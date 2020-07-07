@@ -1,5 +1,151 @@
-const { app, BrowserWindow } = require('electron')
-
+const { app, BrowserWindow, Menu, MenuItem } = require('electron')
+const path = require('path');
+const template = require(path.join(__dirname, './electron1/constants/top-menu'));
+// const template = [
+//   {
+//     label: 'Menu',
+//     submenu: [
+//       {
+//         label: 'About Minsky',
+//       },
+//       {
+//         label: 'Upgrade'
+//       },
+//       {
+//         label: 'New System'
+//       },
+//       {
+//         label: 'Open'
+//       },
+//       {
+//         label: 'Recent Files',
+//         submenu: [
+//           {
+//             label: 'TestFile'
+//           }
+//         ]
+//       },
+//       {
+//         label: 'Library'
+//       },
+//       {
+//         label: 'Save'
+//       },
+//       {
+//         label: 'SaveAs'
+//       },
+//       {
+//         label: 'Insert File as Group'
+//       },
+//       {
+//         label: 'Dimensional Analysis'
+//       },
+//       {
+//         label: 'Export Canvas'
+//       },
+//       {
+//         label: 'Export Plots',
+//         submenu: [
+//           {
+//             label: 'test'
+//           }
+//         ]
+//       },
+//       {
+//         label: 'Log simulation'
+//       },
+//       {
+//         label: 'Recording'
+//       },
+//       {
+//         label: 'Replay recording'
+//       },
+//       {
+//         label: 'Quit'
+//       },
+//       {
+//         type: 'separator'
+//       },
+//       {
+//         label: 'Debugging Use'
+//       }
+//     ]
+//   },
+//   {
+//      label: 'Edit',
+//      submenu: [
+//         {
+//            role: 'undo'
+//         },
+//         {
+//            role: 'redo'
+//         },
+//         {
+//            type: 'separator'
+//         },
+//         {
+//            role: 'cut'
+//         },
+//         {
+//            role: 'copy'
+//         },
+//         {
+//            role: 'paste'
+//         }
+//      ]
+//   },
+  
+//   {
+//      label: 'View',
+//      submenu: [
+//         {
+//            role: 'reload'
+//         },
+//         {
+//            role: 'toggledevtools'
+//         },
+//         {
+//            type: 'separator'
+//         },
+//         {
+//            role: 'resetzoom'
+//         },
+//         {
+//            role: 'zoomin'
+//         },
+//         {
+//            role: 'zoomout'
+//         },
+//         {
+//            type: 'separator'
+//         },
+//         {
+//            role: 'togglefullscreen'
+//         }
+//      ]
+//   },
+  
+//   {
+//      role: 'window',
+//      submenu: [
+//         {
+//            role: 'minimize'
+//         },
+//         {
+//            role: 'close'
+//         }
+//      ]
+//   },
+  
+//   {
+//      role: 'help',
+//      submenu: [
+//         {
+//            label: 'Learn More'
+//         }
+//      ]
+//   }
+// ]
 let win;
 
 function createWindow () {
@@ -21,7 +167,8 @@ function createWindow () {
     win = null
   })
 }
-
+const menu = Menu.buildFromTemplate(template)
+Menu.setApplicationMenu(menu)
 // Create window on electron intialization
 app.on('ready', createWindow)
 
@@ -40,3 +187,4 @@ app.on('activate', function () {
     createWindow()
   }
 })
+
