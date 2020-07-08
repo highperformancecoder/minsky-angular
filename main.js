@@ -1,190 +1,77 @@
-const { app, BrowserWindow, Menu, MenuItem } = require('electron')
-const path = require('path');
-const template = require(path.join(__dirname, './electron1/constants/top-menu'));
-// const template = [
-//   {
-//     label: 'Menu',
-//     submenu: [
-//       {
-//         label: 'About Minsky',
-//       },
-//       {
-//         label: 'Upgrade'
-//       },
-//       {
-//         label: 'New System'
-//       },
-//       {
-//         label: 'Open'
-//       },
-//       {
-//         label: 'Recent Files',
-//         submenu: [
-//           {
-//             label: 'TestFile'
-//           }
-//         ]
-//       },
-//       {
-//         label: 'Library'
-//       },
-//       {
-//         label: 'Save'
-//       },
-//       {
-//         label: 'SaveAs'
-//       },
-//       {
-//         label: 'Insert File as Group'
-//       },
-//       {
-//         label: 'Dimensional Analysis'
-//       },
-//       {
-//         label: 'Export Canvas'
-//       },
-//       {
-//         label: 'Export Plots',
-//         submenu: [
-//           {
-//             label: 'test'
-//           }
-//         ]
-//       },
-//       {
-//         label: 'Log simulation'
-//       },
-//       {
-//         label: 'Recording'
-//       },
-//       {
-//         label: 'Replay recording'
-//       },
-//       {
-//         label: 'Quit'
-//       },
-//       {
-//         type: 'separator'
-//       },
-//       {
-//         label: 'Debugging Use'
-//       }
-//     ]
-//   },
-//   {
-//      label: 'Edit',
-//      submenu: [
-//         {
-//            role: 'undo'
-//         },
-//         {
-//            role: 'redo'
-//         },
-//         {
-//            type: 'separator'
-//         },
-//         {
-//            role: 'cut'
-//         },
-//         {
-//            role: 'copy'
-//         },
-//         {
-//            role: 'paste'
-//         }
-//      ]
-//   },
-  
-//   {
-//      label: 'View',
-//      submenu: [
-//         {
-//            role: 'reload'
-//         },
-//         {
-//            role: 'toggledevtools'
-//         },
-//         {
-//            type: 'separator'
-//         },
-//         {
-//            role: 'resetzoom'
-//         },
-//         {
-//            role: 'zoomin'
-//         },
-//         {
-//            role: 'zoomout'
-//         },
-//         {
-//            type: 'separator'
-//         },
-//         {
-//            role: 'togglefullscreen'
-//         }
-//      ]
-//   },
-  
-//   {
-//      role: 'window',
-//      submenu: [
-//         {
-//            role: 'minimize'
-//         },
-//         {
-//            role: 'close'
-//         }
-//      ]
-//   },
-  
-//   {
-//      role: 'help',
-//      submenu: [
-//         {
-//            label: 'Learn More'
-//         }
-//      ]
-//   }
-// ]
-let win;
-
-function createWindow () {
-  // Create the browser window.
-  win = new BrowserWindow({
-    width: 600, 
-    height: 600,
-    backgroundColor: '#ffffff'
-  })
-
-
-  win.loadURL(`file://${__dirname}/dist/angular-minsky/index.html`)
-
-  //// uncomment below to open the DevTools.
-  // win.webContents.openDevTools()
-
-  // Event when the window is closed.
-  win.on('closed', function () {
-    win = null
-  })
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var electron_1 = require("electron");
+var path = require("path");
+var url = require("url");
+var top_menu_1 = require("./src/top-menu");
+var win = null;
+var args = process.argv.slice(1), serve = args.some(function (val) { return val === '--serve'; });
+function createWindow() {
+    var electronScreen = electron_1.screen;
+    var size = electronScreen.getPrimaryDisplay().workAreaSize;
+    // Create the browser window.
+    win = new electron_1.BrowserWindow({
+        x: 0,
+        y: 0,
+        width: size.width,
+        height: size.height,
+        webPreferences: {
+            nodeIntegration: true,
+            allowRunningInsecureContent: (serve) ? true : false,
+        },
+    });
+    if (serve) {
+        win.webContents.openDevTools();
+        require('electron-reload')(__dirname, {
+            electron: require(__dirname + "/node_modules/electron")
+        });
+        win.loadURL('http://localhost:4200');
+    }
+    else {
+        win.loadURL(url.format({
+            pathname: path.join(__dirname, 'dist/index.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+    }
+    // Emitted when the window is closed.
+    win.on('closed', function () {
+        // Dereference the window object, usually you would store window
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
+        win = null;
+    });
+    return win;
 }
-const menu = Menu.buildFromTemplate(template)
-Menu.setApplicationMenu(menu)
-// Create window on electron intialization
-app.on('ready', createWindow)
-
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-
-  // On macOS specific close process
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
-app.on('activate', function () {
-  // macOS specific close process
-  if (win === null) {
-    createWindow()
-  }
-})
-
+try {
+    electron_1.app.allowRendererProcessReuse = true;
+    // This method will be called when Electron has finished
+    // initialization and is ready to create browser windows.
+    // Some APIs can only be used after this event occurs.
+    // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
+    electron_1.app.on('ready', function () {
+        var menu = top_menu_1.template;
+        electron_1.Menu.setApplicationMenu(menu);
+        setTimeout(createWindow, 400);
+    });
+    // Quit when all windows are closed.
+    electron_1.app.on('window-all-closed', function () {
+        // On OS X it is common for applications and their menu bar
+        // to stay active until the user quits explicitly with Cmd + Q
+        if (process.platform !== 'darwin') {
+            electron_1.app.quit();
+        }
+    });
+    electron_1.app.on('activate', function () {
+        // On OS X it's common to re-create a window in the app when the
+        // dock icon is clicked and there are no other windows open.
+        if (win === null) {
+            createWindow();
+        }
+    });
+}
+catch (e) {
+    // Catch Error
+    // throw e;
+}
+//# sourceMappingURL=main.js.map
