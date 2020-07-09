@@ -19,6 +19,7 @@ function createWindow() {
             nodeIntegration: true,
             allowRunningInsecureContent: (serve) ? true : false,
         },
+        icon: __dirname + '/Icon/favicon.png'
     });
     if (serve) {
         win.webContents.openDevTools();
