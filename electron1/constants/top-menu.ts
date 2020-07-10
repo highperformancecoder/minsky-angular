@@ -1,6 +1,6 @@
 export const template = [
     {
-      label: 'Menu',
+      label: 'File',
       submenu: [
         {
           label: 'About Minsky',
@@ -44,7 +44,10 @@ export const template = [
           label: 'Export Plots',
           submenu: [
             {
-              label: 'test'
+              label: 'as SVG'
+            },
+            {
+               label: 'as CSV'
             }
           ]
         },
@@ -65,6 +68,18 @@ export const template = [
         },
         {
           label: 'Debugging Use'
+        },
+        {
+         label: 'Redraw'
+        },
+        {
+         label: 'Object Browser'
+        },
+        {
+         label: 'Select items'
+        },
+        {
+         label: 'Command'
         }
       ]
     },
@@ -72,22 +87,25 @@ export const template = [
        label: 'Edit',
        submenu: [
           {
-             role: 'undo'
+             role: 'Undo'
           },
           {
-             role: 'redo'
+             role: 'Redo'
           },
           {
-             type: 'separator'
+             role: 'Cut'
           },
           {
-             role: 'cut'
+             role: 'Copy'
           },
           {
-             role: 'copy'
+             role: 'Paste'
           },
           {
-             role: 'paste'
+            role: 'Group selection'
+          },
+          {
+            role: 'Dimensions'
           }
        ]
     },

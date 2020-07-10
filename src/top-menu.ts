@@ -2,7 +2,7 @@ import { Menu } from 'electron';
 
 export const template = Menu.buildFromTemplate([
   {
-    label: 'Menu',
+    label: 'File',
     submenu: [
       {
         label: 'About Minsky',
@@ -46,7 +46,10 @@ export const template = Menu.buildFromTemplate([
         label: 'Export Plots',
         submenu: [
           {
-            label: 'test'
+            label: 'as SVG'
+          },
+          {
+             label: 'as CSV'
           }
         ]
       },
@@ -67,49 +70,295 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Debugging Use'
+      },
+      {
+       label: 'Redraw'
+      },
+      {
+       label: 'Object Browser'
+      },
+      {
+       label: 'Select items'
+      },
+      {
+       label: 'Command'
       }
     ]
   },
   {
-    label: 'Edit',
+     label: 'Edit',
+     submenu: [
+        {
+          label: 'Undo',
+          role: 'undo'
+        },
+        {
+          label: 'Redo',
+          role: 'redo'
+        },
+        {
+          label: 'Cut',
+          role: 'cut'
+        },
+        {
+          label: 'Copy',
+          role: 'copy'
+        },
+        {
+          label: 'Paste',
+          role: 'paste'
+        },
+        {
+          label: 'Group selection'
+        },
+        {
+          label: 'Dimensions'
+        }
+     ]
+  },
+  {
+    label: 'Bookmarks',
     submenu: [
       {
-        role: 'undo'
+        label: 'Bookmark this position'
       },
       {
-        role: 'redo'
+        label: 'Delete...',
+        submenu: [
+        ]
       },
       {
         type: 'separator'
-      },
-      {
-        role: 'cut'
-      },
-      {
-        role: 'copy'
-      },
-      {
-        role: 'paste'
       }
     ]
   },
   {
-    role: 'window',
+    label: 'Insert',
     submenu: [
       {
-        role: 'minimize'
+        label: 'Godley Table'
       },
       {
-        role: 'close'
+        label: 'Variable', 
+        submenu: [
+          {
+            type: 'separator'
+          },
+          {
+            label: 'variable'
+          },
+          {
+            label: 'constant'
+          },
+          {
+            label: 'parameter'
+          }
+        ]
+      },
+      {
+        label: 'Binary Ops',
+        submenu: [
+          {
+            label: 'add'
+          },
+          {
+            label: 'subtract'
+          },
+          {
+            label: 'multiple'
+          },
+          {
+            label: 'divide'
+          },
+          {
+            label: 'min'
+          },
+          {
+            label: 'max'
+          },
+          {
+            label: 'and'
+          },
+          {
+            label: 'or'
+          },
+          {
+            label: 'log'
+          },
+          {
+            label: 'pow'
+          },
+          {
+            label: 'lt'
+          },
+          {
+            label: 'le'
+          },
+          {
+            label: 'eq'
+          }
+        ]
+      },
+      {
+        label: 'Functions',
+        submenu: [
+          {
+            label: 'copy'
+          },
+          {
+            label: 'sqrt'
+          },
+          {
+            label: 'exp'
+          },
+          {
+            label: 'ln'
+          },
+          {
+            label: 'sin'
+          },
+          {
+            label: 'cos'
+          },
+          {
+            label: 'tan'
+          },
+          {
+            label: 'asin'
+          },
+          {
+            label: 'acos'
+          },
+          {
+            label: 'atan'
+          },
+          {
+            label: 'sinh'
+          },
+          {
+            label: 'cosh'
+          },
+          {
+            label: 'tanh'
+          },
+          {
+            label: 'abs'
+          },
+          {
+            label: 'floor'
+          },
+          {
+            label: 'frac'
+          },
+          {
+            label: 'not'
+          }
+        ]
+      }, 
+      {
+        label: 'Reductions',
+        submenu: [
+          {
+            label: 'sum'
+          },
+          {
+            label: 'product'
+          },
+          {
+            label: 'infimum'
+          },
+          {
+            label: 'supremum'
+          },
+          {
+            label: 'any'
+          },
+          {
+            label: 'all'
+          },
+          {
+            label: 'infIndex'
+          },
+          {
+            label: 'supIndex'
+          }
+        ]
+      }, 
+      {
+        label: 'Scans',
+        submenu: [
+          {
+            label: 'runningSum'
+          },
+          {
+            label: 'runningProduct'
+          },
+          {
+            label: 'difference'
+          }
+        ]
+      },
+      {
+        label: 'Tensor operations',
+        submenu: [
+          {
+            label: 'innerProduct'
+          },
+          {
+            label: 'outerProduct'
+          },
+          {
+            label: 'index'
+          },
+          {
+            label: 'gather'
+          }
+        ]
+      },
+      {
+        label: 'time'
+      },
+      {
+        label: 'integrate'
+      },
+      {
+        label: 'differentiate'
+      },
+      {
+        label: 'data'
+      },
+      {
+        label: 'ravel'
+      },
+      {
+        label: 'plot'
       }
     ]
   },
-    
+  {
+    label: 'Options',
+    submenu: [
+      {
+        label: 'Preferences'
+      },
+      {
+        label: 'Background Color'
+      }
+    ]
+  },
+  {
+    label: 'Range Kutta',
+    submenu: [
+      {
+        label: 'Range Kutta'
+      }
+    ]
+  },
   {
     role: 'help',
     submenu: [
       {
-        label: 'Learn More'
+        label: 'Minsky Documentation'
       }
     ]
   }
