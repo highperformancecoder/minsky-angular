@@ -277,9 +277,6 @@ exports.template = electron_1.Menu.buildFromTemplate([
                         label: 'all'
                     },
                     {
-                        label: 'all'
-                    },
-                    {
                         label: 'infIndex'
                     },
                     {
@@ -350,10 +347,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
         ]
     },
     {
-        label: 'Range Kutta',
+        label: 'Runge Kutta',
         submenu: [
             {
-                label: 'Range Kutta'
+                label: 'Runge Kutta'
             }
         ]
     },

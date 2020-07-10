@@ -347,10 +347,10 @@ export const template = Menu.buildFromTemplate([
     ]
   },
   {
-    label: 'Range Kutta',
+    label: 'Runge Kutta',
     submenu: [
       {
-        label: 'Range Kutta'
+        label: 'Runge Kutta'
       }
     ]
   },
