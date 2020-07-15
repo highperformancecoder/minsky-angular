@@ -1,11 +1,11 @@
-import { Menu } from 'electron';
+import { Menu, BrowserWindow } from 'electron';
 
 export const template = Menu.buildFromTemplate([
   {
     label: 'File',
     submenu: [
       {
-        label: 'About Minsky',
+        label: 'About Minsky'
       },
       {
         label: 'Upgrade'
@@ -139,13 +139,21 @@ export const template = Menu.buildFromTemplate([
         label: 'Godley Table'
       },
       {
-        label: 'Variable', 
+        label: 'Variable',
         submenu: [
           {
             type: 'separator'
           },
           {
-            label: 'variable'
+            label: 'variable',
+            click () {
+              const { BrowserWindow } = require('electron')
+              const win = new BrowserWindow({ width: 300, height: 600 })
+    
+              // Load a remote URL
+              win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
+    
+            }
           },
           {
             label: 'constant'
