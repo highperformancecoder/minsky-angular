@@ -156,10 +156,26 @@ export const template = Menu.buildFromTemplate([
             }
           },
           {
-            label: 'constant'
+            label: 'constant',
+            click () {
+              const { BrowserWindow } = require('electron')
+              const win = new BrowserWindow({ width: 300, height: 600 })
+    
+              // Load a remote URL
+              win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
+    
+            }
           },
           {
-            label: 'parameter'
+            label: 'parameter',
+            click () {
+              const { BrowserWindow } = require('electron')
+              const win = new BrowserWindow({ width: 300, height: 600 })
+    
+              // Load a remote URL
+              win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
+    
+            }
           }
         ]
       },
