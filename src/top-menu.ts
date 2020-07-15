@@ -148,7 +148,7 @@ export const template = Menu.buildFromTemplate([
             label: 'variable',
             click () {
               const { BrowserWindow } = require('electron')
-              const win = new BrowserWindow({ width: 300, height: 600 })
+              const win = new BrowserWindow({ width: 450, height: 550 })
     
               // Load a remote URL
               win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
@@ -159,7 +159,7 @@ export const template = Menu.buildFromTemplate([
             label: 'constant',
             click () {
               const { BrowserWindow } = require('electron')
-              const win = new BrowserWindow({ width: 300, height: 600 })
+              const win = new BrowserWindow({ width: 450, height: 550 })
     
               // Load a remote URL
               win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
@@ -170,7 +170,7 @@ export const template = Menu.buildFromTemplate([
             label: 'parameter',
             click () {
               const { BrowserWindow } = require('electron')
-              const win = new BrowserWindow({ width: 300, height: 600 })
+              const win = new BrowserWindow({ width: 450, height: 550 })
     
               // Load a remote URL
               win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
@@ -363,7 +363,15 @@ export const template = Menu.buildFromTemplate([
     label: 'Options',
     submenu: [
       {
-        label: 'Preferences'
+        label: 'Preferences',
+        click () {
+          const { BrowserWindow } = require('electron')
+          const win = new BrowserWindow({ width: 550, height: 450 })
+
+          // Load a remote URL
+          win.loadURL(`file://${__dirname}/static_popups/preferences.html`)
+
+        }
       },
       {
         label: 'Background Color'
