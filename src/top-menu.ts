@@ -112,7 +112,15 @@ export const template = Menu.buildFromTemplate([
           label: 'Group selection'
         },
         {
-          label: 'Dimensions'
+          label: 'Dimensions',
+          click () {
+            const { BrowserWindow } = require('electron')
+            const win = new BrowserWindow({ width: 420, height: 250 })
+  
+            // Load a remote URL
+            win.loadURL(`file://${__dirname}/static_popups/dimensions.html`)
+  
+          }
         }
      ]
   },
@@ -120,7 +128,15 @@ export const template = Menu.buildFromTemplate([
     label: 'Bookmarks',
     submenu: [
       {
-        label: 'Bookmark this position'
+        label: 'Bookmark this position',
+        click () {
+          const { BrowserWindow } = require('electron')
+          const win = new BrowserWindow({ width: 420, height: 180 })
+
+          // Load a remote URL
+          win.loadURL(`file://${__dirname}/static_popups/bookmark-position.html`)
+
+        }
       },
       {
         label: 'Delete...',
@@ -382,7 +398,15 @@ export const template = Menu.buildFromTemplate([
     label: 'Runge Kutta',
     submenu: [
       {
-        label: 'Runge Kutta'
+        label: 'Runge Kutta',
+        click () {
+          const { BrowserWindow } = require('electron')
+          const win = new BrowserWindow({ width: 550, height: 550 })
+
+          // Load a remote URL
+          win.loadURL(`file://${__dirname}/static_popups/runge-kutta-parameters.html`)
+
+        }
       }
     ]
   },

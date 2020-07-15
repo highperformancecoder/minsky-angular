@@ -1,0 +1,61 @@
+<style>
+    .popup-wrapper {
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0 auto;
+        max-width: 360px;
+    }
+
+    .popup-title {
+        margin: 30px 0;
+        text-align: center;
+    }
+
+    .form-control {
+        margin-bottom: 10px;
+    }
+
+    .form-control label {
+        min-width: 160px;
+        display: inline-block;
+        text-align: right;
+        margin-right: 10px;
+    }
+
+    .form-buttons {
+        margin: 30px 0;
+        text-align: center;
+    }
+
+    .form-buttons .btn {
+        display: inline-block;
+    }
+</style>
+<div class="popup-wrapper">
+    <div class="form-wrapper">
+        <form action="">
+            <div class="form-control">
+                <label for="dimension">Dimension</label>
+                <input type="text" class="dimension" id="dimension">
+            </div>
+
+            <div class="form-control">
+                <label for="type">Bookmark name</label>
+                <select name="type" id="type">
+                    <option value="string">string</option>
+                    <option value="value">value</option>
+                    <option value="time">time</option>
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="unitsFormat">Units/Format</label>
+                <select name="units-format" id="unitsFormat"></select>
+            </div>
+
+            <div class="form-control form-buttons">
+                <button class="btn ok-btn">OK</button>
+                <button class="btn cancel-btn">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
