@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as url from 'url';
 import {template} from './src/top-menu';
 
-let win: BrowserWindow = null;
+export let win: BrowserWindow = null;
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
@@ -24,7 +24,6 @@ function createWindow(): BrowserWindow {
     },
     icon: __dirname + '/Icon/favicon.png'
   });
-
   if (serve) {
 
     win.webContents.openDevTools();

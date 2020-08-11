@@ -1,5 +1,6 @@
 import { Menu, BrowserWindow } from 'electron';
-
+import { win } from '../main';
+const { dialog } = require('electron')
 export const template = Menu.buildFromTemplate([
   {
     label: 'File',
@@ -164,21 +165,29 @@ export const template = Menu.buildFromTemplate([
             label: 'variable',
             click () {
               const { BrowserWindow } = require('electron')
-              const win = new BrowserWindow({ width: 450, height: 550 })
-    
+              const cwin = new BrowserWindow({ width: 450, height: 550 ,title:"add variable",
+              resizable: false,
+              minimizable:false,
+              parent:win
+          ,})
+              cwin.setMenu(null);
               // Load a remote URL
-              win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
-    
+              cwin.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
+              
             }
           },
           {
             label: 'constant',
             click () {
               const { BrowserWindow } = require('electron')
-              const win = new BrowserWindow({ width: 450, height: 550 })
-    
+              const cwin = new BrowserWindow({ width: 450, height: 550 ,title:"add variable",
+              resizable: false,
+              minimizable:false,
+              parent:win
+          ,})
+              cwin.setMenu(null);
               // Load a remote URL
-              win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
+              cwin.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
     
             }
           },
@@ -186,10 +195,15 @@ export const template = Menu.buildFromTemplate([
             label: 'parameter',
             click () {
               const { BrowserWindow } = require('electron')
-              const win = new BrowserWindow({ width: 450, height: 550 })
-    
+              const cwin = new BrowserWindow({ width: 450, height: 550,
+               parent:win ,title:"add variable",
+              resizable: false,
+              minimizable:false
+          ,})
+              cwin.setMenu(null);
               // Load a remote URL
-              win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
+              cwin.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
+              win.setMenuBarVisibility(false);
     
             }
           }
