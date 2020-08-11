@@ -6,7 +6,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
         label: 'File',
         submenu: [
             {
-                label: 'About Minsky',
+                label: 'About Minsky'
             },
             {
                 label: 'Upgrade'
@@ -113,7 +113,13 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Group selection'
             },
             {
-                label: 'Dimensions'
+                label: 'Dimensions',
+                click: function () {
+                    var BrowserWindow = require('electron').BrowserWindow;
+                    var win = new BrowserWindow({ width: 420, height: 250 });
+                    // Load a remote URL
+                    win.loadURL("file://" + __dirname + "/static_popups/dimensions.html");
+                }
             }
         ]
     },
@@ -121,7 +127,13 @@ exports.template = electron_1.Menu.buildFromTemplate([
         label: 'Bookmarks',
         submenu: [
             {
-                label: 'Bookmark this position'
+                label: 'Bookmark this position',
+                click: function () {
+                    var BrowserWindow = require('electron').BrowserWindow;
+                    var win = new BrowserWindow({ width: 420, height: 180 });
+                    // Load a remote URL
+                    win.loadURL("file://" + __dirname + "/static_popups/bookmark-position.html");
+                }
             },
             {
                 label: 'Delete...',
@@ -145,13 +157,31 @@ exports.template = electron_1.Menu.buildFromTemplate([
                         type: 'separator'
                     },
                     {
-                        label: 'variable'
+                        label: 'variable',
+                        click: function () {
+                            var BrowserWindow = require('electron').BrowserWindow;
+                            var win = new BrowserWindow({ width: 450, height: 550 });
+                            // Load a remote URL
+                            win.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+                        }
                     },
                     {
-                        label: 'constant'
+                        label: 'constant',
+                        click: function () {
+                            var BrowserWindow = require('electron').BrowserWindow;
+                            var win = new BrowserWindow({ width: 450, height: 550 });
+                            // Load a remote URL
+                            win.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+                        }
                     },
                     {
-                        label: 'parameter'
+                        label: 'parameter',
+                        click: function () {
+                            var BrowserWindow = require('electron').BrowserWindow;
+                            var win = new BrowserWindow({ width: 450, height: 550 });
+                            // Load a remote URL
+                            win.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+                        }
                     }
                 ]
             },
@@ -339,7 +369,13 @@ exports.template = electron_1.Menu.buildFromTemplate([
         label: 'Options',
         submenu: [
             {
-                label: 'Preferences'
+                label: 'Preferences',
+                click: function () {
+                    var BrowserWindow = require('electron').BrowserWindow;
+                    var win = new BrowserWindow({ width: 550, height: 450 });
+                    // Load a remote URL
+                    win.loadURL("file://" + __dirname + "/static_popups/preferences.html");
+                }
             },
             {
                 label: 'Background Color'
@@ -350,7 +386,13 @@ exports.template = electron_1.Menu.buildFromTemplate([
         label: 'Runge Kutta',
         submenu: [
             {
-                label: 'Runge Kutta'
+                label: 'Runge Kutta',
+                click: function () {
+                    var BrowserWindow = require('electron').BrowserWindow;
+                    var win = new BrowserWindow({ width: 550, height: 550 });
+                    // Load a remote URL
+                    win.loadURL("file://" + __dirname + "/static_popups/runge-kutta-parameters.html");
+                }
             }
         ]
     },
