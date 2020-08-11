@@ -1,12 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
+var aboutWin;
+electron_1.ipcMain.on('about:close', function (event) {
+    aboutWin.close();
+});
 exports.template = electron_1.Menu.buildFromTemplate([
     {
         label: 'File',
         submenu: [
             {
-                label: 'About Minsky'
+                label: 'About Minsky',
+                //It will open a child window when about menu is clicked.
+                click: function () {
+                    aboutWin = new electron_1.BrowserWindow({ width: 420, height: 450, webPreferences: { nodeIntegration: true },
+                        title: "About Minsky" });
+                    //setting menu for child window                          
+                    var childMenu = electron_1.Menu.buildFromTemplate([{ label: '' }]);
+                    aboutWin.setMenu(childMenu);
+                    // Load a remote URL
+                    aboutWin.loadURL("file://" + __dirname + "/static_popups/about.html");
+                    // aboutWin.webContents.openDevTools();
+                }
             },
             {
                 label: 'Upgrade'

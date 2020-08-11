@@ -1,11 +1,29 @@
-import { Menu, BrowserWindow } from 'electron';
+import { Menu, BrowserWindow,ipcMain } from 'electron';
+
+
+let aboutWin: BrowserWindow;
+
+ipcMain.on('about:close',(event)=>{
+  aboutWin.close();
+});
 
 export const template = Menu.buildFromTemplate([
   {
     label: 'File',
     submenu: [
       {
-        label: 'About Minsky'
+        label: 'About Minsky',
+        //It will open a child window when about menu is clicked.
+        click () {
+          aboutWin = new BrowserWindow({ width: 420, height: 450,webPreferences:{nodeIntegration:true},
+                                    title:"About Minsky" })
+         //setting menu for child window                          
+         const childMenu = Menu.buildFromTemplate([{label: ''}]);
+         aboutWin.setMenu(childMenu);
+         // Load a remote URL
+         aboutWin.loadURL(`file://${__dirname}/static_popups/about.html`)
+        // aboutWin.webContents.openDevTools();
+     }
       },
       {
         label: 'Upgrade'
