@@ -190,11 +190,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                         label: 'parameter',
                         click: function () {
                             var BrowserWindow = require('electron').BrowserWindow;
-                            var cwin = new BrowserWindow({ width: 450, height: 550, title: "add variable",
+                            var cwin = new BrowserWindow({ width: 450, height: 550,
+                                parent: main_1.win, title: "add variable",
                                 resizable: false,
                                 minimizable: false,
-                                parent: main_1.win,
-                                modal: true,
                             });
                             cwin.setMenu(null);
                             // Load a remote URL
