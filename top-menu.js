@@ -13,14 +13,24 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'About Minsky',
                 //It will open a child window when about menu is clicked.
                 click: function () {
-                    aboutWin = new electron_1.BrowserWindow({ width: 420, height: 450, webPreferences: { nodeIntegration: true },
-                        title: "About Minsky" });
+                    aboutWin = new electron_1.BrowserWindow({
+                        width: 420, height: 450,
+                        webPreferences: { nodeIntegration: true },
+                        resizable: false,
+                        minimizable: false,
+                        modal: true,
+                        show: false,
+                        title: "About Minsky"
+                    });
                     //setting menu for child window                          
-                    var childMenu = electron_1.Menu.buildFromTemplate([{ label: '' }]);
-                    aboutWin.setMenu(childMenu);
+                    //const childMenu = Menu.buildFromTemplate([{ label: '' }]);
+                    aboutWin.setMenu(null);
                     // Load a remote URL
                     aboutWin.loadURL("file://" + __dirname + "/static_popups/about.html");
                     // aboutWin.webContents.openDevTools();
+                    aboutWin.once('ready-to-show', function () {
+                        aboutWin.show();
+                    });
                 }
             },
             {
