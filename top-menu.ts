@@ -5,6 +5,8 @@ ipcMain.on('about:close', (event) => {
   aboutWin.close();
 });
 
+import { win } from './main';
+
 export const template = Menu.buildFromTemplate([
   {
     label: 'File',
@@ -198,35 +200,20 @@ export const template = Menu.buildFromTemplate([
           },
           {
             label: 'variable',
-            click() {
-              const { BrowserWindow } = require('electron')
-              const win = new BrowserWindow({ width: 450, height: 550 })
-
-              // Load a remote URL
-              win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
-
+            click () {
+                createVariablePopUp('variable');
             }
           },
           {
             label: 'constant',
-            click() {
-              const { BrowserWindow } = require('electron')
-              const win = new BrowserWindow({ width: 450, height: 550 })
-
-              // Load a remote URL
-              win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
-
+            click () {
+             createVariablePopUp('constant');
             }
           },
           {
             label: 'parameter',
-            click() {
-              const { BrowserWindow } = require('electron')
-              const win = new BrowserWindow({ width: 450, height: 550 })
-
-              // Load a remote URL
-              win.loadURL(`file://${__dirname}/static_popups/create_variable.html`)
-
+            click () {
+              createVariablePopUp('parameter');
             }
           }
         ]
@@ -456,7 +443,25 @@ export const template = Menu.buildFromTemplate([
   }
 ]);
 
-
+function createVariablePopUp(type){
+  var BrowserWindow = require('electron').BrowserWindow;
+              var variable_window = new BrowserWindow({
+                  width: 300,
+                  height: 420,
+                  title: "Specify variable name",
+                  resizable: false,
+                  minimizable: false,
+                  parent: win,
+                  modal: true,
+                  backgroundColor:'#c8ccd0'
+              });
+              variable_window.setMenu(null);
+              variable_window.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+              variable_window.on('closed', () => {
+                console.log('closed',type);
+               variable_window = null;
+              });
+}
 
 
 

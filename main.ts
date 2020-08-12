@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as url from 'url';
 import {template} from './top-menu';
 
-let win: BrowserWindow = null;
+export let win: BrowserWindow = null;
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
@@ -18,13 +18,13 @@ function createWindow(): BrowserWindow {
     y: 0,
     width: size.width,
     height: size.height,
+    backgroundColor:'#c8ccd0',
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: (serve) ? true : false,
     },
     icon: __dirname + '/Icon/favicon.png'
   });
-
   if (serve) {
 
     win.webContents.openDevTools();

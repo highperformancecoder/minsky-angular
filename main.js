@@ -4,17 +4,18 @@ var electron_1 = require("electron");
 var path = require("path");
 var url = require("url");
 var top_menu_1 = require("./top-menu");
-var win = null;
+exports.win = null;
 var args = process.argv.slice(1), serve = args.some(function (val) { return val === '--serve'; });
 function createWindow() {
     var electronScreen = electron_1.screen;
     var size = electronScreen.getPrimaryDisplay().workAreaSize;
     // Create the browser window.
-    win = new electron_1.BrowserWindow({
+    exports.win = new electron_1.BrowserWindow({
         x: 0,
         y: 0,
         width: size.width,
         height: size.height,
+        backgroundColor: '#c8ccd0',
         webPreferences: {
             nodeIntegration: true,
             allowRunningInsecureContent: (serve) ? true : false,
@@ -22,27 +23,27 @@ function createWindow() {
         icon: __dirname + '/Icon/favicon.png'
     });
     if (serve) {
-        win.webContents.openDevTools();
+        exports.win.webContents.openDevTools();
         require('electron-reload')(__dirname, {
             electron: require(__dirname + "/node_modules/electron")
         });
-        win.loadURL('http://localhost:4200');
+        exports.win.loadURL('http://localhost:4200');
     }
     else {
-        win.loadURL(url.format({
+        exports.win.loadURL(url.format({
             pathname: path.join(__dirname, 'dist/index.html'),
             protocol: 'file:',
             slashes: true
         }));
     }
     // Emitted when the window is closed.
-    win.on('closed', function () {
+    exports.win.on('closed', function () {
         // Dereference the window object, usually you would store window
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
-        win = null;
+        exports.win = null;
     });
-    return win;
+    return exports.win;
 }
 try {
     electron_1.app.allowRendererProcessReuse = true;
@@ -66,7 +67,7 @@ try {
     electron_1.app.on('activate', function () {
         // On OS X it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
-        if (win === null) {
+        if (exports.win === null) {
             createWindow();
         }
     });
