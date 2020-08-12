@@ -238,7 +238,7 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'add',
             click() {
-              
+              console.log("add")
             }
           },
           {
@@ -620,7 +620,7 @@ export const template = Menu.buildFromTemplate([
 ]);
 
 function createVariablePopUp(type) {
-  var BrowserWindow = require('electron').BrowserWindow;
+ 
    variable_window = new BrowserWindow({
     width: 320,
     height: 420,
@@ -629,7 +629,6 @@ function createVariablePopUp(type) {
     minimizable: false,
     parent: win,
     modal: true,
-    show:false,
     backgroundColor: '#c8ccd0',
     webPreferences: {
       nodeIntegration: true
@@ -641,9 +640,7 @@ function createVariablePopUp(type) {
     console.log('closed', type);
     variable_window = null;
   });
-  aboutWin.once('ready-to-show',()=>{
-    variable_window.show();
- });
+  
 }
 
 

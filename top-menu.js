@@ -230,7 +230,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     {
                         label: 'add',
                         click: function () {
-                            console.log("add clicked");
+                            console.log("add");
                         }
                     },
                     {
@@ -557,8 +557,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
     }
 ]);
 function createVariablePopUp(type) {
-    var BrowserWindow = require('electron').BrowserWindow;
-    variable_window = new BrowserWindow({
+    variable_window = new electron_1.BrowserWindow({
         width: 320,
         height: 420,
         title: "Specify variable name",
@@ -566,7 +565,6 @@ function createVariablePopUp(type) {
         minimizable: false,
         parent: main_1.win,
         modal: true,
-        show: false,
         backgroundColor: '#c8ccd0',
         webPreferences: {
             nodeIntegration: true
@@ -577,9 +575,6 @@ function createVariablePopUp(type) {
     variable_window.on('closed', function () {
         console.log('closed', type);
         variable_window = null;
-    });
-    aboutWin.once('ready-to-show', function () {
-        variable_window.show();
     });
 }
 //# sourceMappingURL=top-menu.js.map
