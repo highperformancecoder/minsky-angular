@@ -1,12 +1,17 @@
 import { Menu, BrowserWindow, ipcMain,shell } from 'electron';
-let aboutWin: BrowserWindow;
+import { win } from './main';
 
+let aboutWin: BrowserWindow;
+let variable_window : BrowserWindow;
 ipcMain.on('about:close', (event) => {
   aboutWin.close();
 });
-
-import { win } from './main';
-
+ipcMain.on('create_variable:ok', (event) => {
+  variable_window.close();
+});
+ipcMain.on('create_variable:cancel', (event) => {
+  variable_window.close();
+});
 export const template = Menu.buildFromTemplate([
   {
     label: 'File',
@@ -165,15 +170,8 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Dimensions',
         click() {
-          const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({ width: 420, height: 250,
-            webPreferences: {
-              nodeIntegration: true
-            }
-          })
 
-          // Load a remote URL
-          win.loadURL(`file://${__dirname}/menu/dimensions/dimensions.html`)
+          createMenuPopUp(420,250,"Dimensions","/menu/dimensions/dimensions.html");
 
         }
       }
@@ -185,15 +183,8 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Bookmark this position',
         click() {
-          const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({ width: 420, height: 180,
-            webPreferences: {
-              nodeIntegration: true
-            }
-           })
 
-          // Load a remote URL
-          win.loadURL(`file://${__dirname}/menu/bookmark-position/bookmark-position.html`)
+           createMenuPopUp(420,180,"Bookmark this position","/menu/bookmark-position/bookmark-position.html");
 
         }
       },
@@ -243,43 +234,82 @@ export const template = Menu.buildFromTemplate([
         label: 'Binary Ops',
         submenu: [
           {
-            label: 'add'
+            label: 'add',
+            click() {
+              console.log("add")
+            }
           },
           {
-            label: 'subtract'
+            label: 'subtract',
+            click() {
+              
+            }
           },
           {
-            label: 'multiple'
+            label: 'multiple',
+            click() {
+              
+            }
           },
           {
-            label: 'divide'
+            label: 'divide',
+            click() {
+              
+            }
           },
           {
-            label: 'min'
+            label: 'min',
+            click() {
+              
+            }
           },
           {
-            label: 'max'
+            label: 'max',
+            click() {
+              
+            }
           },
           {
-            label: 'and'
+            label: 'and',
+            click() {
+              
+            }
           },
           {
-            label: 'or'
+            label: 'or',
+            click() {
+              
+            }
           },
           {
-            label: 'log'
+            label: 'log',
+            click() {
+              
+            }
           },
           {
-            label: 'pow'
+            label: 'pow',
+            click() {
+              
+            }
           },
           {
-            label: 'lt'
+            label: 'lt',
+            click() {
+              
+            }
           },
           {
-            label: 'le'
+            label: 'le',
+            click() {
+              
+            }
           },
           {
-            label: 'eq'
+            label: 'eq',
+            click() {
+              
+            }
           }
         ]
       },
@@ -287,55 +317,106 @@ export const template = Menu.buildFromTemplate([
         label: 'Functions',
         submenu: [
           {
-            label: 'copy'
+            label: 'copy',
+            click() {
+              
+            }
           },
           {
-            label: 'sqrt'
+            label: 'sqrt',
+            click() {
+              
+            }
           },
           {
-            label: 'exp'
+            label: 'exp',
+            click() {
+              
+            }
           },
           {
-            label: 'ln'
+            label: 'ln',
+            click() {
+              
+            }
           },
           {
-            label: 'sin'
+            label: 'sin',
+            click() {
+              
+            }
           },
           {
-            label: 'cos'
+            label: 'cos',
+            click() {
+              
+            }
           },
           {
-            label: 'tan'
+            label: 'tan',
+            click() {
+              
+            }
           },
           {
-            label: 'asin'
+            label: 'asin',
+            click() {
+              
+            }
           },
           {
-            label: 'acos'
+            label: 'acos',
+            click() {
+              
+            }
           },
           {
-            label: 'atan'
+            label: 'atan',
+            click() {
+              
+            }
           },
           {
-            label: 'sinh'
+            label: 'sinh',
+            click() {
+              
+            }
           },
           {
-            label: 'cosh'
+            label: 'cosh',
+            click() {
+              
+            }
           },
           {
-            label: 'tanh'
+            label: 'tanh',
+            click() {
+              
+            }
           },
           {
-            label: 'abs'
+            label: 'abs',
+            click() {
+              
+            }
           },
           {
-            label: 'floor'
+            label: 'floor',
+            click() {
+              
+            }
           },
           {
-            label: 'frac'
+            label: 'frac',
+            click() {
+              
+            }
           },
           {
-            label: 'not'
+            label: 'not',
+            click() {
+              
+            }
           }
         ]
       },
@@ -343,28 +424,52 @@ export const template = Menu.buildFromTemplate([
         label: 'Reductions',
         submenu: [
           {
-            label: 'sum'
+            label: 'sum',
+            click() {
+              
+            }
           },
           {
-            label: 'product'
+            label: 'product',
+            click() {
+              
+            }
           },
           {
-            label: 'infimum'
+            label: 'infimum',
+            click() {
+              
+            }
           },
           {
-            label: 'supremum'
+            label: 'supremum',
+            click() {
+              
+            }
           },
           {
-            label: 'any'
+            label: 'any',
+            click() {
+              
+            }
           },
           {
-            label: 'all'
+            label: 'all',
+            click() {
+              
+            }
           },
           {
-            label: 'infIndex'
+            label: 'infIndex',
+            click() {
+              
+            }
           },
           {
-            label: 'supIndex'
+            label: 'supIndex',
+            click() {
+              
+            }
           }
         ]
       },
@@ -372,13 +477,22 @@ export const template = Menu.buildFromTemplate([
         label: 'Scans',
         submenu: [
           {
-            label: 'runningSum'
+            label: 'runningSum',
+            click() {
+              
+            }
           },
           {
-            label: 'runningProduct'
+            label: 'runningProduct',
+            click() {
+              
+            }
           },
           {
-            label: 'difference'
+            label: 'difference',
+            click() {
+              
+            }
           }
         ]
       },
@@ -386,36 +500,66 @@ export const template = Menu.buildFromTemplate([
         label: 'Tensor operations',
         submenu: [
           {
-            label: 'innerProduct'
+            label: 'innerProduct',
+            click() {
+              
+            }
           },
           {
-            label: 'outerProduct'
+            label: 'outerProduct',
+            click() {
+              
+            }
           },
           {
-            label: 'index'
+            label: 'index',
+            click() {
+              
+            }
           },
           {
-            label: 'gather'
+            label: 'gather',
+            click() {
+              
+            }
           }
         ]
       },
       {
-        label: 'time'
+        label: 'time',
+        click() {
+          
+        }
       },
       {
-        label: 'integrate'
+        label: 'integrate',
+        click() {
+          
+        }
       },
       {
-        label: 'differentiate'
+        label: 'differentiate',
+        click() {
+          
+        }
       },
       {
-        label: 'data'
+        label: 'data',
+        click() {
+          
+        }
       },
       {
-        label: 'ravel'
+        label: 'ravel',
+        click() {
+          
+        }
       },
       {
-        label: 'plot'
+        label: 'plot',
+        click() {
+          
+        }
       }
     ]
   },
@@ -425,16 +569,8 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Preferences',
         click() {
-          const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({
-            width: 550, height: 450,
-            webPreferences: {
-              nodeIntegration: true
-            }
-          })
 
-          // Load a remote URL
-          win.loadURL(`file://${__dirname}/menu/preferences/preferences.html`)
+          createMenuPopUp(550,450,"Preferences","/menu/preferences/preferences.html");
 
         }
       },
@@ -449,15 +585,8 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Runge Kutta',
         click() {
-          const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({ width: 550, height: 550,
-            webPreferences: {
-              nodeIntegration: true
-            }
-          })
 
-          // Load a remote URL
-          win.loadURL(`file://${__dirname}/menu/runge-kutta-parameters/runge-kutta-parameters.html`)
+          createMenuPopUp(550,550,"Runge Kutta","/menu/runge-kutta-parameters/runge-kutta-parameters.html");
 
         }
       }
@@ -474,9 +603,9 @@ export const template = Menu.buildFromTemplate([
 ]);
 
 function createVariablePopUp(type) {
-  var BrowserWindow = require('electron').BrowserWindow;
-  var variable_window = new BrowserWindow({
-    width: 300,
+ 
+   variable_window = new BrowserWindow({
+    width: 320,
     height: 420,
     title: "Specify variable name",
     resizable: false,
@@ -493,6 +622,30 @@ function createVariablePopUp(type) {
   variable_window.on('closed', () => {
     console.log('closed', type);
     variable_window = null;
+  });
+  
+}
+
+function createMenuPopUp(width,height,title,dir_path){
+  var BrowserWindow = require('electron').BrowserWindow;
+  var menu_window = new BrowserWindow({
+    width: width,
+    height: height,
+    title: title,
+    resizable: false,
+    minimizable: false,
+    parent: win,
+    modal: true,
+    backgroundColor: '#c8ccd0',
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+  menu_window.setMenu(null);
+  menu_window.loadURL("file://" + __dirname + dir_path);
+  menu_window.on('closed', () => {
+    // console.log('closed', type);
+    menu_window = null;
   });
 }
 
