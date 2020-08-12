@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
+var main_1 = require("./main");
+var dialog = require('electron').dialog;
 exports.template = electron_1.Menu.buildFromTemplate([
     {
         label: 'File',
@@ -159,28 +161,19 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     {
                         label: 'variable',
                         click: function () {
-                            var BrowserWindow = require('electron').BrowserWindow;
-                            var win = new BrowserWindow({ width: 450, height: 550 });
-                            // Load a remote URL
-                            win.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+                            createVariablePopUp('variable');
                         }
                     },
                     {
                         label: 'constant',
                         click: function () {
-                            var BrowserWindow = require('electron').BrowserWindow;
-                            var win = new BrowserWindow({ width: 450, height: 550 });
-                            // Load a remote URL
-                            win.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+                            createVariablePopUp('constant');
                         }
                     },
                     {
                         label: 'parameter',
                         click: function () {
-                            var BrowserWindow = require('electron').BrowserWindow;
-                            var win = new BrowserWindow({ width: 450, height: 550 });
-                            // Load a remote URL
-                            win.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+                            createVariablePopUp('parameter');
                         }
                     }
                 ]
@@ -405,4 +398,23 @@ exports.template = electron_1.Menu.buildFromTemplate([
         ]
     }
 ]);
+function createVariablePopUp(type) {
+    var BrowserWindow = require('electron').BrowserWindow;
+    var variable_window = new BrowserWindow({
+        width: 300,
+        height: 420,
+        title: "Specify variable name",
+        resizable: false,
+        minimizable: false,
+        parent: main_1.win,
+        modal: true,
+        backgroundColor: '#c8ccd0'
+    });
+    variable_window.setMenu(null);
+    variable_window.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+    variable_window.on('closed', function () {
+        console.log('closed', type);
+        variable_window = null;
+    });
+}
 //# sourceMappingURL=top-menu.js.map
