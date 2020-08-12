@@ -1,12 +1,13 @@
 .toolbar-controls {
     display: flex;
     flex-wrap: wrap;
-    
+    border: 1px solid #6d6d6d;
+    margin-top: 0.5px;
+    border-top: 1px solid white;
     .simulation-controls {
         display: flex;
         align-items: center;
         margin: 5px;
-
         .checkbox-control {
             label,
             input {
@@ -15,37 +16,31 @@
             }
         }
     }
-
     .range-input-control {
         display: flex;
         flex-direction: column;
         margin: 5px;
-
+        font-size: 14px;
         .range-input-label {
             text-align: center;
             user-select: none;
         }
-
         .range-input-wrapper {
             display: flex;
             align-items: center;
-
             .slow-label,
             .fast-label {
                 margin: 0 5px;
                 user-select: none;
             }
-
             input {
                 cursor: pointer;
             }
         }
     }
-
     .time-info {
         display: flex;
         margin-left: auto;
-
         .time,
         .delta-time {
             margin: auto 10px;
@@ -57,15 +52,37 @@
 .btn {
     align-items: center;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
     display: inline-flex;
-    height: 40px;
-    margin: 5px;
-    padding: 6px;
-    width: 40px;
-
+    height: 31px;
+    margin: auto;
+    padding: 2px;
+    width: 31px;
+    border-right: 2px solid #928484;
+    border-bottom: 2px solid #332f2f;
+    border-top: 1px solid white;
+    border-left: 2px solid white;
+    background: #ececec;
     .btn-icon {
         max-width: 100%;
     }
+}
+
+.zoom-btn {
+    width: 42px;
+    padding: 8px;
+}
+
+.btn:focus {
+    outline: none;
+    border-left: 2px solid #332f2f;
+    border-top: 2px solid #928484;
+    border-bottom: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+    background: white;
+    margin-top: -1px;
+}
+
+.m-a-0 {
+    margin: auto 0;
 }
