@@ -1,0 +1,62 @@
+// basic color
+$black: #000000;
+$white: #ffffff;
+
+// yellow color
+$primary-yellow: #f0ad4e;
+
+//grey
+$primary-grey: #696969;
+$primary-light-grey: #fafafa;
+$primary-header: #e7e8ea;
+
+// $base-color: #c6538c;
+$brand-primary: #29a9ff !default; // #337ab7
+$brand-success: #18a518 !default; //#5cb85c
+$brand-info: #5bc0de !default;
+$brand-warning: $primary-yellow !default;
+$brand-danger: #ed3330 !default;
+
+$body-bg: $white !default;
+// $text-color: $gray-dark !default;
+
+//** Global textual link color.
+$link-color: $brand-primary !default;
+$btn-color: $white !default;
+
+$navbar-color: #777 !default;
+$navbar-bg: #eaeaea !default;
+$navbar-border-light: #d8d8d8 !default;
+$navbar-border: #cecdcd !default;
+$navbar-hover: #dedede !default;
+// $navbar-border: darken($navbar-bg, 6.5%) !default;
+
+// Navbar links
+$navbar-link-color: grey !default;
+$navbar-link-hover-color: $brand-primary !default;
+$navbar-link-hover-bg: transparent !default;
+$navbar-link-active-color: #555 !default;
+// $navbar-link-active-bg: darken($navbar-bg, 6.5%) !default;
+$navbar-link-disabled-color: #ccc !default;
+$navbar-link-disabled-bg: transparent !default;
+
+// Navbar brand label
+$navbar-brand-color: $navbar-link-color !default;
+// $navbar-brand-hover-color: darken($navbar-brand-color, 10%) !default;
+$navbar-brand-hover-bg: transparent !default;
+
+// Navbar toggle
+$navbar-toggle-hover-bg: #ddd !default;
+$navbar-toggle-icon-bar-bg: #888 !default;
+$navbar-toggle-border-color: #ddd !default;
+
+// Text color
+$text: $black !default;
+
+// Border color
+$default-solid: $black !default;
+
+// global fontSize variable
+$primary-font: 14px;
+$secondary-font: 12px;
+$default-header: 16px;
