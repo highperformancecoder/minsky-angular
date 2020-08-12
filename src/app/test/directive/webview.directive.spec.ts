@@ -1,4 +1,4 @@
-import { WebviewDirective } from './webview.directive';
+import { WebviewDirective } from '../../shared/directives/webview/webview.directive';
 
 describe('WebviewDirective', () => {
   it('should create an instance', () => {
