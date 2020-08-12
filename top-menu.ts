@@ -26,10 +26,10 @@ export const template = Menu.buildFromTemplate([
               show:false,
               title: "About Minsky"
             })
-          //setting menu for child window                          
+          //setting menu for child window
           aboutWin.setMenu(null);
           // Load a remote URL
-          aboutWin.loadURL(`file://${__dirname}/static_popups/about.html`)
+          aboutWin.loadURL(`file://${__dirname}/menu/about/about.html`)
           // aboutWin.webContents.openDevTools();
 
           //The window will show when it is ready
@@ -40,7 +40,7 @@ export const template = Menu.buildFromTemplate([
           aboutWin.on('closed', function () {
             aboutWin = null;
         });
-    
+
         }
       },
       {
@@ -158,10 +158,14 @@ export const template = Menu.buildFromTemplate([
         label: 'Dimensions',
         click() {
           const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({ width: 420, height: 250 })
+          const win = new BrowserWindow({ width: 420, height: 250,
+            webPreferences: {
+              nodeIntegration: true
+            }
+          })
 
           // Load a remote URL
-          win.loadURL(`file://${__dirname}/static_popups/dimensions.html`)
+          win.loadURL(`file://${__dirname}/menu/dimensions/dimensions.html`)
 
         }
       }
@@ -174,10 +178,14 @@ export const template = Menu.buildFromTemplate([
         label: 'Bookmark this position',
         click() {
           const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({ width: 420, height: 180 })
+          const win = new BrowserWindow({ width: 420, height: 180,
+            webPreferences: {
+              nodeIntegration: true
+            }
+           })
 
           // Load a remote URL
-          win.loadURL(`file://${__dirname}/static_popups/bookmark-position.html`)
+          win.loadURL(`file://${__dirname}/menu/bookmark-position/bookmark-position.html`)
 
         }
       },
@@ -205,19 +213,19 @@ export const template = Menu.buildFromTemplate([
           },
           {
             label: 'variable',
-            click () {
-                createVariablePopUp('variable');
+            click() {
+              createVariablePopUp('variable');
             }
           },
           {
             label: 'constant',
-            click () {
-             createVariablePopUp('constant');
+            click() {
+              createVariablePopUp('constant');
             }
           },
           {
             label: 'parameter',
-            click () {
+            click() {
               createVariablePopUp('parameter');
             }
           }
@@ -410,10 +418,15 @@ export const template = Menu.buildFromTemplate([
         label: 'Preferences',
         click() {
           const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({ width: 550, height: 450 })
+          const win = new BrowserWindow({
+            width: 550, height: 450,
+            webPreferences: {
+              nodeIntegration: true
+            }
+          })
 
           // Load a remote URL
-          win.loadURL(`file://${__dirname}/static_popups/preferences.html`)
+          win.loadURL(`file://${__dirname}/menu/preferences/preferences.html`)
 
         }
       },
@@ -429,10 +442,14 @@ export const template = Menu.buildFromTemplate([
         label: 'Runge Kutta',
         click() {
           const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({ width: 550, height: 550 })
+          const win = new BrowserWindow({ width: 550, height: 550,
+            webPreferences: {
+              nodeIntegration: true
+            }
+          })
 
           // Load a remote URL
-          win.loadURL(`file://${__dirname}/static_popups/runge-kutta-parameters.html`)
+          win.loadURL(`file://${__dirname}/menu/runge-kutta-parameters/runge-kutta-parameters.html`)
 
         }
       }
@@ -448,24 +465,27 @@ export const template = Menu.buildFromTemplate([
   }
 ]);
 
-function createVariablePopUp(type){
+function createVariablePopUp(type) {
   var BrowserWindow = require('electron').BrowserWindow;
-              var variable_window = new BrowserWindow({
-                  width: 300,
-                  height: 420,
-                  title: "Specify variable name",
-                  resizable: false,
-                  minimizable: false,
-                  parent: win,
-                  modal: true,
-                  backgroundColor:'#c8ccd0'
-              });
-              variable_window.setMenu(null);
-              variable_window.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
-              variable_window.on('closed', () => {
-                console.log('closed',type);
-               variable_window = null;
-              });
+  var variable_window = new BrowserWindow({
+    width: 300,
+    height: 420,
+    title: "Specify variable name",
+    resizable: false,
+    minimizable: false,
+    parent: win,
+    modal: true,
+    backgroundColor: '#c8ccd0',
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+  variable_window.setMenu(null);
+  variable_window.loadURL("file://" + __dirname + "/menu/create_variable/create_variable.html");
+  variable_window.on('closed', () => {
+    console.log('closed', type);
+    variable_window = null;
+  });
 }
 
 
