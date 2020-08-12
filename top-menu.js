@@ -1,17 +1,47 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
+var aboutWin;
+electron_1.ipcMain.on('about:close', function (event) {
+    aboutWin.close();
+});
 var main_1 = require("./main");
-var dialog = require('electron').dialog;
 exports.template = electron_1.Menu.buildFromTemplate([
     {
         label: 'File',
         submenu: [
             {
-                label: 'About Minsky'
+                label: 'About Minsky',
+                //It will open a child window when about menu is clicked.
+                click: function () {
+                    aboutWin = new electron_1.BrowserWindow({
+                        width: 420, height: 450,
+                        webPreferences: { nodeIntegration: true },
+                        resizable: false,
+                        minimizable: false,
+                        modal: true,
+                        show: false,
+                        title: "About Minsky"
+                    });
+                    //setting menu for child window                          
+                    aboutWin.setMenu(null);
+                    // Load a remote URL
+                    aboutWin.loadURL("file://" + __dirname + "/static_popups/about.html");
+                    // aboutWin.webContents.openDevTools();
+                    //The window will show when it is ready
+                    aboutWin.once('ready-to-show', function () {
+                        aboutWin.show();
+                    });
+                    aboutWin.on('closed', function () {
+                        aboutWin = null;
+                    });
+                }
             },
             {
-                label: 'Upgrade'
+                label: 'Upgrade',
+                click: function () {
+                    electron_1.shell.openExternal('https://www.patreon.com/hpcoder');
+                }
             },
             {
                 label: 'New System'
