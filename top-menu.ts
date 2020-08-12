@@ -1,15 +1,52 @@
-import { Menu, BrowserWindow } from 'electron';
+import { Menu, BrowserWindow, ipcMain,shell } from 'electron';
+let aboutWin: BrowserWindow;
+
+ipcMain.on('about:close', (event) => {
+  aboutWin.close();
+});
+
 import { win } from './main';
-const { dialog } = require('electron')
+
 export const template = Menu.buildFromTemplate([
   {
     label: 'File',
     submenu: [
       {
-        label: 'About Minsky'
+        label: 'About Minsky',
+        //It will open a child window when about menu is clicked.
+        click() {
+          aboutWin = new BrowserWindow(
+            {
+              width: 420, height: 450,
+              webPreferences: { nodeIntegration: true },
+              resizable: false,
+              minimizable: false,
+              modal:true,
+              show:false,
+              title: "About Minsky"
+            })
+          //setting menu for child window                          
+          aboutWin.setMenu(null);
+          // Load a remote URL
+          aboutWin.loadURL(`file://${__dirname}/static_popups/about.html`)
+          // aboutWin.webContents.openDevTools();
+
+          //The window will show when it is ready
+          aboutWin.once('ready-to-show',()=>{
+             aboutWin.show();
+          });
+
+          aboutWin.on('closed', function () {
+            aboutWin = null;
+        });
+    
+        }
       },
       {
-        label: 'Upgrade'
+        label: 'Upgrade',
+        click: function () {
+          shell.openExternal('https://www.patreon.com/hpcoder');
+      }
       },
       {
         label: 'New System'
@@ -50,7 +87,7 @@ export const template = Menu.buildFromTemplate([
             label: 'as SVG'
           },
           {
-             label: 'as CSV'
+            label: 'as CSV'
           }
         ]
       },
@@ -73,64 +110,64 @@ export const template = Menu.buildFromTemplate([
         label: 'Debugging Use'
       },
       {
-       label: 'Redraw'
+        label: 'Redraw'
       },
       {
-       label: 'Object Browser'
+        label: 'Object Browser'
       },
       {
-       label: 'Select items'
+        label: 'Select items'
       },
       {
-       label: 'Command'
+        label: 'Command'
       }
     ]
   },
   {
-     label: 'Edit',
-     submenu: [
-        {
-          label: 'Undo',
-          role: 'undo'
-        },
-        {
-          label: 'Redo',
-          role: 'redo'
-        },
-        {
-          label: 'Cut',
-          role: 'cut'
-        },
-        {
-          label: 'Copy',
-          role: 'copy'
-        },
-        {
-          label: 'Paste',
-          role: 'paste'
-        },
-        {
-          label: 'Group selection'
-        },
-        {
-          label: 'Dimensions',
-          click () {
-            const { BrowserWindow } = require('electron')
-            const win = new BrowserWindow({ width: 420, height: 250 })
-  
-            // Load a remote URL
-            win.loadURL(`file://${__dirname}/static_popups/dimensions.html`)
-  
-          }
+    label: 'Edit',
+    submenu: [
+      {
+        label: 'Undo',
+        role: 'undo'
+      },
+      {
+        label: 'Redo',
+        role: 'redo'
+      },
+      {
+        label: 'Cut',
+        role: 'cut'
+      },
+      {
+        label: 'Copy',
+        role: 'copy'
+      },
+      {
+        label: 'Paste',
+        role: 'paste'
+      },
+      {
+        label: 'Group selection'
+      },
+      {
+        label: 'Dimensions',
+        click() {
+          const { BrowserWindow } = require('electron')
+          const win = new BrowserWindow({ width: 420, height: 250 })
+
+          // Load a remote URL
+          win.loadURL(`file://${__dirname}/static_popups/dimensions.html`)
+
         }
-     ]
+      }
+    ]
   },
   {
     label: 'Bookmarks',
     submenu: [
       {
         label: 'Bookmark this position',
-        click () {
+        click() {
           const { BrowserWindow } = require('electron')
           const win = new BrowserWindow({ width: 420, height: 180 })
 
@@ -280,7 +317,7 @@ export const template = Menu.buildFromTemplate([
             label: 'not'
           }
         ]
-      }, 
+      },
       {
         label: 'Reductions',
         submenu: [
@@ -309,7 +346,7 @@ export const template = Menu.buildFromTemplate([
             label: 'supIndex'
           }
         ]
-      }, 
+      },
       {
         label: 'Scans',
         submenu: [
@@ -366,7 +403,7 @@ export const template = Menu.buildFromTemplate([
     submenu: [
       {
         label: 'Preferences',
-        click () {
+        click() {
           const { BrowserWindow } = require('electron')
           const win = new BrowserWindow({ width: 550, height: 450 })
 
@@ -385,7 +422,7 @@ export const template = Menu.buildFromTemplate([
     submenu: [
       {
         label: 'Runge Kutta',
-        click () {
+        click() {
           const { BrowserWindow } = require('electron')
           const win = new BrowserWindow({ width: 550, height: 550 })
 
