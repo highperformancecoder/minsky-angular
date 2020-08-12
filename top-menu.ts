@@ -1,4 +1,4 @@
-import { Menu, BrowserWindow, ipcMain } from 'electron';
+import { Menu, BrowserWindow, ipcMain,shell } from 'electron';
 let aboutWin: BrowserWindow;
 
 ipcMain.on('about:close', (event) => {
@@ -41,7 +41,10 @@ export const template = Menu.buildFromTemplate([
         }
       },
       {
-        label: 'Upgrade'
+        label: 'Upgrade',
+        click: function () {
+          shell.openExternal('https://www.patreon.com/hpcoder');
+      }
       },
       {
         label: 'New System'

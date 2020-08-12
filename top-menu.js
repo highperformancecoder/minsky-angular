@@ -23,18 +23,24 @@ exports.template = electron_1.Menu.buildFromTemplate([
                         title: "About Minsky"
                     });
                     //setting menu for child window                          
-                    //const childMenu = Menu.buildFromTemplate([{ label: '' }]);
                     aboutWin.setMenu(null);
                     // Load a remote URL
                     aboutWin.loadURL("file://" + __dirname + "/static_popups/about.html");
                     // aboutWin.webContents.openDevTools();
+                    //The window will show when it is ready
                     aboutWin.once('ready-to-show', function () {
                         aboutWin.show();
+                    });
+                    aboutWin.on('closed', function () {
+                        aboutWin = null;
                     });
                 }
             },
             {
-                label: 'Upgrade'
+                label: 'Upgrade',
+                click: function () {
+                    electron_1.shell.openExternal('https://www.patreon.com/hpcoder');
+                }
             },
             {
                 label: 'New System'
