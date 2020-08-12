@@ -65,12 +65,4 @@ Thanks to following Minsky Unicorn sponsors: Edward McDaniel
 
 
   <!--JS-->
-  <script>
-      const electron = require('electron');
-      const { ipcRenderer } = electron;
-      document.querySelector("button").addEventListener('click',()=>{
-          console.log("button clicked");
-          ipcRenderer.send('about:close', "");
-      })
-
-  </script>
+  <script src="about.js"></script>

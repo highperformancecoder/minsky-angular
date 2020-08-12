@@ -32,6 +32,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     //The window will show when it is ready
                     aboutWin.once('ready-to-show', function () {
                         aboutWin.show();
+                        electron_1.shell.beep();
                     });
                     aboutWin.on('closed', function () {
                         aboutWin = null;
@@ -46,9 +47,14 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'New System',
+                accelerator: 'Ctrl + N'
             },
             {
-                label: 'Open'
+                label: 'Open',
+                click: function () {
+                    electron_1.shell.openPath('c:\\Downloads\\');
+                },
+                accelerator: 'Ctrl + O'
             },
             {
                 label: 'Recent Files',
@@ -65,10 +71,12 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 }
             },
             {
-                label: 'Save'
+                label: 'Save',
+                accelerator: 'Ctrl + S'
             },
             {
-                label: 'SaveAs'
+                label: 'SaveAs',
+                accelerator: 'Ctrl + A'
             },
             {
                 label: 'Insert File as Group'

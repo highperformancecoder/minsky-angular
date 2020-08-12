@@ -35,6 +35,7 @@ export const template = Menu.buildFromTemplate([
           //The window will show when it is ready
           aboutWin.once('ready-to-show',()=>{
              aboutWin.show();
+             shell.beep();
           });
 
           aboutWin.on('closed', function () {
@@ -51,10 +52,14 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'New System',
-        
+        accelerator: 'Ctrl + N'
       },
       {
-        label: 'Open'
+        label: 'Open',
+        click(){
+          shell.openPath('c:\\');
+        },
+        accelerator: 'Ctrl + O'
       },
       {
         label: 'Recent Files',
@@ -71,10 +76,12 @@ export const template = Menu.buildFromTemplate([
         }
       },
       {
-        label: 'Save'
+        label: 'Save',
+        accelerator: 'Ctrl + S'
       },
       {
-        label: 'SaveAs'
+        label: 'SaveAs',
+        accelerator: 'Ctrl + A'
       },
       {
         label: 'Insert File as Group'
@@ -106,7 +113,8 @@ export const template = Menu.buildFromTemplate([
         label: 'Replay recording'
       },
       {
-        label: 'Quit'
+        label: 'Quit',
+        accelerator: 'Ctrl + Q'
       },
       {
         type: 'separator'
