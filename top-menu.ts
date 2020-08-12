@@ -158,15 +158,8 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Dimensions',
         click() {
-          const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({ width: 420, height: 250,
-            webPreferences: {
-              nodeIntegration: true
-            }
-          })
 
-          // Load a remote URL
-          win.loadURL(`file://${__dirname}/menu/dimensions/dimensions.html`)
+          createMenuPopUp(420,250,"Dimensions","/menu/dimensions/dimensions.html");
 
         }
       }
@@ -178,15 +171,8 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Bookmark this position',
         click() {
-          const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({ width: 420, height: 180,
-            webPreferences: {
-              nodeIntegration: true
-            }
-           })
 
-          // Load a remote URL
-          win.loadURL(`file://${__dirname}/menu/bookmark-position/bookmark-position.html`)
+           createMenuPopUp(420,180,"Bookmark this position","/menu/bookmark-position/bookmark-position.html");
 
         }
       },
@@ -571,16 +557,8 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Preferences',
         click() {
-          const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({
-            width: 550, height: 450,
-            webPreferences: {
-              nodeIntegration: true
-            }
-          })
 
-          // Load a remote URL
-          win.loadURL(`file://${__dirname}/menu/preferences/preferences.html`)
+          createMenuPopUp(550,450,"Preferences","/menu/preferences/preferences.html");
 
         }
       },
@@ -595,15 +573,8 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Runge Kutta',
         click() {
-          const { BrowserWindow } = require('electron')
-          const win = new BrowserWindow({ width: 550, height: 550,
-            webPreferences: {
-              nodeIntegration: true
-            }
-          })
 
-          // Load a remote URL
-          win.loadURL(`file://${__dirname}/menu/runge-kutta-parameters/runge-kutta-parameters.html`)
+          createMenuPopUp(550,550,"Runge Kutta","/menu/runge-kutta-parameters/runge-kutta-parameters.html");
 
         }
       }
@@ -641,6 +612,29 @@ function createVariablePopUp(type) {
     variable_window = null;
   });
   
+}
+
+function createMenuPopUp(width,height,title,dir_path){
+  var BrowserWindow = require('electron').BrowserWindow;
+  var menu_window = new BrowserWindow({
+    width: width,
+    height: height,
+    title: title,
+    resizable: false,
+    minimizable: false,
+    parent: win,
+    modal: true,
+    backgroundColor: '#c8ccd0',
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+  menu_window.setMenu(null);
+  menu_window.loadURL("file://" + __dirname + dir_path);
+  menu_window.on('closed', () => {
+    // console.log('closed', type);
+    menu_window = null;
+  });
 }
 
 
