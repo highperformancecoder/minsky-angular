@@ -1,11 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
+var main_1 = require("./main");
 var aboutWin;
+var variable_window;
 electron_1.ipcMain.on('about:close', function (event) {
     aboutWin.close();
 });
-var main_1 = require("./main");
+electron_1.ipcMain.on('create_variable:ok', function (event) {
+    variable_window.close();
+});
+electron_1.ipcMain.on('create_variable:cancel', function (event) {
+    variable_window.close();
+});
 exports.template = electron_1.Menu.buildFromTemplate([
     {
         label: 'File',
@@ -21,6 +28,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                         minimizable: false,
                         modal: true,
                         show: false,
+                        parent: main_1.win,
                         title: "About Minsky"
                     });
                     //setting menu for child window
@@ -220,43 +228,70 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Binary Ops',
                 submenu: [
                     {
-                        label: 'add'
+                        label: 'add',
+                        click: function () {
+                            console.log("add clicked");
+                        }
                     },
                     {
-                        label: 'subtract'
+                        label: 'subtract',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'multiple'
+                        label: 'multiple',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'divide'
+                        label: 'divide',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'min'
+                        label: 'min',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'max'
+                        label: 'max',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'and'
+                        label: 'and',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'or'
+                        label: 'or',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'log'
+                        label: 'log',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'pow'
+                        label: 'pow',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'lt'
+                        label: 'lt',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'le'
+                        label: 'le',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'eq'
+                        label: 'eq',
+                        click: function () {
+                        }
                     }
                 ]
             },
@@ -264,55 +299,89 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Functions',
                 submenu: [
                     {
-                        label: 'copy'
+                        label: 'copy',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'sqrt'
+                        label: 'sqrt',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'exp'
+                        label: 'exp',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'ln'
+                        label: 'ln',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'sin'
+                        label: 'sin',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'cos'
+                        label: 'cos',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'tan'
+                        label: 'tan',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'asin'
+                        label: 'asin',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'acos'
+                        label: 'acos',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'atan'
+                        label: 'atan',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'sinh'
+                        label: 'sinh',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'cosh'
+                        label: 'cosh',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'tanh'
+                        label: 'tanh',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'abs'
+                        label: 'abs',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'floor'
+                        label: 'floor',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'frac'
+                        label: 'frac',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'not'
+                        label: 'not',
+                        click: function () {
+                        }
                     }
                 ]
             },
@@ -320,28 +389,44 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Reductions',
                 submenu: [
                     {
-                        label: 'sum'
+                        label: 'sum',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'product'
+                        label: 'product',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'infimum'
+                        label: 'infimum',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'supremum'
+                        label: 'supremum',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'any'
+                        label: 'any',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'all'
+                        label: 'all',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'infIndex'
+                        label: 'infIndex',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'supIndex'
+                        label: 'supIndex',
+                        click: function () {
+                        }
                     }
                 ]
             },
@@ -349,13 +434,19 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Scans',
                 submenu: [
                     {
-                        label: 'runningSum'
+                        label: 'runningSum',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'runningProduct'
+                        label: 'runningProduct',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'difference'
+                        label: 'difference',
+                        click: function () {
+                        }
                     }
                 ]
             },
@@ -363,36 +454,56 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Tensor operations',
                 submenu: [
                     {
-                        label: 'innerProduct'
+                        label: 'innerProduct',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'outerProduct'
+                        label: 'outerProduct',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'index'
+                        label: 'index',
+                        click: function () {
+                        }
                     },
                     {
-                        label: 'gather'
+                        label: 'gather',
+                        click: function () {
+                        }
                     }
                 ]
             },
             {
-                label: 'time'
+                label: 'time',
+                click: function () {
+                }
             },
             {
-                label: 'integrate'
+                label: 'integrate',
+                click: function () {
+                }
             },
             {
-                label: 'differentiate'
+                label: 'differentiate',
+                click: function () {
+                }
             },
             {
-                label: 'data'
+                label: 'data',
+                click: function () {
+                }
             },
             {
-                label: 'ravel'
+                label: 'ravel',
+                click: function () {
+                }
             },
             {
-                label: 'plot'
+                label: 'plot',
+                click: function () {
+                }
             }
         ]
     },
@@ -447,14 +558,15 @@ exports.template = electron_1.Menu.buildFromTemplate([
 ]);
 function createVariablePopUp(type) {
     var BrowserWindow = require('electron').BrowserWindow;
-    var variable_window = new BrowserWindow({
-        width: 300,
+    variable_window = new BrowserWindow({
+        width: 320,
         height: 420,
         title: "Specify variable name",
         resizable: false,
         minimizable: false,
         parent: main_1.win,
         modal: true,
+        show: false,
         backgroundColor: '#c8ccd0',
         webPreferences: {
             nodeIntegration: true
@@ -465,6 +577,9 @@ function createVariablePopUp(type) {
     variable_window.on('closed', function () {
         console.log('closed', type);
         variable_window = null;
+    });
+    aboutWin.once('ready-to-show', function () {
+        variable_window.show();
     });
 }
 //# sourceMappingURL=top-menu.js.map
