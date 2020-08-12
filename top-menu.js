@@ -147,14 +147,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Dimensions',
                 click: function () {
-                    var BrowserWindow = require('electron').BrowserWindow;
-                    var win = new BrowserWindow({ width: 420, height: 250,
-                        webPreferences: {
-                            nodeIntegration: true
-                        }
-                    });
-                    // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/menu/dimensions/dimensions.html");
+                    createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html");
                 }
             }
         ]
@@ -165,14 +158,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Bookmark this position',
                 click: function () {
-                    var BrowserWindow = require('electron').BrowserWindow;
-                    var win = new BrowserWindow({ width: 420, height: 180,
-                        webPreferences: {
-                            nodeIntegration: true
-                        }
-                    });
-                    // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/menu/bookmark-position/bookmark-position.html");
+                    createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html");
                 }
             },
             {
@@ -402,15 +388,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Preferences',
                 click: function () {
-                    var BrowserWindow = require('electron').BrowserWindow;
-                    var win = new BrowserWindow({
-                        width: 550, height: 450,
-                        webPreferences: {
-                            nodeIntegration: true
-                        }
-                    });
-                    // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/menu/preferences/preferences.html");
+                    createMenuPopUp(550, 450, "Preferences", "/menu/preferences/preferences.html");
                 }
             },
             {
@@ -424,14 +402,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Runge Kutta',
                 click: function () {
-                    var BrowserWindow = require('electron').BrowserWindow;
-                    var win = new BrowserWindow({ width: 550, height: 550,
-                        webPreferences: {
-                            nodeIntegration: true
-                        }
-                    });
-                    // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/menu/runge-kutta-parameters/runge-kutta-parameters.html");
+                    createMenuPopUp(550, 550, "Runge Kutta", "/menu/runge-kutta-parameters/runge-kutta-parameters.html");
                 }
             }
         ]
@@ -465,6 +436,28 @@ function createVariablePopUp(type) {
     variable_window.on('closed', function () {
         console.log('closed', type);
         variable_window = null;
+    });
+}
+function createMenuPopUp(width, height, title, dir_path) {
+    var BrowserWindow = require('electron').BrowserWindow;
+    var menu_window = new BrowserWindow({
+        width: width,
+        height: height,
+        title: title,
+        resizable: false,
+        minimizable: false,
+        parent: main_1.win,
+        modal: true,
+        backgroundColor: '#c8ccd0',
+        webPreferences: {
+            nodeIntegration: true
+        }
+    });
+    menu_window.setMenu(null);
+    menu_window.loadURL("file://" + __dirname + dir_path);
+    menu_window.on('closed', function () {
+        // console.log('closed', type);
+        menu_window = null;
     });
 }
 //# sourceMappingURL=top-menu.js.map
