@@ -161,44 +161,19 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     {
                         label: 'variable',
                         click: function () {
-                            var BrowserWindow = require('electron').BrowserWindow;
-                            var cwin = new BrowserWindow({ width: 450, height: 550, title: "add variable",
-                                resizable: false,
-                                minimizable: false,
-                                parent: main_1.win,
-                            });
-                            cwin.setMenu(null);
-                            // Load a remote URL
-                            cwin.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+                            createVariablePopUp('variable');
                         }
                     },
                     {
                         label: 'constant',
                         click: function () {
-                            var BrowserWindow = require('electron').BrowserWindow;
-                            var cwin = new BrowserWindow({ width: 450, height: 550, title: "add variable",
-                                resizable: false,
-                                minimizable: false,
-                                parent: main_1.win,
-                            });
-                            cwin.setMenu(null);
-                            // Load a remote URL
-                            cwin.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+                            createVariablePopUp('constant');
                         }
                     },
                     {
                         label: 'parameter',
                         click: function () {
-                            var BrowserWindow = require('electron').BrowserWindow;
-                            var cwin = new BrowserWindow({ width: 450, height: 550,
-                                parent: main_1.win, title: "add variable",
-                                resizable: false,
-                                minimizable: false,
-                            });
-                            cwin.setMenu(null);
-                            // Load a remote URL
-                            cwin.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
-                            main_1.win.setMenuBarVisibility(false);
+                            createVariablePopUp('parameter');
                         }
                     }
                 ]
@@ -423,4 +398,22 @@ exports.template = electron_1.Menu.buildFromTemplate([
         ]
     }
 ]);
+function createVariablePopUp(type) {
+    var BrowserWindow = require('electron').BrowserWindow;
+    var variable_window = new BrowserWindow({
+        width: 300,
+        height: 400,
+        title: "Specify variable name",
+        resizable: false,
+        minimizable: false,
+        parent: main_1.win,
+        modal: true
+    });
+    variable_window.setMenu(null);
+    variable_window.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+    variable_window.on('closed', function () {
+        console.log('closed', type);
+        variable_window = null;
+    });
+}
 //# sourceMappingURL=top-menu.js.map
