@@ -28,7 +28,7 @@ export const template = Menu.buildFromTemplate([
           //setting menu for child window
           aboutWin.setMenu(null);
           // Load a remote URL
-          aboutWin.loadURL(`file://${__dirname}/static_popups/about.html`)
+          aboutWin.loadURL(`file://${__dirname}/menu/about/about.html`)
           // aboutWin.webContents.openDevTools();
 
           //The window will show when it is ready
