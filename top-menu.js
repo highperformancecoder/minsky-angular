@@ -23,10 +23,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                         show: false,
                         title: "About Minsky"
                     });
-                    //setting menu for child window                          
+                    //setting menu for child window
                     aboutWin.setMenu(null);
                     // Load a remote URL
-                    aboutWin.loadURL("file://" + __dirname + "/static_popups/about.html");
+                    aboutWin.loadURL("file://" + __dirname + "/menu/about/about.html");
                     // aboutWin.webContents.openDevTools();
                     //The window will show when it is ready
                     aboutWin.once('ready-to-show', function () {
@@ -148,9 +148,13 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Dimensions',
                 click: function () {
                     var BrowserWindow = require('electron').BrowserWindow;
-                    var win = new BrowserWindow({ width: 420, height: 250 });
+                    var win = new BrowserWindow({ width: 420, height: 250,
+                        webPreferences: {
+                            nodeIntegration: true
+                        }
+                    });
                     // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/static_popups/dimensions.html");
+                    win.loadURL("file://" + __dirname + "/menu/dimensions/dimensions.html");
                 }
             }
         ]
@@ -162,9 +166,13 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Bookmark this position',
                 click: function () {
                     var BrowserWindow = require('electron').BrowserWindow;
-                    var win = new BrowserWindow({ width: 420, height: 180 });
+                    var win = new BrowserWindow({ width: 420, height: 180,
+                        webPreferences: {
+                            nodeIntegration: true
+                        }
+                    });
                     // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/static_popups/bookmark-position.html");
+                    win.loadURL("file://" + __dirname + "/menu/bookmark-position/bookmark-position.html");
                 }
             },
             {
@@ -395,9 +403,14 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Preferences',
                 click: function () {
                     var BrowserWindow = require('electron').BrowserWindow;
-                    var win = new BrowserWindow({ width: 550, height: 450 });
+                    var win = new BrowserWindow({
+                        width: 550, height: 450,
+                        webPreferences: {
+                            nodeIntegration: true
+                        }
+                    });
                     // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/static_popups/preferences.html");
+                    win.loadURL("file://" + __dirname + "/menu/preferences/preferences.html");
                 }
             },
             {
@@ -412,9 +425,13 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Runge Kutta',
                 click: function () {
                     var BrowserWindow = require('electron').BrowserWindow;
-                    var win = new BrowserWindow({ width: 550, height: 550 });
+                    var win = new BrowserWindow({ width: 550, height: 550,
+                        webPreferences: {
+                            nodeIntegration: true
+                        }
+                    });
                     // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/static_popups/runge-kutta-parameters.html");
+                    win.loadURL("file://" + __dirname + "/menu/runge-kutta-parameters/runge-kutta-parameters.html");
                 }
             }
         ]
@@ -438,10 +455,13 @@ function createVariablePopUp(type) {
         minimizable: false,
         parent: main_1.win,
         modal: true,
-        backgroundColor: '#c8ccd0'
+        backgroundColor: '#c8ccd0',
+        webPreferences: {
+            nodeIntegration: true
+        }
     });
     variable_window.setMenu(null);
-    variable_window.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+    variable_window.loadURL("file://" + __dirname + "/menu/create_variable/create_variable.html");
     variable_window.on('closed', function () {
         console.log('closed', type);
         variable_window = null;
