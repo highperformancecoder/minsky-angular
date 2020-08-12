@@ -68,10 +68,7 @@
     }
 }
 
-.zoom-out-btn,
-.zoom-in-btn,
-.reset-zoom-btn,
-.zoom-to-fit-btn {
+.zoom-btn {
     width: 42px;
     padding: 8px;
 }
@@ -83,6 +80,7 @@
     border-bottom: 1px solid #e0e0e0;
     border-right: 1px solid #e0e0e0;
     background: white;
+    margin-top: -1px;
 }
 
 .m-a-0 {
