@@ -117,10 +117,10 @@ export const template = Menu.buildFromTemplate([
           click () {
             const { BrowserWindow } = require('electron')
             const win = new BrowserWindow({ width: 420, height: 250 })
-  
+
             // Load a remote URL
-            win.loadURL(`file://${__dirname}/static_popups/dimensions.html`)
-  
+            win.loadURL(`file://${__dirname}/menu/dimensions/dimensions.html`)
+
           }
         }
      ]
@@ -135,7 +135,7 @@ export const template = Menu.buildFromTemplate([
           const win = new BrowserWindow({ width: 420, height: 180 })
 
           // Load a remote URL
-          win.loadURL(`file://${__dirname}/static_popups/bookmark-position.html`)
+          win.loadURL(`file://${__dirname}/menu/bookmark-position/bookmark-position.html`)
 
         }
       },
@@ -280,7 +280,7 @@ export const template = Menu.buildFromTemplate([
             label: 'not'
           }
         ]
-      }, 
+      },
       {
         label: 'Reductions',
         submenu: [
@@ -309,7 +309,7 @@ export const template = Menu.buildFromTemplate([
             label: 'supIndex'
           }
         ]
-      }, 
+      },
       {
         label: 'Scans',
         submenu: [
@@ -371,7 +371,7 @@ export const template = Menu.buildFromTemplate([
           const win = new BrowserWindow({ width: 550, height: 450 })
 
           // Load a remote URL
-          win.loadURL(`file://${__dirname}/static_popups/preferences.html`)
+          win.loadURL(`file://${__dirname}/menu/preferences/preferences.html`)
 
         }
       },
@@ -390,7 +390,7 @@ export const template = Menu.buildFromTemplate([
           const win = new BrowserWindow({ width: 550, height: 550 })
 
           // Load a remote URL
-          win.loadURL(`file://${__dirname}/static_popups/runge-kutta-parameters.html`)
+          win.loadURL(`file://${__dirname}/menu/runge-kutta-parameters/runge-kutta-parameters.html`)
 
         }
       }
@@ -419,7 +419,7 @@ function createVariablePopUp(type){
                   backgroundColor:'#c8ccd0'
               });
               variable_window.setMenu(null);
-              variable_window.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+              variable_window.loadURL("file://" + __dirname + "/menu/create_variable/create_variable.html");
               variable_window.on('closed', () => {
                 console.log('closed',type);
                variable_window = null;

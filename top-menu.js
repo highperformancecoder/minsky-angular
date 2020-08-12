@@ -120,7 +120,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     var BrowserWindow = require('electron').BrowserWindow;
                     var win = new BrowserWindow({ width: 420, height: 250 });
                     // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/static_popups/dimensions.html");
+                    win.loadURL("file://" + __dirname + "/menu/dimensions/dimensions.html");
                 }
             }
         ]
@@ -134,7 +134,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     var BrowserWindow = require('electron').BrowserWindow;
                     var win = new BrowserWindow({ width: 420, height: 180 });
                     // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/static_popups/bookmark-position.html");
+                    win.loadURL("file://" + __dirname + "/menu/bookmark-position/bookmark-position.html");
                 }
             },
             {
@@ -367,7 +367,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     var BrowserWindow = require('electron').BrowserWindow;
                     var win = new BrowserWindow({ width: 550, height: 450 });
                     // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/static_popups/preferences.html");
+                    win.loadURL("file://" + __dirname + "/menu/preferences/preferences.html");
                 }
             },
             {
@@ -384,7 +384,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     var BrowserWindow = require('electron').BrowserWindow;
                     var win = new BrowserWindow({ width: 550, height: 550 });
                     // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/static_popups/runge-kutta-parameters.html");
+                    win.loadURL("file://" + __dirname + "/menu/runge-kutta-parameters/runge-kutta-parameters.html");
                 }
             }
         ]
@@ -411,7 +411,7 @@ function createVariablePopUp(type) {
         backgroundColor: '#c8ccd0'
     });
     variable_window.setMenu(null);
-    variable_window.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
+    variable_window.loadURL("file://" + __dirname + "/menu/create_variable/create_variable.html");
     variable_window.on('closed', function () {
         console.log('closed', type);
         variable_window = null;
