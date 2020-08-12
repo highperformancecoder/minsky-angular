@@ -410,12 +410,13 @@ function createVariablePopUp(type){
   var BrowserWindow = require('electron').BrowserWindow;
               var variable_window = new BrowserWindow({
                   width: 300,
-                  height: 400,
+                  height: 420,
                   title: "Specify variable name",
                   resizable: false,
                   minimizable: false,
                   parent: win,
-                  modal: true
+                  modal: true,
+                  backgroundColor:'#c8ccd0'
               });
               variable_window.setMenu(null);
               variable_window.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
