@@ -1,15 +1,52 @@
-import { Menu, BrowserWindow } from 'electron';
+import { Menu, BrowserWindow, ipcMain,shell } from 'electron';
+let aboutWin: BrowserWindow;
+
+ipcMain.on('about:close', (event) => {
+  aboutWin.close();
+});
+
 import { win } from './main';
-const { dialog } = require('electron')
+
 export const template = Menu.buildFromTemplate([
   {
     label: 'File',
     submenu: [
       {
-        label: 'About Minsky'
+        label: 'About Minsky',
+        //It will open a child window when about menu is clicked.
+        click() {
+          aboutWin = new BrowserWindow(
+            {
+              width: 420, height: 450,
+              webPreferences: { nodeIntegration: true },
+              resizable: false,
+              minimizable: false,
+              modal:true,
+              show:false,
+              title: "About Minsky"
+            })
+          //setting menu for child window
+          aboutWin.setMenu(null);
+          // Load a remote URL
+          aboutWin.loadURL(`file://${__dirname}/static_popups/about.html`)
+          // aboutWin.webContents.openDevTools();
+
+          //The window will show when it is ready
+          aboutWin.once('ready-to-show',()=>{
+             aboutWin.show();
+          });
+
+          aboutWin.on('closed', function () {
+            aboutWin = null;
+        });
+
+        }
       },
       {
-        label: 'Upgrade'
+        label: 'Upgrade',
+        click: function () {
+          shell.openExternal('https://www.patreon.com/hpcoder');
+      }
       },
       {
         label: 'New System'
