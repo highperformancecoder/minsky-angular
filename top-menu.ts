@@ -17,10 +17,11 @@ export const template = Menu.buildFromTemplate([
         click() {
           aboutWin = new BrowserWindow(
             {
-              width: 420, height: 450,
+              width: 420, height: 440,
               webPreferences: { nodeIntegration: true },
               resizable: false,
               minimizable: false,
+              parent:win,
               modal:true,
               show:false,
               title: "About Minsky"
@@ -44,12 +45,13 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Upgrade',
-        click: function () {
+        click() {
           shell.openExternal('https://www.patreon.com/hpcoder');
       }
       },
       {
-        label: 'New System'
+        label: 'New System',
+        
       },
       {
         label: 'Open'
@@ -63,7 +65,10 @@ export const template = Menu.buildFromTemplate([
         ]
       },
       {
-        label: 'Library'
+        label: 'Library',
+        click () {
+            shell.openExternal('https://github.com/highperformancecoder/minsky-models');
+        }
       },
       {
         label: 'Save'

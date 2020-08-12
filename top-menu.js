@@ -15,10 +15,11 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 //It will open a child window when about menu is clicked.
                 click: function () {
                     aboutWin = new electron_1.BrowserWindow({
-                        width: 420, height: 450,
+                        width: 420, height: 440,
                         webPreferences: { nodeIntegration: true },
                         resizable: false,
                         minimizable: false,
+                        parent: main_1.win,
                         modal: true,
                         show: false,
                         title: "About Minsky"
@@ -44,7 +45,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 }
             },
             {
-                label: 'New System'
+                label: 'New System',
             },
             {
                 label: 'Open'
@@ -58,7 +59,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 ]
             },
             {
-                label: 'Library'
+                label: 'Library',
+                click: function () {
+                    electron_1.shell.openExternal('https://github.com/highperformancecoder/minsky-models');
+                }
             },
             {
                 label: 'Save'
