@@ -3,11 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var main_1 = require("../main");
 var dialog = require('electron').dialog;
-exports.template = electron_1.Menu.buildFromTemplate([
-    {
+exports.template = electron_1.Menu.buildFromTemplate([{
         label: 'File',
-        submenu: [
-            {
+        submenu: [{
                 label: 'About Minsky'
             },
             {
@@ -21,11 +19,9 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Recent Files',
-                submenu: [
-                    {
-                        label: 'TestFile'
-                    }
-                ]
+                submenu: [{
+                    label: 'TestFile'
+                }]
             },
             {
                 label: 'Library'
@@ -47,8 +43,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Export Plots',
-                submenu: [
-                    {
+                submenu: [{
                         label: 'as SVG'
                     },
                     {
@@ -90,8 +85,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
     },
     {
         label: 'Edit',
-        submenu: [
-            {
+        submenu: [{
                 label: 'Undo',
                 role: 'undo'
             },
@@ -116,7 +110,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Dimensions',
-                click: function () {
+                click: function() {
                     var BrowserWindow = require('electron').BrowserWindow;
                     var win = new BrowserWindow({ width: 420, height: 250 });
                     // Load a remote URL
@@ -127,10 +121,9 @@ exports.template = electron_1.Menu.buildFromTemplate([
     },
     {
         label: 'Bookmarks',
-        submenu: [
-            {
+        submenu: [{
                 label: 'Bookmark this position',
-                click: function () {
+                click: function() {
                     var BrowserWindow = require('electron').BrowserWindow;
                     var win = new BrowserWindow({ width: 420, height: 180 });
                     // Load a remote URL
@@ -148,31 +141,29 @@ exports.template = electron_1.Menu.buildFromTemplate([
     },
     {
         label: 'Insert',
-        submenu: [
-            {
+        submenu: [{
                 label: 'Godley Table'
             },
             {
                 label: 'Variable',
-                submenu: [
-                    {
+                submenu: [{
                         type: 'separator'
                     },
                     {
                         label: 'variable',
-                        click: function () {
+                        click: function() {
                             createVariablePopUp('variable');
                         }
                     },
                     {
                         label: 'constant',
-                        click: function () {
+                        click: function() {
                             createVariablePopUp('constant');
                         }
                     },
                     {
                         label: 'parameter',
-                        click: function () {
+                        click: function() {
                             createVariablePopUp('parameter');
                         }
                     }
@@ -180,8 +171,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Binary Ops',
-                submenu: [
-                    {
+                submenu: [{
                         label: 'add'
                     },
                     {
@@ -224,8 +214,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Functions',
-                submenu: [
-                    {
+                submenu: [{
                         label: 'copy'
                     },
                     {
@@ -280,8 +269,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Reductions',
-                submenu: [
-                    {
+                submenu: [{
                         label: 'sum'
                     },
                     {
@@ -309,8 +297,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Scans',
-                submenu: [
-                    {
+                submenu: [{
                         label: 'runningSum'
                     },
                     {
@@ -323,8 +310,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Tensor operations',
-                submenu: [
-                    {
+                submenu: [{
                         label: 'innerProduct'
                     },
                     {
@@ -360,10 +346,9 @@ exports.template = electron_1.Menu.buildFromTemplate([
     },
     {
         label: 'Options',
-        submenu: [
-            {
+        submenu: [{
                 label: 'Preferences',
-                click: function () {
+                click: function() {
                     var BrowserWindow = require('electron').BrowserWindow;
                     var win = new BrowserWindow({ width: 550, height: 450 });
                     // Load a remote URL
@@ -377,27 +362,24 @@ exports.template = electron_1.Menu.buildFromTemplate([
     },
     {
         label: 'Runge Kutta',
-        submenu: [
-            {
-                label: 'Runge Kutta',
-                click: function () {
-                    var BrowserWindow = require('electron').BrowserWindow;
-                    var win = new BrowserWindow({ width: 550, height: 550 });
-                    // Load a remote URL
-                    win.loadURL("file://" + __dirname + "/static_popups/runge-kutta-parameters.html");
-                }
+        submenu: [{
+            label: 'Runge Kutta',
+            click: function() {
+                var BrowserWindow = require('electron').BrowserWindow;
+                var win = new BrowserWindow({ width: 550, height: 550 });
+                // Load a remote URL
+                win.loadURL("file://" + __dirname + "/static_popups/runge-kutta-parameters.html");
             }
-        ]
+        }]
     },
     {
         role: 'help',
-        submenu: [
-            {
-                label: 'Minsky Documentation'
-            }
-        ]
+        submenu: [{
+            label: 'Minsky Documentation'
+        }]
     }
 ]);
+
 function createVariablePopUp(type) {
     var BrowserWindow = require('electron').BrowserWindow;
     var variable_window = new BrowserWindow({
@@ -411,7 +393,7 @@ function createVariablePopUp(type) {
     });
     variable_window.setMenu(null);
     variable_window.loadURL("file://" + __dirname + "/static_popups/create_variable.html");
-    variable_window.on('closed', function () {
+    variable_window.on('closed', function() {
         console.log('closed', type);
         variable_window = null;
     });

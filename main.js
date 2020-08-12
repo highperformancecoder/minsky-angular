@@ -3,9 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var path = require("path");
 var url = require("url");
-var top_menu_1 = require("./src/top-menu");
-exports.win = null;
-var args = process.argv.slice(1), serve = args.some(function (val) { return val === '--serve'; });
+var top_menu_1 = require("./top-menu");
+var win = null;
+var args = process.argv.slice(1),
+    serve = args.some(function(val) { return val === '--serve'; });
+
 function createWindow() {
     var electronScreen = electron_1.screen;
     var size = electronScreen.getPrimaryDisplay().workAreaSize;
@@ -27,8 +29,7 @@ function createWindow() {
             electron: require(__dirname + "/node_modules/electron")
         });
         exports.win.loadURL('http://localhost:4200');
-    }
-    else {
+    } else {
         exports.win.loadURL(url.format({
             pathname: path.join(__dirname, 'dist/index.html'),
             protocol: 'file:',
@@ -36,7 +37,7 @@ function createWindow() {
         }));
     }
     // Emitted when the window is closed.
-    exports.win.on('closed', function () {
+    exports.win.on('closed', function() {
         // Dereference the window object, usually you would store window
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
@@ -50,28 +51,27 @@ try {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
-    electron_1.app.on('ready', function () {
+    electron_1.app.on('ready', function() {
         var menu = top_menu_1.template;
         electron_1.Menu.setApplicationMenu(menu);
         setTimeout(createWindow, 400);
     });
     // Quit when all windows are closed.
-    electron_1.app.on('window-all-closed', function () {
+    electron_1.app.on('window-all-closed', function() {
         // On OS X it is common for applications and their menu bar
         // to stay active until the user quits explicitly with Cmd + Q
         if (process.platform !== 'darwin') {
             electron_1.app.quit();
         }
     });
-    electron_1.app.on('activate', function () {
+    electron_1.app.on('activate', function() {
         // On OS X it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (exports.win === null) {
             createWindow();
         }
     });
-}
-catch (e) {
+} catch (e) {
     // Catch Error
     // throw e;
 }

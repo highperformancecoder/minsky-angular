@@ -1,7 +1,7 @@
 import { app, BrowserWindow, screen, Menu } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import {template} from './src/top-menu';
+import {template} from './top-menu';
 
 export let win: BrowserWindow = null;
 const args = process.argv.slice(1),

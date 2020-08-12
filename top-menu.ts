@@ -1,5 +1,5 @@
 import { Menu, BrowserWindow } from 'electron';
-import { win } from '../main';
+import { win } from './main';
 const { dialog } = require('electron')
 export const template = Menu.buildFromTemplate([
   {
