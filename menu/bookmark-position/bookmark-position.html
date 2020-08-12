@@ -1,4 +1,9 @@
-<style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
     .popup-wrapper {
         font-family: Arial, Helvetica, sans-serif;
         margin: 0 auto;
@@ -30,26 +35,14 @@
         display: inline-block;
     }
 </style>
-<div class="popup-wrapper">
+</head>
+<body>
+  <div class="popup-wrapper">
     <div class="form-wrapper">
         <form action="">
             <div class="form-control">
-                <label for="dimension">Dimension</label>
-                <input type="text" class="dimension" id="dimension">
-            </div>
-
-            <div class="form-control">
-                <label for="type">Bookmark name</label>
-                <select name="type" id="type">
-                    <option value="string">string</option>
-                    <option value="value">value</option>
-                    <option value="time">time</option>
-                </select>
-            </div>
-
-            <div class="form-control">
-                <label for="unitsFormat">Units/Format</label>
-                <select name="units-format" id="unitsFormat"></select>
+                <label for="bookmarkName">Bookmark name</label>
+                <input type="text" class="bookmark-name" id="bookmarkName">
             </div>
 
             <div class="form-control form-buttons">
@@ -59,3 +52,8 @@
         </form>
     </div>
 </div>
+<script src="./bookmark-position.js"></script>
+</body>
+</html>
+
+
