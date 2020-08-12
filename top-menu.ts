@@ -17,7 +17,7 @@ export const template = Menu.buildFromTemplate([
         click() {
           aboutWin = new BrowserWindow(
             {
-              width: 420, height: 440,
+              width: 480, height: 445,
               webPreferences: { nodeIntegration: true },
               resizable: false,
               minimizable: false,

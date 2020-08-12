@@ -15,7 +15,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 //It will open a child window when about menu is clicked.
                 click: function () {
                     aboutWin = new electron_1.BrowserWindow({
-                        width: 420, height: 440,
+                        width: 480, height: 445,
                         webPreferences: { nodeIntegration: true },
                         resizable: false,
                         minimizable: false,
@@ -52,7 +52,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Open',
                 click: function () {
-                    electron_1.shell.openPath('c:\\Downloads\\');
+                    electron_1.shell.openPath('c:\\');
                 },
                 accelerator: 'Ctrl + O'
             },
@@ -108,7 +108,8 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Replay recording'
             },
             {
-                label: 'Quit'
+                label: 'Quit',
+                accelerator: 'Ctrl + Q'
             },
             {
                 type: 'separator'
