@@ -22,14 +22,14 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 //It will open a child window when about menu is clicked.
                 click: function () {
                     aboutWin = new electron_1.BrowserWindow({
-                        width: 420, height: 450,
+                        width: 420, height: 440,
                         webPreferences: { nodeIntegration: true },
                         resizable: false,
                         minimizable: false,
+                        parent: main_1.win,
                         modal: true,
                         show: false,
-                        parent: main_1.win,
-                        title: "About Minsky"
+                        title: ""
                     });
                     //setting menu for child window
                     aboutWin.setMenu(null);
@@ -39,10 +39,12 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     //The window will show when it is ready
                     aboutWin.once('ready-to-show', function () {
                         aboutWin.show();
+                        electron_1.shell.beep();
                     });
                     aboutWin.on('closed', function () {
                         aboutWin = null;
                     });
+                    // createMenuPopUp(480,445, "About Minsky","/menu/about/about.html")
                 }
             },
             {
@@ -52,10 +54,15 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 }
             },
             {
-                label: 'New System'
+                label: 'New System',
+                accelerator: 'Ctrl + N'
             },
             {
-                label: 'Open'
+                label: 'Open',
+                click: function () {
+                    electron_1.shell.openPath('c:\\');
+                },
+                accelerator: 'Ctrl + O'
             },
             {
                 label: 'Recent Files',
@@ -66,13 +73,18 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 ]
             },
             {
-                label: 'Library'
+                label: 'Library',
+                click: function () {
+                    electron_1.shell.openExternal('https://github.com/highperformancecoder/minsky-models');
+                }
             },
             {
-                label: 'Save'
+                label: 'Save',
+                accelerator: 'Ctrl + S'
             },
             {
-                label: 'SaveAs'
+                label: 'SaveAs',
+                accelerator: 'Ctrl + A'
             },
             {
                 label: 'Insert File as Group'
@@ -104,7 +116,8 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Replay recording'
             },
             {
-                label: 'Quit'
+                label: 'Quit',
+                accelerator: 'Ctrl + Q'
             },
             {
                 type: 'separator'

@@ -22,14 +22,14 @@ export const template = Menu.buildFromTemplate([
         click() {
           aboutWin = new BrowserWindow(
             {
-              width: 420, height: 450,
+              width: 420, height: 440,
               webPreferences: { nodeIntegration: true },
               resizable: false,
               minimizable: false,
+              parent:win,
               modal:true,
               show:false,
-              parent:win,
-              title: "About Minsky"
+              title: ""
             })
           //setting menu for child window
           aboutWin.setMenu(null);
@@ -40,25 +40,32 @@ export const template = Menu.buildFromTemplate([
           //The window will show when it is ready
           aboutWin.once('ready-to-show',()=>{
              aboutWin.show();
+             shell.beep();
           });
 
           aboutWin.on('closed', function () {
             aboutWin = null;
         });
 
-        }
+            // createMenuPopUp(480,445, "About Minsky","/menu/about/about.html")
+         }
       },
       {
         label: 'Upgrade',
-        click: function () {
+        click() {
           shell.openExternal('https://www.patreon.com/hpcoder');
       }
       },
       {
-        label: 'New System'
+        label: 'New System',
+        accelerator: 'Ctrl + N'
       },
       {
-        label: 'Open'
+        label: 'Open',
+        click(){
+          shell.openPath('c:\\');
+        },
+        accelerator: 'Ctrl + O'
       },
       {
         label: 'Recent Files',
@@ -69,13 +76,18 @@ export const template = Menu.buildFromTemplate([
         ]
       },
       {
-        label: 'Library'
+        label: 'Library',
+        click () {
+            shell.openExternal('https://github.com/highperformancecoder/minsky-models');
+        }
       },
       {
-        label: 'Save'
+        label: 'Save',
+        accelerator: 'Ctrl + S'
       },
       {
-        label: 'SaveAs'
+        label: 'SaveAs',
+        accelerator: 'Ctrl + A'
       },
       {
         label: 'Insert File as Group'
@@ -107,7 +119,8 @@ export const template = Menu.buildFromTemplate([
         label: 'Replay recording'
       },
       {
-        label: 'Quit'
+        label: 'Quit',
+        accelerator: 'Ctrl + Q'
       },
       {
         type: 'separator'
