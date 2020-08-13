@@ -22,7 +22,7 @@ export const template = Menu.buildFromTemplate([
         //It will open a child window when about menu is clicked.
         click() {
           createMenuPopUp(420, 440, "", "/menu/about/about.html", "");
-          shell.beep();
+          shell.beep()
         }
       },
       {
