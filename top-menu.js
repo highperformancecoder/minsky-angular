@@ -6,13 +6,13 @@ var aboutWin;
 var variable_window;
 var menu_window;
 electron_1.ipcMain.on('about:close', function (event) {
-    aboutWin.close();
+    menu_window.close();
 });
 electron_1.ipcMain.on('create_variable:ok', function (event) {
-    variable_window.close();
+    menu_window.close();
 });
 electron_1.ipcMain.on('create_variable:cancel', function (event) {
-    variable_window.close();
+    menu_window.close();
 });
 electron_1.ipcMain.on('background-color:ok', function (event, data) {
     var css = "body { background-color: " + data.color + "; color: black; }";
@@ -30,28 +30,8 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'About Minsky',
                 //It will open a child window when about menu is clicked.
                 click: function () {
-                    aboutWin = new electron_1.BrowserWindow({
-                        width: 420, height: 450,
-                        webPreferences: { nodeIntegration: true },
-                        resizable: false,
-                        minimizable: false,
-                        modal: true,
-                        show: false,
-                        parent: main_1.win,
-                        title: "About Minsky"
-                    });
-                    //setting menu for child window
-                    aboutWin.setMenu(null);
-                    // Load a remote URL
-                    aboutWin.loadURL("file://" + __dirname + "/menu/about/about.html");
-                    // aboutWin.webContents.openDevTools();
-                    //The window will show when it is ready
-                    aboutWin.once('ready-to-show', function () {
-                        aboutWin.show();
-                    });
-                    aboutWin.on('closed', function () {
-                        aboutWin = null;
-                    });
+                    createMenuPopUp(420, 440, "", "/menu/about/about.html", "#ffffff");
+                    electron_1.shell.beep();
                 }
             },
             {
@@ -61,10 +41,15 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 }
             },
             {
-                label: 'New System'
+                label: 'New System',
+                accelerator: 'Ctrl + N'
             },
             {
-                label: 'Open'
+                label: 'Open',
+                click: function () {
+                    electron_1.shell.openPath('c:\\');
+                },
+                accelerator: 'Ctrl + O'
             },
             {
                 label: 'Recent Files',
@@ -75,13 +60,18 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 ]
             },
             {
-                label: 'Library'
+                label: 'Library',
+                click: function () {
+                    electron_1.shell.openExternal('https://github.com/highperformancecoder/minsky-models');
+                }
             },
             {
-                label: 'Save'
+                label: 'Save',
+                accelerator: 'Ctrl + S'
             },
             {
-                label: 'SaveAs'
+                label: 'SaveAs',
+                accelerator: 'Ctrl + A'
             },
             {
                 label: 'Insert File as Group'
@@ -113,7 +103,9 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Replay recording'
             },
             {
-                label: 'Quit'
+                label: 'Quit',
+                role: "quit",
+                accelerator: 'Ctrl + Q'
             },
             {
                 type: 'separator'
@@ -164,7 +156,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Dimensions',
                 click: function () {
-                    createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html");
+                    createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html", null);
                 }
             }
         ]
@@ -175,7 +167,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Bookmark this position',
                 click: function () {
-                    createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html");
+                    createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
                 }
             },
             {
@@ -202,19 +194,19 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     {
                         label: 'variable',
                         click: function () {
-                            createVariablePopUp('variable');
+                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
                         }
                     },
                     {
                         label: 'constant',
                         click: function () {
-                            createVariablePopUp('constant');
+                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
                         }
                     },
                     {
                         label: 'parameter',
                         click: function () {
-                            createVariablePopUp('parameter');
+                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
                         }
                     }
                 ]
@@ -508,13 +500,13 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Preferences',
                 click: function () {
-                    createMenuPopUp(550, 450, "Preferences", "/menu/preferences/preferences.html");
+                    createMenuPopUp(550, 450, "Preferences", "/menu/preferences/preferences.html", null);
                 }
             },
             {
                 label: 'Background Color',
                 click: function () {
-                    createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html");
+                    createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html", null);
                 }
             }
         ]
@@ -525,7 +517,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Runge Kutta',
                 click: function () {
-                    createMenuPopUp(550, 550, "Runge Kutta", "/menu/runge-kutta-parameters/runge-kutta-parameters.html");
+                    createMenuPopUp(550, 550, "Runge Kutta", "/menu/runge-kutta-parameters/runge-kutta-parameters.html", null);
                 }
             }
         ]
@@ -534,33 +526,17 @@ exports.template = electron_1.Menu.buildFromTemplate([
         role: 'help',
         submenu: [
             {
-                label: 'Minsky Documentation'
+                label: 'Minsky Documentation',
+                click: function () {
+                    var shell = require('electron').shell;
+                    shell.openExternal('https://minsky.sourceforge.io/manual/minsky.html');
+                }
             }
         ]
     }
 ]);
-function createVariablePopUp(type) {
-    variable_window = new electron_1.BrowserWindow({
-        width: 320,
-        height: 420,
-        title: "Specify variable name",
-        resizable: false,
-        minimizable: false,
-        parent: main_1.win,
-        modal: true,
-        backgroundColor: '#c8ccd0',
-        webPreferences: {
-            nodeIntegration: true
-        }
-    });
-    variable_window.setMenu(null);
-    variable_window.loadURL("file://" + __dirname + "/menu/create_variable/create_variable.html");
-    variable_window.on('closed', function () {
-        console.log('closed', type);
-        variable_window = null;
-    });
-}
-function createMenuPopUp(width, height, title, dir_path) {
+function createMenuPopUp(width, height, title, dir_path, background_color) {
+    background_color = background_color || "#c1c1c1";
     var BrowserWindow = require('electron').BrowserWindow;
     menu_window = new BrowserWindow({
         width: width,
@@ -568,17 +544,20 @@ function createMenuPopUp(width, height, title, dir_path) {
         title: title,
         resizable: false,
         minimizable: false,
+        show: false,
         parent: main_1.win,
         modal: true,
-        backgroundColor: '#c8ccd0',
+        backgroundColor: background_color,
         webPreferences: {
             nodeIntegration: true
         }
     });
     menu_window.setMenu(null);
     menu_window.loadURL("file://" + __dirname + dir_path);
+    menu_window.once('ready-to-show', function () {
+        menu_window.show();
+    });
     menu_window.on('closed', function () {
-        // console.log('closed', type);
         menu_window = null;
     });
 }
