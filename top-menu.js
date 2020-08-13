@@ -44,6 +44,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     aboutWin.on('closed', function () {
                         aboutWin = null;
                     });
+                    // createMenuPopUp(480,445, "About Minsky","/menu/about/about.html")
                 }
             },
             {

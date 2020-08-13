@@ -47,7 +47,8 @@ export const template = Menu.buildFromTemplate([
             aboutWin = null;
         });
 
-        }
+            // createMenuPopUp(480,445, "About Minsky","/menu/about/about.html")
+         }
       },
       {
         label: 'Upgrade',
