@@ -1,13 +1,8 @@
 import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
 import { win } from './main';
 
-<<<<<<< HEAD
-let aboutWin: BrowserWindow;
-let variable_window: BrowserWindow;
-=======
 var menu_window: BrowserWindow;
 
->>>>>>> dev
 ipcMain.on('about:close', (event) => {
   menu_window.close();
 });
@@ -26,39 +21,8 @@ export const template = Menu.buildFromTemplate([
         label: 'About Minsky',
         //It will open a child window when about menu is clicked.
         click() {
-<<<<<<< HEAD
-          aboutWin = new BrowserWindow(
-            {
-              width: 420, height: 440,
-              webPreferences: { nodeIntegration: true },
-              resizable: false,
-              minimizable: false,
-              parent: win,
-              modal: true,
-              show: false,
-              title: ""
-            })
-          //setting menu for child window
-          aboutWin.setMenu(null);
-          // Load a remote URL
-          aboutWin.loadURL(`file://${__dirname}/menu/about/about.html`)
-          // aboutWin.webContents.openDevTools();
-
-          //The window will show when it is ready
-          aboutWin.once('ready-to-show', () => {
-            aboutWin.show();
-            shell.beep();
-          });
-
-          aboutWin.on('closed', function () {
-            aboutWin = null;
-          });
-
-          // createMenuPopUp(480,445, "About Minsky","/menu/about/about.html")
-=======
           createMenuPopUp(420, 440, "", "/menu/about/about.html", "");
           shell.beep()
->>>>>>> dev
         }
       },
       {
@@ -622,40 +586,10 @@ export const template = Menu.buildFromTemplate([
   }
 ]);
 
-<<<<<<< HEAD
-function createVariablePopUp(type) {
-
-  variable_window = new BrowserWindow({
-    width: 320,
-    height: 420,
-    title: "Specify variable name",
-    resizable: false,
-    minimizable: false,
-    parent: win,
-    modal: true,
-    backgroundColor: '#c8ccd0',
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
-  variable_window.setMenu(null);
-  variable_window.loadURL("file://" + __dirname + "/menu/create_variable/create_variable.html");
-  variable_window.on('closed', () => {
-    console.log('closed', type);
-    variable_window = null;
-  });
-
-}
-
-function createMenuPopUp(width, height, title, dir_path) {
-  var BrowserWindow = require('electron').BrowserWindow;
-  var menu_window = new BrowserWindow({
-=======
 
 function createMenuPopUp(width, height, title, dir_path, backgroundColor = '#c8ccd0') {
 
   menu_window = new BrowserWindow({
->>>>>>> dev
     width: width,
     height: height,
     title: title,
