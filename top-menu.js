@@ -84,7 +84,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 ]
             },
             {
-                label: 'Log simulation'
+                label: 'Log simulation',
+                click: function () {
+                    createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html");
+                }
             },
             {
                 label: 'Recording'
@@ -94,8 +97,8 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Quit',
-                role: "quit",
-                accelerator: 'Ctrl + Q'
+                accelerator: 'Ctrl + Q',
+                role: 'quit'
             },
             {
                 type: 'separator'
