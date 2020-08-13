@@ -573,7 +573,11 @@ export const template = Menu.buildFromTemplate([
     role: 'help',
     submenu: [
       {
-        label: 'Minsky Documentation'
+        label: 'Minsky Documentation',
+        click() {
+          const shell = require('electron').shell
+          shell.openExternal('https://minsky.sourceforge.io/manual/minsky.html');
+        }
       }
     ]
   }
