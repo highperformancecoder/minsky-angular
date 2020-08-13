@@ -2,16 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var main_1 = require("./main");
-var aboutWin;
-var variable_window;
+var menu_window;
 electron_1.ipcMain.on('about:close', function (event) {
-    aboutWin.close();
+    menu_window.close();
 });
 electron_1.ipcMain.on('create_variable:ok', function (event) {
-    variable_window.close();
+    menu_window.close();
 });
 electron_1.ipcMain.on('create_variable:cancel', function (event) {
-    variable_window.close();
+    menu_window.close();
 });
 exports.template = electron_1.Menu.buildFromTemplate([
     {
@@ -21,30 +20,8 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'About Minsky',
                 //It will open a child window when about menu is clicked.
                 click: function () {
-                    aboutWin = new electron_1.BrowserWindow({
-                        width: 420, height: 440,
-                        webPreferences: { nodeIntegration: true },
-                        resizable: false,
-                        minimizable: false,
-                        parent: main_1.win,
-                        modal: true,
-                        show: false,
-                        title: ""
-                    });
-                    //setting menu for child window
-                    aboutWin.setMenu(null);
-                    // Load a remote URL
-                    aboutWin.loadURL("file://" + __dirname + "/menu/about/about.html");
-                    // aboutWin.webContents.openDevTools();
-                    //The window will show when it is ready
-                    aboutWin.once('ready-to-show', function () {
-                        aboutWin.show();
-                        electron_1.shell.beep();
-                    });
-                    aboutWin.on('closed', function () {
-                        aboutWin = null;
-                    });
-                    // createMenuPopUp(480,445, "About Minsky","/menu/about/about.html")
+                    createMenuPopUp(420, 440, "", "/menu/about/about.html", "");
+                    electron_1.shell.beep();
                 }
             },
             {
@@ -117,6 +94,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Quit',
+                role: "quit",
                 accelerator: 'Ctrl + Q'
             },
             {
@@ -206,19 +184,19 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     {
                         label: 'variable',
                         click: function () {
-                            createVariablePopUp('variable');
+                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
                         }
                     },
                     {
                         label: 'constant',
                         click: function () {
-                            createVariablePopUp('constant');
+                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
                         }
                     },
                     {
                         label: 'parameter',
                         click: function () {
-                            createVariablePopUp('parameter');
+                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
                         }
                     }
                 ]
@@ -540,44 +518,27 @@ exports.template = electron_1.Menu.buildFromTemplate([
         ]
     }
 ]);
-function createVariablePopUp(type) {
-    variable_window = new electron_1.BrowserWindow({
-        width: 320,
-        height: 420,
-        title: "Specify variable name",
-        resizable: false,
-        minimizable: false,
-        parent: main_1.win,
-        modal: true,
-        backgroundColor: '#c8ccd0',
-        webPreferences: {
-            nodeIntegration: true
-        }
-    });
-    variable_window.setMenu(null);
-    variable_window.loadURL("file://" + __dirname + "/menu/create_variable/create_variable.html");
-    variable_window.on('closed', function () {
-        console.log('closed', type);
-        variable_window = null;
-    });
-}
-function createMenuPopUp(width, height, title, dir_path) {
-    var BrowserWindow = require('electron').BrowserWindow;
-    var menu_window = new BrowserWindow({
+function createMenuPopUp(width, height, title, dir_path, backgroundColor) {
+    if (backgroundColor === void 0) { backgroundColor = '#c8ccd0'; }
+    menu_window = new electron_1.BrowserWindow({
         width: width,
         height: height,
         title: title,
         resizable: false,
         minimizable: false,
+        show: false,
         parent: main_1.win,
         modal: true,
-        backgroundColor: '#c8ccd0',
+        backgroundColor: backgroundColor,
         webPreferences: {
             nodeIntegration: true
         }
     });
     menu_window.setMenu(null);
     menu_window.loadURL("file://" + __dirname + dir_path);
+    menu_window.once('ready-to-show', function () {
+        menu_window.show();
+    });
     menu_window.on('closed', function () {
         // console.log('closed', type);
         menu_window = null;
