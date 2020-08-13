@@ -1,17 +1,18 @@
 import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
 import { win } from './main';
 
-let aboutWin: BrowserWindow;
-let variable_window: BrowserWindow;
+var menu_window: BrowserWindow;
+
 ipcMain.on('about:close', (event) => {
-  aboutWin.close();
+  menu_window.close();
 });
 ipcMain.on('create_variable:ok', (event) => {
-  variable_window.close();
+  menu_window.close();
 });
 ipcMain.on('create_variable:cancel', (event) => {
-  variable_window.close();
+  menu_window.close();
 });
+
 export const template = Menu.buildFromTemplate([
   {
     label: 'File',
@@ -20,34 +21,8 @@ export const template = Menu.buildFromTemplate([
         label: 'About Minsky',
         //It will open a child window when about menu is clicked.
         click() {
-          aboutWin = new BrowserWindow(
-            {
-              width: 420, height: 440,
-              webPreferences: { nodeIntegration: true },
-              resizable: false,
-              minimizable: false,
-              parent: win,
-              modal: true,
-              show: false,
-              title: ""
-            })
-          //setting menu for child window
-          aboutWin.setMenu(null);
-          // Load a remote URL
-          aboutWin.loadURL(`file://${__dirname}/menu/about/about.html`)
-          // aboutWin.webContents.openDevTools();
-
-          //The window will show when it is ready
-          aboutWin.once('ready-to-show', () => {
-            aboutWin.show();
-            shell.beep();
-          });
-
-          aboutWin.on('closed', function () {
-            aboutWin = null;
-          });
-
-          // createMenuPopUp(480,445, "About Minsky","/menu/about/about.html")
+          createMenuPopUp(420, 440, "", "/menu/about/about.html", "");
+          shell.beep()
         }
       },
       {
@@ -120,6 +95,7 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Quit',
+        role: "quit",
         accelerator: 'Ctrl + Q'
       },
       {
@@ -214,19 +190,19 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'variable',
             click() {
-              createVariablePopUp('variable');
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
             }
           },
           {
             label: 'constant',
             click() {
-              createVariablePopUp('constant');
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
             }
           },
           {
             label: 'parameter',
             click() {
-              createVariablePopUp('parameter');
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
             }
           }
         ]
@@ -607,52 +583,32 @@ export const template = Menu.buildFromTemplate([
   }
 ]);
 
-function createVariablePopUp(type) {
 
-  variable_window = new BrowserWindow({
-    width: 320,
-    height: 420,
-    title: "Specify variable name",
-    resizable: false,
-    minimizable: false,
-    parent: win,
-    modal: true,
-    backgroundColor: '#c8ccd0',
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
-  variable_window.setMenu(null);
-  variable_window.loadURL("file://" + __dirname + "/menu/create_variable/create_variable.html");
-  variable_window.on('closed', () => {
-    console.log('closed', type);
-    variable_window = null;
-  });
+function createMenuPopUp(width, height, title, dir_path, backgroundColor = '#c8ccd0') {
 
-}
-
-function createMenuPopUp(width, height, title, dir_path) {
-  var BrowserWindow = require('electron').BrowserWindow;
-  var menu_window = new BrowserWindow({
+  menu_window = new BrowserWindow({
     width: width,
     height: height,
     title: title,
     resizable: false,
     minimizable: false,
+    show: false,
     parent: win,
     modal: true,
-    backgroundColor: '#c8ccd0',
+    backgroundColor: backgroundColor,
     webPreferences: {
       nodeIntegration: true
     }
   });
   menu_window.setMenu(null);
   menu_window.loadURL("file://" + __dirname + dir_path);
+
+  menu_window.once('ready-to-show', () => {
+    menu_window.show();
+  });
+
   menu_window.on('closed', () => {
     // console.log('closed', type);
     menu_window = null;
   });
 }
-
-
-
