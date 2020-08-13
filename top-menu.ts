@@ -1,17 +1,23 @@
 import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
 import { win } from './main';
 
+<<<<<<< HEAD
 let aboutWin: BrowserWindow;
 let variable_window: BrowserWindow;
+=======
+var menu_window: BrowserWindow;
+
+>>>>>>> dev
 ipcMain.on('about:close', (event) => {
-  aboutWin.close();
+  menu_window.close();
 });
 ipcMain.on('create_variable:ok', (event) => {
-  variable_window.close();
+  menu_window.close();
 });
 ipcMain.on('create_variable:cancel', (event) => {
-  variable_window.close();
+  menu_window.close();
 });
+
 export const template = Menu.buildFromTemplate([
   {
     label: 'File',
@@ -20,6 +26,7 @@ export const template = Menu.buildFromTemplate([
         label: 'About Minsky',
         //It will open a child window when about menu is clicked.
         click() {
+<<<<<<< HEAD
           aboutWin = new BrowserWindow(
             {
               width: 420, height: 440,
@@ -48,6 +55,10 @@ export const template = Menu.buildFromTemplate([
           });
 
           // createMenuPopUp(480,445, "About Minsky","/menu/about/about.html")
+=======
+          createMenuPopUp(420, 440, "", "/menu/about/about.html", "");
+          shell.beep()
+>>>>>>> dev
         }
       },
       {
@@ -218,19 +229,19 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'variable',
             click() {
-              createVariablePopUp('variable');
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
             }
           },
           {
             label: 'constant',
             click() {
-              createVariablePopUp('constant');
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
             }
           },
           {
             label: 'parameter',
             click() {
-              createVariablePopUp('parameter');
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
             }
           }
         ]
@@ -601,12 +612,17 @@ export const template = Menu.buildFromTemplate([
     role: 'help',
     submenu: [
       {
-        label: 'Minsky Documentation'
+        label: 'Minsky Documentation',
+        click() {
+          const shell = require('electron').shell
+          shell.openExternal('https://minsky.sourceforge.io/manual/minsky.html');
+        }
       }
     ]
   }
 ]);
 
+<<<<<<< HEAD
 function createVariablePopUp(type) {
 
   variable_window = new BrowserWindow({
@@ -634,25 +650,34 @@ function createVariablePopUp(type) {
 function createMenuPopUp(width, height, title, dir_path) {
   var BrowserWindow = require('electron').BrowserWindow;
   var menu_window = new BrowserWindow({
+=======
+
+function createMenuPopUp(width, height, title, dir_path, backgroundColor = '#c8ccd0') {
+
+  menu_window = new BrowserWindow({
+>>>>>>> dev
     width: width,
     height: height,
     title: title,
     resizable: false,
     minimizable: false,
+    show: false,
     parent: win,
     modal: true,
-    backgroundColor: '#c8ccd0',
+    backgroundColor: backgroundColor,
     webPreferences: {
       nodeIntegration: true
     }
   });
   menu_window.setMenu(null);
   menu_window.loadURL("file://" + __dirname + dir_path);
+
+  menu_window.once('ready-to-show', () => {
+    menu_window.show();
+  });
+
   menu_window.on('closed', () => {
     // console.log('closed', type);
     menu_window = null;
   });
 }
-
-
-
