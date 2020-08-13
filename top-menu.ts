@@ -95,7 +95,10 @@ export const template = Menu.buildFromTemplate([
         ]
       },
       {
-        label: 'Log simulation'
+        label: 'Log simulation',
+        click() {
+          createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html",null);
+        }
       },
       {
         label: 'Recording'
@@ -105,8 +108,8 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Quit',
-        role: "quit",
-        accelerator: 'Ctrl + Q'
+        accelerator: 'Ctrl + Q',
+        role: 'quit'
       },
       {
         type: 'separator'
