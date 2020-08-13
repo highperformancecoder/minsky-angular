@@ -4,6 +4,7 @@ var electron_1 = require("electron");
 var main_1 = require("./main");
 var aboutWin;
 var variable_window;
+var menu_window;
 electron_1.ipcMain.on('about:close', function (event) {
     aboutWin.close();
 });
@@ -12,6 +13,14 @@ electron_1.ipcMain.on('create_variable:ok', function (event) {
 });
 electron_1.ipcMain.on('create_variable:cancel', function (event) {
     variable_window.close();
+});
+electron_1.ipcMain.on('background-color:ok', function (event, data) {
+    var css = "body { background-color: " + data.color + "; color: black; }";
+    main_1.win.webContents.insertCSS(css);
+    menu_window.close();
+});
+electron_1.ipcMain.on('background-color:cancel', function (event) {
+    menu_window.close();
 });
 exports.template = electron_1.Menu.buildFromTemplate([
     {
@@ -503,7 +512,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 }
             },
             {
-                label: 'Background Color'
+                label: 'Background Color',
+                click: function () {
+                    createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html");
+                }
             }
         ]
     },
@@ -550,7 +562,7 @@ function createVariablePopUp(type) {
 }
 function createMenuPopUp(width, height, title, dir_path) {
     var BrowserWindow = require('electron').BrowserWindow;
-    var menu_window = new BrowserWindow({
+    menu_window = new BrowserWindow({
         width: width,
         height: height,
         title: title,

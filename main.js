@@ -9,19 +9,20 @@ var args = process.argv.slice(1), serve = args.some(function (val) { return val 
 function createWindow() {
     var electronScreen = electron_1.screen;
     var size = electronScreen.getPrimaryDisplay().workAreaSize;
-    // Create the browser window.
     exports.win = new electron_1.BrowserWindow({
         x: 0,
         y: 0,
         width: size.width,
         height: size.height,
-        backgroundColor: '#c8ccd0',
+        transparent: true,
         webPreferences: {
             nodeIntegration: true,
+            affinity: "window",
             allowRunningInsecureContent: (serve) ? true : false,
         },
         icon: __dirname + '/Icon/favicon.png'
     });
+    exports.win.setBackgroundColor("#c1c1c1");
     if (serve) {
         exports.win.webContents.openDevTools();
         require('electron-reload')(__dirname, {

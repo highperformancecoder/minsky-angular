@@ -1,25 +1,30 @@
-
 .popup-title {
-  margin: 30px 0;
-  text-align: center;
+    margin: 30px 0;
+    text-align: center;
 }
 
 .form-control {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .form-control label {
-  min-width: 160px;
-  display: inline-block;
-  text-align: right;
-  margin-right: 10px;
+    min-width: 160px;
+    display: inline-block;
+    text-align: right;
+    margin-right: 10px;
 }
 
 .form-buttons {
-  margin: 30px 0;
-  text-align: center;
+    margin: 30px 0;
+    text-align: center;
 }
 
 .form-buttons .btn {
-  display: inline-block;
+    display: inline-block;
+}
+
+#myColor {
+    width: 80px;
+    height: 80px;
+    border: none;
 }
