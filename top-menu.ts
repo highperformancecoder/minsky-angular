@@ -1,8 +1,8 @@
-import { Menu, BrowserWindow, ipcMain,shell } from 'electron';
+import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
 import { win } from './main';
 
 let aboutWin: BrowserWindow;
-let variable_window : BrowserWindow;
+let variable_window: BrowserWindow;
 ipcMain.on('about:close', (event) => {
   aboutWin.close();
 });
@@ -26,9 +26,9 @@ export const template = Menu.buildFromTemplate([
               webPreferences: { nodeIntegration: true },
               resizable: false,
               minimizable: false,
-              parent:win,
-              modal:true,
-              show:false,
+              parent: win,
+              modal: true,
+              show: false,
               title: ""
             })
           //setting menu for child window
@@ -38,23 +38,23 @@ export const template = Menu.buildFromTemplate([
           // aboutWin.webContents.openDevTools();
 
           //The window will show when it is ready
-          aboutWin.once('ready-to-show',()=>{
-             aboutWin.show();
-             shell.beep();
+          aboutWin.once('ready-to-show', () => {
+            aboutWin.show();
+            shell.beep();
           });
 
           aboutWin.on('closed', function () {
             aboutWin = null;
-        });
+          });
 
-            // createMenuPopUp(480,445, "About Minsky","/menu/about/about.html")
-         }
+          // createMenuPopUp(480,445, "About Minsky","/menu/about/about.html")
+        }
       },
       {
         label: 'Upgrade',
         click() {
           shell.openExternal('https://www.patreon.com/hpcoder');
-      }
+        }
       },
       {
         label: 'New System',
@@ -62,7 +62,7 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Open',
-        click(){
+        click() {
           shell.openPath('c:\\');
         },
         accelerator: 'Ctrl + O'
@@ -77,8 +77,8 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Library',
-        click () {
-            shell.openExternal('https://github.com/highperformancecoder/minsky-models');
+        click() {
+          shell.openExternal('https://github.com/highperformancecoder/minsky-models');
         }
       },
       {
@@ -110,7 +110,10 @@ export const template = Menu.buildFromTemplate([
         ]
       },
       {
-        label: 'Log simulation'
+        label: 'Log simulation',
+        click() {
+          createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html");
+        }
       },
       {
         label: 'Recording'
@@ -120,7 +123,8 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Quit',
-        accelerator: 'Ctrl + Q'
+        accelerator: 'Ctrl + Q',
+        role: 'quit'
       },
       {
         type: 'separator'
@@ -172,7 +176,7 @@ export const template = Menu.buildFromTemplate([
         label: 'Dimensions',
         click() {
 
-          createMenuPopUp(420,250,"Dimensions","/menu/dimensions/dimensions.html");
+          createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html");
 
         }
       }
@@ -185,7 +189,7 @@ export const template = Menu.buildFromTemplate([
         label: 'Bookmark this position',
         click() {
 
-           createMenuPopUp(420,180,"Bookmark this position","/menu/bookmark-position/bookmark-position.html");
+          createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html");
 
         }
       },
@@ -243,73 +247,73 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'subtract',
             click() {
-              
+
             }
           },
           {
             label: 'multiple',
             click() {
-              
+
             }
           },
           {
             label: 'divide',
             click() {
-              
+
             }
           },
           {
             label: 'min',
             click() {
-              
+
             }
           },
           {
             label: 'max',
             click() {
-              
+
             }
           },
           {
             label: 'and',
             click() {
-              
+
             }
           },
           {
             label: 'or',
             click() {
-              
+
             }
           },
           {
             label: 'log',
             click() {
-              
+
             }
           },
           {
             label: 'pow',
             click() {
-              
+
             }
           },
           {
             label: 'lt',
             click() {
-              
+
             }
           },
           {
             label: 'le',
             click() {
-              
+
             }
           },
           {
             label: 'eq',
             click() {
-              
+
             }
           }
         ]
@@ -320,103 +324,103 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'copy',
             click() {
-              
+
             }
           },
           {
             label: 'sqrt',
             click() {
-              
+
             }
           },
           {
             label: 'exp',
             click() {
-              
+
             }
           },
           {
             label: 'ln',
             click() {
-              
+
             }
           },
           {
             label: 'sin',
             click() {
-              
+
             }
           },
           {
             label: 'cos',
             click() {
-              
+
             }
           },
           {
             label: 'tan',
             click() {
-              
+
             }
           },
           {
             label: 'asin',
             click() {
-              
+
             }
           },
           {
             label: 'acos',
             click() {
-              
+
             }
           },
           {
             label: 'atan',
             click() {
-              
+
             }
           },
           {
             label: 'sinh',
             click() {
-              
+
             }
           },
           {
             label: 'cosh',
             click() {
-              
+
             }
           },
           {
             label: 'tanh',
             click() {
-              
+
             }
           },
           {
             label: 'abs',
             click() {
-              
+
             }
           },
           {
             label: 'floor',
             click() {
-              
+
             }
           },
           {
             label: 'frac',
             click() {
-              
+
             }
           },
           {
             label: 'not',
             click() {
-              
+
             }
           }
         ]
@@ -427,49 +431,49 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'sum',
             click() {
-              
+
             }
           },
           {
             label: 'product',
             click() {
-              
+
             }
           },
           {
             label: 'infimum',
             click() {
-              
+
             }
           },
           {
             label: 'supremum',
             click() {
-              
+
             }
           },
           {
             label: 'any',
             click() {
-              
+
             }
           },
           {
             label: 'all',
             click() {
-              
+
             }
           },
           {
             label: 'infIndex',
             click() {
-              
+
             }
           },
           {
             label: 'supIndex',
             click() {
-              
+
             }
           }
         ]
@@ -480,19 +484,19 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'runningSum',
             click() {
-              
+
             }
           },
           {
             label: 'runningProduct',
             click() {
-              
+
             }
           },
           {
             label: 'difference',
             click() {
-              
+
             }
           }
         ]
@@ -503,25 +507,25 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'innerProduct',
             click() {
-              
+
             }
           },
           {
             label: 'outerProduct',
             click() {
-              
+
             }
           },
           {
             label: 'index',
             click() {
-              
+
             }
           },
           {
             label: 'gather',
             click() {
-              
+
             }
           }
         ]
@@ -529,37 +533,37 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'time',
         click() {
-          
+
         }
       },
       {
         label: 'integrate',
         click() {
-          
+
         }
       },
       {
         label: 'differentiate',
         click() {
-          
+
         }
       },
       {
         label: 'data',
         click() {
-          
+
         }
       },
       {
         label: 'ravel',
         click() {
-          
+
         }
       },
       {
         label: 'plot',
         click() {
-          
+
         }
       }
     ]
@@ -571,7 +575,7 @@ export const template = Menu.buildFromTemplate([
         label: 'Preferences',
         click() {
 
-          createMenuPopUp(550,450,"Preferences","/menu/preferences/preferences.html");
+          createMenuPopUp(550, 450, "Preferences", "/menu/preferences/preferences.html");
 
         }
       },
@@ -587,7 +591,7 @@ export const template = Menu.buildFromTemplate([
         label: 'Runge Kutta',
         click() {
 
-          createMenuPopUp(550,550,"Runge Kutta","/menu/runge-kutta-parameters/runge-kutta-parameters.html");
+          createMenuPopUp(550, 550, "Runge Kutta", "/menu/runge-kutta-parameters/runge-kutta-parameters.html");
 
         }
       }
@@ -604,8 +608,8 @@ export const template = Menu.buildFromTemplate([
 ]);
 
 function createVariablePopUp(type) {
- 
-   variable_window = new BrowserWindow({
+
+  variable_window = new BrowserWindow({
     width: 320,
     height: 420,
     title: "Specify variable name",
@@ -624,10 +628,10 @@ function createVariablePopUp(type) {
     console.log('closed', type);
     variable_window = null;
   });
-  
+
 }
 
-function createMenuPopUp(width,height,title,dir_path){
+function createMenuPopUp(width, height, title, dir_path) {
   var BrowserWindow = require('electron').BrowserWindow;
   var menu_window = new BrowserWindow({
     width: width,
