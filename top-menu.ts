@@ -22,14 +22,14 @@ export const template = Menu.buildFromTemplate([
         click() {
           aboutWin = new BrowserWindow(
             {
-              width: 480, height: 445,
+              width: 420, height: 440,
               webPreferences: { nodeIntegration: true },
               resizable: false,
               minimizable: false,
               parent:win,
               modal:true,
               show:false,
-              title: "About Minsky"
+              title: ""
             })
           //setting menu for child window
           aboutWin.setMenu(null);

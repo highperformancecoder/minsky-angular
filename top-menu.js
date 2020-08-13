@@ -22,14 +22,14 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 //It will open a child window when about menu is clicked.
                 click: function () {
                     aboutWin = new electron_1.BrowserWindow({
-                        width: 480, height: 445,
+                        width: 420, height: 440,
                         webPreferences: { nodeIntegration: true },
                         resizable: false,
                         minimizable: false,
                         parent: main_1.win,
                         modal: true,
                         show: false,
-                        title: "About Minsky"
+                        title: ""
                     });
                     //setting menu for child window
                     aboutWin.setMenu(null);
