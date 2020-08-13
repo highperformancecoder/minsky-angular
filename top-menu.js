@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var main_1 = require("./main");
+var aboutWin;
+var variable_window;
 var menu_window;
 electron_1.ipcMain.on('about:close', function (event) {
     menu_window.close();
@@ -12,6 +14,14 @@ electron_1.ipcMain.on('create_variable:ok', function (event) {
 electron_1.ipcMain.on('create_variable:cancel', function (event) {
     menu_window.close();
 });
+electron_1.ipcMain.on('background-color:ok', function (event, data) {
+    var css = "body { background-color: " + data.color + "; color: black; }";
+    main_1.win.webContents.insertCSS(css);
+    menu_window.close();
+});
+electron_1.ipcMain.on('background-color:cancel', function (event) {
+    menu_window.close();
+});
 exports.template = electron_1.Menu.buildFromTemplate([
     {
         label: 'File',
@@ -20,7 +30,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'About Minsky',
                 //It will open a child window when about menu is clicked.
                 click: function () {
-                    createMenuPopUp(420, 440, "", "/menu/about/about.html", "");
+                    createMenuPopUp(420, 440, "", "/menu/about/about.html", "#ffffff");
                     electron_1.shell.beep();
                 }
             },
@@ -86,7 +96,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Log simulation',
                 click: function () {
-                    createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html");
+                    createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html", null);
                 }
             },
             {
@@ -149,7 +159,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Dimensions',
                 click: function () {
-                    createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html");
+                    createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html", null);
                 }
             }
         ]
@@ -160,7 +170,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Bookmark this position',
                 click: function () {
-                    createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html");
+                    createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
                 }
             },
             {
@@ -187,19 +197,19 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     {
                         label: 'variable',
                         click: function () {
-                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
+                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
                         }
                     },
                     {
                         label: 'constant',
                         click: function () {
-                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
+                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
                         }
                     },
                     {
                         label: 'parameter',
                         click: function () {
-                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html");
+                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
                         }
                     }
                 ]
@@ -493,11 +503,14 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Preferences',
                 click: function () {
-                    createMenuPopUp(550, 450, "Preferences", "/menu/preferences/preferences.html");
+                    createMenuPopUp(550, 450, "Preferences", "/menu/preferences/preferences.html", null);
                 }
             },
             {
-                label: 'Background Color'
+                label: 'Background Color',
+                click: function () {
+                    createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html", null);
+                }
             }
         ]
     },
@@ -507,7 +520,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Runge Kutta',
                 click: function () {
-                    createMenuPopUp(550, 550, "Runge Kutta", "/menu/runge-kutta-parameters/runge-kutta-parameters.html");
+                    createMenuPopUp(550, 550, "Runge Kutta", "/menu/runge-kutta-parameters/runge-kutta-parameters.html", null);
                 }
             }
         ]
@@ -525,9 +538,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
         ]
     }
 ]);
-function createMenuPopUp(width, height, title, dir_path, backgroundColor) {
-    if (backgroundColor === void 0) { backgroundColor = '#c8ccd0'; }
-    menu_window = new electron_1.BrowserWindow({
+function createMenuPopUp(width, height, title, dir_path, background_color) {
+    background_color = background_color || "#c1c1c1";
+    var BrowserWindow = require('electron').BrowserWindow;
+    menu_window = new BrowserWindow({
         width: width,
         height: height,
         title: title,
@@ -536,7 +550,7 @@ function createMenuPopUp(width, height, title, dir_path, backgroundColor) {
         show: false,
         parent: main_1.win,
         modal: true,
-        backgroundColor: backgroundColor,
+        backgroundColor: background_color,
         webPreferences: {
             nodeIntegration: true
         }
@@ -547,7 +561,6 @@ function createMenuPopUp(width, height, title, dir_path, backgroundColor) {
         menu_window.show();
     });
     menu_window.on('closed', function () {
-        // console.log('closed', type);
         menu_window = null;
     });
 }
