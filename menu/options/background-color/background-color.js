@@ -8,6 +8,6 @@ document.getElementById("backgroundOk").addEventListener('click', () => {
     ipcRenderer.send('background-color:ok', data);
 
 })
-document.getElementById("backgroundCancel").addEventListener('click', () => {
-    ipcRenderer.send('background-color:cancel', "");
+document.querySelector('.cancel-btn').addEventListener('click', () => {
+    ipcRenderer.send('global-menu-popup:cancel');
 })

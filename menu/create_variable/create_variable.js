@@ -4,6 +4,6 @@ document.getElementById("createVariableOk").addEventListener('click', () => {
     console.log("button clicked");
     ipcRenderer.send('create_variable:ok', "");
 })
-document.getElementById("createVariableCancel").addEventListener('click', () => {
-    ipcRenderer.send('create_variable:cancel', "");
+document.querySelector('.cancel-btn').addEventListener('click', () => {
+    ipcRenderer.send('global-menu-popup:cancel');
 })

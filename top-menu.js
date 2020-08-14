@@ -3,21 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var main_1 = require("./main");
 var menu_window;
-electron_1.ipcMain.on('about:close', function (event) {
-    menu_window.close();
-});
 electron_1.ipcMain.on('create_variable:ok', function (event) {
-    menu_window.close();
-});
-electron_1.ipcMain.on('create_variable:cancel', function (event) {
     menu_window.close();
 });
 electron_1.ipcMain.on('background-color:ok', function (event, data) {
     var css = "body { background-color: " + data.color + "; color: black; }";
     main_1.win.webContents.insertCSS(css);
-    menu_window.close();
-});
-electron_1.ipcMain.on('background-color:cancel', function (event) {
     menu_window.close();
 });
 exports.template = electron_1.Menu.buildFromTemplate([
@@ -28,7 +19,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'About Minsky',
                 //It will open a child window when about menu is clicked.
                 click: function () {
-                    createMenuPopUp(420, 440, "", "/menu/about/about.html", "#ffffff");
+                    createMenuPopUp(420, 440, "", "/menu/file/about/about.html", "#ffffff");
                     electron_1.shell.beep();
                 }
             },
@@ -75,7 +66,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Insert File as Group'
             },
             {
-                label: 'Dimensional Analysis'
+                label: 'Dimensional Analysis',
+                click: function () {
+                    createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html", "#ffffff");
+                }
             },
             {
                 label: 'Export Canvas'
@@ -121,7 +115,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Object Browser'
             },
             {
-                label: 'Select items'
+                label: 'Select items',
+                click: function () {
+                    createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html", "#ffffff");
+                }
             },
             {
                 label: 'Command'

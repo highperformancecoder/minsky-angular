@@ -2,24 +2,16 @@ import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
 import { win } from './main';
 
 var menu_window: BrowserWindow;
-
-ipcMain.on('about:close', (event) => {
-  menu_window.close();
-});
 ipcMain.on('create_variable:ok', (event) => {
   menu_window.close();
 });
-ipcMain.on('create_variable:cancel', (event) => {
-  menu_window.close();
-});
+
 ipcMain.on('background-color:ok', (event, data) => {
   var css = "body { background-color: " + data.color + "; color: black; }";
   win.webContents.insertCSS(css);
   menu_window.close();
 });
-ipcMain.on('background-color:cancel', (event) => {
-  menu_window.close();
-});
+
 
 export const template = Menu.buildFromTemplate([
   {
@@ -29,7 +21,7 @@ export const template = Menu.buildFromTemplate([
         label: 'About Minsky',
         //It will open a child window when about menu is clicked.
         click() {
-          createMenuPopUp(420, 440, "", "/menu/about/about.html", "#ffffff");
+          createMenuPopUp(420, 440, "", "/menu/file/about/about.html", "#ffffff");
           shell.beep()
         }
       },
@@ -76,7 +68,10 @@ export const template = Menu.buildFromTemplate([
         label: 'Insert File as Group'
       },
       {
-        label: 'Dimensional Analysis'
+        label: 'Dimensional Analysis',
+        click() {
+          createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html","#ffffff");
+        }
       },
       {
         label: 'Export Canvas'
@@ -122,7 +117,10 @@ export const template = Menu.buildFromTemplate([
         label: 'Object Browser'
       },
       {
-        label: 'Select items'
+        label: 'Select items',
+        click() {
+          createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html","#ffffff");
+        }
       },
       {
         label: 'Command'
