@@ -2,8 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var main_1 = require("./main");
-var aboutWin;
-var variable_window;
 var menu_window;
 electron_1.ipcMain.on('about:close', function (event) {
     menu_window.close();
@@ -507,7 +505,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 }
             },
             {
-                label: 'Background Color',
+                label: 'Background Colour',
                 click: function () {
                     createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html", null);
                 }

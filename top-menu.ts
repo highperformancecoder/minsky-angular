@@ -159,7 +159,7 @@ export const template = Menu.buildFromTemplate([
         label: 'Dimensions',
         click() {
 
-          createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html", null);
+          createMenuPopUp(420, 250, "Dimensions", "/menu/edit/dimensions/dimensions-popup.html", null);
 
         }
       }
