@@ -155,7 +155,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Dimensions',
                 click: function () {
-                    createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html");
+                    createMenuPopUp(420, 250, "Dimensions", "/menu/edit/dimensions/dimensions-popup.html");
                 }
             }
         ]
@@ -566,8 +566,13 @@ function createMenuPopUp(width, height, title, dir_path) {
     menu_window.setMenu(null);
     menu_window.loadURL("file://" + __dirname + dir_path);
     menu_window.on('closed', function () {
-        // console.log('closed', type);
         menu_window = null;
+    });
+    // Closing global popup event_______
+    electron_1.ipcMain.on('global-menu-popup:cancel', function (event) {
+        if (menu_window) {
+            menu_window.close();
+        }
     });
 }
 //# sourceMappingURL=top-menu.js.map
