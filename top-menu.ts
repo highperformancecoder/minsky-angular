@@ -1,8 +1,6 @@
 import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
 import { win } from './main';
 
-let aboutWin: BrowserWindow;
-let variable_window : BrowserWindow;
 var menu_window: BrowserWindow;
 
 ipcMain.on('about:close', (event) => {
@@ -14,8 +12,8 @@ ipcMain.on('create_variable:ok', (event) => {
 ipcMain.on('create_variable:cancel', (event) => {
   menu_window.close();
 });
-ipcMain.on('background-color:ok', (event,data) => {
-  var css = "body { background-color: "+data.color+"; color: black; }" ;
+ipcMain.on('background-color:ok', (event, data) => {
+  var css = "body { background-color: " + data.color + "; color: black; }";
   win.webContents.insertCSS(css);
   menu_window.close();
 });
@@ -31,7 +29,7 @@ export const template = Menu.buildFromTemplate([
         label: 'About Minsky',
         //It will open a child window when about menu is clicked.
         click() {
-          createMenuPopUp(420, 440, "", "/menu/about/about.html","#ffffff");
+          createMenuPopUp(420, 440, "", "/menu/about/about.html", "#ffffff");
           shell.beep()
         }
       },
@@ -97,7 +95,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Log simulation',
         click() {
-          createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html",null);
+          createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html", null);
         }
       },
       {
@@ -161,7 +159,7 @@ export const template = Menu.buildFromTemplate([
         label: 'Dimensions',
         click() {
 
-          createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html",null);
+          createMenuPopUp(420, 250, "Dimensions", "/menu/edit/dimensions/dimensions-popup.html", null);
 
         }
       }
@@ -174,7 +172,7 @@ export const template = Menu.buildFromTemplate([
         label: 'Bookmark this position',
         click() {
 
-          createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html",null);
+          createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
 
         }
       },
@@ -203,19 +201,19 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'variable',
             click() {
-              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html",null);
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
             }
           },
           {
             label: 'constant',
             click() {
-              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html",null);
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
             }
           },
           {
             label: 'parameter',
             click() {
-              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html",null);
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
             }
           }
         ]
@@ -560,14 +558,14 @@ export const template = Menu.buildFromTemplate([
         label: 'Preferences',
         click() {
 
-          createMenuPopUp(550, 450, "Preferences", "/menu/preferences/preferences.html",null);
+          createMenuPopUp(550, 450, "Preferences", "/menu/preferences/preferences.html", null);
 
         }
       },
       {
-        label: 'Background Color',
-        click(){
-          createMenuPopUp(350,350,"Background Colour","/menu/options/background-color/background-color.html",null);
+        label: 'Background Colour',
+        click() {
+          createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html", null);
         }
       }
     ]
@@ -579,7 +577,7 @@ export const template = Menu.buildFromTemplate([
         label: 'Runge Kutta',
         click() {
 
-          createMenuPopUp(550, 550, "Runge Kutta", "/menu/runge-kutta-parameters/runge-kutta-parameters.html",null);
+          createMenuPopUp(550, 550, "Runge Kutta", "/menu/runge-kutta-parameters/runge-kutta-parameters.html", null);
 
         }
       }
@@ -600,10 +598,10 @@ export const template = Menu.buildFromTemplate([
 ]);
 
 
-function createMenuPopUp(width,height,title,dir_path,background_color){
+function createMenuPopUp(width, height, title, dir_path, background_color) {
   background_color = background_color || "#c1c1c1";
   var BrowserWindow = require('electron').BrowserWindow;
-   menu_window = new BrowserWindow({
+  menu_window = new BrowserWindow({
     width: width,
     height: height,
     title: title,
@@ -626,5 +624,11 @@ function createMenuPopUp(width,height,title,dir_path,background_color){
 
   menu_window.on('closed', () => {
     menu_window = null;
+  });
+  // Closing global popup event_______
+  ipcMain.on('global-menu-popup:cancel', (event) => {
+    if (menu_window) {
+      menu_window.close();
+    }
   });
 }
