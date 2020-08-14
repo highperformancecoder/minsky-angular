@@ -2,8 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var main_1 = require("./main");
-var aboutWin;
-var variable_window;
 var menu_window;
 electron_1.ipcMain.on('about:close', function (event) {
     menu_window.close();
@@ -126,7 +124,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Object Browser'
             },
             {
-                label: 'Select items'
+                label: 'Select items',
+                click: function () {
+                    createMenuPopUp(290, 153, "", "/menu/select-items/select_items.html", "#ffffff");
+                }
             },
             {
                 label: 'Command'

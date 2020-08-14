@@ -125,7 +125,10 @@ export const template = Menu.buildFromTemplate([
         label: 'Object Browser'
       },
       {
-        label: 'Select items'
+        label: 'Select items',
+        click() {
+          createMenuPopUp(290, 153, "", "/menu/select-items/select_items.html","#ffffff");
+        }
       },
       {
         label: 'Command'
