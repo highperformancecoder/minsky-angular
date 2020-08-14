@@ -29,7 +29,7 @@ export const template = Menu.buildFromTemplate([
         label: 'About Minsky',
         //It will open a child window when about menu is clicked.
         click() {
-          createMenuPopUp(420, 440, "", "/menu/about/about.html", "#ffffff");
+          createMenuPopUp(420, 440, "", "/menu/file/about/about.html", "#ffffff");
           shell.beep()
         }
       },
@@ -78,7 +78,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Dimensional Analysis',
         click() {
-          createMenuPopUp(240, 153, "", "/menu/dimensional-analysis/dimensional_analysis.html","#ffffff");
+          createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html","#ffffff");
         }
       },
       {
@@ -127,7 +127,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Select items',
         click() {
-          createMenuPopUp(290, 153, "", "/menu/select-items/select_items.html","#ffffff");
+          createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html","#ffffff");
         }
       },
       {

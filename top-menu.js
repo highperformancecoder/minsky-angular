@@ -28,7 +28,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'About Minsky',
                 //It will open a child window when about menu is clicked.
                 click: function () {
-                    createMenuPopUp(420, 440, "", "/menu/about/about.html", "#ffffff");
+                    createMenuPopUp(420, 440, "", "/menu/file/about/about.html", "#ffffff");
                     electron_1.shell.beep();
                 }
             },
@@ -77,7 +77,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Dimensional Analysis',
                 click: function () {
-                    createMenuPopUp(240, 153, "", "/menu/dimensional-analysis/dimensional_analysis.html", "#ffffff");
+                    createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html", "#ffffff");
                 }
             },
             {
@@ -126,7 +126,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Select items',
                 click: function () {
-                    createMenuPopUp(290, 153, "", "/menu/select-items/select_items.html", "#ffffff");
+                    createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html", "#ffffff");
                 }
             },
             {
