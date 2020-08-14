@@ -24,7 +24,7 @@ function createWindow() {
     });
     exports.win.setBackgroundColor("#c1c1c1");
     if (serve) {
-        exports.win.webContents.openDevTools();
+        // win.webContents.openDevTools();
         require('electron-reload')(__dirname, {
             electron: require(__dirname + "/node_modules/electron")
         });

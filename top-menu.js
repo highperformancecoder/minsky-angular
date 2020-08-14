@@ -163,7 +163,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Dimensions',
                 click: function () {
-                    createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html", null);
+                    createMenuPopUp(420, 250, "Dimensions", "/menu/edit/dimensions/dimensions-popup.html", null);
                 }
             }
         ]
@@ -511,7 +511,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 }
             },
             {
-                label: 'Background Color',
+                label: 'Background Colour',
                 click: function () {
                     createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html", null);
                 }
@@ -566,6 +566,12 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
     });
     menu_window.on('closed', function () {
         menu_window = null;
+    });
+    // Closing global popup event_______
+    electron_1.ipcMain.on('global-menu-popup:cancel', function (event) {
+        if (menu_window) {
+            menu_window.close();
+        }
     });
 }
 //# sourceMappingURL=top-menu.js.map
