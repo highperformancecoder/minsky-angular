@@ -1,17 +1,26 @@
 import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
 import { win } from './main';
 
-let aboutWin: BrowserWindow;
-let variable_window: BrowserWindow;
+var menu_window: BrowserWindow;
+
 ipcMain.on('about:close', (event) => {
-  aboutWin.close();
+  menu_window.close();
 });
 ipcMain.on('create_variable:ok', (event) => {
-  variable_window.close();
+  menu_window.close();
 });
 ipcMain.on('create_variable:cancel', (event) => {
-  variable_window.close();
+  menu_window.close();
 });
+ipcMain.on('background-color:ok', (event, data) => {
+  var css = "body { background-color: " + data.color + "; color: black; }";
+  win.webContents.insertCSS(css);
+  menu_window.close();
+});
+ipcMain.on('background-color:cancel', (event) => {
+  menu_window.close();
+});
+
 export const template = Menu.buildFromTemplate([
   {
     label: 'File',
@@ -20,45 +29,26 @@ export const template = Menu.buildFromTemplate([
         label: 'About Minsky',
         //It will open a child window when about menu is clicked.
         click() {
-          aboutWin = new BrowserWindow(
-            {
-              width: 420, height: 450,
-              webPreferences: { nodeIntegration: true },
-              resizable: false,
-              minimizable: false,
-              modal: true,
-              show: false,
-              parent: win,
-              title: "About Minsky"
-            })
-          //setting menu for child window
-          aboutWin.setMenu(null);
-          // Load a remote URL
-          aboutWin.loadURL(`file://${__dirname}/menu/about/about.html`)
-          // aboutWin.webContents.openDevTools();
-
-          //The window will show when it is ready
-          aboutWin.once('ready-to-show', () => {
-            aboutWin.show();
-          });
-
-          aboutWin.on('closed', function () {
-            aboutWin = null;
-          });
-
+          createMenuPopUp(420, 440, "", "/menu/about/about.html", "#ffffff");
+          shell.beep()
         }
       },
       {
         label: 'Upgrade',
-        click: function () {
+        click() {
           shell.openExternal('https://www.patreon.com/hpcoder');
         }
       },
       {
-        label: 'New System'
+        label: 'New System',
+        accelerator: 'Ctrl + N'
       },
       {
-        label: 'Open'
+        label: 'Open',
+        click() {
+          shell.openPath('c:\\');
+        },
+        accelerator: 'Ctrl + O'
       },
       {
         label: 'Recent Files',
@@ -69,13 +59,18 @@ export const template = Menu.buildFromTemplate([
         ]
       },
       {
-        label: 'Library'
+        label: 'Library',
+        click() {
+          shell.openExternal('https://github.com/highperformancecoder/minsky-models');
+        }
       },
       {
-        label: 'Save'
+        label: 'Save',
+        accelerator: 'Ctrl + S'
       },
       {
-        label: 'SaveAs'
+        label: 'SaveAs',
+        accelerator: 'Ctrl + A'
       },
       {
         label: 'Insert File as Group'
@@ -98,7 +93,10 @@ export const template = Menu.buildFromTemplate([
         ]
       },
       {
-        label: 'Log simulation'
+        label: 'Log simulation',
+        click() {
+          createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html", null);
+        }
       },
       {
         label: 'Recording'
@@ -107,7 +105,9 @@ export const template = Menu.buildFromTemplate([
         label: 'Replay recording'
       },
       {
-        label: 'Quit'
+        label: 'Quit',
+        accelerator: 'Ctrl + Q',
+        role: 'quit'
       },
       {
         type: 'separator'
@@ -157,8 +157,10 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Dimensions',
-        click: () => {
-          createMenuPopUp(420, 250, "Dimensions", "/menu/edit/dimensions/dimensions-popup.html");
+        click() {
+
+          createMenuPopUp(420, 250, "Dimensions", "/menu/dimensions/dimensions.html", null);
+
         }
       }
     ]
@@ -170,7 +172,7 @@ export const template = Menu.buildFromTemplate([
         label: 'Bookmark this position',
         click() {
 
-          createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html");
+          createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
 
         }
       },
@@ -199,19 +201,19 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'variable',
             click() {
-              createVariablePopUp('variable');
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
             }
           },
           {
             label: 'constant',
             click() {
-              createVariablePopUp('constant');
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
             }
           },
           {
             label: 'parameter',
             click() {
-              createVariablePopUp('parameter');
+              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
             }
           }
         ]
@@ -556,12 +558,15 @@ export const template = Menu.buildFromTemplate([
         label: 'Preferences',
         click() {
 
-          createMenuPopUp(550, 450, "Preferences", "/menu/preferences/preferences.html");
+          createMenuPopUp(550, 450, "Preferences", "/menu/preferences/preferences.html", null);
 
         }
       },
       {
-        label: 'Background Color'
+        label: 'Background Colour',
+        click() {
+          createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html", null);
+        }
       }
     ]
   },
@@ -572,7 +577,7 @@ export const template = Menu.buildFromTemplate([
         label: 'Runge Kutta',
         click() {
 
-          createMenuPopUp(550, 550, "Runge Kutta", "/menu/runge-kutta-parameters/runge-kutta-parameters.html");
+          createMenuPopUp(550, 550, "Runge Kutta", "/menu/runge-kutta-parameters/runge-kutta-parameters.html", null);
 
         }
       }
@@ -582,53 +587,41 @@ export const template = Menu.buildFromTemplate([
     role: 'help',
     submenu: [
       {
-        label: 'Minsky Documentation'
+        label: 'Minsky Documentation',
+        click() {
+          const shell = require('electron').shell
+          shell.openExternal('https://minsky.sourceforge.io/manual/minsky.html');
+        }
       }
     ]
   }
 ]);
 
-function createVariablePopUp(type) {
 
-  variable_window = new BrowserWindow({
-    width: 320,
-    height: 420,
-    title: "Specify variable name",
-    resizable: false,
-    minimizable: false,
-    parent: win,
-    modal: true,
-    backgroundColor: '#c8ccd0',
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
-  variable_window.setMenu(null);
-  variable_window.loadURL("file://" + __dirname + "/menu/create_variable/create_variable.html");
-  variable_window.on('closed', () => {
-    console.log('closed', type);
-    variable_window = null;
-  });
-
-}
-
-function createMenuPopUp(width, height, title, dir_path) {
+function createMenuPopUp(width, height, title, dir_path, background_color) {
+  background_color = background_color || "#c1c1c1";
   var BrowserWindow = require('electron').BrowserWindow;
-  var menu_window = new BrowserWindow({
+  menu_window = new BrowserWindow({
     width: width,
     height: height,
     title: title,
     resizable: false,
     minimizable: false,
+    show: false,
     parent: win,
     modal: true,
-    backgroundColor: '#c8ccd0',
+    backgroundColor: background_color,
     webPreferences: {
       nodeIntegration: true
     }
   });
   menu_window.setMenu(null);
   menu_window.loadURL("file://" + __dirname + dir_path);
+
+  menu_window.once('ready-to-show', () => {
+    menu_window.show();
+  });
+
   menu_window.on('closed', () => {
     menu_window = null;
   });
@@ -639,6 +632,3 @@ function createMenuPopUp(width, height, title, dir_path) {
     }
   });
 }
-
-
-

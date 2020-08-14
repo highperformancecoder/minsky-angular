@@ -12,19 +12,20 @@ function createWindow(): BrowserWindow {
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
-  // Create the browser window.
   win = new BrowserWindow({
     x: 0,
     y: 0,
     width: size.width,
     height: size.height,
-    backgroundColor:'#c8ccd0',
+    transparent: true,
     webPreferences: {
       nodeIntegration: true,
+      affinity: "window",
       allowRunningInsecureContent: (serve) ? true : false,
     },
     icon: __dirname + '/Icon/favicon.png'
   });
+  win.setBackgroundColor("#c1c1c1");
   if (serve) {
 
     // win.webContents.openDevTools();
@@ -49,7 +50,6 @@ function createWindow(): BrowserWindow {
     // when you should delete the corresponding element.
     win = null;
   });
-
   return win;
 }
 
