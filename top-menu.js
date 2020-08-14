@@ -3,21 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var main_1 = require("./main");
 var menu_window;
-electron_1.ipcMain.on('about:close', function (event) {
-    menu_window.close();
-});
 electron_1.ipcMain.on('create_variable:ok', function (event) {
-    menu_window.close();
-});
-electron_1.ipcMain.on('create_variable:cancel', function (event) {
     menu_window.close();
 });
 electron_1.ipcMain.on('background-color:ok', function (event, data) {
     var css = "body { background-color: " + data.color + "; color: black; }";
     main_1.win.webContents.insertCSS(css);
-    menu_window.close();
-});
-electron_1.ipcMain.on('background-color:cancel', function (event) {
     menu_window.close();
 });
 exports.template = electron_1.Menu.buildFromTemplate([

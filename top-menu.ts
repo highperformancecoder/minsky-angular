@@ -2,24 +2,16 @@ import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
 import { win } from './main';
 
 var menu_window: BrowserWindow;
-
-ipcMain.on('about:close', (event) => {
-  menu_window.close();
-});
 ipcMain.on('create_variable:ok', (event) => {
   menu_window.close();
 });
-ipcMain.on('create_variable:cancel', (event) => {
-  menu_window.close();
-});
+
 ipcMain.on('background-color:ok', (event, data) => {
   var css = "body { background-color: " + data.color + "; color: black; }";
   win.webContents.insertCSS(css);
   menu_window.close();
 });
-ipcMain.on('background-color:cancel', (event) => {
-  menu_window.close();
-});
+
 
 export const template = Menu.buildFromTemplate([
   {
