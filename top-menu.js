@@ -77,7 +77,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Insert File as Group'
             },
             {
-                label: 'Dimensional Analysis'
+                label: 'Dimensional Analysis',
+                click: function () {
+                    createMenuPopUp(240, 153, "", "/menu/dimensional-analysis/dimensional_analysis.html", "#ffffff");
+                }
             },
             {
                 label: 'Export Canvas'

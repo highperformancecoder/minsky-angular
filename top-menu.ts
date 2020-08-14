@@ -1,8 +1,6 @@
 import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
 import { win } from './main';
 
-let aboutWin: BrowserWindow;
-let variable_window : BrowserWindow;
 var menu_window: BrowserWindow;
 
 ipcMain.on('about:close', (event) => {
@@ -78,7 +76,10 @@ export const template = Menu.buildFromTemplate([
         label: 'Insert File as Group'
       },
       {
-        label: 'Dimensional Analysis'
+        label: 'Dimensional Analysis',
+        click() {
+          createMenuPopUp(240, 153, "", "/menu/dimensional-analysis/dimensional_analysis.html","#ffffff");
+        }
       },
       {
         label: 'Export Canvas'
