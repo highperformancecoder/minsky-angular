@@ -72,7 +72,20 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Save',
-                accelerator: 'Ctrl + S'
+                accelerator: 'CmdOrCtrl + S',
+                click: function () {
+                    var content = "This is the content of new file";
+                    electron_1.dialog.showSaveDialog(main_1.win, { filters: [{ name: 'text', extensions: ['txt'] }] }).
+                        then(function (result) {
+                        console.log(result);
+                        fs.writeFile(result.filePath, content, function (err) {
+                            if (err)
+                                console.log(err);
+                        });
+                    }).catch(function (err) {
+                        console.log("file is not saved");
+                    });
+                }
             },
             {
                 label: 'SaveAs',
