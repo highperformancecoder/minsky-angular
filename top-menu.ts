@@ -1,6 +1,9 @@
 import { Menu, BrowserWindow, ipcMain, shell,dialog } from 'electron';
+import { win ,getStorageBackgroundColor,setStorageBackgroundColor} from './main';
+const electron = require('electron');
+const storage = require('electron-json-storage');
+storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 const fs = require('fs');
-import { win } from './main';
 
 var menu_window: BrowserWindow;
 ipcMain.on('create_variable:ok', (event) => {
@@ -9,7 +12,9 @@ ipcMain.on('create_variable:ok', (event) => {
 
 ipcMain.on('background-color:ok', (event, data) => {
   var css = "body { background-color: " + data.color + "; color: black; }";
+  storage.set('backgroundColor',{color:data.color});
   win.webContents.insertCSS(css);
+  setStorageBackgroundColor(data.color);
   menu_window.close();
 });
 
@@ -39,10 +44,10 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Open',
         accelerator: 'CmdOrCtrl + O',
-        click () {
-          const files = dialog.showOpenDialog(win,{
-            properties:['openFile'],
-            filters:[{name:'text',extensions:['txt']}]
+        click() {
+          const files = dialog.showOpenDialog(win, {
+            properties: ['openFile'],
+            filters: [{ name: 'text', extensions: ['txt'] }]
           });
 
           files.then(result => {
@@ -70,7 +75,20 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Save',
-        accelerator: 'Ctrl + S'
+        accelerator: 'CmdOrCtrl + S',
+        click() {
+          let content = "This is the content of new file";
+          dialog.showSaveDialog(win, { filters: [{ name: 'text', extensions: ['txt'] }] }).
+            then(result => {
+              console.log(result)
+              fs.writeFile(result.filePath, content, (err) => {
+                if (err)
+                  console.log(err);
+              })
+            }).catch(err => {
+              console.log("file is not saved")
+            })
+        }
       },
       {
         label: 'SaveAs',
@@ -82,7 +100,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Dimensional Analysis',
         click() {
-          createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html","#ffffff");
+          createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html", "#ffffff");
         }
       },
       {
@@ -131,7 +149,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Select items',
         click() {
-          createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html","#ffffff");
+          createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html", "#ffffff");
         }
       },
       {
@@ -609,7 +627,7 @@ export const template = Menu.buildFromTemplate([
 
 
 function createMenuPopUp(width, height, title, dir_path, background_color) {
-  background_color = background_color || "#c1c1c1";
+  background_color = background_color || getStorageBackgroundColor();
   var BrowserWindow = require('electron').BrowserWindow;
   menu_window = new BrowserWindow({
     width: width,
