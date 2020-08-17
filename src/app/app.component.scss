@@ -19,11 +19,22 @@
       border-left: 1px solid $toolbar-border;
       background-color: $toolbar-bg;
 
+
       label {
         padding: 3px;
         margin: 2px;
         font-size: $primary-font;
       }
+
+      label:focus {
+        outline: none;
+      }
+    }
+    .tab:focus{
+      outline: none;
     }
   }
+}
+.active-bg{
+  background-color:$white !important;
 }
