@@ -1,6 +1,9 @@
-import { Menu, BrowserWindow, ipcMain, shell, dialog } from 'electron';
+import { Menu, BrowserWindow, ipcMain, shell,dialog } from 'electron';
+import { win ,getStorageBackgroundColor,setStorageBackgroundColor} from './main';
+const electron = require('electron');
+const storage = require('electron-json-storage');
+storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 const fs = require('fs');
-import { win } from './main';
 
 var menu_window: BrowserWindow;
 ipcMain.on('create_variable:ok', (event) => {
@@ -9,7 +12,9 @@ ipcMain.on('create_variable:ok', (event) => {
 
 ipcMain.on('background-color:ok', (event, data) => {
   var css = "body { background-color: " + data.color + "; color: black; }";
+  storage.set('backgroundColor',{color:data.color});
   win.webContents.insertCSS(css);
+  setStorageBackgroundColor(data.color);
   menu_window.close();
 });
 
@@ -622,7 +627,7 @@ export const template = Menu.buildFromTemplate([
 
 
 function createMenuPopUp(width, height, title, dir_path, background_color) {
-  background_color = background_color || "#c1c1c1";
+  background_color = background_color || getStorageBackgroundColor();
   var BrowserWindow = require('electron').BrowserWindow;
   menu_window = new BrowserWindow({
     width: width,
