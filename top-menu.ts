@@ -11,9 +11,8 @@ ipcMain.on('create_variable:ok', (event) => {
 });
 
 ipcMain.on('background-color:ok', (event, data) => {
-  var css = "body { background-color: " + data.color + "; color: black; }";
   storage.set('backgroundColor',{color:data.color});
-  win.webContents.insertCSS(css);
+  checkBackgroundAndApplyTextColor(data.color);
   setStorageBackgroundColor(data.color);
   menu_window.close();
 });
@@ -92,10 +91,26 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'SaveAs',
-        accelerator: 'Ctrl + A'
+        accelerator: 'CmdOrCtrl + A'
       },
       {
-        label: 'Insert File as Group'
+        label: 'Insert File as Group',
+        click(){
+          const files = dialog.showOpenDialog(win, {
+            properties: ['openFile','multiSelections'],
+            filters: [{ name: 'text', extensions: ['txt'] }]
+          });
+
+          files.then(result => {
+            console.log(result.canceled)
+            console.log(result.filePaths)
+            for(let file of result.filePaths){
+              console.log(fs.readFileSync(file).toString())
+            }
+          }).catch(err => {
+            console.log("file is not selected")
+          })
+        }
       },
       {
         label: 'Dimensional Analysis',
@@ -659,4 +674,53 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
       menu_window.close();
     }
   });
+}
+
+export function checkBackgroundAndApplyTextColor(color){
+    // Variables for red, green, blue values
+    
+    var colorArray;
+    var r, g, b, hsp;
+    
+    // Check the format of the color, HEX or RGB?
+    if (color.match(/^rgb/)) {
+
+        // If RGB --> store the red, green, blue values in separate variables
+        colorArray = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+        
+        r = color[1];
+        g = color[2];
+        b = color[3];
+    } 
+    else {
+        
+        // If hex --> Convert it to RGB: http://gist.github.com/983661
+        colorArray = +("0x" + color.slice(1).replace( 
+        color.length < 5 && /./g, '$&$&'));
+
+        r = colorArray >> 16;
+        g = colorArray >> 8 & 255;
+        b = colorArray & 255;
+    }
+    
+    // HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
+    hsp = Math.sqrt(
+    0.299 * (r * r) +
+    0.587 * (g * g) +
+    0.114 * (b * b)
+    );
+
+    // Using the HSP value, determine whether the color is light or dark
+    if (hsp>127.5) {
+      var css = "body { background-color: " + color + "; color: black; }";
+      applyCssToBackground(css);
+    } 
+    else {
+      var css = "body { background-color: " + color + "; color: white; }";
+      applyCssToBackground(css);
+    }
+
+}
+function applyCssToBackground(css){
+  win.webContents.insertCSS(css);
 }

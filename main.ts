@@ -2,10 +2,11 @@ import { app, BrowserWindow, screen, Menu } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import {template} from './top-menu';
+import {checkBackgroundAndApplyTextColor} from './top-menu'
 const storage = require('electron-json-storage');
 
 export let win: BrowserWindow = null;
-let storageBackgroundColor;
+let storageBackgroundColor = "#c1c1c1";
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
@@ -15,6 +16,9 @@ function createWindow(): BrowserWindow {
     if (error) throw error;
     storageBackgroundColor = data.color || "#c1c1c1";
     win = prepareBrowserWindow(storageBackgroundColor);
+    setTimeout(function (){
+      checkBackgroundAndApplyTextColor(storageBackgroundColor);
+    },1500);
   });
 
   return win;
@@ -37,8 +41,8 @@ function prepareBrowserWindow(color){
     },
     icon: __dirname + '/Icon/favicon.png'
   });
-  win.webContents.openDevTools();
  win.setBackgroundColor(color);
+ win.webContents.openDevTools();
   if (serve) {
     require('electron-reload')(__dirname, {
       electron: require(`${__dirname}/node_modules/electron`)
@@ -75,6 +79,7 @@ try {
     const menu = template
     Menu.setApplicationMenu(menu)
     setTimeout(createWindow, 400)
+
   });
 
   // Quit when all windows are closed.
