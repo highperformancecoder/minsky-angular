@@ -43,10 +43,10 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Open',
         accelerator: 'CmdOrCtrl + O',
-        click () {
-          const files = dialog.showOpenDialog(win,{
-            properties:['openFile'],
-            filters:[{name:'text',extensions:['txt']}]
+        click() {
+          const files = dialog.showOpenDialog(win, {
+            properties: ['openFile'],
+            filters: [{ name: 'text', extensions: ['txt'] }]
           });
 
           files.then(result => {
@@ -74,7 +74,20 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Save',
-        accelerator: 'Ctrl + S'
+        accelerator: 'CmdOrCtrl + S',
+        click() {
+          let content = "This is the content of new file";
+          dialog.showSaveDialog(win, { filters: [{ name: 'text', extensions: ['txt'] }] }).
+            then(result => {
+              console.log(result)
+              fs.writeFile(result.filePath, content, (err) => {
+                if (err)
+                  console.log(err);
+              })
+            }).catch(err => {
+              console.log("file is not saved")
+            })
+        }
       },
       {
         label: 'SaveAs',
@@ -86,7 +99,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Dimensional Analysis',
         click() {
-          createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html","#ffffff");
+          createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html", "#ffffff");
         }
       },
       {
@@ -135,7 +148,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Select items',
         click() {
-          createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html","#ffffff");
+          createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html", "#ffffff");
         }
       },
       {
