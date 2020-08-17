@@ -1,8 +1,10 @@
-import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
+import { Menu, BrowserWindow, ipcMain, shell,dialog } from 'electron';
 import { win ,getStorageBackgroundColor,setStorageBackgroundColor} from './main';
 const electron = require('electron');
 const storage = require('electron-json-storage');
 storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
+const fs = require('fs');
+
 var menu_window: BrowserWindow;
 ipcMain.on('create_variable:ok', (event) => {
   menu_window.close();
@@ -41,10 +43,21 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Open',
-        click() {
-          shell.openPath('c:\\');
-        },
-        accelerator: 'Ctrl + O'
+        accelerator: 'CmdOrCtrl + O',
+        click () {
+          const files = dialog.showOpenDialog(win,{
+            properties:['openFile'],
+            filters:[{name:'text',extensions:['txt']}]
+          });
+
+          files.then(result => {
+            console.log(result.canceled)
+            console.log(result.filePaths)
+            console.log(fs.readFileSync(result.filePaths[0]).toString())
+          }).catch(err => {
+            console.log("file is not selected")
+          })
+        }
       },
       {
         label: 'Recent Files',

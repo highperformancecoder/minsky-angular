@@ -92,8 +92,8 @@ function setStorageBackgroundColor(color) {
     storageBackgroundColor = color;
 }
 exports.setStorageBackgroundColor = setStorageBackgroundColor;
-function getstorageBackgroundColor() {
+function getStorageBackgroundColor() {
     return storageBackgroundColor;
 }
-exports.getstorageBackgroundColor = getstorageBackgroundColor;
+exports.getStorageBackgroundColor = getStorageBackgroundColor;
 //# sourceMappingURL=main.js.map
