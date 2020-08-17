@@ -4,9 +4,10 @@ var electron_1 = require("electron");
 var path = require("path");
 var url = require("url");
 var top_menu_1 = require("./top-menu");
+var top_menu_2 = require("./top-menu");
 var storage = require('electron-json-storage');
 exports.win = null;
-var storageBackgroundColor;
+var storageBackgroundColor = "#c1c1c1";
 var args = process.argv.slice(1), serve = args.some(function (val) { return val === '--serve'; });
 function createWindow() {
     storage.get('backgroundColor', function (error, data) {
@@ -14,6 +15,9 @@ function createWindow() {
             throw error;
         storageBackgroundColor = data.color || "#c1c1c1";
         exports.win = prepareBrowserWindow(storageBackgroundColor);
+        setTimeout(function () {
+            top_menu_2.checkBackgroundAndApplyTextColor(storageBackgroundColor);
+        }, 1500);
     });
     return exports.win;
 }
@@ -35,6 +39,7 @@ function prepareBrowserWindow(color) {
         icon: __dirname + '/Icon/favicon.png'
     });
     exports.win.setBackgroundColor(color);
+    exports.win.webContents.openDevTools();
     if (serve) {
         require('electron-reload')(__dirname, {
             electron: require(__dirname + "/node_modules/electron")
