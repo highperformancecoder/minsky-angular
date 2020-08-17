@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
+var fs = require('fs');
 var main_1 = require("./main");
 var menu_window;
 electron_1.ipcMain.on('create_variable:ok', function (event) {
@@ -35,10 +36,20 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Open',
+                accelerator: 'CmdOrCtrl + O',
                 click: function () {
-                    electron_1.shell.openPath('c:\\');
-                },
-                accelerator: 'Ctrl + O'
+                    var files = electron_1.dialog.showOpenDialog(main_1.win, {
+                        properties: ['openFile'],
+                        filters: [{ name: 'text', extensions: ['txt'] }]
+                    });
+                    files.then(function (result) {
+                        console.log(result.canceled);
+                        console.log(result.filePaths);
+                        console.log(fs.readFileSync(result.filePaths[0]).toString());
+                    }).catch(function (err) {
+                        console.log("file is not selected");
+                    });
+                }
             },
             {
                 label: 'Recent Files',
