@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var main_1 = require("./main");
+var electron = require('electron');
 var storage = require('electron-json-storage');
-storage.setDataPath("userData");
+storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 var menu_window;
 electron_1.ipcMain.on('create_variable:ok', function (event) {
     menu_window.close();
@@ -12,6 +13,7 @@ electron_1.ipcMain.on('background-color:ok', function (event, data) {
     var css = "body { background-color: " + data.color + "; color: black; }";
     storage.set('backgroundColor', { color: data.color });
     main_1.win.webContents.insertCSS(css);
+    main_1.setStorageBackgroundColor(data.color);
     menu_window.close();
 });
 exports.template = electron_1.Menu.buildFromTemplate([
@@ -537,7 +539,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
     }
 ]);
 function createMenuPopUp(width, height, title, dir_path, background_color) {
-    background_color = background_color || "#c1c1c1";
+    background_color = background_color || main_1.getstorageBackgroundColor();
     var BrowserWindow = require('electron').BrowserWindow;
     menu_window = new BrowserWindow({
         width: width,

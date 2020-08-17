@@ -5,7 +5,7 @@ import {template} from './top-menu';
 const storage = require('electron-json-storage');
 
 export let win: BrowserWindow = null;
-let storageBackgroundColor = "#c1c1c1";
+let storageBackgroundColor;
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
@@ -13,9 +13,7 @@ function createWindow(): BrowserWindow {
  
   storage.get('backgroundColor', function(error, data) {
     if (error) throw error;
-  
-    console.log(data);
-    storageBackgroundColor = data.color;
+    storageBackgroundColor = data.color || "#c1c1c1";
     win = prepareBrowserWindow(storageBackgroundColor);
   });
  
@@ -23,9 +21,7 @@ function createWindow(): BrowserWindow {
 }
 
 function prepareBrowserWindow(color){
-  
   color = color || "#c1c1c1";
-  console.log("color",color);
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
   win = new BrowserWindow({
@@ -43,9 +39,6 @@ function prepareBrowserWindow(color){
   });
  win.setBackgroundColor(color);
   if (serve) {
-
-    // win.webContents.openDevTools();
-
     require('electron-reload')(__dirname, {
       electron: require(`${__dirname}/node_modules/electron`)
     });
@@ -103,4 +96,11 @@ try {
 } catch (e) {
   // Catch Error
   // throw e;
+}
+
+export function setStorageBackgroundColor(color){
+  storageBackgroundColor = color;
+}
+export function getStorageBackgroundColor(){
+  return storageBackgroundColor;
 }

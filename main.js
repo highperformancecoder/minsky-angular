@@ -6,21 +6,19 @@ var url = require("url");
 var top_menu_1 = require("./top-menu");
 var storage = require('electron-json-storage');
 exports.win = null;
-var storageBackgroundColor = "#c1c1c1";
+var storageBackgroundColor;
 var args = process.argv.slice(1), serve = args.some(function (val) { return val === '--serve'; });
 function createWindow() {
     storage.get('backgroundColor', function (error, data) {
         if (error)
             throw error;
-        console.log(data);
-        storageBackgroundColor = data.color;
+        storageBackgroundColor = data.color || "#c1c1c1";
         exports.win = prepareBrowserWindow(storageBackgroundColor);
     });
     return exports.win;
 }
 function prepareBrowserWindow(color) {
     color = color || "#c1c1c1";
-    console.log("color", color);
     var electronScreen = electron_1.screen;
     var size = electronScreen.getPrimaryDisplay().workAreaSize;
     exports.win = new electron_1.BrowserWindow({
@@ -38,7 +36,6 @@ function prepareBrowserWindow(color) {
     });
     exports.win.setBackgroundColor(color);
     if (serve) {
-        // win.webContents.openDevTools();
         require('electron-reload')(__dirname, {
             electron: require(__dirname + "/node_modules/electron")
         });
@@ -91,4 +88,12 @@ catch (e) {
     // Catch Error
     // throw e;
 }
+function setStorageBackgroundColor(color) {
+    storageBackgroundColor = color;
+}
+exports.setStorageBackgroundColor = setStorageBackgroundColor;
+function getstorageBackgroundColor() {
+    return storageBackgroundColor;
+}
+exports.getstorageBackgroundColor = getstorageBackgroundColor;
 //# sourceMappingURL=main.js.map

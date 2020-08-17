@@ -1,7 +1,8 @@
 import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
-import { win } from './main';
+import { win ,getStorageBackgroundColor,setStorageBackgroundColor} from './main';
+const electron = require('electron');
 const storage = require('electron-json-storage');
-storage.setDataPath("userData");
+storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 var menu_window: BrowserWindow;
 ipcMain.on('create_variable:ok', (event) => {
   menu_window.close();
@@ -11,6 +12,7 @@ ipcMain.on('background-color:ok', (event, data) => {
   var css = "body { background-color: " + data.color + "; color: black; }";
   storage.set('backgroundColor',{color:data.color});
   win.webContents.insertCSS(css);
+  setStorageBackgroundColor(data.color);
   menu_window.close();
 });
 
@@ -599,7 +601,7 @@ export const template = Menu.buildFromTemplate([
 
 
 function createMenuPopUp(width, height, title, dir_path, background_color) {
-  background_color = background_color || "#c1c1c1";
+  background_color = background_color || getStorageBackgroundColor();
   var BrowserWindow = require('electron').BrowserWindow;
   menu_window = new BrowserWindow({
     width: width,
