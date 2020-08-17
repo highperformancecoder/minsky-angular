@@ -1,4 +1,27 @@
 <app-header></app-header>
 <div class="tabs-section">
+  <div class="tabs">
+    <div routerLink="./wiring" routerLinkActive="active-bg" class="wiring tab">
+      <label>
+        Wiring
+      </label>
+    </div>
+    <div routerLink="./equations" routerLinkActive="active-bg" class="equations tab">
+      <label>
+        equations
+      </label>
+    </div>
+    <div routerLink="./parameters" routerLinkActive="active-bg" class="parameters tab">
+      <label>
+        parameters
+      </label>
+    </div>
+    <div routerLink="./variables" routerLinkActive="active-bg" class="variables tab">
+      <label>
+        variables
+      </label>
+    </div>
+
+  </div>
   <router-outlet></router-outlet>
 </div>
