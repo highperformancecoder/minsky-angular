@@ -1,6 +1,7 @@
 import { Menu, BrowserWindow, ipcMain, shell } from 'electron';
 import { win } from './main';
-
+const storage = require('electron-json-storage');
+storage.setDataPath("userData");
 var menu_window: BrowserWindow;
 ipcMain.on('create_variable:ok', (event) => {
   menu_window.close();
@@ -8,6 +9,7 @@ ipcMain.on('create_variable:ok', (event) => {
 
 ipcMain.on('background-color:ok', (event, data) => {
   var css = "body { background-color: " + data.color + "; color: black; }";
+  storage.set('backgroundColor',{color:data.color});
   win.webContents.insertCSS(css);
   menu_window.close();
 });

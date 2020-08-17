@@ -2,16 +2,32 @@ import { app, BrowserWindow, screen, Menu } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import {template} from './top-menu';
+const storage = require('electron-json-storage');
 
 export let win: BrowserWindow = null;
+let storageBackgroundColor = "#c1c1c1";
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
 function createWindow(): BrowserWindow {
+ 
+  storage.get('backgroundColor', function(error, data) {
+    if (error) throw error;
+  
+    console.log(data);
+    storageBackgroundColor = data.color;
+    win = prepareBrowserWindow(storageBackgroundColor);
+  });
+ 
+  return win;
+}
 
+function prepareBrowserWindow(color){
+  
+  color = color || "#c1c1c1";
+  console.log("color",color);
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
-
   win = new BrowserWindow({
     x: 0,
     y: 0,
@@ -25,7 +41,7 @@ function createWindow(): BrowserWindow {
     },
     icon: __dirname + '/Icon/favicon.png'
   });
-  win.setBackgroundColor("#c1c1c1");
+ win.setBackgroundColor(color);
   if (serve) {
 
     // win.webContents.openDevTools();
