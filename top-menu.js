@@ -92,7 +92,23 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 accelerator: 'Ctrl + A'
             },
             {
-                label: 'Insert File as Group'
+                label: 'Insert File as Group',
+                click: function () {
+                    var files = electron_1.dialog.showOpenDialog(main_1.win, {
+                        properties: ['openFile', 'multiSelections'],
+                        filters: [{ name: 'text', extensions: ['txt'] }]
+                    });
+                    files.then(function (result) {
+                        console.log(result.canceled);
+                        console.log(result.filePaths);
+                        for (var _i = 0, _a = result.filePaths; _i < _a.length; _i++) {
+                            var file = _a[_i];
+                            console.log(fs.readFileSync(file).toString());
+                        }
+                    }).catch(function (err) {
+                        console.log("file is not selected");
+                    });
+                }
             },
             {
                 label: 'Dimensional Analysis',

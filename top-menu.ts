@@ -92,10 +92,26 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'SaveAs',
-        accelerator: 'Ctrl + A'
+        accelerator: 'CmdOrCtrl + A'
       },
       {
-        label: 'Insert File as Group'
+        label: 'Insert File as Group',
+        click(){
+          const files = dialog.showOpenDialog(win, {
+            properties: ['openFile','multiSelections'],
+            filters: [{ name: 'text', extensions: ['txt'] }]
+          });
+
+          files.then(result => {
+            console.log(result.canceled)
+            console.log(result.filePaths)
+            for(let file of result.filePaths){
+              console.log(fs.readFileSync(file).toString())
+            }
+          }).catch(err => {
+            console.log("file is not selected")
+          })
+        }
       },
       {
         label: 'Dimensional Analysis',
