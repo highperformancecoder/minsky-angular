@@ -34,6 +34,7 @@ function prepareBrowserWindow(color) {
         },
         icon: __dirname + '/Icon/favicon.png'
     });
+    exports.win.webContents.openDevTools();
     exports.win.setBackgroundColor(color);
     if (serve) {
         require('electron-reload')(__dirname, {

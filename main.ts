@@ -10,13 +10,13 @@ const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
 function createWindow(): BrowserWindow {
- 
+
   storage.get('backgroundColor', function(error, data) {
     if (error) throw error;
     storageBackgroundColor = data.color || "#c1c1c1";
     win = prepareBrowserWindow(storageBackgroundColor);
   });
- 
+
   return win;
 }
 
@@ -37,6 +37,7 @@ function prepareBrowserWindow(color){
     },
     icon: __dirname + '/Icon/favicon.png'
   });
+  win.webContents.openDevTools();
  win.setBackgroundColor(color);
   if (serve) {
     require('electron-reload')(__dirname, {

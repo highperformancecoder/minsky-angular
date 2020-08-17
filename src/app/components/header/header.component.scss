@@ -1,19 +1,36 @@
 .toolbar-controls {
     display: flex;
     flex-wrap: wrap;
-    border: 1px solid #6d6d6d;
-    margin-top: 0.5px;
-    border-top: 1px solid white;
+    padding: 2px 10px;
     .simulation-controls {
         display: flex;
         align-items: center;
         margin: 5px;
         .checkbox-control {
-            label,
+          font-size: 14px;
+          display: initial;
+          margin-right: 8px;
+          .checkbox-wrapper{
+            display: inline-block;
+            height: 40px;
+            line-height: 3.5;
+            order: 0;
+            position: relative;
+            left: 5px;
+            vertical-align: middle;
+            white-space: nowrap;
+            width: 40px;
+            flex-shrink: 0;
+            text-align: center;
+
             input {
-                cursor: pointer;
-                user-select: none;
+              cursor: pointer;
+              user-select: none;
+              height: 20px;
+              width: 20px;
+              border: 2px solid #928484;
             }
+          }
         }
     }
     .range-input-control {
@@ -55,14 +72,16 @@
     cursor: pointer;
     display: inline-flex;
     height: 31px;
-    margin: auto;
+    margin: 2px;
     padding: 2px;
     width: 31px;
-    border-right: 2px solid #928484;
-    border-bottom: 2px solid #332f2f;
-    border-top: 1px solid white;
-    border-left: 2px solid white;
-    background: #ececec;
+    border: 2px solid #928484;
+    background-color: #eae6e6;
+    // background: #ececec;
+    // border-right: 2px solid #928484;
+    // border-bottom: 2px solid #332f2f;
+    // border-top: 1px solid white;
+    // border-left: 2px solid white;
     .btn-icon {
         max-width: 100%;
     }
