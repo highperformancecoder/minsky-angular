@@ -10,7 +10,7 @@ let storageBackgroundColor = "#c1c1c1";
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
-function createWindow(): BrowserWindow {
+export function createWindow(): BrowserWindow {
 
   storage.get('backgroundColor', function(error, data) {
     if (error) throw error;
@@ -59,11 +59,11 @@ function prepareBrowserWindow(color){
 
   // Emitted when the window is closed.
   win.on('closed', () => {
-   
+
     // Dereference the window object, usually you would store window
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    
+
     win = null;
   });
   win.on('close',(event)=>{
@@ -75,7 +75,7 @@ function prepareBrowserWindow(color){
         title: 'Confirm',
         message: 'Are you sure you want to quit?'
       });
-     
+
     if (choice === 0) {
       win.destroy();
     }
@@ -105,7 +105,7 @@ try {
     if (process.platform !== 'darwin') {
      app.quit();
     }
-    
+
   });
 
   app.on('activate', () => {
