@@ -10,7 +10,7 @@ let storageBackgroundColor = "#c1c1c1";
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
-function createWindow(): BrowserWindow {
+export function createWindow(): BrowserWindow {
  
   storage.get('backgroundColor', function(error, data) {
     if (error) throw error;
