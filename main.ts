@@ -33,7 +33,6 @@ function prepareBrowserWindow(color){
     y: 0,
     width: size.width,
     height: size.height,
-    transparent: true,
     webPreferences: {
       nodeIntegration: true,
       affinity: "window",
