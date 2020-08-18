@@ -552,7 +552,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Background Colour',
                 click: function () {
-                    createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html", null);
+                    createMenuPopUp(450, 320, "Background Colour", "/menu/options/background-color/background-color.html", null);
                 }
             }
         ]

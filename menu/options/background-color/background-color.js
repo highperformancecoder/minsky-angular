@@ -1,9 +1,10 @@
 const electron = require('electron');
 const storage = require('electron-json-storage');
+
 storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 const { ipcRenderer } = electron;
 document.getElementById("backgroundOk").addEventListener('click', () => {
-    var selected_color_code = document.getElementById("myColor").value;
+    var selected_color_code = document.getElementById("color-picker").value;
     data = {
         color: selected_color_code
     }
@@ -17,6 +18,12 @@ document.querySelector('.cancel-btn').addEventListener('click', () => {
 storage.get('backgroundColor', function(error, data) {
     if (error) throw error;
     if (data.color !== undefined) {
-        document.getElementById("myColor").value = data.color;
+        document.getElementById("color-picker").value = data.color;
     }
+});
+$('#color-picker').spectrum({
+    type: "flat",
+    showInput: false,
+    allowEmpty: "false",
+    showButtons: false
 });
