@@ -1,3 +1,5 @@
+@import '../../../theme/variables.scss';
+
 .toolbar-controls {
     display: flex;
     flex-wrap: wrap;
@@ -28,7 +30,7 @@
               user-select: none;
               height: 20px;
               width: 20px;
-              border: 2px solid #928484;
+              border: 2px solid $toolbar-box;
             }
           }
         }
@@ -75,13 +77,8 @@
     margin: 2px;
     padding: 2px;
     width: 31px;
-    border: 2px solid #928484;
-    background-color: #eae6e6;
-    // background: #ececec;
-    // border-right: 2px solid #928484;
-    // border-bottom: 2px solid #332f2f;
-    // border-top: 1px solid white;
-    // border-left: 2px solid white;
+    border: 2px solid $toolbar-box;
+    background-color: $toolbar-bg;
     .btn-icon {
         max-width: 100%;
     }
@@ -94,11 +91,11 @@
 
 .btn:focus {
     outline: none;
-    border-left: 2px solid #332f2f;
-    border-top: 2px solid #928484;
-    border-bottom: 1px solid #e0e0e0;
-    border-right: 1px solid #e0e0e0;
-    background: white;
+    border-left: 2px solid $toolbar-border-focus;
+    border-top: 2px solid $toolbar-box;
+    border-bottom: 1px solid $toolbar-bg;
+    border-right: 1px solid $toolbar-bg;
+    background: $white;
     margin-top: -1px;
 }
 
