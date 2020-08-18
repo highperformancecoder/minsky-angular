@@ -69,7 +69,6 @@ function prepareBrowserWindow(color) {
             title: 'Confirm',
             message: 'Are you sure you want to quit?'
         });
-        console.log(choice);
         if (choice === 0) {
             exports.win.destroy();
         }
