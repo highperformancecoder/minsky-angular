@@ -4,7 +4,7 @@ import * as url from 'url';
 import {template} from './top-menu';
 import {checkBackgroundAndApplyTextColor} from './top-menu'
 const storage = require('electron-json-storage');
-
+const dialog = require('electron').dialog;
 export let win: BrowserWindow = null;
 let storageBackgroundColor = "#c1c1c1";
 const args = process.argv.slice(1),
@@ -59,10 +59,26 @@ function prepareBrowserWindow(color){
 
   // Emitted when the window is closed.
   win.on('closed', () => {
+   
     // Dereference the window object, usually you would store window
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
+    
     win = null;
+  });
+  win.on('close',(event)=>{
+    event.preventDefault();
+    const choice = dialog.showMessageBoxSync(win,
+      {
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        title: 'Confirm',
+        message: 'Are you sure you want to quit?'
+      });
+     
+    if (choice === 0) {
+      win.destroy();
+    }
   });
   return win;
 }
@@ -87,8 +103,9 @@ try {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
-      app.quit();
+     app.quit();
     }
+    
   });
 
   app.on('activate', () => {
