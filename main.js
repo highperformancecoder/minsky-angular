@@ -22,6 +22,7 @@ function createWindow() {
     });
     return exports.win;
 }
+exports.createWindow = createWindow;
 function prepareBrowserWindow(color) {
     color = color || "#c1c1c1";
     var electronScreen = electron_1.screen;
