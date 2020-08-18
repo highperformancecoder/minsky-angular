@@ -6,6 +6,7 @@ var url = require("url");
 var top_menu_1 = require("./top-menu");
 var top_menu_2 = require("./top-menu");
 var storage = require('electron-json-storage');
+var dialog = require('electron').dialog;
 exports.win = null;
 var storageBackgroundColor = "#c1c1c1";
 var args = process.argv.slice(1), serve = args.some(function (val) { return val === '--serve'; });
@@ -59,6 +60,18 @@ function prepareBrowserWindow(color) {
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
         exports.win = null;
+    });
+    exports.win.on('close', function (event) {
+        event.preventDefault();
+        var choice = dialog.showMessageBoxSync(exports.win, {
+            type: 'question',
+            buttons: ['Yes', 'No'],
+            title: 'Confirm',
+            message: 'Are you sure you want to quit?'
+        });
+        if (choice === 0) {
+            exports.win.destroy();
+        }
     });
     return exports.win;
 }
