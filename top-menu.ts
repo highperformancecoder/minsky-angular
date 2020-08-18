@@ -1,5 +1,5 @@
 import { Menu, BrowserWindow, ipcMain, shell,dialog } from 'electron';
-import { win ,getStorageBackgroundColor,setStorageBackgroundColor} from './main';
+import { win ,getStorageBackgroundColor,setStorageBackgroundColor, createWindow} from './main';
 const electron = require('electron');
 const storage = require('electron-json-storage');
 storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
@@ -38,7 +38,11 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'New System',
-        accelerator: 'Ctrl + N'
+        accelerator: 'CmdOrCtrl + N',
+        click(){
+          win.hide();
+          createWindow();
+        }
       },
       {
         label: 'Open',

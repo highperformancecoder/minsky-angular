@@ -36,7 +36,11 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'New System',
-                accelerator: 'Ctrl + N'
+                accelerator: 'CmdOrCtrl + N',
+                click: function () {
+                    main_1.win.hide();
+                    main_1.createWindow();
+                }
             },
             {
                 label: 'Open',
