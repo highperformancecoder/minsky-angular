@@ -1,5 +1,23 @@
-.wrapper{
-  text-align: center;
-  font-size: 30px;
-  margin-top: 15%;
+@import '../../../theme/variables.scss';
+
+.wiring-tabs{
+  display: flex;
+  .tab{
+    width: 45px;
+    border: 1px solid $toolbar-box;
+    background-color: transparent;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .tab:focus{
+    outline: none;
+    border-left: 2px solid $toolbar-border-focus;
+    border-top: 2px solid $toolbar-box;
+    border-bottom: 1px solid $toolbar-bg;
+    border-right: 1px solid $toolbar-bg;
+    background: $white;
+    margin-top: -1px;
+  }
 }
