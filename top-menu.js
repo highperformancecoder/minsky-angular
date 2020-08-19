@@ -243,19 +243,19 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     {
                         label: 'variable',
                         click: function () {
-                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
+                            createMenuPopUp(500, 550, "Specify variable name", "/menu/create_variable/create_variable.html", null);
                         }
                     },
                     {
                         label: 'constant',
                         click: function () {
-                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
+                            createMenuPopUp(500, 550, "Specify variable name", "/menu/create_variable/create_variable.html", null);
                         }
                     },
                     {
                         label: 'parameter',
                         click: function () {
-                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
+                            createMenuPopUp(500, 550, "Specify variable name", "/menu/create_variable/create_variable.html", null);
                         }
                     }
                 ]
