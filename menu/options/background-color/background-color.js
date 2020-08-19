@@ -4,9 +4,10 @@ const storage = require('electron-json-storage');
 storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 const { ipcRenderer } = electron;
 document.getElementById("backgroundOk").addEventListener('click', () => {
-    var selected_color_code = document.getElementById("color-picker").value;
+    var selected_color_code = $("#color-picker").spectrum("get")
+
     data = {
-        color: selected_color_code
+        color: selected_color_code.toHexString()
     }
     ipcRenderer.send('background-color:ok', data);
 
