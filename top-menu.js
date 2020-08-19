@@ -160,7 +160,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Redraw'
             },
             {
-                label: 'Object Browser'
+                label: 'Object Browser',
+                click: function () {
+                    createMenuPopUp(400, 230, "", "/menu/file/object-browser/object_browser.html", null);
+                }
             },
             {
                 label: 'Select items',
