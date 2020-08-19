@@ -48,5 +48,6 @@ Thumbs.db
 
 # Js files ignored
 main.js
+top-menu.js
 *.js.map
 
