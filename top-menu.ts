@@ -1,5 +1,5 @@
-import { Menu, BrowserWindow, ipcMain, shell, dialog } from 'electron';
-import { win, getStorageBackgroundColor, setStorageBackgroundColor } from './main';
+import { Menu, BrowserWindow, ipcMain, shell,dialog } from 'electron';
+import { win ,getStorageBackgroundColor,setStorageBackgroundColor, createWindow} from './main';
 const electron = require('electron');
 const storage = require('electron-json-storage');
 storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
@@ -13,9 +13,8 @@ ipcMain.on('create_variable:ok', (event) => {
 });
 
 ipcMain.on('background-color:ok', (event, data) => {
-  var css = "body { background-color: " + data.color + "; color: black; }";
-  storage.set('backgroundColor', { color: data.color });
-  win.webContents.insertCSS(css);
+  storage.set('backgroundColor',{color:data.color});
+  checkBackgroundAndApplyTextColor(data.color);
   setStorageBackgroundColor(data.color);
   menu_window.close();
 });
@@ -56,7 +55,11 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'New System',
-        accelerator: 'Ctrl + N'
+        accelerator: 'CmdOrCtrl + N',
+        click(){
+          win.hide();
+          createWindow();
+        }
       },
       {
         label: 'Open',
@@ -92,14 +95,43 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Save',
-        accelerator: 'Ctrl + S'
+        accelerator: 'CmdOrCtrl + S',
+        click() {
+          let content = "This is the content of new file";
+          dialog.showSaveDialog(win, { filters: [{ name: 'text', extensions: ['txt'] }] }).
+            then(result => {
+              console.log(result)
+              fs.writeFile(result.filePath, content, (err) => {
+                if (err)
+                  console.log(err);
+              })
+            }).catch(err => {
+              console.log("file is not saved")
+            })
+        }
       },
       {
         label: 'SaveAs',
-        accelerator: 'Ctrl + A'
+        accelerator: 'CmdOrCtrl + A'
       },
       {
-        label: 'Insert File as Group'
+        label: 'Insert File as Group',
+        click(){
+          const files = dialog.showOpenDialog(win, {
+            properties: ['openFile','multiSelections'],
+            filters: [{ name: 'text', extensions: ['txt'] }]
+          });
+
+          files.then(result => {
+            console.log(result.canceled)
+            console.log(result.filePaths)
+            for(let file of result.filePaths){
+              console.log(fs.readFileSync(file).toString())
+            }
+          }).catch(err => {
+            console.log("file is not selected")
+          })
+        }
       },
       {
         label: 'Dimensional Analysis',
@@ -124,7 +156,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Log simulation',
         click() {
-          createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html", null);
+          createMenuPopUp(250, 500, "Log simulation", "/menu/file/log-simulation/log-simulation.html", null);
         }
       },
       {
@@ -148,7 +180,10 @@ export const template = Menu.buildFromTemplate([
         label: 'Redraw'
       },
       {
-        label: 'Object Browser'
+        label: 'Object Browser',
+        click(){
+          createMenuPopUp(400,230,"","/menu/file/object-browser/object_browser.html",null);
+        }
       },
       {
         label: 'Select items',
@@ -663,4 +698,53 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
       menu_window.close();
     }
   });
+}
+
+export function checkBackgroundAndApplyTextColor(color){
+    // Variables for red, green, blue values
+    
+    var colorArray;
+    var r, g, b, hsp;
+    
+    // Check the format of the color, HEX or RGB?
+    if (color.match(/^rgb/)) {
+
+        // If RGB --> store the red, green, blue values in separate variables
+        colorArray = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+        
+        r = color[1];
+        g = color[2];
+        b = color[3];
+    } 
+    else {
+        
+        // If hex --> Convert it to RGB: http://gist.github.com/983661
+        colorArray = +("0x" + color.slice(1).replace( 
+        color.length < 5 && /./g, '$&$&'));
+
+        r = colorArray >> 16;
+        g = colorArray >> 8 & 255;
+        b = colorArray & 255;
+    }
+    
+    // HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
+    hsp = Math.sqrt(
+    0.299 * (r * r) +
+    0.587 * (g * g) +
+    0.114 * (b * b)
+    );
+
+    // Using the HSP value, determine whether the color is light or dark
+    if (hsp>127.5) {
+      var css = "body { background-color: " + color + "; color: black; }";
+      applyCssToBackground(css);
+    } 
+    else {
+      var css = "body { background-color: " + color + "; color: white; }";
+      applyCssToBackground(css);
+    }
+
+}
+function applyCssToBackground(css){
+  win.webContents.insertCSS(css);
 }

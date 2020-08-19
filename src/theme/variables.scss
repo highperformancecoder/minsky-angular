@@ -25,11 +25,12 @@ $link-color: $brand-primary !default;
 $btn-color: $white !default;
 
 $toolbar-color: #777 !default;
-$toolbar-bg: #eaeaea !default;
+$toolbar-bg: #e0e0e0 !default;
 $toolbar-border-light: #d8d8d8 !default;
 $toolbar-border: #cecdcd !default;
+$toolbar-border-focus: #332f2f !default;
 $toolbar-hover: #dedede !default;
-// $toolbar-border: darken($toolbar-bg, 6.5%) !default;
+$toolbar-box: #928484 !default;
 
 // toolbar
 $toolbar-link-color: grey !default;

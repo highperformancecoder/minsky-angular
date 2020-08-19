@@ -1,19 +1,24 @@
 import { app, BrowserWindow, screen, Menu, MenuItem } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import { template, bookmarkList } from './top-menu';
+import {template} from './top-menu';
+import {checkBackgroundAndApplyTextColor} from './top-menu'
 const storage = require('electron-json-storage');
-
+const dialog = require('electron').dialog;
 export let win: BrowserWindow = null;
-let storageBackgroundColor;
+let storageBackgroundColor = "#c1c1c1";
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
-function createWindow(): BrowserWindow {
-  storage.get('backgroundColor', function (error, data) {
+export function createWindow(): BrowserWindow {
+
+  storage.get('backgroundColor', function(error, data) {
     if (error) throw error;
     storageBackgroundColor = data.color || "#c1c1c1";
     win = prepareBrowserWindow(storageBackgroundColor);
+    setTimeout(function (){
+      checkBackgroundAndApplyTextColor(storageBackgroundColor);
+    },1500);
   });
 
   return win;
@@ -28,7 +33,6 @@ function prepareBrowserWindow(color) {
     y: 0,
     width: size.width,
     height: size.height,
-    transparent: true,
     title:'Minsky',
     webPreferences: {
       nodeIntegration: true,
@@ -37,7 +41,8 @@ function prepareBrowserWindow(color) {
     },
     icon: __dirname + '/Icon/favicon.png'
   });
-  win.setBackgroundColor(color);
+ win.setBackgroundColor(color);
+ win.webContents.openDevTools();
   if (serve) {
     require('electron-reload')(__dirname, {
       electron: require(`${__dirname}/node_modules/electron`)
@@ -54,10 +59,26 @@ function prepareBrowserWindow(color) {
 
   // Emitted when the window is closed.
   win.on('closed', () => {
+
     // Dereference the window object, usually you would store window
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
+
     win = null;
+  });
+  win.on('close',(event)=>{
+    event.preventDefault();
+    const choice = dialog.showMessageBoxSync(win,
+      {
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        title: 'Confirm',
+        message: 'Are you sure you want to quit?'
+      });
+
+    if (choice === 0) {
+      win.destroy();
+    }
   });
   return win;
 }
@@ -75,6 +96,7 @@ try {
     await addBookmarkList(menu, 'list');
     Menu.setApplicationMenu(menu);
     setTimeout(createWindow, 400)
+
   });
 
   // Quit when all windows are closed.
@@ -82,8 +104,9 @@ try {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
-      app.quit();
+     app.quit();
     }
+
   });
 
   app.on('activate', async () => {
@@ -126,17 +149,6 @@ function addBookmarkList(mainMenu: Menu, purpose: string) {
   return true;
 }
 
-// // Create bookmark
-// export function updateBookmarkList() {
-//   listAllBookmark('list', (val: []) => {
-//     console.log('valee', val);
-//     bookmarkList = [...val]
-//   });
-// }
-function listAllBookmark(puspose: string) {
-
-  // return result;
-}
 function goToSelectedBookmark() {
   win.loadURL(this.url);
   console.log('opened', this.urls)

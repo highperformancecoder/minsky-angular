@@ -40,9 +40,11 @@ var electron_1 = require("electron");
 var path = require("path");
 var url = require("url");
 var top_menu_1 = require("./top-menu");
+var top_menu_2 = require("./top-menu");
 var storage = require('electron-json-storage');
+var dialog = require('electron').dialog;
 exports.win = null;
-var storageBackgroundColor;
+var storageBackgroundColor = "#c1c1c1";
 var args = process.argv.slice(1), serve = args.some(function (val) { return val === '--serve'; });
 function createWindow() {
     storage.get('backgroundColor', function (error, data) {
@@ -50,9 +52,13 @@ function createWindow() {
             throw error;
         storageBackgroundColor = data.color || "#c1c1c1";
         exports.win = prepareBrowserWindow(storageBackgroundColor);
+        setTimeout(function () {
+            top_menu_2.checkBackgroundAndApplyTextColor(storageBackgroundColor);
+        }, 1500);
     });
     return exports.win;
 }
+exports.createWindow = createWindow;
 function prepareBrowserWindow(color) {
     color = color || "#c1c1c1";
     var electronScreen = electron_1.screen;
@@ -62,7 +68,6 @@ function prepareBrowserWindow(color) {
         y: 0,
         width: size.width,
         height: size.height,
-        transparent: true,
         title: 'Minsky',
         webPreferences: {
             nodeIntegration: true,
@@ -72,6 +77,7 @@ function prepareBrowserWindow(color) {
         icon: __dirname + '/Icon/favicon.png'
     });
     exports.win.setBackgroundColor(color);
+    exports.win.webContents.openDevTools();
     if (serve) {
         require('electron-reload')(__dirname, {
             electron: require(__dirname + "/node_modules/electron")
@@ -91,6 +97,18 @@ function prepareBrowserWindow(color) {
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
         exports.win = null;
+    });
+    exports.win.on('close', function (event) {
+        event.preventDefault();
+        var choice = dialog.showMessageBoxSync(exports.win, {
+            type: 'question',
+            buttons: ['Yes', 'No'],
+            title: 'Confirm',
+            message: 'Are you sure you want to quit?'
+        });
+        if (choice === 0) {
+            exports.win.destroy();
+        }
     });
     return exports.win;
 }
@@ -169,16 +187,6 @@ function addBookmarkList(mainMenu, purpose) {
         ;
     });
     return true;
-}
-// // Create bookmark
-// export function updateBookmarkList() {
-//   listAllBookmark('list', (val: []) => {
-//     console.log('valee', val);
-//     bookmarkList = [...val]
-//   });
-// }
-function listAllBookmark(puspose) {
-    // return result;
 }
 function goToSelectedBookmark() {
     exports.win.loadURL(this.url);

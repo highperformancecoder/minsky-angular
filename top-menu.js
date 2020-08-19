@@ -12,9 +12,8 @@ electron_1.ipcMain.on('create_variable:ok', function (event) {
     menu_window.close();
 });
 electron_1.ipcMain.on('background-color:ok', function (event, data) {
-    var css = "body { background-color: " + data.color + "; color: black; }";
     storage.set('backgroundColor', { color: data.color });
-    main_1.win.webContents.insertCSS(css);
+    checkBackgroundAndApplyTextColor(data.color);
     main_1.setStorageBackgroundColor(data.color);
     menu_window.close();
 });
@@ -55,7 +54,11 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'New System',
-                accelerator: 'Ctrl + N'
+                accelerator: 'CmdOrCtrl + N',
+                click: function () {
+                    main_1.win.hide();
+                    main_1.createWindow();
+                }
             },
             {
                 label: 'Open',
@@ -90,14 +93,43 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Save',
-                accelerator: 'Ctrl + S'
+                accelerator: 'CmdOrCtrl + S',
+                click: function () {
+                    var content = "This is the content of new file";
+                    electron_1.dialog.showSaveDialog(main_1.win, { filters: [{ name: 'text', extensions: ['txt'] }] }).
+                        then(function (result) {
+                        console.log(result);
+                        fs.writeFile(result.filePath, content, function (err) {
+                            if (err)
+                                console.log(err);
+                        });
+                    }).catch(function (err) {
+                        console.log("file is not saved");
+                    });
+                }
             },
             {
                 label: 'SaveAs',
-                accelerator: 'Ctrl + A'
+                accelerator: 'CmdOrCtrl + A'
             },
             {
-                label: 'Insert File as Group'
+                label: 'Insert File as Group',
+                click: function () {
+                    var files = electron_1.dialog.showOpenDialog(main_1.win, {
+                        properties: ['openFile', 'multiSelections'],
+                        filters: [{ name: 'text', extensions: ['txt'] }]
+                    });
+                    files.then(function (result) {
+                        console.log(result.canceled);
+                        console.log(result.filePaths);
+                        for (var _i = 0, _a = result.filePaths; _i < _a.length; _i++) {
+                            var file = _a[_i];
+                            console.log(fs.readFileSync(file).toString());
+                        }
+                    }).catch(function (err) {
+                        console.log("file is not selected");
+                    });
+                }
             },
             {
                 label: 'Dimensional Analysis',
@@ -122,7 +154,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Log simulation',
                 click: function () {
-                    createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html", null);
+                    createMenuPopUp(250, 500, "Log simulation", "/menu/file/log-simulation/log-simulation.html", null);
                 }
             },
             {
@@ -146,7 +178,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Redraw'
             },
             {
-                label: 'Object Browser'
+                label: 'Object Browser',
+                click: function () {
+                    createMenuPopUp(400, 230, "", "/menu/file/object-browser/object_browser.html", null);
+                }
             },
             {
                 label: 'Select items',
@@ -600,5 +635,42 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
             menu_window.close();
         }
     });
+}
+function checkBackgroundAndApplyTextColor(color) {
+    // Variables for red, green, blue values
+    var colorArray;
+    var r, g, b, hsp;
+    // Check the format of the color, HEX or RGB?
+    if (color.match(/^rgb/)) {
+        // If RGB --> store the red, green, blue values in separate variables
+        colorArray = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+        r = color[1];
+        g = color[2];
+        b = color[3];
+    }
+    else {
+        // If hex --> Convert it to RGB: http://gist.github.com/983661
+        colorArray = +("0x" + color.slice(1).replace(color.length < 5 && /./g, '$&$&'));
+        r = colorArray >> 16;
+        g = colorArray >> 8 & 255;
+        b = colorArray & 255;
+    }
+    // HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
+    hsp = Math.sqrt(0.299 * (r * r) +
+        0.587 * (g * g) +
+        0.114 * (b * b));
+    // Using the HSP value, determine whether the color is light or dark
+    if (hsp > 127.5) {
+        var css = "body { background-color: " + color + "; color: black; }";
+        applyCssToBackground(css);
+    }
+    else {
+        var css = "body { background-color: " + color + "; color: white; }";
+        applyCssToBackground(css);
+    }
+}
+exports.checkBackgroundAndApplyTextColor = checkBackgroundAndApplyTextColor;
+function applyCssToBackground(css) {
+    main_1.win.webContents.insertCSS(css);
 }
 //# sourceMappingURL=top-menu.js.map
