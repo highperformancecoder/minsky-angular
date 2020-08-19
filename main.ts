@@ -11,7 +11,7 @@ const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
 export function createWindow(): BrowserWindow {
- 
+
   storage.get('backgroundColor', function(error, data) {
     if (error) throw error;
     storageBackgroundColor = data.color || "#c1c1c1";
@@ -20,7 +20,7 @@ export function createWindow(): BrowserWindow {
       checkBackgroundAndApplyTextColor(storageBackgroundColor);
     },1500);
   });
- 
+
   return win;
 }
 
@@ -33,7 +33,6 @@ function prepareBrowserWindow(color){
     y: 0,
     width: size.width,
     height: size.height,
-    transparent: true,
     webPreferences: {
       nodeIntegration: true,
       affinity: "window",
@@ -59,11 +58,11 @@ function prepareBrowserWindow(color){
 
   // Emitted when the window is closed.
   win.on('closed', () => {
-   
+
     // Dereference the window object, usually you would store window
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    
+
     win = null;
   });
   win.on('close',(event)=>{
@@ -75,7 +74,7 @@ function prepareBrowserWindow(color){
         title: 'Confirm',
         message: 'Are you sure you want to quit?'
       });
-     
+
     if (choice === 0) {
       win.destroy();
     }
@@ -95,7 +94,7 @@ try {
     const menu = template
     Menu.setApplicationMenu(menu)
     setTimeout(createWindow, 400)
-    
+
   });
 
   // Quit when all windows are closed.
@@ -105,7 +104,7 @@ try {
     if (process.platform !== 'darwin') {
      app.quit();
     }
-    
+
   });
 
   app.on('activate', () => {

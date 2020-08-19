@@ -8,17 +8,17 @@
 }
 
 .tabs-section {
-  border-top: 1px solid white;
+  border-top: 1px solid $toolbar-box;
   flex: 1;
 
   .tabs {
     display: flex;
-    border-bottom: 1px solid $toolbar-border-light;
+    border-bottom: 1px solid $toolbar-box;
 
     .tab {
-      border-left: 1px solid $toolbar-border;
+      border-left: 2px solid $toolbar-border;
       background-color: $toolbar-bg;
-
+      padding: 2px 4px;
 
       label {
         padding: 3px;
