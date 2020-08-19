@@ -163,7 +163,10 @@ export const template = Menu.buildFromTemplate([
         label: 'Redraw'
       },
       {
-        label: 'Object Browser'
+        label: 'Object Browser',
+        click(){
+          createMenuPopUp(400,230,"","/menu/file/object-browser/object_browser.html",null);
+        }
       },
       {
         label: 'Select items',
