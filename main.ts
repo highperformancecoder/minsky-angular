@@ -1,7 +1,7 @@
-import { app, BrowserWindow, screen, Menu } from 'electron';
+import { app, BrowserWindow, screen, Menu, MenuItem } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import {template} from './top-menu';
+import { template, bookmarkList } from './top-menu';
 const storage = require('electron-json-storage');
 
 export let win: BrowserWindow = null;
@@ -10,17 +10,16 @@ const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
 
 function createWindow(): BrowserWindow {
- 
-  storage.get('backgroundColor', function(error, data) {
+  storage.get('backgroundColor', function (error, data) {
     if (error) throw error;
     storageBackgroundColor = data.color || "#c1c1c1";
     win = prepareBrowserWindow(storageBackgroundColor);
   });
- 
+
   return win;
 }
 
-function prepareBrowserWindow(color){
+function prepareBrowserWindow(color) {
   color = color || "#c1c1c1";
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
@@ -30,6 +29,7 @@ function prepareBrowserWindow(color){
     width: size.width,
     height: size.height,
     transparent: true,
+    title:'Minsky',
     webPreferences: {
       nodeIntegration: true,
       affinity: "window",
@@ -37,7 +37,7 @@ function prepareBrowserWindow(color){
     },
     icon: __dirname + '/Icon/favicon.png'
   });
- win.setBackgroundColor(color);
+  win.setBackgroundColor(color);
   if (serve) {
     require('electron-reload')(__dirname, {
       electron: require(`${__dirname}/node_modules/electron`)
@@ -70,9 +70,10 @@ try {
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
-  app.on('ready', () => {
-    const menu = template
-    Menu.setApplicationMenu(menu)
+  app.on('ready', async () => {
+    const menu = template;
+    await addBookmarkList(menu, 'list');
+    Menu.setApplicationMenu(menu);
     setTimeout(createWindow, 400)
   });
 
@@ -85,10 +86,11 @@ try {
     }
   });
 
-  app.on('activate', () => {
+  app.on('activate', async () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (win === null) {
+      await addBookmarkList(template, 'list');
       createWindow();
     }
   });
@@ -98,9 +100,47 @@ try {
   // throw e;
 }
 
-export function setStorageBackgroundColor(color){
+export function setStorageBackgroundColor(color) {
   storageBackgroundColor = color;
 }
-export function getStorageBackgroundColor(){
+export function getStorageBackgroundColor() {
   return storageBackgroundColor;
+}
+
+function addBookmarkList(mainMenu: Menu, purpose: string) {
+  let foundMain = mainMenu.getMenuItemById('main-bookmark');
+  storage.get('bookmarks', (error, data: [{ title: string, click: any }]) => {
+    if (error) new Error('File not found or error selecting the file');
+    if (data) {
+      data.forEach(ele => {
+        console.log("____ELEL___",ele);
+        let menuItem = new MenuItem({
+          label: ele.title,
+          click: purpose === 'list' ? goToSelectedBookmark.bind(ele) : deleteBookmark.bind(ele)
+        });
+        foundMain.submenu.items.push(menuItem);
+      })
+      console.log("ITEMS_____",foundMain.submenu.items);
+    };
+  });
+  return true;
+}
+
+// // Create bookmark
+// export function updateBookmarkList() {
+//   listAllBookmark('list', (val: []) => {
+//     console.log('valee', val);
+//     bookmarkList = [...val]
+//   });
+// }
+function listAllBookmark(puspose: string) {
+
+  // return result;
+}
+function goToSelectedBookmark() {
+  win.loadURL(this.url);
+  console.log('opened', this.urls)
+}
+function deleteBookmark() {
+  console.log(this, 'deleted')
 }

@@ -7,6 +7,7 @@ var storage = require('electron-json-storage');
 storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 var fs = require('fs');
 var menu_window;
+exports.bookmarkList = [];
 electron_1.ipcMain.on('create_variable:ok', function (event) {
     menu_window.close();
 });
@@ -16,6 +17,23 @@ electron_1.ipcMain.on('background-color:ok', function (event, data) {
     main_1.win.webContents.insertCSS(css);
     main_1.setStorageBackgroundColor(data.color);
     menu_window.close();
+});
+electron_1.ipcMain.on('save-bookmark', function (event, data) {
+    if (data) {
+        storage.get(data.fileName, function (error, fileData) {
+            if (error)
+                throw error;
+            fileData.push({
+                title: data.bookmarkTitle,
+                url: main_1.win.webContents.getURL()
+            });
+            storage.set(data.fileName, fileData, function (error) {
+                if (error)
+                    throw error;
+            });
+            menu_window.close();
+        });
+    }
 });
 exports.template = electron_1.Menu.buildFromTemplate([
     {
@@ -177,11 +195,12 @@ exports.template = electron_1.Menu.buildFromTemplate([
     },
     {
         label: 'Bookmarks',
+        id: 'main-bookmark',
         submenu: [
             {
                 label: 'Bookmark this position',
                 click: function () {
-                    createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
+                    createMenuPopUp(420, 680, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
                 }
             },
             {
@@ -571,6 +590,7 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
     menu_window.once('ready-to-show', function () {
         menu_window.show();
     });
+    menu_window.webContents.openDevTools();
     menu_window.on('closed', function () {
         menu_window = null;
     });
