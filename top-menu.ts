@@ -139,7 +139,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Log simulation',
         click() {
-          createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html", null);
+          createMenuPopUp(250, 500, "Log simulation", "/menu/file/log-simulation/log-simulation.html", null);
         }
       },
       {

@@ -136,7 +136,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Log simulation',
                 click: function () {
-                    createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html", null);
+                    createMenuPopUp(250, 500, "Log simulation", "/menu/file/log-simulation/log-simulation.html", null);
                 }
             },
             {
