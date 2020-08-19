@@ -1,3 +1,9 @@
+.popup-wrapper {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0 auto;
+    max-width: fit-content;
+}
+
 .popup-title {
     margin: 30px 0;
     text-align: center;
@@ -21,10 +27,4 @@
 
 .form-buttons .btn {
     display: inline-block;
-}
-
-#myColor {
-    width: 80px;
-    height: 80px;
-    border: none;
 }
