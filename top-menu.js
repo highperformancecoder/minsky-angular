@@ -7,7 +7,7 @@ var storage = require('electron-json-storage');
 storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 var fs = require('fs');
 var menu_window;
-electron_1.ipcMain.on('create_variable:ok', function (event) {
+electron_1.ipcMain.on('create-variable:ok', function (event) {
     menu_window.close();
 });
 electron_1.ipcMain.on('background-color:ok', function (event, data) {
@@ -136,7 +136,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Log simulation',
                 click: function () {
-                    createMenuPopUp(250, 500, "Log simulation", "/menu/log-simulation/log-simulation.html", null);
+                    createMenuPopUp(250, 500, "Log simulation", "/menu/file/log-simulation/log-simulation.html", null);
                 }
             },
             {
@@ -160,7 +160,10 @@ exports.template = electron_1.Menu.buildFromTemplate([
                 label: 'Redraw'
             },
             {
-                label: 'Object Browser'
+                label: 'Object Browser',
+                click: function () {
+                    createMenuPopUp(400, 230, "", "/menu/file/object-browser/object_browser.html", null);
+                }
             },
             {
                 label: 'Select items',
@@ -240,19 +243,19 @@ exports.template = electron_1.Menu.buildFromTemplate([
                     {
                         label: 'variable',
                         click: function () {
-                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
+                            createMenuPopUp(500, 550, "Specify variable name", "/menu/create-variable/create-variable.html", null);
                         }
                     },
                     {
                         label: 'constant',
                         click: function () {
-                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
+                            createMenuPopUp(500, 550, "Specify variable name", "/menu/create-variable/create-variable.html", null);
                         }
                     },
                     {
                         label: 'parameter',
                         click: function () {
-                            createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
+                            createMenuPopUp(500, 550, "Specify variable name", "/menu/create-variable/create-variable.html", null);
                         }
                     }
                 ]
@@ -552,7 +555,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Background Colour',
                 click: function () {
-                    createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html", null);
+                    createMenuPopUp(450, 320, "Background Colour", "/menu/options/background-color/background-color.html", null);
                 }
             }
         ]
