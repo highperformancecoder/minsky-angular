@@ -46,6 +46,7 @@ testem.log
 .DS_Store
 Thumbs.db
 
-
-# Js map files ignored
+# Js files ignored
+main.js
 *.js.map
+
