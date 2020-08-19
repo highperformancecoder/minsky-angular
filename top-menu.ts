@@ -119,7 +119,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Dimensional Analysis',
         click() {
-          createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html", "#ffffff");
+          createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional-analysis.html", "#ffffff");
         }
       },
       {
@@ -165,13 +165,13 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Object Browser',
         click(){
-          createMenuPopUp(400,230,"","/menu/file/object-browser/object_browser.html",null);
+          createMenuPopUp(400,230,"","/menu/file/object-browser/object-browser.html",null);
         }
       },
       {
         label: 'Select items',
         click() {
-          createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html", "#ffffff");
+          createMenuPopUp(290, 153, "", "/menu/file/select-items/select-items.html", "#ffffff");
         }
       },
       {
