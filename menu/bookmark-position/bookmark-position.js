@@ -1,5 +1,5 @@
 const electron = require('electron');
-const { ipcRenderer } = electron;
+const { ipcRenderer, Menu } = electron;
 const storage = require('electron-json-storage');
 storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 const bookmarkFileName = 'bookmarks';

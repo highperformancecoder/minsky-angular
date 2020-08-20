@@ -22,14 +22,26 @@ electron_1.ipcMain.on('save-bookmark', function (event, data) {
         storage.get(data.fileName, function (error, fileData) {
             if (error)
                 throw error;
-            fileData.push({
+            var dataToSave = {
                 title: data.bookmarkTitle,
                 url: main_1.win.webContents.getURL()
-            });
+            };
+            fileData.push(dataToSave);
             storage.set(data.fileName, fileData, function (error) {
                 if (error)
                     throw error;
             });
+            var outerSubMenu = exports.template.getMenuItemById('main-bookmark').submenu;
+            var innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark').submenu;
+            outerSubMenu.append(new electron_1.MenuItem({
+                label: data.bookmarkTitle,
+                click: main_1.goToSelectedBookmark.bind(dataToSave)
+            }));
+            innerSubMenu.append(new electron_1.MenuItem({
+                label: data.bookmarkTitle,
+                click: main_1.deleteBookmark.bind(dataToSave)
+            }));
+            electron_1.Menu.setApplicationMenu(exports.template);
             menu_window.close();
         });
     }
@@ -240,6 +252,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             },
             {
                 label: 'Delete...',
+                id: 'delete-bookmark',
                 submenu: []
             },
             {
