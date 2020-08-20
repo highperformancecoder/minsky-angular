@@ -280,19 +280,19 @@ export const template = Menu.buildFromTemplate([
           {
             label: 'variable',
             click() {
-              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
+              createMenuPopUp(500, 550, "Specify variable name", "/menu/create-variable/create-variable.html", null);
             }
           },
           {
             label: 'constant',
             click() {
-              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
+              createMenuPopUp(500, 550, "Specify variable name", "/menu/create-variable/create-variable.html", null);
             }
           },
           {
             label: 'parameter',
             click() {
-              createMenuPopUp(320, 420, "Specify variable name", "/menu/create_variable/create_variable.html", null);
+              createMenuPopUp(500, 550, "Specify variable name", "/menu/create-variable/create-variable.html", null);
             }
           }
         ]
@@ -644,7 +644,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Background Colour',
         click() {
-          createMenuPopUp(350, 350, "Background Colour", "/menu/options/background-color/background-color.html", null);
+          createMenuPopUp(450, 320, "Background Colour", "/menu/options/background-color/background-color.html", null);
         }
       }
     ]

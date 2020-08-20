@@ -1,5 +1,4 @@
 @import '../theme/variables.scss';
-
 :host {
   display: flex;
   flex-direction: column;
@@ -8,33 +7,31 @@
 }
 
 .tabs-section {
-  border-top: 1px solid $toolbar-box;
-  flex: 1;
-
-  .tabs {
-    display: flex;
-    border-bottom: 1px solid $toolbar-box;
-
-    .tab {
-      border-left: 2px solid $toolbar-border;
-      background-color: $toolbar-bg;
-      padding: 2px 4px;
-
-      label {
-        padding: 3px;
-        margin: 2px;
-        font-size: $primary-font;
-      }
-
-      label:focus {
-        outline: none;
-      }
+    border-top: 1px solid $toolbar-box;
+    flex: 1;
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid $toolbar-box;
+        .tab {
+            border-left: 2px solid $toolbar-border;
+            background-color: $toolbar-bg;
+            padding: 2px 4px;
+            color: black;
+            label {
+                padding: 3px;
+                margin: 2px;
+                font-size: $primary-font;
+            }
+            label:focus {
+                outline: none;
+            }
+        }
+        .tab:focus {
+            outline: none;
+        }
     }
-    .tab:focus{
-      outline: none;
-    }
-  }
 }
-.active-bg{
-  background-color:$white !important;
+
+.active-bg {
+    background-color: $white !important;
 }
