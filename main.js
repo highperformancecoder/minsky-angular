@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var path = require("path");
 var url = require("url");
+electron_1.app.setName("Minsky");
 var top_menu_1 = require("./top-menu");
 var top_menu_2 = require("./top-menu");
 var storage = require('electron-json-storage');
@@ -32,6 +33,7 @@ function prepareBrowserWindow(color) {
         y: 0,
         width: size.width,
         height: size.height,
+        title: 'Minsky',
         webPreferences: {
             nodeIntegration: true,
             affinity: "window",
@@ -83,6 +85,7 @@ try {
     // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
     electron_1.app.on('ready', function () {
         var menu = top_menu_1.template;
+        addUpdateBookmarkList(menu);
         electron_1.Menu.setApplicationMenu(menu);
         setTimeout(createWindow, 400);
     });
@@ -98,6 +101,7 @@ try {
         // On OS X it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (exports.win === null) {
+            addUpdateBookmarkList(top_menu_1.template);
             createWindow();
         }
     });
@@ -114,4 +118,51 @@ function getStorageBackgroundColor() {
     return storageBackgroundColor;
 }
 exports.getStorageBackgroundColor = getStorageBackgroundColor;
+function addUpdateBookmarkList(mainMenu) {
+    storage.get('bookmarks', function (error, data) {
+        if (error)
+            new Error('File not found or error selecting the file');
+        if (data) {
+            var outerSubMenu_1 = mainMenu.getMenuItemById('main-bookmark').submenu;
+            var innerSubMenu_1 = outerSubMenu_1.getMenuItemById('delete-bookmark').submenu;
+            outerSubMenu_1.append(new electron_1.MenuItem({ type: 'separator' }));
+            data.forEach(function (ele) {
+                outerSubMenu_1.append(new electron_1.MenuItem({
+                    label: ele.title,
+                    click: goToSelectedBookmark.bind(ele)
+                }));
+                innerSubMenu_1.append(new electron_1.MenuItem({
+                    label: ele.title,
+                    click: deleteBookmark.bind(ele)
+                }));
+            });
+            electron_1.Menu.setApplicationMenu(mainMenu);
+        }
+        ;
+    });
+}
+function goToSelectedBookmark() {
+    exports.win.loadURL(this.url).catch(function (err) { throw new Error('Bookmarked url not found'); });
+}
+exports.goToSelectedBookmark = goToSelectedBookmark;
+function deleteBookmark() {
+    var _this = this;
+    storage.get('bookmarks', function (error, data) {
+        if (error)
+            new Error('File not found');
+        if (data) {
+            var ind = data.findIndex(function (ele) { return ele.title === _this.title; });
+            ind > -1 ? data.splice(ind, 1) : new Error("Bookmark Not Found");
+            storage.set('bookmarks', data, function (error) { });
+            var innerSubmenu = top_menu_1.template.getMenuItemById('main-bookmark').submenu.getMenuItemById('delete-bookmark').submenu.items;
+            var outerSubmenu = top_menu_1.template.getMenuItemById('main-bookmark').submenu.items;
+            var innerIdx = innerSubmenu.findIndex(function (ele) { return ele.label === _this.title; });
+            var outerIdx = outerSubmenu.findIndex(function (ele) { return ele.label === _this.title; });
+            innerSubmenu[innerIdx].visible = false;
+            outerSubmenu[outerIdx].visible = false;
+            // innerIdx > -1 ? innerSubmenu.splice(innerIdx, 1) : new Error("Bookmark Not Found");
+        }
+    });
+}
+exports.deleteBookmark = deleteBookmark;
 //# sourceMappingURL=main.js.map

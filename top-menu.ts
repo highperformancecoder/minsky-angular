@@ -1,22 +1,51 @@
-import { Menu, BrowserWindow, ipcMain, shell,dialog } from 'electron';
-import { win ,getStorageBackgroundColor,setStorageBackgroundColor, createWindow} from './main';
+import { Menu, BrowserWindow, ipcMain, shell, dialog, MenuItem } from 'electron';
+import { win, getStorageBackgroundColor, setStorageBackgroundColor, createWindow, goToSelectedBookmark, deleteBookmark } from './main';
 const electron = require('electron');
 const storage = require('electron-json-storage');
 storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 const fs = require('fs');
-
 var menu_window: BrowserWindow;
-ipcMain.on('create-variable:ok', (event) => {
+export var bookmarkList = [];
+
+
+ipcMain.on('create_variable:ok', (event) => {
   menu_window.close();
 });
 
 ipcMain.on('background-color:ok', (event, data) => {
-  storage.set('backgroundColor',{color:data.color});
+  storage.set('backgroundColor', { color: data.color });
   checkBackgroundAndApplyTextColor(data.color);
   setStorageBackgroundColor(data.color);
   menu_window.close();
 });
 
+ipcMain.on('save-bookmark', (event, data) => {
+  if (data) {
+    storage.get(data.fileName, function (error, fileData) {
+      if (error) throw error;
+      const dataToSave = {
+        title: data.bookmarkTitle,
+        url: win.webContents.getURL()
+      };
+      fileData.push(dataToSave);
+      storage.set(data.fileName, fileData, function (error) {
+        if (error) throw error;
+      });
+      let outerSubMenu = template.getMenuItemById('main-bookmark').submenu;
+      let innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark').submenu;
+      outerSubMenu.append(new MenuItem({
+        label: data.bookmarkTitle,
+        click: goToSelectedBookmark.bind(dataToSave)
+      }));
+      innerSubMenu.append(new MenuItem({
+        label: data.bookmarkTitle,
+        click: deleteBookmark.bind(dataToSave)
+      }));
+      Menu.setApplicationMenu(template);
+      menu_window.close();
+    });
+  }
+})
 
 export const template = Menu.buildFromTemplate([
   {
@@ -39,7 +68,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'New System',
         accelerator: 'CmdOrCtrl + N',
-        click(){
+        click() {
           win.hide();
           createWindow();
         }
@@ -99,16 +128,16 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Insert File as Group',
-        click(){
+        click() {
           const files = dialog.showOpenDialog(win, {
-            properties: ['openFile','multiSelections'],
+            properties: ['openFile', 'multiSelections'],
             filters: [{ name: 'text', extensions: ['txt'] }]
           });
 
           files.then(result => {
             console.log(result.canceled)
             console.log(result.filePaths)
-            for(let file of result.filePaths){
+            for (let file of result.filePaths) {
               console.log(fs.readFileSync(file).toString())
             }
           }).catch(err => {
@@ -119,7 +148,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Dimensional Analysis',
         click() {
-          createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional-analysis.html", "#ffffff");
+          createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html", "#ffffff");
         }
       },
       {
@@ -164,14 +193,14 @@ export const template = Menu.buildFromTemplate([
       },
       {
         label: 'Object Browser',
-        click(){
-          createMenuPopUp(400,230,"","/menu/file/object-browser/object-browser.html",null);
+        click() {
+          createMenuPopUp(400, 230, "", "/menu/file/object-browser/object_browser.html", null);
         }
       },
       {
         label: 'Select items',
         click() {
-          createMenuPopUp(290, 153, "", "/menu/file/select-items/select-items.html", "#ffffff");
+          createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html", "#ffffff");
         }
       },
       {
@@ -217,17 +246,17 @@ export const template = Menu.buildFromTemplate([
   },
   {
     label: 'Bookmarks',
+    id: 'main-bookmark',
     submenu: [
       {
         label: 'Bookmark this position',
         click() {
-
-          createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
-
+          createMenuPopUp(420, 200, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
         }
       },
       {
         label: 'Delete...',
+        id: 'delete-bookmark',
         submenu: [
         ]
       },
@@ -647,8 +676,8 @@ export const template = Menu.buildFromTemplate([
   }
 ]);
 
-
 function createMenuPopUp(width, height, title, dir_path, background_color) {
+
   background_color = background_color || getStorageBackgroundColor();
   var BrowserWindow = require('electron').BrowserWindow;
   menu_window = new BrowserWindow({
@@ -671,7 +700,7 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
   menu_window.once('ready-to-show', () => {
     menu_window.show();
   });
-
+  // menu_window.webContents.openDevTools();
   menu_window.on('closed', () => {
     menu_window = null;
   });
@@ -683,51 +712,51 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
   });
 }
 
-export function checkBackgroundAndApplyTextColor(color){
-    // Variables for red, green, blue values
-    
-    var colorArray;
-    var r, g, b, hsp;
-    
-    // Check the format of the color, HEX or RGB?
-    if (color.match(/^rgb/)) {
+export function checkBackgroundAndApplyTextColor(color) {
+  // Variables for red, green, blue values
 
-        // If RGB --> store the red, green, blue values in separate variables
-        colorArray = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
-        
-        r = color[1];
-        g = color[2];
-        b = color[3];
-    } 
-    else {
-        
-        // If hex --> Convert it to RGB: http://gist.github.com/983661
-        colorArray = +("0x" + color.slice(1).replace( 
-        color.length < 5 && /./g, '$&$&'));
+  var colorArray;
+  var r, g, b, hsp;
 
-        r = colorArray >> 16;
-        g = colorArray >> 8 & 255;
-        b = colorArray & 255;
-    }
-    
-    // HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
-    hsp = Math.sqrt(
+  // Check the format of the color, HEX or RGB?
+  if (color.match(/^rgb/)) {
+
+    // If RGB --> store the red, green, blue values in separate variables
+    colorArray = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+
+    r = color[1];
+    g = color[2];
+    b = color[3];
+  }
+  else {
+
+    // If hex --> Convert it to RGB: http://gist.github.com/983661
+    colorArray = +("0x" + color.slice(1).replace(
+      color.length < 5 && /./g, '$&$&'));
+
+    r = colorArray >> 16;
+    g = colorArray >> 8 & 255;
+    b = colorArray & 255;
+  }
+
+  // HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
+  hsp = Math.sqrt(
     0.299 * (r * r) +
     0.587 * (g * g) +
     0.114 * (b * b)
-    );
+  );
 
-    // Using the HSP value, determine whether the color is light or dark
-    if (hsp>127.5) {
-      var css = "body { background-color: " + color + "; color: black; }";
-      applyCssToBackground(css);
-    } 
-    else {
-      var css = "body { background-color: " + color + "; color: white; }";
-      applyCssToBackground(css);
-    }
+  // Using the HSP value, determine whether the color is light or dark
+  if (hsp > 127.5) {
+    var css = "body { background-color: " + color + "; color: black; }";
+    applyCssToBackground(css);
+  }
+  else {
+    var css = "body { background-color: " + color + "; color: white; }";
+    applyCssToBackground(css);
+  }
 
 }
-function applyCssToBackground(css){
+function applyCssToBackground(css) {
   win.webContents.insertCSS(css);
 }

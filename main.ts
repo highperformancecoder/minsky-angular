@@ -1,8 +1,9 @@
-import { app, BrowserWindow, screen, Menu } from 'electron';
+import { app, BrowserWindow, screen, Menu, MenuItem } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import {template} from './top-menu';
-import {checkBackgroundAndApplyTextColor} from './top-menu'
+app.setName("Minsky");
+import { template } from './top-menu';
+import { checkBackgroundAndApplyTextColor } from './top-menu'
 const storage = require('electron-json-storage');
 const dialog = require('electron').dialog;
 export let win: BrowserWindow = null;
@@ -12,19 +13,19 @@ const args = process.argv.slice(1),
 
 export function createWindow(): BrowserWindow {
 
-  storage.get('backgroundColor', function(error, data) {
+  storage.get('backgroundColor', function (error, data) {
     if (error) throw error;
     storageBackgroundColor = data.color || "#c1c1c1";
     win = prepareBrowserWindow(storageBackgroundColor);
-    setTimeout(function (){
+    setTimeout(function () {
       checkBackgroundAndApplyTextColor(storageBackgroundColor);
-    },1500);
+    }, 1500);
   });
 
   return win;
 }
 
-function prepareBrowserWindow(color){
+function prepareBrowserWindow(color) {
   color = color || "#c1c1c1";
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
@@ -33,6 +34,7 @@ function prepareBrowserWindow(color){
     y: 0,
     width: size.width,
     height: size.height,
+    title: 'Minsky',
     webPreferences: {
       nodeIntegration: true,
       affinity: "window",
@@ -40,8 +42,8 @@ function prepareBrowserWindow(color){
     },
     icon: __dirname + '/Icon/favicon.png'
   });
- win.setBackgroundColor(color);
- win.webContents.openDevTools();
+  win.setBackgroundColor(color);
+  win.webContents.openDevTools();
   if (serve) {
     require('electron-reload')(__dirname, {
       electron: require(`${__dirname}/node_modules/electron`)
@@ -65,7 +67,7 @@ function prepareBrowserWindow(color){
 
     win = null;
   });
-  win.on('close',(event)=>{
+  win.on('close', (event) => {
     event.preventDefault();
     const choice = dialog.showMessageBoxSync(win,
       {
@@ -91,10 +93,10 @@ try {
   // Some APIs can only be used after this event occurs.
   // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
   app.on('ready', () => {
-    const menu = template
-    Menu.setApplicationMenu(menu)
-    setTimeout(createWindow, 400)
-
+    const menu = template;
+    addUpdateBookmarkList(menu);
+    Menu.setApplicationMenu(menu);
+    setTimeout(createWindow, 400);
   });
 
   // Quit when all windows are closed.
@@ -111,6 +113,7 @@ try {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (win === null) {
+      addUpdateBookmarkList(template);
       createWindow();
     }
   });
@@ -120,9 +123,53 @@ try {
   // throw e;
 }
 
-export function setStorageBackgroundColor(color){
+export function setStorageBackgroundColor(color) {
   storageBackgroundColor = color;
 }
-export function getStorageBackgroundColor(){
+export function getStorageBackgroundColor() {
   return storageBackgroundColor;
+}
+
+function addUpdateBookmarkList(mainMenu: Menu) {
+  storage.get('bookmarks', (error, data: [{ title: string, click: any }]) => {
+    if (error) new Error('File not found or error selecting the file');
+    if (data) {
+      let outerSubMenu = mainMenu.getMenuItemById('main-bookmark').submenu;
+      let innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark').submenu;
+      outerSubMenu.append(new MenuItem({ type: 'separator' }))
+      data.forEach(ele => {
+        outerSubMenu.append(new MenuItem({
+          label: ele.title,
+          click: goToSelectedBookmark.bind(ele)
+        }));
+        innerSubMenu.append(new MenuItem({
+          label: ele.title,
+          click: deleteBookmark.bind(ele)
+        }));
+      })
+      Menu.setApplicationMenu(mainMenu)
+    };
+  });
+}
+
+export function goToSelectedBookmark() {
+  win.loadURL(this.url).catch(err => { throw new Error('Bookmarked url not found') })
+}
+export function deleteBookmark() {
+  storage.get('bookmarks', (error, data: [{ title: string, click: any }]) => {
+    if (error) new Error('File not found');
+    if (data) {
+      const ind = data.findIndex(ele => ele.title === this.title);
+      ind > -1 ? data.splice(ind, 1) : new Error("Bookmark Not Found");
+      storage.set('bookmarks', data, (error) => { });
+
+      let innerSubmenu = template.getMenuItemById('main-bookmark').submenu.getMenuItemById('delete-bookmark').submenu.items;
+      let outerSubmenu = template.getMenuItemById('main-bookmark').submenu.items;
+      const innerIdx = innerSubmenu.findIndex(ele => ele.label === this.title);
+      const outerIdx = outerSubmenu.findIndex(ele => ele.label === this.title);
+      innerSubmenu[innerIdx].visible = false;
+      outerSubmenu[outerIdx].visible = false;
+      // innerIdx > -1 ? innerSubmenu.splice(innerIdx, 1) : new Error("Bookmark Not Found");
+    }
+  });
 }

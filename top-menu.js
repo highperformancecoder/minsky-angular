@@ -7,7 +7,8 @@ var storage = require('electron-json-storage');
 storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
 var fs = require('fs');
 var menu_window;
-electron_1.ipcMain.on('create-variable:ok', function (event) {
+exports.bookmarkList = [];
+electron_1.ipcMain.on('create_variable:ok', function (event) {
     menu_window.close();
 });
 electron_1.ipcMain.on('background-color:ok', function (event, data) {
@@ -15,6 +16,35 @@ electron_1.ipcMain.on('background-color:ok', function (event, data) {
     checkBackgroundAndApplyTextColor(data.color);
     main_1.setStorageBackgroundColor(data.color);
     menu_window.close();
+});
+electron_1.ipcMain.on('save-bookmark', function (event, data) {
+    if (data) {
+        storage.get(data.fileName, function (error, fileData) {
+            if (error)
+                throw error;
+            var dataToSave = {
+                title: data.bookmarkTitle,
+                url: main_1.win.webContents.getURL()
+            };
+            fileData.push(dataToSave);
+            storage.set(data.fileName, fileData, function (error) {
+                if (error)
+                    throw error;
+            });
+            var outerSubMenu = exports.template.getMenuItemById('main-bookmark').submenu;
+            var innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark').submenu;
+            outerSubMenu.append(new electron_1.MenuItem({
+                label: data.bookmarkTitle,
+                click: main_1.goToSelectedBookmark.bind(dataToSave)
+            }));
+            innerSubMenu.append(new electron_1.MenuItem({
+                label: data.bookmarkTitle,
+                click: main_1.deleteBookmark.bind(dataToSave)
+            }));
+            electron_1.Menu.setApplicationMenu(exports.template);
+            menu_window.close();
+        });
+    }
 });
 exports.template = electron_1.Menu.buildFromTemplate([
     {
@@ -116,7 +146,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Dimensional Analysis',
                 click: function () {
-                    createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional-analysis.html", "#ffffff");
+                    createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html", "#ffffff");
                 }
             },
             {
@@ -162,13 +192,13 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Object Browser',
                 click: function () {
-                    createMenuPopUp(400, 230, "", "/menu/file/object-browser/object-browser.html", null);
+                    createMenuPopUp(400, 230, "", "/menu/file/object-browser/object_browser.html", null);
                 }
             },
             {
                 label: 'Select items',
                 click: function () {
-                    createMenuPopUp(290, 153, "", "/menu/file/select-items/select-items.html", "#ffffff");
+                    createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html", "#ffffff");
                 }
             },
             {
@@ -212,15 +242,17 @@ exports.template = electron_1.Menu.buildFromTemplate([
     },
     {
         label: 'Bookmarks',
+        id: 'main-bookmark',
         submenu: [
             {
                 label: 'Bookmark this position',
                 click: function () {
-                    createMenuPopUp(420, 180, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
+                    createMenuPopUp(420, 200, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
                 }
             },
             {
                 label: 'Delete...',
+                id: 'delete-bookmark',
                 submenu: []
             },
             {
@@ -606,6 +638,7 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
     menu_window.once('ready-to-show', function () {
         menu_window.show();
     });
+    // menu_window.webContents.openDevTools();
     menu_window.on('closed', function () {
         menu_window = null;
     });
