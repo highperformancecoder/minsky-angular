@@ -140,7 +140,6 @@ function addUpdateBookmarkList(mainMenu) {
         }
         ;
     });
-    return true;
 }
 function goToSelectedBookmark() {
     exports.win.loadURL(this.url).catch(function (err) { throw new Error('Bookmarked url not found'); });

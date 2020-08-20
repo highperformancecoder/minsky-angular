@@ -146,7 +146,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Dimensional Analysis',
                 click: function () {
-                    createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional-analysis.html", "#ffffff");
+                    createMenuPopUp(240, 153, "", "/menu/file/dimensional-analysis/dimensional_analysis.html", "#ffffff");
                 }
             },
             {
@@ -198,7 +198,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Select items',
                 click: function () {
-                    createMenuPopUp(290, 153, "", "/menu/file/select-items/select-items.html", "#ffffff");
+                    createMenuPopUp(290, 153, "", "/menu/file/select-items/select_items.html", "#ffffff");
                 }
             },
             {
@@ -247,7 +247,7 @@ exports.template = electron_1.Menu.buildFromTemplate([
             {
                 label: 'Bookmark this position',
                 click: function () {
-                    createMenuPopUp(420, 680, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
+                    createMenuPopUp(420, 200, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
                 }
             },
             {
@@ -638,7 +638,7 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
     menu_window.once('ready-to-show', function () {
         menu_window.show();
     });
-    menu_window.webContents.openDevTools();
+    // menu_window.webContents.openDevTools();
     menu_window.on('closed', function () {
         menu_window = null;
     });

@@ -251,7 +251,7 @@ export const template = Menu.buildFromTemplate([
       {
         label: 'Bookmark this position',
         click() {
-          createMenuPopUp(420, 680, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
+          createMenuPopUp(420, 200, "Bookmark this position", "/menu/bookmark-position/bookmark-position.html", null);
         }
       },
       {
@@ -700,7 +700,7 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
   menu_window.once('ready-to-show', () => {
     menu_window.show();
   });
-  menu_window.webContents.openDevTools();
+  // menu_window.webContents.openDevTools();
   menu_window.on('closed', () => {
     menu_window = null;
   });
