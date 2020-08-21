@@ -1,19 +1,16 @@
 import * as path from 'path'
 import * as url from 'url'
 
-import { BrowserWindow, Menu, MenuItem, app, screen } from 'electron'
+import { app, BrowserWindow, screen, Menu, MenuItem, dialog } from 'electron';
 
-import { checkBackgroundAndApplyTextColor } from './top-menu'
-import { template } from './top-menu'
+import { checkBackgroundAndApplyTextColor, template } from './top-menu'
 
-const storage = require('electron-json-storage')
-const dialog = require('electron').dialog
-app.setName('Minsky')
-
-export let win: BrowserWindow = null
-let storageBackgroundColor = '#c1c1c1'
+app.setName("Minsky");
+const storage = require('electron-json-storage');
+export let win: BrowserWindow = null;
+let storageBackgroundColor = "#c1c1c1";
 const args = process.argv.slice(1),
-	serve = args.some((val) => val === '--serve')
+	serve = args.some(val => val === '--serve');
 
 export function createWindow(): BrowserWindow {
 	storage.get('backgroundColor', function (error, data) {
@@ -24,7 +21,6 @@ export function createWindow(): BrowserWindow {
 			checkBackgroundAndApplyTextColor(storageBackgroundColor)
 		}, 1500)
 	})
-
 	return win
 }
 
@@ -87,36 +83,38 @@ function prepareBrowserWindow(color) {
 }
 
 try {
-	app.allowRendererProcessReuse = true
+	app.allowRendererProcessReuse = true;
 
 	// This method will be called when Electron has finished
 	// initialization and is ready to create browser windows.
 	// Some APIs can only be used after this event occurs.
 	// Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
 	app.on('ready', () => {
-		const menu = template
-		addUpdateBookmarkList(menu)
-		Menu.setApplicationMenu(menu)
-		setTimeout(createWindow, 400)
-	})
+		const menu = template;
+		addUpdateBookmarkList(menu);
+		Menu.setApplicationMenu(menu);
+		setTimeout(createWindow, 400);
+	});
 
 	// Quit when all windows are closed.
 	app.on('window-all-closed', () => {
 		// On OS X it is common for applications and their menu bar
 		// to stay active until the user quits explicitly with Cmd + Q
 		if (process.platform !== 'darwin') {
-			app.quit()
+			app.quit();
 		}
-	})
+
+	});
 
 	app.on('activate', () => {
 		// On OS X it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
 		if (win === null) {
-			addUpdateBookmarkList(template)
-			createWindow()
+			addUpdateBookmarkList(template);
+			createWindow();
 		}
-	})
+	});
+
 } catch (e) {
 	// Catch Error
 	// throw e;
@@ -167,7 +165,7 @@ export function deleteBookmark() {
 		if (data) {
 			const ind = data.findIndex((ele) => ele.title === this.title)
 			ind > -1 ? data.splice(ind, 1) : new Error('Bookmark Not Found')
-			storage.set('bookmarks', data, (error) => {})
+			storage.set('bookmarks', data, (error) => { })
 
 			let innerSubmenu = template
 				.getMenuItemById('main-bookmark')

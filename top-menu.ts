@@ -1,4 +1,4 @@
-import { Menu, BrowserWindow, ipcMain, shell, dialog, MenuItem } from 'electron'
+import { Menu, BrowserWindow, ipcMain, shell, dialog, MenuItem, app, remote } from 'electron';
 import {
 	win,
 	getStorageBackgroundColor,
@@ -6,13 +6,11 @@ import {
 	createWindow,
 	goToSelectedBookmark,
 	deleteBookmark,
-} from './main'
-const electron = require('electron')
-const storage = require('electron-json-storage')
-storage.setDataPath((electron.app || electron.remote.app).getPath('userData'))
-const fs = require('fs')
-var menu_window: BrowserWindow
-export var bookmarkList = []
+} from './main';
+const storage = require('electron-json-storage');
+storage.setDataPath((app || remote.app).getPath('userData'));
+const fs = require('fs');
+var menu_window: BrowserWindow;
 
 ipcMain.on('create_variable:ok', (event) => {
 	menu_window.close()
@@ -387,51 +385,51 @@ export const template = Menu.buildFromTemplate([
 					},
 					{
 						label: 'subtract',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'multiple',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'divide',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'min',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'max',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'and',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'or',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'log',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'pow',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'lt',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'le',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'eq',
-						click() {},
+						click() { },
 					},
 				],
 			},
@@ -440,71 +438,71 @@ export const template = Menu.buildFromTemplate([
 				submenu: [
 					{
 						label: 'copy',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'sqrt',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'exp',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'ln',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'sin',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'cos',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'tan',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'asin',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'acos',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'atan',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'sinh',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'cosh',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'tanh',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'abs',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'floor',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'frac',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'not',
-						click() {},
+						click() { },
 					},
 				],
 			},
@@ -513,35 +511,35 @@ export const template = Menu.buildFromTemplate([
 				submenu: [
 					{
 						label: 'sum',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'product',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'infimum',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'supremum',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'any',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'all',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'infIndex',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'supIndex',
-						click() {},
+						click() { },
 					},
 				],
 			},
@@ -550,15 +548,15 @@ export const template = Menu.buildFromTemplate([
 				submenu: [
 					{
 						label: 'runningSum',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'runningProduct',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'difference',
-						click() {},
+						click() { },
 					},
 				],
 			},
@@ -567,45 +565,45 @@ export const template = Menu.buildFromTemplate([
 				submenu: [
 					{
 						label: 'innerProduct',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'outerProduct',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'index',
-						click() {},
+						click() { },
 					},
 					{
 						label: 'gather',
-						click() {},
+						click() { },
 					},
 				],
 			},
 			{
 				label: 'time',
-				click() {},
+				click() { },
 			},
 			{
 				label: 'integrate',
-				click() {},
+				click() { },
 			},
 			{
 				label: 'differentiate',
-				click() {},
+				click() { },
 			},
 			{
 				label: 'data',
-				click() {},
+				click() { },
 			},
 			{
 				label: 'ravel',
-				click() {},
+				click() { },
 			},
 			{
 				label: 'plot',
-				click() {},
+				click() { },
 			},
 		],
 	},
