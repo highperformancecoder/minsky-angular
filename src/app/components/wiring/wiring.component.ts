@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core'
 
 @Component({
-  selector: 'app-wiring',
-  templateUrl: './wiring.component.html',
-  styleUrls: ['./wiring.component.scss']
+	selector: 'app-wiring',
+	templateUrl: './wiring.component.html',
+	styleUrls: ['./wiring.component.scss'],
 })
 export class WiringComponent implements OnInit {
+	constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+	ngOnInit(): void {}
 }
