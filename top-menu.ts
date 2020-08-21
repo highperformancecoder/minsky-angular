@@ -1,12 +1,9 @@
-import { Menu, BrowserWindow, ipcMain, shell, dialog, MenuItem } from 'electron';
+import { Menu, BrowserWindow, ipcMain, shell, dialog, MenuItem, app, remote } from 'electron';
 import { win, getStorageBackgroundColor, setStorageBackgroundColor, createWindow, goToSelectedBookmark, deleteBookmark } from './main';
-const electron = require('electron');
 const storage = require('electron-json-storage');
-storage.setDataPath((electron.app || electron.remote.app).getPath('userData'));
+storage.setDataPath((app || remote.app).getPath('userData'));
 const fs = require('fs');
 var menu_window: BrowserWindow;
-export var bookmarkList = [];
-
 
 ipcMain.on('create_variable:ok', (event) => {
   menu_window.close();
@@ -112,7 +109,6 @@ export const template = Menu.buildFromTemplate([
           let content = "This is the content of new file";
           dialog.showSaveDialog(win, { filters: [{ name: 'text', extensions: ['txt'] }] }).
             then(result => {
-              console.log(result)
               fs.writeFile(result.filePath, content, (err) => {
                 if (err)
                   console.log(err);

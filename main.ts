@@ -1,11 +1,9 @@
-import { app, BrowserWindow, screen, Menu, MenuItem } from 'electron';
+import { app, BrowserWindow, screen, Menu, MenuItem, dialog } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 app.setName("Minsky");
-import { template } from './top-menu';
-import { checkBackgroundAndApplyTextColor } from './top-menu'
+import { checkBackgroundAndApplyTextColor, template } from './top-menu'
 const storage = require('electron-json-storage');
-const dialog = require('electron').dialog;
 export let win: BrowserWindow = null;
 let storageBackgroundColor = "#c1c1c1";
 const args = process.argv.slice(1),
@@ -104,7 +102,7 @@ try {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
-     app.quit();
+      app.quit();
     }
 
   });
