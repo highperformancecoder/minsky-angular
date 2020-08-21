@@ -32,6 +32,14 @@
 	width: 100%;
 }
 
+.mt-10 {
+	margin: 10px 0px;
+}
+
+.mt-20 {
+	margin: 20px 0px;
+}
+
 .footer_btn > button {
 	width: 17%;
 	height: 60%;
