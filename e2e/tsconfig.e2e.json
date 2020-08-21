@@ -1,13 +1,9 @@
 {
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../out-tsc/e2e",
-    "module": "commonjs",
-    "types": [
-      "mocha"
-    ]
-  },
-  "include": [
-    "e2e/**/*.ts"
-  ]
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "../out-tsc/e2e",
+		"module": "commonjs",
+		"types": ["mocha"]
+	},
+	"include": ["e2e/**/*.ts"]
 }
