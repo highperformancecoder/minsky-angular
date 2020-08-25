@@ -1,5 +1,7 @@
 @import '../../../theme/variables.scss';
 
+$button-size: 2rem;
+
 .toolbar-controls {
 	display: flex;
 	flex-wrap: wrap;
@@ -73,11 +75,12 @@
 	border: none;
 	cursor: pointer;
 	display: inline-flex;
-	height: 31px;
+	height: $button-size;
+	width: $button-size;
 	margin: 2px;
 	padding: 2px;
-	width: 31px;
-	border: 2px solid $toolbar-box;
+	border: 1px solid $toolbar-box;
+	border-radius: 0.25rem;
 	background-color: $toolbar-bg;
 	.btn-icon {
 		max-width: 100%;
