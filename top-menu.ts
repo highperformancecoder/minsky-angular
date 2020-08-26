@@ -1,4 +1,13 @@
-import { Menu, BrowserWindow, ipcMain, shell, dialog, MenuItem, app, remote } from 'electron';
+import {
+	Menu,
+	BrowserWindow,
+	ipcMain,
+	shell,
+	dialog,
+	MenuItem,
+	app,
+	remote,
+} from 'electron'
 import {
 	win,
 	getStorageBackgroundColor,
@@ -6,54 +15,21 @@ import {
 	createWindow,
 	goToSelectedBookmark,
 	deleteBookmark,
-} from './main';
-const storage = require('electron-json-storage');
-storage.setDataPath((app || remote.app).getPath('userData'));
-const fs = require('fs');
-var menu_window: BrowserWindow;
+} from './main'
+const storage = require('electron-json-storage')
+storage.setDataPath((app || remote.app).getPath('userData'))
+const fs = require('fs')
+let menuWindow: BrowserWindow
 
 ipcMain.on('create_variable:ok', (event) => {
-	menu_window.close()
+	menuWindow.close()
 })
 
 ipcMain.on('background-color:ok', (event, data) => {
 	storage.set('backgroundColor', { color: data.color })
 	checkBackgroundAndApplyTextColor(data.color)
 	setStorageBackgroundColor(data.color)
-	menu_window.close()
-})
-
-ipcMain.on('save-bookmark', (event, data) => {
-	if (data) {
-		storage.get(data.fileName, function (error, fileData) {
-			if (error) throw error
-			const dataToSave = {
-				title: data.bookmarkTitle,
-				url: win.webContents.getURL(),
-			}
-			fileData.push(dataToSave)
-			storage.set(data.fileName, fileData, function (error) {
-				if (error) throw error
-			})
-			let outerSubMenu = template.getMenuItemById('main-bookmark').submenu
-			let innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark')
-				.submenu
-			outerSubMenu.append(
-				new MenuItem({
-					label: data.bookmarkTitle,
-					click: goToSelectedBookmark.bind(dataToSave),
-				})
-			)
-			innerSubMenu.append(
-				new MenuItem({
-					label: data.bookmarkTitle,
-					click: deleteBookmark.bind(dataToSave),
-				})
-			)
-			Menu.setApplicationMenu(template)
-			menu_window.close()
-		})
-	}
+	menuWindow.close()
 })
 
 export const template = Menu.buildFromTemplate([
@@ -62,7 +38,7 @@ export const template = Menu.buildFromTemplate([
 		submenu: [
 			{
 				label: 'About Minsky',
-				//It will open a child window when about menu is clicked.
+				// It will open a child window when about menu is clicked.
 				click() {
 					createMenuPopUp(
 						420,
@@ -130,7 +106,7 @@ export const template = Menu.buildFromTemplate([
 				label: 'Save',
 				accelerator: 'CmdOrCtrl + S',
 				click() {
-					let content = 'This is the content of new file'
+					const content = 'This is the content of new file'
 					dialog
 						.showSaveDialog(win, {
 							filters: [{ name: 'text', extensions: ['txt'] }],
@@ -162,7 +138,7 @@ export const template = Menu.buildFromTemplate([
 						.then((result) => {
 							console.log(result.canceled)
 							console.log(result.filePaths)
-							for (let file of result.filePaths) {
+							for (const file of result.filePaths) {
 								console.log(fs.readFileSync(file).toString())
 							}
 						})
@@ -385,51 +361,51 @@ export const template = Menu.buildFromTemplate([
 					},
 					{
 						label: 'subtract',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'multiple',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'divide',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'min',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'max',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'and',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'or',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'log',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'pow',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'lt',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'le',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'eq',
-						click() { },
+						click() {},
 					},
 				],
 			},
@@ -438,71 +414,71 @@ export const template = Menu.buildFromTemplate([
 				submenu: [
 					{
 						label: 'copy',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'sqrt',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'exp',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'ln',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'sin',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'cos',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'tan',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'asin',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'acos',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'atan',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'sinh',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'cosh',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'tanh',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'abs',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'floor',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'frac',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'not',
-						click() { },
+						click() {},
 					},
 				],
 			},
@@ -511,35 +487,35 @@ export const template = Menu.buildFromTemplate([
 				submenu: [
 					{
 						label: 'sum',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'product',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'infimum',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'supremum',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'any',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'all',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'infIndex',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'supIndex',
-						click() { },
+						click() {},
 					},
 				],
 			},
@@ -548,15 +524,15 @@ export const template = Menu.buildFromTemplate([
 				submenu: [
 					{
 						label: 'runningSum',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'runningProduct',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'difference',
-						click() { },
+						click() {},
 					},
 				],
 			},
@@ -565,45 +541,45 @@ export const template = Menu.buildFromTemplate([
 				submenu: [
 					{
 						label: 'innerProduct',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'outerProduct',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'index',
-						click() { },
+						click() {},
 					},
 					{
 						label: 'gather',
-						click() { },
+						click() {},
 					},
 				],
 			},
 			{
 				label: 'time',
-				click() { },
+				click() {},
 			},
 			{
 				label: 'integrate',
-				click() { },
+				click() {},
 			},
 			{
 				label: 'differentiate',
-				click() { },
+				click() {},
 			},
 			{
 				label: 'data',
-				click() { },
+				click() {},
 			},
 			{
 				label: 'ravel',
-				click() { },
+				click() {},
 			},
 			{
 				label: 'plot',
-				click() { },
+				click() {},
 			},
 		],
 	},
@@ -659,6 +635,7 @@ export const template = Menu.buildFromTemplate([
 			{
 				label: 'Minsky Documentation',
 				click() {
+					// tslint:disable-next-line: no-shadowed-variable
 					const shell = require('electron').shell
 					shell.openExternal(
 						'https://minsky.sourceforge.io/manual/minsky.html'
@@ -669,37 +646,73 @@ export const template = Menu.buildFromTemplate([
 	},
 ])
 
-function createMenuPopUp(width, height, title, dir_path, background_color) {
-	background_color = background_color || getStorageBackgroundColor()
-	var BrowserWindow = require('electron').BrowserWindow
-	menu_window = new BrowserWindow({
-		width: width,
-		height: height,
-		title: title,
+ipcMain.on('save-bookmark', (event, data) => {
+	if (data) {
+		storage.get(data.fileName, (error, fileData) => {
+			if (error) throw error
+			const dataToSave = {
+				title: data.bookmarkTitle,
+				url: win.webContents.getURL(),
+			}
+			fileData.push(dataToSave)
+			// tslint:disable-next-line: no-shadowed-variable
+			storage.set(data.fileName, fileData, (error) => {
+				if (error) throw error
+			})
+			const outerSubMenu = template.getMenuItemById('main-bookmark')
+				.submenu
+			const innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark')
+				.submenu
+			outerSubMenu.append(
+				new MenuItem({
+					label: data.bookmarkTitle,
+					click: goToSelectedBookmark.bind(dataToSave),
+				})
+			)
+			innerSubMenu.append(
+				new MenuItem({
+					label: data.bookmarkTitle,
+					click: deleteBookmark.bind(dataToSave),
+				})
+			)
+			Menu.setApplicationMenu(template)
+			menuWindow.close()
+		})
+	}
+})
+
+function createMenuPopUp(width, height, title, dirPath, menuBackgroundColor) {
+	menuBackgroundColor = menuBackgroundColor || getStorageBackgroundColor()
+	// tslint:disable-next-line: no-shadowed-variable
+	const BrowserWindow = require('electron').BrowserWindow
+	menuWindow = new BrowserWindow({
+		width,
+		height,
+		title,
 		resizable: false,
 		minimizable: false,
 		show: false,
 		parent: win,
 		modal: true,
-		backgroundColor: background_color,
+		backgroundColor: menuBackgroundColor,
 		webPreferences: {
 			nodeIntegration: true,
 		},
 	})
-	menu_window.setMenu(null)
-	menu_window.loadURL('file://' + __dirname + dir_path)
+	menuWindow.setMenu(null)
+	menuWindow.loadURL('file://' + __dirname + dirPath)
 
-	menu_window.once('ready-to-show', () => {
-		menu_window.show()
+	menuWindow.once('ready-to-show', () => {
+		menuWindow.show()
 	})
-	// menu_window.webContents.openDevTools();
-	menu_window.on('closed', () => {
-		menu_window = null
+	// menuWindow.webContents.openDevTools();      // command to inspect popup
+	menuWindow.on('closed', () => {
+		menuWindow = null
 	})
 	// Closing global popup event_______
 	ipcMain.on('global-menu-popup:cancel', (event) => {
-		if (menu_window) {
-			menu_window.close()
+		if (menuWindow) {
+			menuWindow.close()
 		}
 	})
 }
@@ -707,8 +720,9 @@ function createMenuPopUp(width, height, title, dir_path, background_color) {
 export function checkBackgroundAndApplyTextColor(color) {
 	// Variables for red, green, blue values
 
-	var colorArray
-	var r, g, b, hsp
+	let colorArray
+	// tslint:disable-next-line: one-variable-per-declaration
+	let r, g, b, hsp
 
 	// Check the format of the color, HEX or RGB?
 	if (color.match(/^rgb/)) {
@@ -726,8 +740,11 @@ export function checkBackgroundAndApplyTextColor(color) {
 			'0x' + color.slice(1).replace(color.length < 5 && /./g, '$&$&')
 		)
 
+		// tslint:disable-next-line: no-bitwise
 		r = colorArray >> 16
+		// tslint:disable-next-line: no-bitwise
 		g = (colorArray >> 8) & 255
+		// tslint:disable-next-line: no-bitwise
 		b = colorArray & 255
 	}
 
@@ -736,10 +753,10 @@ export function checkBackgroundAndApplyTextColor(color) {
 
 	// Using the HSP value, determine whether the color is light or dark
 	if (hsp > 127.5) {
-		var css = 'body { background-color: ' + color + '; color: black; }'
+		const css = 'body { background-color: ' + color + '; color: black; }'
 		applyCssToBackground(css)
 	} else {
-		var css = 'body { background-color: ' + color + '; color: white; }'
+		const css = 'body { background-color: ' + color + '; color: white; }'
 		applyCssToBackground(css)
 	}
 }

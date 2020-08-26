@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 
-import { EquationsComponent } from './equations.component'
+import { WiringComponent } from '../../components/wiring/wiring.component'
 
-describe('EquationsComponent', () => {
-	let component: EquationsComponent
-	let fixture: ComponentFixture<EquationsComponent>
+describe('WiringComponent', () => {
+	let component: WiringComponent
+	let fixture: ComponentFixture<WiringComponent>
 
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
-			declarations: [EquationsComponent],
+			declarations: [WiringComponent],
 		}).compileComponents()
 	}))
 
 	beforeEach(() => {
-		fixture = TestBed.createComponent(EquationsComponent)
+		fixture = TestBed.createComponent(WiringComponent)
 		component = fixture.componentInstance
 		fixture.detectChanges()
 	})
