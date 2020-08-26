@@ -57,7 +57,12 @@ $text: $black !default;
 // Border color
 $default-solid: $black !default;
 
-// global fontSize variable
+// global fontSize
 $primary-font: 14px;
-$secondary-font: 12px;
-$default-header: 16px;
+$secondary-font: 30px;
+
+// btn size
+$button-size: 2rem;
+
+// tab
+$wiring-tabs-height: 1.9rem;
