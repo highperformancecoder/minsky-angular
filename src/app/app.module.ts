@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms'
 import { HttpClientModule, HttpClient } from '@angular/common/http'
 import { CoreModule } from './core/core.module'
 import { SharedModule } from './shared/shared.module'
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io'
 
 import { AppRoutingModule } from './app-routing.module'
 
@@ -28,6 +29,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
 	return new TranslateHttpLoader(http, './assets/i18n/', '.json')
 }
 
+const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
+
 @NgModule({
 	declarations: [
 		AppComponent,
@@ -45,6 +48,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
 		SharedModule,
 		HomeModule,
 		AppRoutingModule,
+		SocketIoModule.forRoot(config),
 		TranslateModule.forRoot({
 			loader: {
 				provide: TranslateLoader,

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'
+import { CommunicationService } from '../../communication.service'
 
 @Component({
 	selector: 'app-wiring',
@@ -6,7 +7,18 @@ import { Component, OnInit } from '@angular/core'
 	styleUrls: ['./wiring.component.scss'],
 })
 export class WiringComponent implements OnInit {
-	constructor() {}
+	newMessage: string
+	messageList: string[] = []
 
-	ngOnInit(): void {}
+	constructor(private cmService: CommunicationService) {}
+
+	sendMessage() {
+		this.cmService.sendMessage(this.newMessage)
+		this.newMessage = ''
+	}
+	ngOnInit() {
+		this.cmService.getMessages().subscribe((message: string) => {
+			this.messageList.push(message)
+		})
+	}
 }
