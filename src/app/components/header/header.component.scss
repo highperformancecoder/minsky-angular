@@ -1,7 +1,5 @@
 @import '../../../theme/variables.scss';
 
-$button-size: 2rem;
-
 .toolbar-controls {
 	display: flex;
 	flex-wrap: wrap;
@@ -30,8 +28,8 @@ $button-size: 2rem;
 				input {
 					cursor: pointer;
 					user-select: none;
-					height: 20px;
-					width: 20px;
+					height: 1.3rem;
+					width: 1.3rem;
 					border: 2px solid $toolbar-box;
 				}
 			}
@@ -88,7 +86,7 @@ $button-size: 2rem;
 }
 
 .zoom-btn {
-	width: 42px;
+	width: 3rem;
 	padding: 8px;
 }
 

@@ -1,5 +1,7 @@
+@import '../../../theme/variables.scss';
+
 .wrapper {
 	text-align: center;
-	font-size: 30px;
+	font-size: $secondary-font;
 	margin-top: 15%;
 }
