@@ -11,11 +11,11 @@ const port = process.env.PORT || 3000
 
 io.on('connection', (socket) => {
 	console.log('user connected')
-	socket.on('myClick', function (data) {
-		console.log('myClick in server.js')
+	socket.on('canvasClick', (data) => {
+		console.log('canvasClick in server.js')
 		// console.log(socket);
 		console.log(data)
-		socket.broadcast.emit('myClick', data)
+		socket.broadcast.emit('canvasClick', data)
 	})
 })
 

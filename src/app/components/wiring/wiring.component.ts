@@ -22,10 +22,10 @@ export class WiringComponent implements OnInit {
 				clientX: event.clientX,
 				clientY: event.clientY,
 			}
-			this.socket.emit('myClick', clickData)
+			this.socket.emit('canvasClick', clickData)
 		})
 
-		this.socket.on('myClick', (data) => {
+		this.socket.on('canvasClick', (data) => {
 			console.log('event received', data)
 			document.querySelectorAll(data.id).dispatchEvent(data.event)
 		})
