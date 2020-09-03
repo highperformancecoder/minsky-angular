@@ -24,6 +24,13 @@ io.on('connection', (socket) => {
 				break
 		}
 	})
+
+	socket.on('canvasClick', (data) => {
+		console.log('canvasClick in server.js')
+		// console.log(socket);
+		console.log(data)
+		socket.broadcast.emit('canvasClick', data)
+	})
 })
 
 io.on('new-message', (message) => {
