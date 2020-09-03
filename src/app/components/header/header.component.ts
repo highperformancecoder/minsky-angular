@@ -1,16 +1,33 @@
 import { Component, OnInit } from '@angular/core'
 
+import { CommunicationService } from './../../communication.service'
+
+interface HeaderEvent {
+	action: string
+	target: string
+}
+
 @Component({
 	selector: 'app-header',
 	templateUrl: './header.component.html',
 	styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
-	constructor() {}
+	HEADER_EVENT = 'HEADER_EVENT'
+	constructor(private commService: CommunicationService) {}
 
 	ngOnInit() {}
+
+	buttonClicked() {
+		// this.commService
+	}
+
 	recordButton() {
-		console.log('recordButton')
+		this.commService.sendEvent(this.HEADER_EVENT, {
+			action: 'CLICKED',
+			target: 'RECORD_BUTTON',
+		})
+		console.log('recordButtonssss')
 	}
 	recordingReplyButton() {
 		console.log('recordingReplyButton')
