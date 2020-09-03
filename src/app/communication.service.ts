@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
-import { Socket } from 'ngx-socket-io'
 import { Observable } from 'rxjs'
+import { Socket } from 'ngx-socket-io'
 
 export class Message {
 	id: string
@@ -15,6 +15,10 @@ export class CommunicationService {
 
 	public sendMessage(message) {
 		this.socket.emit('new-message', message)
+	}
+
+	public sendEvent(event, message) {
+		this.socket.emit(event, message)
 	}
 
 	public getMessages = () => {
