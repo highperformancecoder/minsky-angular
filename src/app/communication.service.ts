@@ -22,10 +22,10 @@ export class CommunicationService {
 	}
 
 	public getMessages = () => {
-		// tslint:disable-next-line: deprecation
-		return Observable.create((observer) => {
-			this.socket.on('new-message', (message) => {
+		return new Observable((observer) => {
+			this.socket.on('RESPONSE', (message) => {
 				observer.next(message)
+				console.log(message)
 			})
 		})
 	}
