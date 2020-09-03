@@ -11,6 +11,19 @@ const port = process.env.PORT || 3000
 
 io.on('connection', (socket) => {
 	console.log('user connected')
+	socket.on('HEADER_EVENT', (message) => {
+		switch (message.target) {
+			case 'RECORD_BUTTON':
+				console.log('record button clicked')
+				socket.emit('RESPONSE', { msg: 'Recording Started' })
+				break
+			case 'REFRESH_BUTTON':
+				console.log('refresh button clicked')
+				// TODO: send updated canvas
+				socket.emit('RESPONSE', { msg: 'Refreshing' })
+				break
+		}
+	})
 })
 
 io.on('new-message', (message) => {
