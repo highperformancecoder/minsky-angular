@@ -22,6 +22,46 @@ io.on('connection', (socket) => {
 				// TODO: send updated canvas
 				socket.emit('RESPONSE', { msg: 'Refreshing' })
 				break
+			case 'RECORDING_REPLAY_BUTTON':
+				console.log('Recording replay button clicked')
+				socket.emit('RESPONSE', { msg: 'Recording Replay Started' })
+				break
+			case 'REVERSE_CHECKBOX_BUTTON':
+				console.log('Reverse checkbox button clicked')
+				socket.emit('RESPONSE', { msg: 'Reverse checked' })
+				break
+			case 'STOP_BUTTON':
+				console.log('Stop button clicked')
+				socket.emit('RESPONSE', { msg: 'Recording Stop' })
+				break
+			case 'STEP_BUTTON':
+				console.log('Step button clicked')
+				socket.emit('RESPONSE', { msg: 'Recording Step' })
+				break
+			case 'ZOOMOUT_BUTTON':
+				console.log('ZoomOut button clicked')
+				socket.emit('RESPONSE', { msg: 'ZoomOut' })
+				break
+			case 'ZOOMIN_BUTTON':
+				console.log('ZoomIn button clicked')
+				socket.emit('RESPONSE', { msg: 'ZoomIn' })
+				break
+			case 'RESET_BUTTON':
+				console.log('Reset button clicked')
+				socket.emit('RESPONSE', { msg: 'Reset Recording' })
+				break
+			case 'RESETZOOM_BUTTON':
+				console.log('Reset zoom button clicked')
+				socket.emit('RESPONSE', { msg: 'Reset Zoom' })
+				break
+			case 'ZOOMTOFIT_BUTTON':
+				console.log('Zoom to fit button clicked')
+				socket.emit('RESPONSE', { msg: 'Zoom Fit' })
+				break
+			case 'SIMULATION_SPEED':
+				console.log('Simulation speed clicked')
+				socket.emit('RESPONSE', { msg: 'Updating Simulation Speed' })
+				break
 		}
 	})
 
