@@ -305,6 +305,15 @@ export const template = Menu.buildFromTemplate([
 		submenu: [
 			{
 				label: 'Godley Table',
+				click() {
+					createMenuPopUp(
+						420,
+						200,
+						'Godley table',
+						'/menu/godley-table/godley-table.html',
+						null
+					)
+				},
 			},
 			{
 				label: 'Variable',
