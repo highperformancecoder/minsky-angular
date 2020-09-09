@@ -20,39 +20,19 @@ export class WiringComponent implements OnInit {
 		private socket: Socket
 	) {
 		document.addEventListener('click', (event) => {
-			const clickData = {
-				type: event.type,
-				clientX: event.clientX,
-				clientY: event.clientY,
-			}
-			this.socket.emit('canvasEvent', clickData)
+			this.cmService.mouseEvents('canvasEvent', event)
 		})
 
 		document.addEventListener('mousedown', (event) => {
-			const clickData = {
-				type: event.type,
-				clientX: event.clientX,
-				clientY: event.clientY,
-			}
-			this.socket.emit('canvasEvent', clickData)
+			this.cmService.mouseEvents('canvasEvent', event)
 		})
 
 		document.addEventListener('mouseup', (event) => {
-			const clickData = {
-				type: event.type,
-				clientX: event.clientX,
-				clientY: event.clientY,
-			}
-			this.socket.emit('canvasEvent', clickData)
+			this.cmService.mouseEvents('canvasEvent', event)
 		})
 
 		document.addEventListener('mousemove', (event) => {
-			const clickData = {
-				type: event.type,
-				clientX: event.clientX,
-				clientY: event.clientY,
-			}
-			this.socket.emit('canvasEvent', clickData)
+			this.cmService.mouseEvents('canvasEvent', event)
 		})
 
 		this.socket.on('canvasEvent', (data) => {

@@ -21,14 +21,14 @@ export class CommunicationService {
 		this.socket.emit(event, message)
 	}
 
-	/* public mouseEvents = (eventName, event) => {                         	// common method for mouse events
+	public mouseEvents(eventName, event) {
 		const clickData = {
 			type: event.type,
 			clientX: event.clientX,
 			clientY: event.clientY,
 		}
 		this.socket.emit(eventName, clickData)
-	} */
+	}
 
 	public getMessages = () => {
 		return new Observable((observer) => {
