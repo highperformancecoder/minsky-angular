@@ -37,9 +37,9 @@ export class WiringComponent implements OnInit {
 
 		this.cmService.dispatchEvents('canvasEvent')
 
+		this.windowDetails()
 		this.canvasOffsetValues()
 		this.canvasWindowSize()
-		this.windowDetails()
 	}
 
 	ngOnInit() {
@@ -51,7 +51,14 @@ export class WiringComponent implements OnInit {
 	canvasWindowSize() {
 		// code for canvas window size
 		const screen = window.screen
-		console.log(screen)
+		const windowDetail = {
+			width: screen.width,
+			height: screen.height,
+		}
+		console.log('width:' + screen.width + ' ' + 'height:' + screen.height)
+
+		this.cmService.emitValues('Values', windowDetail)
+		this.cmService.dispatchEvents('Values')
 	}
 
 	windowDetails() {
@@ -59,9 +66,14 @@ export class WiringComponent implements OnInit {
 		const winSize = require('electron')
 			.remote.getCurrentWindow()
 			.getNativeWindowHandle()
-			.readUInt32LE(0)
-			.toString(16)
+
+		// code to convert buffer element to string where 0 will be replaced with each array element
+		/* const winSize = require('electron')
+			.remote.getCurrentWindow()
+			.getNativeWindowHandle().readUInt32LE(0).toString(16) */
 		console.log(winSize)
+		this.cmService.emitValues('Values', winSize)
+		this.cmService.dispatchEvents('Values')
 	}
 
 	canvasOffsetValues() {
@@ -77,9 +89,8 @@ export class WiringComponent implements OnInit {
 			this.leftOffset = this.canvasDetail.offsetLeft
 			this.offSetValue =
 				'top:' + this.topOffset + ' ' + 'left:' + this.leftOffset
-			console.log('value: ' + this.offSetValue)
 
-			this.cmService.sendOffset('Values', this.offSetValue)
+			this.cmService.emitValues('Values', this.offSetValue)
 		})
 
 		this.cmService.dispatchEvents('Values')

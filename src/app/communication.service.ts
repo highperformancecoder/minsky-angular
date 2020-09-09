@@ -13,8 +13,8 @@ export class Message {
 export class CommunicationService {
 	constructor(private socket: Socket) {}
 
-	public sendOffset(message, offSetValue) {
-		this.socket.emit(message, offSetValue)
+	public emitValues(message, data) {
+		this.socket.emit(message, data)
 	}
 
 	public sendEvent(event, message) {

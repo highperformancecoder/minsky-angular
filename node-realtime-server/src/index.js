@@ -67,12 +67,12 @@ io.on('connection', (socket) => {
 
 	socket.on('canvasEvent', (data) => {
 		// code for mouse events
-		console.log(data.type + 'in server.js')
 		console.log(data)
 		socket.broadcast.emit('canvasEvent', data)
 	})
 
 	socket.on('Values', (data) => {
+		// code for x11 window, left/top offset, window size
 		console.log(data)
 		socket.broadcast.emit(data)
 	})
