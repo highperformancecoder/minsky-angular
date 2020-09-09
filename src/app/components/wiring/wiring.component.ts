@@ -35,13 +35,23 @@ export class WiringComponent implements OnInit {
 			this.cmService.mouseEvents('canvasEvent', event)
 		})
 
-		this.socket.on('canvasEvent', (data) => {
-			// common code for mouse events
-			console.log('event received', data)
-			document.querySelectorAll(data.id).dispatchEvent(data.event)
-		})
+		this.cmService.dispatchEvents('canvasEvent')
 
+		this.canvasOffsetValues()
+		this.canvasWindowSize()
 		this.windowDetails()
+	}
+
+	ngOnInit() {
+		this.cmService.getMessages().subscribe((message: string) => {
+			this.messageList.push(message)
+		})
+	}
+
+	canvasWindowSize() {
+		// code for canvas window size
+		const screen = window.screen
+		console.log(screen)
 	}
 
 	windowDetails() {
@@ -51,13 +61,15 @@ export class WiringComponent implements OnInit {
 			.getNativeWindowHandle()
 			.readUInt32LE(0)
 			.toString(16)
+		console.log(winSize)
+	}
 
+	canvasOffsetValues() {
 		// code for canvas offset values
 		document.addEventListener('DOMContentLoaded', () => {
 			// When the event DOMContentLoaded occurs, it is safe to access the DOM
 
 			window.addEventListener('scroll', this.canvasSticky)
-
 			this.canvasDetail = document.getElementById('offsetValue')
 
 			// Get the offset position of the canvas
@@ -65,19 +77,12 @@ export class WiringComponent implements OnInit {
 			this.leftOffset = this.canvasDetail.offsetLeft
 			this.offSetValue =
 				'top:' + this.topOffset + ' ' + 'left:' + this.leftOffset
-			console.log('value' + this.offSetValue)
-			this.socket.emit('Values', this.offSetValue)
+			console.log('value: ' + this.offSetValue)
+
+			this.cmService.sendOffset('Values', this.offSetValue)
 		})
 
-		this.socket.on('Values', (data) => {
-			// common code for mouse events
-			console.log('offset value for top/left', data)
-			document.querySelectorAll(data.id).dispatchEvent(data.event)
-		})
-
-		// code for window size
-		const screen = window.screen
-		console.log(winSize, screen)
+		this.cmService.dispatchEvents('Values')
 	}
 
 	canvasSticky() {
@@ -91,16 +96,5 @@ export class WiringComponent implements OnInit {
 		} else {
 			this.canvasDetail.classList.remove('sticky')
 		}
-	}
-
-	sendMessage() {
-		this.cmService.sendMessage(this.newMessage)
-		this.newMessage = ''
-	}
-
-	ngOnInit() {
-		this.cmService.getMessages().subscribe((message: string) => {
-			this.messageList.push(message)
-		})
 	}
 }

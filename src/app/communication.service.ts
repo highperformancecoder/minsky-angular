@@ -13,8 +13,8 @@ export class Message {
 export class CommunicationService {
 	constructor(private socket: Socket) {}
 
-	public sendMessage(message) {
-		this.socket.emit('new-message', message)
+	public sendOffset(message, offSetValue) {
+		this.socket.emit(message, offSetValue)
 	}
 
 	public sendEvent(event, message) {
@@ -28,6 +28,14 @@ export class CommunicationService {
 			clientY: event.clientY,
 		}
 		this.socket.emit(eventName, clickData)
+	}
+
+	public dispatchEvents(eventName) {
+		this.socket.on(eventName, (data) => {
+			// common code for dispatch events
+			console.log('event received', data)
+			document.querySelectorAll(data.id).dispatchEvent(data.event)
+		})
 	}
 
 	public getMessages = () => {
