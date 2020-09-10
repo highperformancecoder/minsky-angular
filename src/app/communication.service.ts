@@ -34,7 +34,7 @@ export class CommunicationService {
 		this.socket.on(eventName, (data) => {
 			// common code for dispatch events
 			console.log('event received', data)
-			document.querySelectorAll(data.id).dispatchEvent(data.event)
+			document.querySelector(data.id).dispatchEvent(data.event)
 		})
 	}
 
