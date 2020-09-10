@@ -23,6 +23,7 @@ import { WiringComponent } from './components/wiring/wiring.component'
 import { EquationsComponent } from './components/equations/equations.component'
 import { ParametersComponent } from './components/parameters/parameters.component'
 import { VariablesComponent } from './components/variables/variables.component'
+import { AngularResizedEventModule } from 'angular-resize-event'
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -48,6 +49,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 		SharedModule,
 		HomeModule,
 		AppRoutingModule,
+		AngularResizedEventModule,
 		SocketIoModule.forRoot(config),
 		TranslateModule.forRoot({
 			loader: {

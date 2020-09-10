@@ -102,6 +102,7 @@
   },
   "dependencies": {
     "@types/socket.io": "^2.1.11",
+    "angular-resize-event": "^2.0.0",
     "electron-json-storage": "^4.2.0",
     "electron-store": "^6.0.0",
     "express": "^4.17.1",

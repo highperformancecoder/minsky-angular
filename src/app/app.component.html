@@ -1,42 +1,44 @@
-<app-header></app-header>
-<div class="tabs-section">
-	<div class="tabs">
-		<div
-			routerLink="./wiring"
-			routerLinkActive="active-bg"
-			class="wiring tab"
-		>
-			<label>
-				Wiring
-			</label>
+<div (resized)="windowResize($event)">
+	<app-header></app-header>
+	<div class="tabs-section">
+		<div class="tabs">
+			<div
+				routerLink="./wiring"
+				routerLinkActive="active-bg"
+				class="wiring tab"
+			>
+				<label>
+					Wiring
+				</label>
+			</div>
+			<div
+				routerLink="./equations"
+				routerLinkActive="active-bg"
+				class="equations tab"
+			>
+				<label>
+					Equations
+				</label>
+			</div>
+			<div
+				routerLink="./parameters"
+				routerLinkActive="active-bg"
+				class="parameters tab"
+			>
+				<label>
+					Parameters
+				</label>
+			</div>
+			<div
+				routerLink="./variables"
+				routerLinkActive="active-bg"
+				class="variables tab"
+			>
+				<label>
+					Variables
+				</label>
+			</div>
 		</div>
-		<div
-			routerLink="./equations"
-			routerLinkActive="active-bg"
-			class="equations tab"
-		>
-			<label>
-				Equations
-			</label>
-		</div>
-		<div
-			routerLink="./parameters"
-			routerLinkActive="active-bg"
-			class="parameters tab"
-		>
-			<label>
-				Parameters
-			</label>
-		</div>
-		<div
-			routerLink="./variables"
-			routerLinkActive="active-bg"
-			class="variables tab"
-		>
-			<label>
-				Variables
-			</label>
-		</div>
+		<router-outlet></router-outlet>
 	</div>
-	<router-outlet></router-outlet>
 </div>
