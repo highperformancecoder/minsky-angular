@@ -37,6 +37,7 @@ export class AppComponent {
 
 		this.windowDetails()
 		this.windowSize()
+		this.cmService.canvasOffsetValues()
 	}
 
 	windowDetails() {
@@ -55,14 +56,14 @@ export class AppComponent {
 	}
 
 	windowSize() {
-		// code for canvas window size
-		const screen = window.screen
+		// code for window size
 		const windowDetail = {
-			width: screen.width,
-			height: screen.height,
+			width: window.innerWidth,
+			height: window.innerHeight,
 		}
-		console.log('width:' + screen.width + ' ' + 'height:' + screen.height)
-
+		console.log(
+			'width:' + window.innerWidth + ' ' + 'height:' + window.innerHeight
+		)
 		this.cmService.emitValues('Values', windowDetail)
 		this.cmService.dispatchEvents('Values')
 	}
@@ -79,7 +80,7 @@ export class AppComponent {
 				'resizeHeight:' +
 				event.newWidth
 		)
-
+		this.cmService.canvasOffsetValues()
 		this.cmService.emitValues('Values', windowResizeDetail)
 		this.cmService.dispatchEvents('Values')
 	}
