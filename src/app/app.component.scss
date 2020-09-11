@@ -32,6 +32,17 @@
 	}
 }
 
+.spinner {
+	position: absolute;
+	top: 60%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	::ng-deep .mat-progress-spinner circle,
+	.mat-spinner circle {
+		stroke: $primary-yellow;
+	}
+}
+
 .active-bg {
 	background-color: $white !important;
 }
