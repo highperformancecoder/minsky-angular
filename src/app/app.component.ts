@@ -12,6 +12,8 @@ import { ResizedEvent } from 'angular-resize-event'
 	styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+	loader = false
+
 	constructor(
 		private electronService: ElectronService,
 		private cmService: CommunicationService,
