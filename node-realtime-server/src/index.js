@@ -65,11 +65,16 @@ io.on('connection', (socket) => {
 		}
 	})
 
-	socket.on('canvasClick', (data) => {
-		console.log('canvasClick in server.js')
-		// console.log(socket);
+	socket.on('canvasEvent', (data) => {
+		// code for mouse events
 		console.log(data)
-		socket.broadcast.emit('canvasClick', data)
+		socket.broadcast.emit('canvasEvent', data)
+	})
+
+	socket.on('Values', (data) => {
+		// code for x11 window, left/top offset, window size
+		console.log(data)
+		socket.broadcast.emit(data)
 	})
 })
 

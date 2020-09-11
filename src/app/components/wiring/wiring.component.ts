@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core'
-import { Socket } from 'ngx-socket-io'
 import { CommunicationService } from '../../communication.service'
 
 @Component({
@@ -8,32 +7,25 @@ import { CommunicationService } from '../../communication.service'
 	styleUrls: ['./wiring.component.scss'],
 })
 export class WiringComponent implements OnInit {
-	newMessage: string
 	messageList: string[] = []
-
-	constructor(
-		private cmService: CommunicationService,
-		private socket: Socket
-	) {
+	constructor(private cmService: CommunicationService) {
 		document.addEventListener('click', (event) => {
-			const clickData = {
-				timeStamp: event.timeStamp,
-				type: event.type,
-				clientX: event.clientX,
-				clientY: event.clientY,
-			}
-			this.socket.emit('canvasClick', clickData)
+			this.cmService.mouseEvents('canvasEvent', event)
 		})
 
-		this.socket.on('canvasClick', (data) => {
-			console.log('event received', data)
-			document.querySelectorAll(data.id).dispatchEvent(data.event)
+		document.addEventListener('mousedown', (event) => {
+			this.cmService.mouseEvents('canvasEvent', event)
 		})
-	}
 
-	sendMessage() {
-		this.cmService.sendMessage(this.newMessage)
-		this.newMessage = ''
+		document.addEventListener('mouseup', (event) => {
+			this.cmService.mouseEvents('canvasEvent', event)
+		})
+
+		document.addEventListener('mousemove', (event) => {
+			this.cmService.mouseEvents('canvasEvent', event)
+		})
+
+		this.cmService.dispatchEvents('canvasEvent')
 	}
 
 	ngOnInit() {
