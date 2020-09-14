@@ -7,21 +7,21 @@
 	.simulation-controls {
 		display: flex;
 		align-items: center;
-		margin: 5px;
+		margin: $margin * 2;
 		.checkbox-control {
 			font-size: 14px;
 			display: initial;
-			margin-right: 8px;
+			margin-right: $margin * 5;
 			.checkbox-wrapper {
 				display: inline-block;
 				height: 40px;
+				width: 40px;
 				line-height: 3.5;
 				order: 0;
 				position: relative;
 				left: 5px;
 				vertical-align: middle;
 				white-space: nowrap;
-				width: 40px;
 				flex-shrink: 0;
 				text-align: center;
 

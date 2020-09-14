@@ -2,8 +2,8 @@
 :host {
 	display: flex;
 	flex-direction: column;
-	height: 100vh;
-	width: 100vw;
+	height: $height;
+	width: $width;
 }
 
 .example-button-row {
@@ -30,7 +30,7 @@
 		.tab {
 			border-left: 2px solid $toolbar-border;
 			background-color: $toolbar-bg;
-			padding: 0.5rem;
+			padding: $padding;
 			color: black;
 			label {
 				padding: 3px;
