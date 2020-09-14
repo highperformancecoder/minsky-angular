@@ -25,6 +25,7 @@ import { ParametersComponent } from './components/parameters/parameters.componen
 import { VariablesComponent } from './components/variables/variables.component'
 import { AngularResizedEventModule } from 'angular-resize-event'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MaterialModule } from './material.module'
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -49,6 +50,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 		CoreModule,
 		SharedModule,
 		HomeModule,
+		MaterialModule,
 		MatProgressSpinnerModule,
 		AppRoutingModule,
 		AngularResizedEventModule,

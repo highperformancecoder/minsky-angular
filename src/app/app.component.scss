@@ -6,6 +6,21 @@
 	width: 100vw;
 }
 
+.example-button-row {
+	a {
+		border: 2px solid $toolbar-border-light;
+		background-color: $toolbar-bg;
+		color: $toolbar-border-focus;
+		&:active,
+		&:focus {
+			border: 2px solid $toolbar-border;
+		}
+	}
+	.mat-button-base {
+		margin: 5px 5px 5px 0;
+	}
+}
+
 .tabs-section {
 	border-top: 1px solid $toolbar-box;
 	flex: 1;

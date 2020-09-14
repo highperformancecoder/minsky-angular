@@ -4,9 +4,12 @@
 	display: flex;
 	.tab {
 		cursor: pointer;
-		width: 3rem;
-		border: 1px solid $toolbar-box;
-		background-color: transparent;
+		margin: $margin-min;
+		width: $wiring-tabs-width;
+		max-width: $wiring-tab-max-width;
+		border-radius: 2px;
+		border: 2px solid $toolbar-border-light;
+		background-color: $toolbar-bg;
 		height: $wiring-tabs-height;
 		display: flex;
 		justify-content: center;
