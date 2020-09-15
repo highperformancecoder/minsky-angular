@@ -2,8 +2,8 @@
 :host {
 	display: flex;
 	flex-direction: column;
-	height: $height;
-	width: $width;
+	height: $app-height;
+	width: $app-width;
 }
 
 .example-button-row {

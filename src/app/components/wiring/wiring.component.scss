@@ -4,13 +4,10 @@
 	display: flex;
 	.tab {
 		cursor: pointer;
-		margin: $margin;
-		width: $wiring-tabs-width;
-		max-width: $wiring-tab-max-width;
-		border-radius: 2px;
-		border: 2px solid $toolbar-border-light;
-		background-color: $toolbar-bg;
-		height: $wiring-tabs-height;
+		width: $dimensions * 3;
+		border: 1px solid $toolbar-box;
+		background-color: transparent;
+		height: $dimensions * 2;
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -26,12 +23,12 @@
 }
 
 .minsky-canvas {
-	height: calc($height - #{4.5 * $wiring-tabs-height});
+	height: calc(100vh - #{4.5 * $dimensions * 2});
 	/* Approx - TODO:: fix tis. Compute in sass OR compute in JS after initial render */
 
 	overflow: auto;
 	border: 1px solid $black;
 	canvas {
-		height: $height * 2;
+		height: $app-height * 2;
 	}
 }
