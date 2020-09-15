@@ -2,8 +2,23 @@
 :host {
 	display: flex;
 	flex-direction: column;
-	height: 100vh;
-	width: 100vw;
+	height: $app-height;
+	width: $app-width;
+}
+
+.example-button-row {
+	a {
+		border: 2px solid $toolbar-border-light;
+		background-color: $toolbar-bg;
+		color: $toolbar-border-focus;
+		&:active,
+		&:focus {
+			border: 2px solid $toolbar-border;
+		}
+	}
+	.mat-button-base {
+		margin: 5px 5px 5px 0;
+	}
 }
 
 .tabs-section {
@@ -15,7 +30,7 @@
 		.tab {
 			border-left: 2px solid $toolbar-border;
 			background-color: $toolbar-bg;
-			padding: 0.5rem;
+			padding: $padding;
 			color: black;
 			label {
 				padding: 3px;

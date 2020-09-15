@@ -7,29 +7,29 @@
 	.simulation-controls {
 		display: flex;
 		align-items: center;
-		margin: 5px;
+		margin: $margin * 2;
 		.checkbox-control {
-			font-size: 14px;
+			font-size: $primary-font;
 			display: initial;
-			margin-right: 8px;
+			margin-right: $margin * 5;
 			.checkbox-wrapper {
 				display: inline-block;
-				height: 40px;
-				line-height: 3.5;
+				height: $dimensions * 2.5;
+				width: $dimensions * 2.5;
+				line-height: 4;
 				order: 0;
 				position: relative;
 				left: 5px;
 				vertical-align: middle;
 				white-space: nowrap;
-				width: 40px;
 				flex-shrink: 0;
 				text-align: center;
 
 				input {
 					cursor: pointer;
 					user-select: none;
-					height: 1.3rem;
-					width: 1.3rem;
+					height: $dimensions * 1.5;
+					width: $dimensions * 1.5;
 					border: 2px solid $toolbar-box;
 				}
 			}
@@ -68,7 +68,6 @@
 			border-bottom: 1px solid $toolbar-bg;
 			border-right: 1px solid $toolbar-bg;
 			background: $white;
-			margin-top: -1px;
 		}
 	}
 

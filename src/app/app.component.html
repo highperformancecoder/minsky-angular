@@ -4,43 +4,47 @@
 	</div>
 	<app-header></app-header>
 	<div class="tabs-section">
-		<div class="tabs">
-			<div
+		<div class="tabs example-button-row">
+			<a
 				routerLink="./wiring"
 				routerLinkActive="active-bg"
-				class="wiring tab"
+				class="wiring"
+				mat-stroked-button
 			>
 				<label>
 					Wiring
 				</label>
-			</div>
-			<div
+			</a>
+			<a
 				routerLink="./equations"
 				routerLinkActive="active-bg"
-				class="equations tab"
+				class="equations"
+				mat-stroked-button
 			>
 				<label>
 					Equations
 				</label>
-			</div>
-			<div
+			</a>
+			<a
 				routerLink="./parameters"
 				routerLinkActive="active-bg"
-				class="parameters tab"
+				class="parameters"
+				mat-stroked-button
 			>
 				<label>
 					Parameters
 				</label>
-			</div>
-			<div
+			</a>
+			<a
 				routerLink="./variables"
 				routerLinkActive="active-bg"
-				class="variables tab"
+				class="variables"
+				mat-stroked-button
 			>
 				<label>
 					Variables
 				</label>
-			</div>
+			</a>
 		</div>
 		<router-outlet></router-outlet>
 	</div>
