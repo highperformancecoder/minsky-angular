@@ -113,6 +113,7 @@
     "hammerjs": "^2.0.8",
     "ngx-socket-io": "^3.2.0",
     "socket.io": "^2.3.0",
+    "socketio-file-upload": "^0.7.2",
     "spectrum-colorpicker2": "^2.0.3"
   },
   "husky": {
