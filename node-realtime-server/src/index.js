@@ -1,3 +1,4 @@
+const os = require('os')
 const express = require('express')
 const app = express()
 
@@ -6,11 +7,10 @@ const server = http.Server(app)
 
 const socketIO = require('socket.io')
 const io = socketIO(server)
-
 const port = process.env.PORT || 3000
 
 io.on('connection', (socket) => {
-	console.log('user connected')
+	console.log('User connected')
 	socket.on('HEADER_EVENT', (message) => {
 		switch (message.target) {
 			case 'RECORD_BUTTON':
@@ -67,13 +67,23 @@ io.on('connection', (socket) => {
 
 	socket.on('canvasEvent', (data) => {
 		// code for mouse events
-		console.log(data)
+		if (data.type !== 'mousemove') {
+			console.log('Canvas Event: ', data)
+		}
 		socket.broadcast.emit('canvasEvent', data)
 	})
 
 	socket.on('Values', (data) => {
 		// code for x11 window, left/top offset, window size
-		console.log(data)
+		if (Buffer.isBuffer(data)) {
+			const windowId =
+				os.endianness() == 'LE'
+					? data.readInt32LE()
+					: data.readInt32BE()
+			console.log('Buffer :', data, ' window id = ', windowId)
+		} else {
+			console.log('Values :', data)
+		}
 		socket.broadcast.emit(data)
 	})
 })
@@ -83,5 +93,5 @@ io.on('new-message', (message) => {
 })
 
 server.listen(port, () => {
-	console.log(`started on port: ${port}`)
+	console.log(`Started on port: ${port}`)
 })
