@@ -6,7 +6,9 @@
 		cursor: pointer;
 		width: $dimensions * 3;
 		border: 1px solid $toolbar-box;
-		background-color: transparent;
+		background-color: $toolbar-bg;
+		border-radius: 4px;
+		margin: $margin;
 		height: $dimensions * 2;
 		display: flex;
 		justify-content: center;

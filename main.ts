@@ -120,12 +120,6 @@ try {
 	// throw e;
 }
 
-export function getWindowSize() {
-	const handle = win.getNativeWindowHandle().readUInt32LE(0)
-	// console.log(`nativeWindowHandle: ${handle.toString(16)}`)
-	return handle.toString(16)
-}
-
 export function setStorageBackgroundColor(color) {
 	storageBackgroundColor = color
 }
