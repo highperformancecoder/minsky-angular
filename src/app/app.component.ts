@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, ChangeDetectorRef } from '@angular/core'
 import { ElectronService } from './core/services'
 import { TranslateService } from '@ngx-translate/core'
 import { AppConfig } from '../environments/environment'
@@ -13,11 +13,13 @@ import { ResizedEvent } from 'angular-resize-event'
 })
 export class AppComponent {
 	loader = false
+	directory: string[]
 
 	constructor(
 		private electronService: ElectronService,
 		private cmService: CommunicationService,
-		private translate: TranslateService
+		private translate: TranslateService,
+		private cdr: ChangeDetectorRef
 	) {
 		this.translate.setDefaultLang('en')
 		console.log('AppConfig', AppConfig)
@@ -41,19 +43,25 @@ export class AppComponent {
 		this.windowSize()
 		this.cmService.canvasOffsetValues()
 	}
+	ngOnInit() {
+		this.electronService.directory.subscribe((value) => {
+			this.directory = value
+			this.cdr.detectChanges()
+		})
+	}
 
 	windowDetails() {
 		// code for X11 window
-		const winSize = require('electron')
+		const winHandle = require('electron')
 			.remote.getCurrentWindow()
 			.getNativeWindowHandle()
 
 		// code to convert buffer element to string where 0 will be replaced with each array element
-		/* const winSize = require('electron')
+		/* const winHandle = require('electron')
 			.remote.getCurrentWindow()
 			.getNativeWindowHandle().readUInt32LE(0).toString(16) */
-		console.log(winSize)
-		this.cmService.emitValues('Values', winSize)
+		console.log(winHandle)
+		this.cmService.emitValues('Values', winHandle)
 		this.cmService.dispatchEvents('Values')
 	}
 
