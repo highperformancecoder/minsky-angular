@@ -9,19 +9,19 @@ import { CommunicationService } from '../../communication.service'
 export class WiringComponent implements OnInit {
 	messageList: string[] = []
 	constructor(private cmService: CommunicationService) {
-		document.addEventListener('click', (event) => {
+		document.addEventListener('click', (event: MouseEvent) => {
 			this.cmService.mouseEvents('canvasEvent', event)
 		})
 
-		document.addEventListener('mousedown', (event) => {
+		document.addEventListener('mousedown', (event: MouseEvent) => {
 			this.cmService.mouseEvents('canvasEvent', event)
 		})
 
-		document.addEventListener('mouseup', (event) => {
+		document.addEventListener('mouseup', (event: MouseEvent) => {
 			this.cmService.mouseEvents('canvasEvent', event)
 		})
 
-		document.addEventListener('mousemove', (event) => {
+		document.addEventListener('mousemove', (event: MouseEvent) => {
 			this.cmService.mouseEvents('canvasEvent', event)
 		})
 
