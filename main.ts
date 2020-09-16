@@ -143,20 +143,22 @@ function addUpdateBookmarkList(mainMenu: Menu) {
 			const innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark')
 				.submenu
 			outerSubMenu.append(new MenuItem({ type: 'separator' }))
-			data.forEach((ele) => {
-				outerSubMenu.append(
-					new MenuItem({
-						label: ele.title,
-						click: goToSelectedBookmark.bind(ele),
-					})
-				)
-				innerSubMenu.append(
-					new MenuItem({
-						label: ele.title,
-						click: deleteBookmark.bind(ele),
-					})
-				)
-			})
+			if (Array.isArray(data)) {
+				data.forEach((ele) => {
+					outerSubMenu.append(
+						new MenuItem({
+							label: ele.title,
+							click: goToSelectedBookmark.bind(ele),
+						})
+					)
+					innerSubMenu.append(
+						new MenuItem({
+							label: ele.title,
+							click: deleteBookmark.bind(ele),
+						})
+					)
+				})
+			}
 			Menu.setApplicationMenu(mainMenu)
 		}
 	})
