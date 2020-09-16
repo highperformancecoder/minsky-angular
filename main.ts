@@ -4,6 +4,7 @@ import * as url from 'url'
 import { app, BrowserWindow, screen, Menu, MenuItem, dialog } from 'electron'
 
 import { checkBackgroundAndApplyTextColor, template } from './top-menu'
+const env = process.env.NODE_ENV || 'development'
 
 app.setName('Minsky')
 const storage = require('electron-json-storage')
@@ -118,6 +119,18 @@ try {
 } catch (e) {
 	// Catch Error
 	// throw e;
+}
+
+// If development environment
+if (env === 'development') {
+	try {
+		require('electron-reloader')(module, {
+			debug: true,
+			watchRenderer: true,
+		})
+	} catch (_) {
+		console.log('Error')
+	}
 }
 
 export function setStorageBackgroundColor(color) {
