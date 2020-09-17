@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 
 import { CommunicationService } from './../../communication.service'
-import { HeaderEvent } from '../../shared/models/header-event'
+import { HeaderEvent } from '../../../interfaces/FEEvents'
 
 @Component({
 	selector: 'app-header',
