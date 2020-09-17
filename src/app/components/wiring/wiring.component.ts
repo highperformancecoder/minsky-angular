@@ -8,6 +8,7 @@ import { CommunicationService } from '../../communication.service'
 })
 export class WiringComponent implements OnInit {
 	messageList: string[] = []
+
 	constructor(private cmService: CommunicationService) {
 		document.addEventListener('click', (event: MouseEvent) => {
 			this.cmService.mouseEvents('canvasEvent', event)
