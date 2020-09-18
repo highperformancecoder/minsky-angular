@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
-import { Observable } from 'rxjs'
+import { Observable, BehaviorSubject } from 'rxjs'
 import { Socket } from 'ngx-socket-io'
+import { ElectronService } from './core/services/electron/electron.service'
 
 export class Message {
 	id: string
@@ -16,7 +17,20 @@ export class CommunicationService {
 	leftOffset: number
 	topOffset: number
 	offSetValue: string
-	constructor(private socket: Socket) {}
+	directory = new BehaviorSubject<string[]>([])
+	openDirectory = new BehaviorSubject<string[]>([])
+	constructor(
+		private socket: Socket,
+		private electronService: ElectronService
+	) {
+		this.electronService.ipcRenderer.on('Save_file', (event, result) => {
+			this.directory.next(result)
+		})
+
+		this.electronService.ipcRenderer.on('Open_file', (event, result) => {
+			this.openDirectory.next(result)
+		})
+	}
 
 	public emitValues(message, data) {
 		this.socket.emit(message, data)

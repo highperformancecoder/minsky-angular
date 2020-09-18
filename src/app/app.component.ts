@@ -14,6 +14,7 @@ import { ResizedEvent } from 'angular-resize-event'
 export class AppComponent {
 	loader = false
 	directory: string[]
+	openFileDirectory: any
 
 	constructor(
 		private electronService: ElectronService,
@@ -38,16 +39,15 @@ export class AppComponent {
 		} else {
 			console.log('Run in browser')
 		}
-
+		this.openFile()
+		this.saveFile()
 		this.windowDetails()
 		this.windowSize()
 		this.cmService.canvasOffsetValues()
 	}
+
 	ngOnInit() {
-		this.electronService.directory.subscribe((value) => {
-			this.directory = value
-			this.cdr.detectChanges()
-		})
+		console.log('ng init')
 	}
 
 	windowDetails() {
@@ -61,8 +61,7 @@ export class AppComponent {
 			.remote.getCurrentWindow()
 			.getNativeWindowHandle().readUInt32LE(0).toString(16) */
 		console.log(winHandle)
-		this.cmService.emitValues('Values', winHandle)
-		this.cmService.dispatchEvents('Values')
+		this.emitData(winHandle)
 	}
 
 	windowSize() {
@@ -74,8 +73,7 @@ export class AppComponent {
 		console.log(
 			'width:' + window.innerWidth + ' ' + 'height:' + window.innerHeight
 		)
-		this.cmService.emitValues('Values', windowDetail)
-		this.cmService.dispatchEvents('Values')
+		this.emitData(windowDetail)
 	}
 
 	windowResize(event: ResizedEvent) {
@@ -91,7 +89,27 @@ export class AppComponent {
 				event.newWidth
 		)
 		this.cmService.canvasOffsetValues()
-		this.cmService.emitValues('Values', windowResizeDetail)
+		this.emitData(windowResizeDetail)
+	}
+
+	saveFile() {
+		this.cmService.directory.subscribe((value) => {
+			this.directory = value
+			// console.log(this.directory)
+			this.emitData(this.directory)
+		})
+	}
+
+	openFile() {
+		this.cmService.openDirectory.subscribe((value) => {
+			this.openFileDirectory = value
+			// console.log(this.openFileDirectory)
+			this.emitData(this.openFileDirectory)
+		})
+	}
+
+	emitData(data) {
+		this.cmService.emitValues('Values', data)
 		this.cmService.dispatchEvents('Values')
 	}
 }
