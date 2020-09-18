@@ -7,6 +7,7 @@ import {
 	MenuItem,
 	app,
 	remote,
+	ipcRenderer,
 } from 'electron'
 import {
 	win,
@@ -77,6 +78,7 @@ export const template = Menu.buildFromTemplate([
 						.then((result) => {
 							console.log(result.canceled)
 							console.log(result.filePaths)
+							openFunc(result)
 							console.log(
 								fs.readFileSync(result.filePaths[0]).toString()
 							)
@@ -113,6 +115,7 @@ export const template = Menu.buildFromTemplate([
 						})
 						.then((result) => {
 							console.log(result)
+							saveFunc(result)
 							fs.writeFile(result.filePath, content, (err) => {
 								if (err) console.log(err)
 							})
@@ -771,4 +774,11 @@ export function checkBackgroundAndApplyTextColor(color) {
 }
 function applyCssToBackground(css) {
 	win.webContents.insertCSS(css)
+}
+
+function openFunc(data) {
+	win.webContents.send('Open_file', data)
+}
+function saveFunc(data) {
+	win.webContents.send('Save_file', data)
 }
