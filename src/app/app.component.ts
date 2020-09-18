@@ -39,22 +39,15 @@ export class AppComponent {
 		} else {
 			console.log('Run in browser')
 		}
-
+		this.openFile()
+		this.saveFile()
 		this.windowDetails()
 		this.windowSize()
 		this.cmService.canvasOffsetValues()
 	}
+
 	ngOnInit() {
-		this.cmService.directory.subscribe((value) => {
-			this.directory = value
-			console.log(this.directory)
-			this.cdr.detectChanges()
-		})
-		this.cmService.openDirectory.subscribe((value) => {
-			this.openFileDirectory = value
-			console.log(this.openFileDirectory)
-			this.cdr.detectChanges()
-		})
+		console.log('ng init')
 	}
 
 	windowDetails() {
@@ -97,6 +90,22 @@ export class AppComponent {
 		)
 		this.cmService.canvasOffsetValues()
 		this.emitData(windowResizeDetail)
+	}
+
+	saveFile() {
+		this.cmService.directory.subscribe((value) => {
+			this.directory = value
+			// console.log(this.directory)
+			this.emitData(this.directory)
+		})
+	}
+
+	openFile() {
+		this.cmService.openDirectory.subscribe((value) => {
+			this.openFileDirectory = value
+			// console.log(this.openFileDirectory)
+			this.emitData(this.openFileDirectory)
+		})
 	}
 
 	emitData(data) {
