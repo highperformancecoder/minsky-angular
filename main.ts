@@ -1,9 +1,18 @@
 import * as path from 'path'
 import * as url from 'url'
 
-import { app, BrowserWindow, screen, Menu, MenuItem, dialog } from 'electron'
+import {
+	app,
+	BrowserWindow,
+	screen,
+	Menu,
+	MenuItem,
+	dialog,
+	ipcMain,
+} from 'electron'
 
-import { checkBackgroundAndApplyTextColor, template } from './top-menu'
+// import { checkBackgroundAndApplyTextColor, template } from './top-menu'
+
 const env = process.env.NODE_ENV || 'development'
 
 app.setName('Minsky')
@@ -93,10 +102,58 @@ try {
 	// tslint:disable-next-line: max-line-length
 	// Added 400 ms to fix the black background issue while using transparent window.More details at https://github.com/electron/electron/issues/15947.
 	app.on('ready', () => {
+		ipcMain.on('template', (data) => {})
 		const menu = template
 		addUpdateBookmarkList(menu)
 		Menu.setApplicationMenu(menu)
 		setTimeout(createWindow, 400)
+
+		ipcMain.on('background-color:ok', (event, data) => {
+			storage.set('backgroundColor', { color: data.color })
+			checkBackgroundAndApplyTextColor(data.color)
+			setStorageBackgroundColor(data.color)
+			win.close()
+		})
+		ipcMain.on('create_variable:ok', (event) => {
+			win.close()
+		})
+
+		ipcMain.on('save-bookmark', (event, data) => {
+			if (data) {
+				storage.get(data.fileName, (error, fileData) => {
+					if (error) throw error
+					const dataToSave = {
+						title: data.bookmarkTitle,
+						url: win.webContents.getURL(),
+					}
+					fileData.push(dataToSave)
+					// tslint:disable-next-line: no-shadowed-variable
+					storage.set(data.fileName, fileData, (error) => {
+						if (error) throw error
+					})
+					const outerSubMenu = template.getMenuItemById(
+						'main-bookmark'
+					).submenu
+					const innerSubMenu = outerSubMenu.getMenuItemById(
+						'delete-bookmark'
+					).submenu
+					outerSubMenu.append(
+						new MenuItem({
+							label: data.bookmarkTitle,
+							click: goToSelectedBookmark.bind(dataToSave),
+						})
+					)
+					innerSubMenu.append(
+						new MenuItem({
+							label: data.bookmarkTitle,
+							click: deleteBookmark.bind(dataToSave),
+						})
+					)
+					Menu.setApplicationMenu(template)
+					win.close()
+				})
+			}
+		})
 	})
 
 	// Quit when all windows are closed.
