@@ -1,18 +1,9 @@
 import * as path from 'path'
 import * as url from 'url'
 
-import {
-	app,
-	BrowserWindow,
-	screen,
-	Menu,
-	MenuItem,
-	dialog,
-	ipcMain,
-} from 'electron'
+import { app, BrowserWindow, screen, Menu, MenuItem, dialog } from 'electron'
 
-// import { checkBackgroundAndApplyTextColor, template } from './top-menu'
-
+import { checkBackgroundAndApplyTextColor, template } from './top-menu'
 const env = process.env.NODE_ENV || 'development'
 
 app.setName('Minsky')
@@ -28,7 +19,7 @@ export function createWindow(): BrowserWindow {
 		storageBackgroundColor = data.color || '#c1c1c1'
 		win = prepareBrowserWindow(storageBackgroundColor)
 		setTimeout(() => {
-			ipcMain.emit('bgColor', storageBackgroundColor)
+			checkBackgroundAndApplyTextColor(storageBackgroundColor)
 		}, 1500)
 	})
 	return win
@@ -102,62 +93,10 @@ try {
 	// tslint:disable-next-line: max-line-length
 	// Added 400 ms to fix the black background issue while using transparent window.More details at https://github.com/electron/electron/issues/15947.
 	app.on('ready', () => {
-		ipcMain.on('template', (event, data) => {
-			const menu = data
-			addUpdateBookmarkList(menu)
-			Menu.setApplicationMenu(menu)
-			setTimeout(createWindow, 400)
-		})
-
-		ipcMain.on('background-color:ok', (event, data) => {
-			storage.set('backgroundColor', { color: data.color })
-			ipcMain.emit('bgColor', data.color)
-			setStorageBackgroundColor(data.color)
-			win.close()
-		})
-		ipcMain.on('create_variable:ok', (event) => {
-			win.close()
-		})
-
-		ipcMain.on('save-bookmark', (event, data) => {
-			if (data) {
-				storage.get(data.fileName, (error, fileData) => {
-					if (error) throw error
-					const dataToSave = {
-						title: data.bookmarkTitle,
-						url: win.webContents.getURL(),
-					}
-					fileData.push(dataToSave)
-					// tslint:disable-next-line: no-shadowed-variable
-					storage.set(data.fileName, fileData, (error) => {
-						if (error) throw error
-					})
-					// tslint:disable-next-line: no-shadowed-variable
-					ipcMain.on('template', (event, data) => {
-						const outerSubMenu = data.getMenuItemById(
-							'main-bookmark'
-						).submenu
-						const innerSubMenu = outerSubMenu.getMenuItemById(
-							'delete-bookmark'
-						).submenu
-						outerSubMenu.append(
-							new MenuItem({
-								label: data.bookmarkTitle,
-								click: goToSelectedBookmark.bind(dataToSave),
-							})
-						)
-						innerSubMenu.append(
-							new MenuItem({
-								label: data.bookmarkTitle,
-								click: deleteBookmark.bind(dataToSave),
-							})
-						)
-						Menu.setApplicationMenu(data)
-						win.close()
-					})
-				})
-			}
-		})
+		const menu = template
+		addUpdateBookmarkList(menu)
+		Menu.setApplicationMenu(menu)
+		setTimeout(createWindow, 400)
 	})
 
 	// Quit when all windows are closed.
@@ -173,10 +112,8 @@ try {
 		// On OS X it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
 		if (win === null) {
-			ipcMain.on('template', (event, data) => {
-				addUpdateBookmarkList(data)
-				createWindow()
-			})
+			addUpdateBookmarkList(template)
+			createWindow()
 		}
 	})
 } catch (e) {
@@ -251,23 +188,21 @@ export function deleteBookmark() {
 			storage.set('bookmarks', data, (error) => {
 				console.log(error)
 			})
-			// tslint:disable-next-line: no-shadowed-variable
-			ipcMain.on('template', (event, data) => {
-				const innerSubmenu = data
-					.getMenuItemById('main-bookmark')
-					.submenu.getMenuItemById('delete-bookmark').submenu.items
-				const outerSubmenu = data.getMenuItemById('main-bookmark')
-					.submenu.items
-				const innerIdx = innerSubmenu.findIndex(
-					(ele) => ele.label === this.title
-				)
-				const outerIdx = outerSubmenu.findIndex(
-					(ele) => ele.label === this.title
-				)
-				innerSubmenu[innerIdx].visible = false
-				outerSubmenu[outerIdx].visible = false
-				// innerIdx > -1 ? innerSubmenu.splice(innerIdx, 1) : new Error("Bookmark Not Found");
-			})
+
+			const innerSubmenu = template
+				.getMenuItemById('main-bookmark')
+				.submenu.getMenuItemById('delete-bookmark').submenu.items
+			const outerSubmenu = template.getMenuItemById('main-bookmark')
+				.submenu.items
+			const innerIdx = innerSubmenu.findIndex(
+				(ele) => ele.label === this.title
+			)
+			const outerIdx = outerSubmenu.findIndex(
+				(ele) => ele.label === this.title
+			)
+			innerSubmenu[innerIdx].visible = false
+			outerSubmenu[outerIdx].visible = false
+			// innerIdx > -1 ? innerSubmenu.splice(innerIdx, 1) : new Error("Bookmark Not Found");
 		}
 	})
 }

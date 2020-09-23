@@ -1,4 +1,4 @@
-/* import {
+import {
 	Menu,
 	BrowserWindow,
 	ipcMain,
@@ -782,4 +782,3 @@ function openFunc(data) {
 function saveFunc(data) {
 	win.webContents.send('Save_file', data)
 }
- */
