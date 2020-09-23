@@ -5,7 +5,7 @@ import { AppConfig } from '../environments/environment'
 import { CommunicationService } from './communication.service'
 // Import the resized event model
 import { ResizedEvent } from 'angular-resize-event'
-import { remote, shell, ipcMain, BrowserWindow } from 'electron'
+import { remote, shell } from 'electron'
 import * as fs from 'fs'
 
 import {
@@ -27,6 +27,7 @@ export class AppComponent {
 	loader = false
 	directory: string[]
 	openFileDirectory: any
+	bgColor: any
 
 	constructor(
 		private electronService: ElectronService,
@@ -117,7 +118,7 @@ export class AppComponent {
 
 	// top menu code
 	public topMenu() {
-		const template = remote.Menu.buildFromTemplate([
+		const template = this.electronService.remote.Menu.buildFromTemplate([
 			{
 				label: 'File',
 				submenu: [
@@ -757,8 +758,8 @@ export class AppComponent {
 				],
 			},
 		])
-		remote.Menu.setApplicationMenu(template)
-		this.electronService.ipcRenderer.send('template', template)
+		// this.electronService.remote.Menu.setApplicationMenu(template)
+		this.electronService.ipcRenderer.send('templateData', template)
 	}
 
 	createMenuPopUp(width, height, title, dirPath, menuBackgroundColor) {
@@ -790,10 +791,20 @@ export class AppComponent {
 			menuWindow = null
 		})
 		// Closing global popup event_______
-		ipcMain.on('global-menu-popup:cancel', (event) => {
-			if (menuWindow) {
-				menuWindow.close()
+		this.electronService.ipcRenderer.on(
+			'global-menu-popup:cancel',
+			(event) => {
+				if (menuWindow) {
+					menuWindow.close()
+				}
 			}
+		)
+	}
+
+	backgroundColor() {
+		this.electronService.ipcRenderer.on('bgColor', (event, data) => {
+			this.bgColor = data
+			this.checkBackgroundAndApplyTextColor(this.bgColor)
 		})
 	}
 
