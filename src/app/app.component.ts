@@ -37,9 +37,8 @@ export class AppComponent {
 				'NodeJS childProcess',
 				this.electronService.childProcess
 			)
-			setTimeout(() => {
-				this.topMenuService.topMenu()
-			}, 2000)
+			// code for top menu
+			this.topMenuService.topMenu()
 		} else {
 			console.log('Run in browser')
 		}

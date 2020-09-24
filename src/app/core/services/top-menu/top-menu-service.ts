@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core'
 import { ElectronService } from '../electron/electron.service'
+import { ActivatedRoute } from '@angular/router'
+const path = require('path')
+const url = require('url')
 
 @Injectable({
 	providedIn: 'root',
 })
 export class TopMenuService {
-	constructor(private electronService: ElectronService) {}
+	constructor(
+		private electronService: ElectronService,
+		private router: ActivatedRoute
+	) {}
 
 	topMenu() {
 		const remote = this.electronService.remote
@@ -22,7 +28,7 @@ export class TopMenuService {
 								420,
 								440,
 								'',
-								'G:Coditasminsky-angularmenu\fileaboutabout.html',
+								'/menu/file/about/about.html',
 								'#ffffff'
 							)
 							remote.shell.beep()
@@ -636,10 +642,9 @@ export class TopMenuService {
 			},
 		})
 		menuWindow.setMenu(null)
-		menuWindow.loadURL(
-			'file://G:Coditasminsky-angular/menu/file/about/about.html'
-		)
-		// console.log("file://" + __dirname + dirPath);
+		menuWindow.loadURL('file://' + path.resolve('.') + dirPath)
+
+		// console.log('file://' + __dirname + dirPath);
 		menuWindow.once('ready-to-show', () => {
 			menuWindow.show()
 		})

@@ -6,6 +6,7 @@ import { NgModule } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { HttpClientModule, HttpClient } from '@angular/common/http'
 import { CoreModule } from './core/core.module'
+import { MenuModule } from './components/menu/menu-module'
 import { SharedModule } from './shared/shared.module'
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io'
 
@@ -48,6 +49,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 		FormsModule,
 		HttpClientModule,
 		CoreModule,
+		MenuModule,
 		SharedModule,
 		HomeModule,
 		MaterialModule,
