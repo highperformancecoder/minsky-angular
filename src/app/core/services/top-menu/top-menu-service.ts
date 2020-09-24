@@ -28,7 +28,7 @@ export class TopMenuService {
 								420,
 								440,
 								'',
-								'/menu/file/about/about.html',
+								'/src/app/components/menu/file/about/about.component.html',
 								'#ffffff'
 							)
 							remote.shell.beep()
