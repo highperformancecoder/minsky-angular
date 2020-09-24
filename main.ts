@@ -3,7 +3,7 @@ import * as url from 'url'
 
 import { app, BrowserWindow, screen, Menu, MenuItem, dialog } from 'electron'
 
-import { checkBackgroundAndApplyTextColor, template } from './top-menu'
+// import { checkBackgroundAndApplyTextColor, template } from './top-menu'
 const env = process.env.NODE_ENV || 'development'
 
 app.setName('Minsky')
@@ -19,7 +19,8 @@ export function createWindow(): BrowserWindow {
 		storageBackgroundColor = data.color || '#c1c1c1'
 		win = prepareBrowserWindow(storageBackgroundColor)
 		setTimeout(() => {
-			checkBackgroundAndApplyTextColor(storageBackgroundColor)
+			// ToDo backgroundColor saving
+			// checkBackgroundAndApplyTextColor(storageBackgroundColor)
 		}, 1500)
 	})
 	return win
@@ -93,9 +94,10 @@ try {
 	// tslint:disable-next-line: max-line-length
 	// Added 400 ms to fix the black background issue while using transparent window.More details at https://github.com/electron/electron/issues/15947.
 	app.on('ready', () => {
-		const menu = template
-		addUpdateBookmarkList(menu)
-		Menu.setApplicationMenu(menu)
+		// ToDo saving
+		// const menu = template
+		// addUpdateBookmarkList(menu)
+		// Menu.setApplicationMenu(menu)
 		setTimeout(createWindow, 400)
 	})
 
@@ -112,7 +114,8 @@ try {
 		// On OS X it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
 		if (win === null) {
-			addUpdateBookmarkList(template)
+			// ToDo
+			// addUpdateBookmarkList(template)
 			createWindow()
 		}
 	})
@@ -189,6 +192,8 @@ export function deleteBookmark() {
 				console.log(error)
 			})
 
+			/* ToDo add code to delete bookmark
+
 			const innerSubmenu = template
 				.getMenuItemById('main-bookmark')
 				.submenu.getMenuItemById('delete-bookmark').submenu.items
@@ -202,6 +207,8 @@ export function deleteBookmark() {
 			)
 			innerSubmenu[innerIdx].visible = false
 			outerSubmenu[outerIdx].visible = false
+			*/
+
 			// innerIdx > -1 ? innerSubmenu.splice(innerIdx, 1) : new Error("Bookmark Not Found");
 		}
 	})
