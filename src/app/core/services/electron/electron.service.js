@@ -44,6 +44,8 @@ var ElectronService = /** @class */ (function () {
 			this.ipcRenderer = window.require('electron').ipcRenderer
 			this.webFrame = window.require('electron').webFrame
 			this.remote = window.require('electron').remote
+			this.ipcMain = window.require('electron').ipcMain
+			this.dialog = window.require('electron').dialog
 			this.childProcess = window.require('child_process')
 			this.fs = window.require('fs')
 		}

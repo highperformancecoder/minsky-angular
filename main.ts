@@ -1,12 +1,20 @@
 import * as path from 'path'
 import * as url from 'url'
 
-import { app, BrowserWindow, screen, Menu, MenuItem, dialog } from 'electron'
+import {
+	app,
+	BrowserWindow,
+	screen,
+	Menu,
+	MenuItem,
+	dialog,
+	ipcMain,
+} from 'electron'
 
-// import { checkBackgroundAndApplyTextColor, template } from './top-menu'
+// import { template } from './src/app/core/services/top-menu/top-menu-service'
 const env = process.env.NODE_ENV || 'development'
 
-app.setName('Minsky')
+// app.setName('Minsky')
 const storage = require('electron-json-storage')
 export let win: BrowserWindow = null
 let storageBackgroundColor = '#c1c1c1'
@@ -95,7 +103,6 @@ try {
 	// Added 400 ms to fix the black background issue while using transparent window.More details at https://github.com/electron/electron/issues/15947.
 	app.on('ready', () => {
 		// ToDo saving
-		// const menu = template
 		// addUpdateBookmarkList(menu)
 		// Menu.setApplicationMenu(menu)
 		setTimeout(createWindow, 400)
@@ -192,9 +199,9 @@ export function deleteBookmark() {
 				console.log(error)
 			})
 
-			/* ToDo add code to delete bookmark
+			// ToDo add code to delete bookmark
 
-			const innerSubmenu = template
+			/* const innerSubmenu = template
 				.getMenuItemById('main-bookmark')
 				.submenu.getMenuItemById('delete-bookmark').submenu.items
 			const outerSubmenu = template.getMenuItemById('main-bookmark')
@@ -206,8 +213,7 @@ export function deleteBookmark() {
 				(ele) => ele.label === this.title
 			)
 			innerSubmenu[innerIdx].visible = false
-			outerSubmenu[outerIdx].visible = false
-			*/
+			outerSubmenu[outerIdx].visible = false */
 
 			// innerIdx > -1 ? innerSubmenu.splice(innerIdx, 1) : new Error("Bookmark Not Found");
 		}
