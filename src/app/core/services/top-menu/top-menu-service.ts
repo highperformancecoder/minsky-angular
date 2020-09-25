@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core'
 import { ElectronService } from '../electron/electron.service'
-import { ActivatedRoute } from '@angular/router'
 const path = require('path')
 import {
 	win,
@@ -18,63 +17,8 @@ const { dialog } = require('electron').remote
 })
 export class TopMenuService {
 	template: Electron.Menu
-	menuWindow: Electron.BrowserWindow
-	constructor(
-		private electronService: ElectronService,
-		private router: ActivatedRoute
-	) {
-		const storage = require('electron-json-storage')
-		storage.setDataPath(
-			(app || this.electronService.remote.app).getPath('userData')
-		)
-		const ipcRenderer = this.electronService.ipcRenderer
 
-		ipcRenderer.on('background-color:ok', (event, data) => {
-			storage.set('backgroundColor', { color: data.color })
-			this.checkBackgroundAndApplyTextColor(data.color)
-			setStorageBackgroundColor(data.color)
-			this.menuWindow.close()
-		})
-
-		ipcRenderer.on('save-bookmark', (event, data) => {
-			if (data) {
-				storage.get(data.fileName, (error, fileData) => {
-					if (error) throw error
-					const dataToSave = {
-						title: data.bookmarkTitle,
-						url: win.webContents.getURL(),
-					}
-					fileData.push(dataToSave)
-					// tslint:disable-next-line: no-shadowed-variable
-					storage.set(data.fileName, fileData, (error) => {
-						if (error) throw error
-					})
-					const outerSubMenu = this.template.getMenuItemById(
-						'main-bookmark'
-					).submenu
-					const innerSubMenu = outerSubMenu.getMenuItemById(
-						'delete-bookmark'
-					).submenu
-					outerSubMenu.append(
-						new MenuItem({
-							label: data.bookmarkTitle,
-							click: goToSelectedBookmark.bind(dataToSave),
-						})
-					)
-					innerSubMenu.append(
-						new MenuItem({
-							label: data.bookmarkTitle,
-							click: deleteBookmark.bind(dataToSave),
-						})
-					)
-					this.electronService.remote.Menu.setApplicationMenu(
-						this.template
-					)
-					this.menuWindow.close()
-				})
-			}
-		})
-	}
+	constructor(private electronService: ElectronService) {}
 
 	topMenu() {
 		const remote = this.electronService.remote
@@ -716,7 +660,7 @@ export class TopMenuService {
 	createMenuPopUp = (width, height, title, dirPath, bgColor) => {
 		bgColor = bgColor || getStorageBackgroundColor()
 		const BrowserWindow = this.electronService.remote.BrowserWindow
-		this.menuWindow = new BrowserWindow({
+		let menuWindow = new BrowserWindow({
 			width,
 			height,
 			title,
@@ -730,74 +674,25 @@ export class TopMenuService {
 				nodeIntegration: true,
 			},
 		})
-		this.menuWindow.setMenu(null)
-		this.menuWindow.loadURL('file://' + path.resolve('.') + dirPath)
+		menuWindow.setMenu(null)
+		menuWindow.loadURL('file://' + path.resolve('.') + dirPath)
 
-		this.menuWindow.once('ready-to-show', () => {
-			this.menuWindow.show()
+		menuWindow.once('ready-to-show', () => {
+			menuWindow.show()
 		})
 		// menuWindow.webContents.openDevTools();
-		this.menuWindow.on('closed', () => {
-			this.menuWindow = null
+		menuWindow.on('closed', () => {
+			menuWindow = null
 		})
 		// Closing global popup event_______
 		this.electronService.remote.ipcMain.on(
 			'global-menu-popup:cancel',
 			(event) => {
-				if (this.menuWindow) {
-					this.menuWindow.close()
+				if (menuWindow) {
+					menuWindow.close()
 				}
 			}
 		)
-	}
-
-	checkBackgroundAndApplyTextColor(color) {
-		// Variables for red, green, blue values
-
-		let colorArray
-		// tslint:disable-next-line: one-variable-per-declaration
-		let r, g, b, hsp
-
-		// Check the format of the color, HEX or RGB?
-		if (color.match(/^rgb/)) {
-			// If RGB --> store the red, green, blue values in separate variables
-			colorArray = color.match(
-				/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/
-			)
-
-			r = color[1]
-			g = color[2]
-			b = color[3]
-		} else {
-			// If hex --> Convert it to RGB: http://gist.github.com/983661
-			colorArray = +(
-				'0x' + color.slice(1).replace(color.length < 5 && /./g, '$&$&')
-			)
-
-			// tslint:disable-next-line: no-bitwise
-			r = colorArray >> 16
-			// tslint:disable-next-line: no-bitwise
-			g = (colorArray >> 8) & 255
-			// tslint:disable-next-line: no-bitwise
-			b = colorArray & 255
-		}
-
-		// HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
-		hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
-
-		// Using the HSP value, determine whether the color is light or dark
-		if (hsp > 127.5) {
-			const css =
-				'body { background-color: ' + color + '; color: black; }'
-			this.applyCssToBackground(css)
-		} else {
-			const css =
-				'body { background-color: ' + color + '; color: white; }'
-			this.applyCssToBackground(css)
-		}
-	}
-	applyCssToBackground(css) {
-		win.webContents.insertCSS(css)
 	}
 
 	openFunc(data) {
