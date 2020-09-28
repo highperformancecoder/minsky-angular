@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { ElectronService } from '../electron/electron.service'
 const path = require('path')
+// import * as staticFilePath from '../../../../assets/menu/options/background-color'
 import {
 	win,
 	getStorageBackgroundColor,
@@ -21,6 +22,7 @@ export class TopMenuService {
 	constructor(private electronService: ElectronService) {}
 
 	topMenu() {
+		const openFunc = this.openFunc
 		const remote = this.electronService.remote
 		const fs = this.electronService.fs
 		const createMenuPopUp = this.createMenuPopUp
@@ -77,10 +79,10 @@ export class TopMenuService {
 											.readFileSync(result.filePaths[0])
 											.toString()
 									)
-									this.openFunc(result)
+									openFunc(result)
 								})
 								.catch((err) => {
-									console.log('file is not selected')
+									console.log(err)
 								})
 						},
 					},
@@ -656,49 +658,22 @@ export class TopMenuService {
 		this.electronService.remote.Menu.setApplicationMenu(this.template)
 		// this.electronService.ipcRenderer.send('minsky-menu',template)
 	}
-
+	// this function open new popup window from main.ts
 	createMenuPopUp = (width, height, title, dirPath, bgColor) => {
-		bgColor = bgColor || getStorageBackgroundColor()
-		const BrowserWindow = this.electronService.remote.BrowserWindow
-		let menuWindow = new BrowserWindow({
+		const data = {
 			width,
 			height,
 			title,
-			resizable: false,
-			minimizable: false,
-			show: false,
-			// parent: win,
-			modal: true,
-			backgroundColor: bgColor,
-			webPreferences: {
-				nodeIntegration: true,
-			},
-		})
-		menuWindow.setMenu(null)
-		menuWindow.loadURL('file://' + path.resolve('.') + dirPath)
-
-		menuWindow.once('ready-to-show', () => {
-			menuWindow.show()
-		})
-		// menuWindow.webContents.openDevTools();
-		menuWindow.on('closed', () => {
-			menuWindow = null
-		})
-		// Closing global popup event_______
-		this.electronService.remote.ipcMain.on(
-			'global-menu-popup:cancel',
-			(event) => {
-				if (menuWindow) {
-					menuWindow.close()
-				}
-			}
-		)
+			dirPath,
+			bgColor,
+		}
+		this.electronService.ipcRenderer.send('create-new-window', data)
 	}
 
 	openFunc(data) {
-		win.webContents.send('Open_file', data)
+		// win.webContents.send('Open_file', data)
 	}
 	saveFunc(data) {
-		win.webContents.send('Save_file', data)
+		// win.webContents.send('Save_file', data)
 	}
 }

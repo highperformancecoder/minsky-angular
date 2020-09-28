@@ -151,7 +151,13 @@ try {
 			storage.set('backgroundColor', { color: data.color })
 			checkBackgroundAndApplyTextColor(data.color)
 			setStorageBackgroundColor(data.color)
-			// menuWindow.close()
+			event.reply('background-color:ok-reply')
+		})
+
+		ipcMain.on('create-new-window', (event, data) => {
+			console.log(data)
+			const { width, height, title, dirPath, bgColor } = data
+			createMenuPopUp(width, height, title, dirPath, bgColor)
 		})
 	})
 
@@ -312,4 +318,41 @@ function checkBackgroundAndApplyTextColor(color) {
 }
 function applyCssToBackground(css) {
 	win.webContents.insertCSS(css)
+}
+
+// this function open new popup window
+function createMenuPopUp(width, height, title, dirPath, menuBackgroundColor) {
+	menuBackgroundColor = menuBackgroundColor || getStorageBackgroundColor()
+	// tslint:disable-next-line: no-shadowed-variable
+	const BrowserWindow = require('electron').BrowserWindow
+	let menuWindow = new BrowserWindow({
+		width,
+		height,
+		title,
+		resizable: false,
+		minimizable: false,
+		show: false,
+		parent: win,
+		modal: true,
+		backgroundColor: menuBackgroundColor,
+		webPreferences: {
+			nodeIntegration: true,
+		},
+	})
+	menuWindow.setMenu(null)
+	menuWindow.loadURL('file://' + __dirname + dirPath)
+
+	menuWindow.once('ready-to-show', () => {
+		menuWindow.show()
+	})
+	// menuWindow.webContents.openDevTools();      // command to inspect popup
+	menuWindow.on('closed', () => {
+		menuWindow = null
+	})
+	// Closing global popup event_______
+	ipcMain.on('global-menu-popup:cancel', (event) => {
+		if (menuWindow) {
+			menuWindow.close()
+		}
+	})
 }
