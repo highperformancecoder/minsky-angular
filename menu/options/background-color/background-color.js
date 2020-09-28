@@ -10,6 +10,9 @@ document.getElementById('backgroundOk').addEventListener('click', () => {
 		color: selected_color_code.toHexString(),
 	}
 	ipcRenderer.send('background-color:ok', data)
+	ipcRenderer.on('background-color:ok-reply', (event, arg) => {
+		ipcRenderer.send('global-menu-popup:cancel')
+	})
 })
 document.querySelector('.cancel-btn').addEventListener('click', () => {
 	ipcRenderer.send('global-menu-popup:cancel')

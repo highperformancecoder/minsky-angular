@@ -1,8 +1,9 @@
-import { Component, ChangeDetectorRef } from '@angular/core'
+import { Component } from '@angular/core'
 import { ElectronService } from './core/services'
 import { TranslateService } from '@ngx-translate/core'
 import { AppConfig } from '../environments/environment'
 import { CommunicationService } from './communication.service'
+import { TopMenuService } from './core/services/top-menu/top-menu-service'
 // Import the resized event model
 import { ResizedEvent } from 'angular-resize-event'
 
@@ -19,8 +20,8 @@ export class AppComponent {
 	constructor(
 		private electronService: ElectronService,
 		private cmService: CommunicationService,
-		private translate: TranslateService,
-		private cdr: ChangeDetectorRef
+		private topMenuService: TopMenuService,
+		private translate: TranslateService
 	) {
 		this.translate.setDefaultLang('en')
 		console.log('AppConfig', AppConfig)
@@ -36,6 +37,8 @@ export class AppComponent {
 				'NodeJS childProcess',
 				this.electronService.childProcess
 			)
+			// code for top menu
+			this.topMenuService.topMenu()
 		} else {
 			console.log('Run in browser')
 		}
@@ -46,20 +49,11 @@ export class AppComponent {
 		this.cmService.canvasOffsetValues()
 	}
 
-	ngOnInit() {
-		console.log('ng init')
-	}
-
 	windowDetails() {
 		// code for X11 window
 		const winHandle = require('electron')
 			.remote.getCurrentWindow()
 			.getNativeWindowHandle()
-
-		// code to convert buffer element to string where 0 will be replaced with each array element
-		/* const winHandle = require('electron')
-			.remote.getCurrentWindow()
-			.getNativeWindowHandle().readUInt32LE(0).toString(16) */
 		console.log(winHandle)
 		this.emitData(winHandle)
 	}
