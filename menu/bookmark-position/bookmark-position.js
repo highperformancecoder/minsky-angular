@@ -25,4 +25,8 @@ document.getElementById('bookmark-ok-btn').addEventListener('click', () => {
 			})
 		}, 400)
 	}
+
+	ipcRenderer.on('bookmark-done-reply', (event, arg) => {
+		ipcRenderer.send('global-menu-popup:cancel')
+	})
 })

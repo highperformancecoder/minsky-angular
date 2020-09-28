@@ -113,6 +113,7 @@ try {
 
 		ipcMain.on('save-bookmark', (event, data) => {
 			if (data) {
+				const menu = Menu.getApplicationMenu()
 				storage.get(data.fileName, (error, fileData) => {
 					if (error) throw error
 					const dataToSave = {
@@ -124,9 +125,8 @@ try {
 					storage.set(data.fileName, fileData, (error) => {
 						if (error) throw error
 					})
-					const outerSubMenu = this.template.getMenuItemById(
-						'main-bookmark'
-					).submenu
+					const outerSubMenu = menu.getMenuItemById('main-bookmark')
+						.submenu
 					const innerSubMenu = outerSubMenu.getMenuItemById(
 						'delete-bookmark'
 					).submenu
@@ -142,10 +142,11 @@ try {
 							click: deleteBookmark.bind(dataToSave),
 						})
 					)
-					// Menu.setApplicationMenu(template)
+					Menu.setApplicationMenu(menu)
 					// menuWindow.close()
 				})
 			}
+			event.reply('bookmark-done-reply')
 		})
 		ipcMain.on('background-color:ok', (event, data) => {
 			storage.set('backgroundColor', { color: data.color })
