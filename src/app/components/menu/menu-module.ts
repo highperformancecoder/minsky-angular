@@ -11,6 +11,7 @@ import { DimensionsComponent } from './edit/dimensions/dimensions.component'
 import { PreferencesComponent } from './preferences/preferences.component'
 import { RungeKuttaParametersComponent } from './runge-kutta-parameters/runge-kutta-parameters.component'
 import { BackgroundColorComponent } from './options/background-color/background-color.component'
+import { GodleyTableComponent } from './insert/godley-table/godley-table.component'
 
 @NgModule({
 	declarations: [
@@ -25,6 +26,7 @@ import { BackgroundColorComponent } from './options/background-color/background-
 		PreferencesComponent,
 		RungeKuttaParametersComponent,
 		BackgroundColorComponent,
+		GodleyTableComponent,
 	],
 	imports: [CommonModule],
 })

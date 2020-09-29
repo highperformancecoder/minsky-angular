@@ -1,20 +1,20 @@
 import { Component, OnInit } from '@angular/core'
-import { ElectronService } from '../../../core/services'
+import { ElectronService } from '../../../../core/services'
 
 @Component({
-	selector: 'app-create-variable',
-	templateUrl: './create-variable.component.html',
-	styleUrls: ['./create-variable.component.scss'],
+	selector: 'app-godley-table',
+	templateUrl: './godley-table.component.html',
+	styleUrls: ['./godley-table.component.scss'],
 })
-export class CreateVariableComponent implements OnInit {
+export class GodleyTableComponent implements OnInit {
 	constructor(private electronService: ElectronService) {}
 
 	ngOnInit(): void {
 		document
-			.getElementById('createVariableOk')
+			.getElementById('godleyTableOk')
 			.addEventListener('click', () => {
 				console.log('button clicked')
-				this.electronService.ipcRenderer.send('create-variable:ok', '')
+				this.electronService.ipcRenderer.send('godley-table:ok', '')
 			})
 		document.querySelector('.cancel-btn').addEventListener('click', () => {
 			this.electronService.ipcRenderer.send('global-menu-popup:cancel')
