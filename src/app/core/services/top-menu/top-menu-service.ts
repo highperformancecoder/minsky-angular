@@ -1,16 +1,7 @@
 import { Injectable } from '@angular/core'
 import { ElectronService } from '../electron/electron.service'
-const path = require('path')
-// import * as staticFilePath from '../../../../assets/menu/options/background-color'
-import {
-	win,
-	getStorageBackgroundColor,
-	setStorageBackgroundColor,
-	createWindow,
-	goToSelectedBookmark,
-	deleteBookmark,
-} from '../../../../../main.js'
-import { app, MenuItem } from 'electron'
+
+import { win, createWindow } from '../../../../../main.js'
 const { dialog } = require('electron').remote
 
 @Injectable({
