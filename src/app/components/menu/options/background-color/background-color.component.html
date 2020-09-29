@@ -1,1 +1,9 @@
-<p>background-color works!</p>
+<div class="background-wrapper">
+	<input type="text" [value]="defaultClr" />
+	<div class="background-buttons">
+		<button class="btn ok-btn" id="backgroundOk" (click)="onClickOk()">
+			OK
+		</button>
+		<button class="cancel-btn" (click)="close()">Cancel</button>
+	</div>
+</div>

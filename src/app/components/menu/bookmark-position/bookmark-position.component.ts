@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 import { ElectronService } from '../../../core/services'
+import { FormGroup, FormBuilder } from '@angular/forms'
 
 @Component({
 	selector: 'app-bookmark-position',
@@ -7,31 +8,44 @@ import { ElectronService } from '../../../core/services'
 	styleUrls: ['./bookmark-position.component.scss'],
 })
 export class BookmarkPositionComponent implements OnInit {
-	constructor(private eleService: ElectronService) {}
+	formBookmark: FormGroup
+	bookmark: any
+	bookmarkFileName = 'bookmarks'
+	electron = require('electron')
+	storage = require('electron-json-storage')
+	constructor(
+		private eleService: ElectronService,
+		private formBuilder: FormBuilder
+	) {
+		this.storage.setDataPath(
+			(this.electron.app || this.electron.remote.app).getPath('userData')
+		)
+	}
 
 	ngOnInit(): void {}
 
-	onClickedOk() {
-		/*  const name = document.getElementById('bookmarkName').value
+	onClickOk() {
+		const name = this.bookmark
 		if (name) {
-			storage.has(bookmarkFileName, (err, isExist) => {
+			this.storage.has(this.bookmarkFileName, (err, isExist) => {
 				if (err) throw err
-				if (!isExist)
-					storage.set(bookmarkFileName, [], (err) => {
+				if (!isExist) {
+					this.storage.set(this.bookmarkFileName, [], (error) => {
 						console.log('file error.....')
 					})
+				}
 			})
 			setTimeout(() => {
-				ipcRenderer.send('save-bookmark', {
+				this.eleService.ipcRenderer.send('save-bookmark', {
 					bookmarkTitle: name,
-					fileName: bookmarkFileName,
+					fileName: this.bookmarkFileName,
 				})
 			}, 400)
 		}
 
-		ipcRenderer.on('bookmark-done-reply', (event, arg) => {
-			ipcRenderer.send('global-menu-popup:cancel')
-		}) */
+		this.eleService.ipcRenderer.on('bookmark-done-reply', (event, arg) => {
+			this.close()
+		})
 	}
 
 	close() {

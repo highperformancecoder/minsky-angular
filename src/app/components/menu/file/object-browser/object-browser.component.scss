@@ -1,0 +1,26 @@
+.main {
+	display: flex;
+	justify-content: center;
+}
+input,
+button {
+	margin-left: 1px;
+	padding: 2px;
+	border: 2px solid rgb(124, 121, 124);
+	background-color: rgb(233, 231, 231);
+}
+a {
+	text-decoration: none;
+}
+
+.content {
+	margin-top: 2px;
+	box-sizing: border-box;
+	width: 395px;
+	height: 178px;
+	padding-right: 230px;
+	border: 1px solid rgb(219, 208, 208);
+	overflow: auto;
+	direction: rtl;
+	font-size: 15px;
+}

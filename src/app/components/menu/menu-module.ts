@@ -11,6 +11,9 @@ import { DimensionsComponent } from './edit/dimensions/dimensions.component'
 import { PreferencesComponent } from './preferences/preferences.component'
 import { RungeKuttaParametersComponent } from './runge-kutta-parameters/runge-kutta-parameters.component'
 import { BackgroundColorComponent } from './options/background-color/background-color.component'
+import { MatLabel, MatFormField } from '@angular/material/form-field'
+import { MaterialModule } from '../../material.module'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 @NgModule({
 	declarations: [
@@ -26,6 +29,13 @@ import { BackgroundColorComponent } from './options/background-color/background-
 		RungeKuttaParametersComponent,
 		BackgroundColorComponent,
 	],
-	imports: [CommonModule],
+	imports: [
+		CommonModule,
+		MaterialModule,
+		ReactiveFormsModule,
+		FormsModule,
+		MatFormField,
+		MatLabel,
+	],
 })
 export class MenuModule {}

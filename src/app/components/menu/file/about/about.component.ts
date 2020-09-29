@@ -11,7 +11,7 @@ export class AboutComponent implements OnInit {
 
 	ngOnInit(): void {}
 
-	aboutFunc() {
+	onClickOk() {
 		console.log('button clicked')
 		this.electronService.ipcRenderer.send('global-menu-popup:cancel')
 	}
