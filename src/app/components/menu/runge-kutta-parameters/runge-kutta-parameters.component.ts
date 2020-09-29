@@ -9,9 +9,8 @@ import { ElectronService } from '../../../core/services'
 export class RungeKuttaParametersComponent implements OnInit {
 	constructor(private electronService: ElectronService) {}
 
-	ngOnInit(): void {
-		document.querySelector('.cancel-btn').addEventListener('click', () => {
-			this.electronService.ipcRenderer.send('global-menu-popup:cancel')
-		})
+	ngOnInit(): void {}
+	onCancel() {
+		this.electronService.ipcRenderer.send('global-menu-popup:cancel')
 	}
 }

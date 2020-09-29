@@ -9,15 +9,13 @@ import { ElectronService } from '../../../../core/services'
 export class GodleyTableComponent implements OnInit {
 	constructor(private electronService: ElectronService) {}
 
-	ngOnInit(): void {
-		document
-			.getElementById('godleyTableOk')
-			.addEventListener('click', () => {
-				console.log('button clicked')
-				this.electronService.ipcRenderer.send('godley-table:ok', '')
-			})
-		document.querySelector('.cancel-btn').addEventListener('click', () => {
-			this.electronService.ipcRenderer.send('global-menu-popup:cancel')
-		})
+	ngOnInit(): void {}
+
+	godleyTableOk() {
+		console.log('button clicked')
+		this.electronService.ipcRenderer.send('godley-table:ok', '')
+	}
+	onCancel() {
+		this.electronService.ipcRenderer.send('global-menu-popup:cancel')
 	}
 }

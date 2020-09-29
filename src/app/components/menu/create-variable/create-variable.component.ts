@@ -9,15 +9,14 @@ import { ElectronService } from '../../../core/services'
 export class CreateVariableComponent implements OnInit {
 	constructor(private electronService: ElectronService) {}
 
-	ngOnInit(): void {
-		document
-			.getElementById('createVariableOk')
-			.addEventListener('click', () => {
-				console.log('button clicked')
-				this.electronService.ipcRenderer.send('create-variable:ok', '')
-			})
-		document.querySelector('.cancel-btn').addEventListener('click', () => {
-			this.electronService.ipcRenderer.send('global-menu-popup:cancel')
-		})
+	ngOnInit(): void {}
+
+	createVariableCancel() {
+		console.log('button clicked')
+		this.electronService.ipcRenderer.send('create-variable:ok', '')
+	}
+
+	createVariableOk() {
+		this.electronService.ipcRenderer.send('global-menu-popup:cancel')
 	}
 }

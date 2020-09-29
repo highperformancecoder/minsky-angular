@@ -9,12 +9,11 @@ import { ElectronService } from '../../../../core/services'
 export class DimensionsComponent implements OnInit {
 	constructor(private electronService: ElectronService) {}
 
-	ngOnInit(): void {
-		document.getElementById('submitBtn').addEventListener('click', () => {
-			this.electronService.ipcRenderer.send('global-menu-popup:cancel')
-		})
-		document.getElementById('cancelBtn').addEventListener('click', () => {
-			this.electronService.ipcRenderer.send('global-menu-popup:cancel')
-		})
+	ngOnInit(): void {}
+	submitBtn() {
+		this.electronService.ipcRenderer.send('global-menu-popup:cancel')
+	}
+	cancelBtn() {
+		this.electronService.ipcRenderer.send('global-menu-popup:cancel')
 	}
 }
