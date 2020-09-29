@@ -36,8 +36,8 @@ import { GodleyTableComponent } from './insert/godley-table/godley-table.compone
 		MaterialModule,
 		ReactiveFormsModule,
 		FormsModule,
-		MatFormField,
-		MatLabel,
+		// MatFormField,
+		// MatLabel,
 	],
 })
 export class MenuModule {}

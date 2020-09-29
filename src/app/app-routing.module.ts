@@ -7,7 +7,6 @@ import { WiringComponent } from './components/wiring/wiring.component'
 import { EquationsComponent } from './components/equations/equations.component'
 import { ParametersComponent } from './components/parameters/parameters.component'
 import { VariablesComponent } from './components/variables/variables.component'
-import { AboutComponent } from './components/menu/file/about/about.component'
 
 const routes: Routes = [
 	{
@@ -30,10 +29,6 @@ const routes: Routes = [
 	{
 		path: 'variables',
 		component: VariablesComponent,
-	},
-	{
-		path: 'about',
-		component: AboutComponent,
 	},
 	{
 		path: '**',
