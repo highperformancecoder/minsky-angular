@@ -14,6 +14,7 @@ import { BackgroundColorComponent } from './options/background-color/background-
 import { MatLabel, MatFormField } from '@angular/material/form-field'
 import { MaterialModule } from '../../material.module'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { GodleyTableComponent } from './insert/godley-table/godley-table.component'
 
 @NgModule({
 	declarations: [
@@ -28,6 +29,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 		PreferencesComponent,
 		RungeKuttaParametersComponent,
 		BackgroundColorComponent,
+		GodleyTableComponent,
 	],
 	imports: [
 		CommonModule,

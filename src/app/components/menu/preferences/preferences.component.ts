@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'
+import { ElectronService } from '../../../core/services'
 
 @Component({
 	selector: 'app-preferences',
@@ -6,7 +7,11 @@ import { Component, OnInit } from '@angular/core'
 	styleUrls: ['./preferences.component.scss'],
 })
 export class PreferencesComponent implements OnInit {
-	constructor() {}
+	constructor(private electronService: ElectronService) {}
 
-	ngOnInit(): void {}
+	ngOnInit(): void {
+		document.querySelector('.cancel-btn').addEventListener('click', () => {
+			this.electronService.ipcRenderer.send('global-menu-popup:cancel')
+		})
+	}
 }

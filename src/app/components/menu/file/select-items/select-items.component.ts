@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'
+import { ElectronService } from '../../../../core/services'
 
 @Component({
 	selector: 'app-select-items',
@@ -6,7 +7,11 @@ import { Component, OnInit } from '@angular/core'
 	styleUrls: ['./select-items.component.scss'],
 })
 export class SelectItemsComponent implements OnInit {
-	constructor() {}
+	constructor(private electronService: ElectronService) {}
 
-	ngOnInit(): void {}
+	ngOnInit(): void {
+		document.querySelector('button').addEventListener('click', () => {
+			this.electronService.ipcRenderer.send('global-menu-popup:cancel')
+		})
+	}
 }
