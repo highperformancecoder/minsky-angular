@@ -67,7 +67,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 			},
 		}),
 	],
-	exports: [AppComponent],
+	exports: [],
 	providers: [],
 	bootstrap: [AppComponent],
 })

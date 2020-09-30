@@ -11,7 +11,11 @@ import { DimensionsComponent } from './edit/dimensions/dimensions.component'
 import { PreferencesComponent } from './preferences/preferences.component'
 import { RungeKuttaParametersComponent } from './runge-kutta-parameters/runge-kutta-parameters.component'
 import { BackgroundColorComponent } from './options/background-color/background-color.component'
-// import { MatLabel, MatFormField } from '@angular/material/form-field'
+/* import {
+	MAT_COLOR_FORMATS,
+	NgxMatColorPickerModule,
+	NGX_MAT_COLOR_FORMATS
+} from '@angular-material-components/color-picker' */
 import { MaterialModule } from '../../material.module'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { GodleyTableComponent } from './insert/godley-table/godley-table.component'
@@ -36,8 +40,10 @@ import { GodleyTableComponent } from './insert/godley-table/godley-table.compone
 		MaterialModule,
 		ReactiveFormsModule,
 		FormsModule,
-		// MatFormField,
-		// MatLabel,
+		// NgxMatColorPickerModule,
 	],
+	/* providers: [
+		{ provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
+	], */
 })
 export class MenuModule {}
