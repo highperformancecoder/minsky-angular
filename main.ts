@@ -107,9 +107,7 @@ try {
 		// addUpdateBookmarkList(menu)
 		// Menu.setApplicationMenu(menu)
 		setTimeout(createWindow, 400)
-		storage.setDataPath(
-			(app || this.electronService.remote.app).getPath('userData')
-		)
+		storage.setDataPath(app.getPath('userData'))
 
 		ipcMain.on('save-bookmark', (event, data) => {
 			if (data) {
@@ -160,6 +158,9 @@ try {
 			const { width, height, title, dirPath, bgColor } = data
 			createMenuPopUp(width, height, title, dirPath, bgColor)
 		})
+		ipcMain.on('ready-template', (event) => {
+			addUpdateBookmarkList(Menu.getApplicationMenu())
+		})
 	})
 
 	// Quit when all windows are closed.
@@ -176,7 +177,6 @@ try {
 		// dock icon is clicked and there are no other windows open.
 		if (win === null) {
 			// ToDo
-			// addUpdateBookmarkList(template)
 			createWindow()
 		}
 	})

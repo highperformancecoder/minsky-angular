@@ -647,6 +647,7 @@ export class TopMenuService {
 			},
 		])
 		this.electronService.remote.Menu.setApplicationMenu(this.template)
+		this.electronService.ipcRenderer.send('ready-template')
 		// this.electronService.ipcRenderer.send('minsky-menu',template)
 	}
 	// this function open new popup window from main.ts
