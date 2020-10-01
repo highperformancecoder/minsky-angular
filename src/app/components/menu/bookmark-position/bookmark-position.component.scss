@@ -1,10 +1,11 @@
+@import '../../../../theme/variables.scss';
+
 .popup-wrapper {
-	font-family: Arial, Helvetica, sans-serif;
 	margin: 0 auto;
-	max-width: 360px;
+	max-width: 27.713vw;
 	.example-form {
-		min-width: 150px;
-		max-width: 500px;
+		min-width: 11.547vw;
+		max-width: 38.491vw;
 		width: 100%;
 	}
 

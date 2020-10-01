@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 
-import { GodleyTableComponent } from './godley-table.component'
+import { GodleyTableComponent } from '../../components/menu/insert/godley-table/godley-table.component'
 
 describe('GodleyTableComponent', () => {
 	let component: GodleyTableComponent

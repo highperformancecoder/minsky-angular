@@ -1,41 +1,38 @@
-* {
-	margin: 0;
-	padding: 0;
-}
+@import '../../../../../theme/variables.scss';
+
 .select_items {
 	margin: 20px 25px 0px 20px;
 	display: flex;
 	flex-direction: row;
-	font-size: 13px;
+	font-size: $primary-font;
 }
 .wrapper {
-	margin-top: 10px;
+	margin-top: $margin;
 }
 .dot {
 	margin-right: 5%;
 	height: 10%;
 	width: 10%;
-	background-color: rgb(0, 70, 140);
+	background-color: $brand-primary;
 	border-radius: 50%;
-	border: 3px solid rgb(0, 70, 140);
-	color: #ffffff;
+	border: 3px solid $brand-primary;
+	color: $white;
 	font-weight: bold;
-	font-size: 25px;
+	font-size: $secondary-font;
 	text-align: center;
 }
 
 .footer_btn {
-	background-color: rgb(242, 242, 242);
-	height: 42px;
+	background-color: $toolbar-bg;
+	height: 6.593vh;
 	position: fixed;
 	bottom: 0;
 	width: 100%;
-}
-
-.footer_btn > button {
-	width: 30%;
-	height: 50%;
-	float: right;
-	margin: 4% 5%;
-	outline: none;
+	button {
+		width: 30%;
+		height: 50%;
+		float: right;
+		margin: 4% 5%;
+		outline: none;
+	}
 }

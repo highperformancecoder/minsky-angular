@@ -1,7 +1,8 @@
+@import '../../../../theme/variables.scss';
+
 .popup-wrapper {
-	font-family: Arial, Helvetica, sans-serif;
 	margin: 0 auto;
-	max-width: 470px;
+	max-width: 27.713vw;
 }
 
 .popup-title {
@@ -10,25 +11,23 @@
 }
 
 .form-control {
-	margin-bottom: 10px;
-}
-
-.form-control > label {
-	min-width: 270px;
-	display: inline-block;
-	text-align: right;
-	margin-right: 10px;
-}
-
-.form-control .radio-wrapper {
-	margin-right: 30px;
+	margin-bottom: $margin;
+	label {
+		min-width: 11.547vw;
+		display: inline-block;
+		text-align: right;
+		margin-right: $margin;
+	}
+	.radio-wrapper {
+		margin-right: 30px;
+	}
 }
 
 .form-buttons {
 	margin: 30px 0;
 	text-align: center;
-}
 
-.form-buttons .btn {
-	display: inline-block;
+	.btn {
+		display: inline-block;
+	}
 }
