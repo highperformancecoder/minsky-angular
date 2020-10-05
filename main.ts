@@ -213,6 +213,7 @@ function addUpdateBookmarkList(mainMenu: Menu) {
 				.submenu
 			const innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark')
 				.submenu
+
 			outerSubMenu.append(new MenuItem({ type: 'separator' }))
 			if (Array.isArray(data)) {
 				data.forEach((ele) => {
@@ -252,6 +253,7 @@ export function deleteBookmark() {
 			storage.set('bookmarks', data, (error) => {
 				console.log(error)
 			})
+			win.webContents.send('refresh-menu')
 
 			// ToDo add code to delete bookmark
 

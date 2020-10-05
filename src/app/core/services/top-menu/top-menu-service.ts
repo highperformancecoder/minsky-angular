@@ -10,7 +10,11 @@ const { dialog } = require('electron').remote
 export class TopMenuService {
 	template: Electron.Menu
 
-	constructor(private electronService: ElectronService) {}
+	constructor(private electronService: ElectronService) {
+		electronService.ipcRenderer.on('refresh-menu', (event) => {
+			this.topMenu()
+		})
+	}
 
 	topMenu() {
 		const openFunc = this.openFunc
@@ -650,6 +654,7 @@ export class TopMenuService {
 		this.electronService.ipcRenderer.send('ready-template')
 		// this.electronService.ipcRenderer.send('minsky-menu',template)
 	}
+
 	// this function open new popup window from main.ts
 	createMenuPopUp = (width, height, title, dirPath, bgColor) => {
 		const data = {
