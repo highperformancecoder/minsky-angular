@@ -27,6 +27,7 @@ import { VariablesComponent } from './components/variables/variables.component'
 import { AngularResizedEventModule } from 'angular-resize-event'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { MaterialModule } from './material.module'
+import { MenuRoutingModule } from './components/menu/menu-routing.module'
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -55,6 +56,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 		MaterialModule,
 		MatProgressSpinnerModule,
 		AppRoutingModule,
+		MenuRoutingModule,
 		AngularResizedEventModule,
 		SocketIoModule.forRoot(config),
 		TranslateModule.forRoot({
@@ -65,7 +67,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 			},
 		}),
 	],
-	exports: [AppComponent],
+	exports: [],
 	providers: [],
 	bootstrap: [AppComponent],
 })

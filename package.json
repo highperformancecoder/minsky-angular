@@ -102,6 +102,7 @@
     "node": ">=10.13.0"
   },
   "dependencies": {
+    "@angular-material-components/color-picker": "^4.0.2",
     "@angular/animations": "^8.0.0 || ^9.0.0-0",
     "@angular/cdk": "~8.2.3",
     "@angular/forms": "^8.0.0 || ^9.0.0-0",

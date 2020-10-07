@@ -2,17 +2,15 @@ import { Component, OnInit } from '@angular/core'
 import { ElectronService } from '../../../../core/services'
 
 @Component({
-	selector: 'app-about',
-	templateUrl: './about.component.html',
-	styleUrls: ['./about.component.scss'],
+	selector: 'app-select-items',
+	templateUrl: './select-items.component.html',
+	styleUrls: ['./select-items.component.scss'],
 })
-export class AboutComponent implements OnInit {
+export class SelectItemsComponent implements OnInit {
 	constructor(private electronService: ElectronService) {}
 
 	ngOnInit(): void {}
-
 	onClickOk() {
-		console.log('button clicked')
 		this.electronService.ipcRenderer.send('global-menu-popup:cancel')
 	}
 }

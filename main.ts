@@ -102,14 +102,8 @@ try {
 	// tslint:disable-next-line: max-line-length
 	// Added 400 ms to fix the black background issue while using transparent window.More details at https://github.com/electron/electron/issues/15947.
 	app.on('ready', () => {
-		// ToDo saving
-		// const menu = template
-		// addUpdateBookmarkList(menu)
-		// Menu.setApplicationMenu(menu)
 		setTimeout(createWindow, 400)
-		storage.setDataPath(
-			(app || this.electronService.remote.app).getPath('userData')
-		)
+		storage.setDataPath(app.getPath('userData'))
 
 		ipcMain.on('save-bookmark', (event, data) => {
 			if (data) {
@@ -143,7 +137,6 @@ try {
 						})
 					)
 					Menu.setApplicationMenu(menu)
-					// menuWindow.close()
 				})
 			}
 			event.reply('bookmark-done-reply')
@@ -159,6 +152,9 @@ try {
 			console.log(data)
 			const { width, height, title, dirPath, bgColor } = data
 			createMenuPopUp(width, height, title, dirPath, bgColor)
+		})
+		ipcMain.on('ready-template', (event) => {
+			addUpdateBookmarkList(Menu.getApplicationMenu())
 		})
 	})
 
@@ -176,7 +172,6 @@ try {
 		// dock icon is clicked and there are no other windows open.
 		if (win === null) {
 			// ToDo
-			// addUpdateBookmarkList(template)
 			createWindow()
 		}
 	})
@@ -213,6 +208,7 @@ function addUpdateBookmarkList(mainMenu: Menu) {
 				.submenu
 			const innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark')
 				.submenu
+
 			outerSubMenu.append(new MenuItem({ type: 'separator' }))
 			if (Array.isArray(data)) {
 				data.forEach((ele) => {
@@ -252,6 +248,7 @@ export function deleteBookmark() {
 			storage.set('bookmarks', data, (error) => {
 				console.log(error)
 			})
+			win.webContents.send('refresh-menu')
 
 			// ToDo add code to delete bookmark
 

@@ -1,3 +1,4 @@
+/*
 import {
 	Menu,
 	BrowserWindow,
@@ -782,3 +783,4 @@ function openFunc(data) {
 function saveFunc(data) {
 	win.webContents.send('Save_file', data)
 }
+*/
