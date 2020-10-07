@@ -102,10 +102,6 @@ try {
 	// tslint:disable-next-line: max-line-length
 	// Added 400 ms to fix the black background issue while using transparent window.More details at https://github.com/electron/electron/issues/15947.
 	app.on('ready', () => {
-		// ToDo saving
-		// const menu = template
-		// addUpdateBookmarkList(menu)
-		// Menu.setApplicationMenu(menu)
 		setTimeout(createWindow, 400)
 		storage.setDataPath(app.getPath('userData'))
 
@@ -141,7 +137,6 @@ try {
 						})
 					)
 					Menu.setApplicationMenu(menu)
-					// menuWindow.close()
 				})
 			}
 			event.reply('bookmark-done-reply')
