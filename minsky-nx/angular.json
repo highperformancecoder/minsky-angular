@@ -116,6 +116,72 @@
           }
         }
       }
+    },
+    "minsky-electron": {
+      "root": "apps/minsky-electron",
+      "sourceRoot": "apps/minsky-electron/src",
+      "projectType": "application",
+      "prefix": "minsky-electron",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "nx-electron:build",
+          "options": {
+            "outputPath": "dist/apps/minsky-electron",
+            "main": "apps/minsky-electron/src/main.ts",
+            "tsConfig": "apps/minsky-electron/tsconfig.app.json",
+            "assets": ["apps/minsky-electron/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/minsky-electron/src/environments/environment.ts",
+                  "with": "apps/minsky-electron/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "nx-electron:execute",
+          "options": {
+            "buildTarget": "minsky-electron:build"
+          }
+        },
+        "package": {
+          "builder": "nx-electron:package",
+          "options": {
+            "name": "minsky-electron",
+            "frontendProject": "minsky-web",
+            "out": "dist/packages"
+          }
+        },
+        "make": {
+          "builder": "nx-electron:make",
+          "options": {
+            "name": "minsky-electron",
+            "frontendProject": "minsky-web",
+            "out": "dist/executables"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/minsky-electron/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/minsky-electron/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {
