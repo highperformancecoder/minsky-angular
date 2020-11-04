@@ -182,6 +182,56 @@
           }
         }
       }
+    },
+    "minsky-server": {
+      "root": "apps/minsky-server",
+      "sourceRoot": "apps/minsky-server/src",
+      "projectType": "application",
+      "prefix": "minsky-server",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@nrwl/node:build",
+          "options": {
+            "outputPath": "dist/apps/minsky-server",
+            "main": "apps/minsky-server/src/main.ts",
+            "tsConfig": "apps/minsky-server/tsconfig.app.json",
+            "assets": ["apps/minsky-server/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/minsky-server/src/environments/environment.ts",
+                  "with": "apps/minsky-server/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "minsky-server:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/minsky-server/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/minsky-server/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

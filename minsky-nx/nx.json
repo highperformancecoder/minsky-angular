@@ -32,6 +32,9 @@
     },
     "minsky-electron": {
       "tags": []
+    },
+    "minsky-server": {
+      "tags": []
     }
   }
 }
