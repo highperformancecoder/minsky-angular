@@ -12,7 +12,7 @@
     "ng:serve": "ng serve",
     "ng:serve:server": "ng serve minsky-server",
     "ng:serve:web": "npm run postinstall:web && ng serve -o",
-    "electron:serve": "ng serve minsky-electron",
+    "electron:serve": "wait-on http-get://localhost:4200/ && ng serve minsky-electron",
     "electron:local": "npm run build:prod && electron dist/apps/electron/main.js",
     "electron:linux": "npm run build:prod && electron-builder build --linux",
     "electron:windows": "npm run build:prod && electron-builder build --windows",
@@ -106,6 +106,7 @@
     "ts-jest": "26.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~6.0.0",
-    "typescript": "~4.0.3"
+    "typescript": "~4.0.3",
+    "wait-on": "^5.2.0"
   }
 }
