@@ -1,0 +1,62 @@
+@import '../../../../theme/variables.scss';
+
+.toolbar-section {
+	display: inline-flex;
+
+	.m-a-0 {
+		margin: auto 0;
+	}
+
+	.btn {
+		align-items: center;
+		border: none;
+		cursor: pointer;
+		display: inline-flex;
+		height: $button-size;
+		width: $button-size;
+		margin: 2px;
+		padding: 2px;
+		border: 1px solid $toolbar-box;
+		border-radius: 0.25rem;
+		background-color: $toolbar-bg;
+		.btn-icon {
+			max-width: 100%;
+		}
+		&:focus {
+			outline: none;
+			border-left: 2px solid $toolbar-border-focus;
+			border-top: 2px solid $toolbar-box;
+			border-bottom: 1px solid $toolbar-bg;
+			border-right: 1px solid $toolbar-bg;
+			background: $white;
+			margin-top: -1px;
+		}
+	}
+	.range-input-control {
+		display: flex;
+		flex-direction: column;
+		margin: 5px;
+		font-size: 14px;
+		.range-input-label {
+			text-align: center;
+			user-select: none;
+		}
+		.range-input-wrapper {
+			display: flex;
+			align-items: center;
+			.slow-label,
+			.fast-label {
+				margin: 0 5px;
+				user-select: none;
+			}
+			input {
+				cursor: pointer;
+			}
+		}
+	}
+
+	.zoom-btn {
+		width: 3rem;
+		padding: 8px;
+	}
+}

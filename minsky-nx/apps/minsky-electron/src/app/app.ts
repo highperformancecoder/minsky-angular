@@ -1,8 +1,8 @@
-import { BrowserWindow, shell, screen } from 'electron';
-import { rendererAppName, rendererAppPort } from './constants';
-import { environment } from '../environments/environment';
+import { BrowserWindow, dialog, screen, shell } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
+import { environment } from '../environments/environment';
+import { rendererAppName, rendererAppPort } from './constants';
 
 export default class App {
   // Keep a global reference of the window object, if you don't, the window will
@@ -29,6 +29,17 @@ export default class App {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
+    const choice = dialog.showMessageBoxSync(App.mainWindow, {
+      type: 'question',
+      buttons: ['Yes', 'No'],
+      title: 'Confirm',
+      message: 'Are you sure you want to quit?',
+    });
+
+    if (choice === 0) {
+      App.mainWindow.destroy();
+    }
+
     App.mainWindow = null;
   }
 
@@ -69,7 +80,14 @@ export default class App {
       webPreferences: {
         nodeIntegration: true,
         backgroundThrottling: false,
+        affinity: 'window',
+        //TODO: allow if isDevelopmentMode
+        // allowRunningInsecureContent: serve ? true : false,
       },
+      x: 0,
+      y: 0,
+      title: 'Minsky',
+      icon: __dirname + '/assets/favicon.png',
     });
     App.mainWindow.setMenu(null);
     App.mainWindow.center();

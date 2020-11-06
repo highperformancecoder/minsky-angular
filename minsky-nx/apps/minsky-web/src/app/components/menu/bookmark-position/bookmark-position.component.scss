@@ -1,0 +1,15 @@
+@import '../../../../theme/variables.scss';
+
+.popup-wrapper {
+	margin: 0 auto;
+	max-width: 27.713vw;
+	.example-form {
+		min-width: 11.547vw;
+		max-width: 38.491vw;
+		width: 100%;
+	}
+
+	.example-full-width {
+		width: 100%;
+	}
+}
