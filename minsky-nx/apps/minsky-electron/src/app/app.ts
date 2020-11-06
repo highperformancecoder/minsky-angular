@@ -1,4 +1,5 @@
 import { BrowserWindow, dialog, screen, shell } from 'electron';
+import * as storage from 'electron-json-storage';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
@@ -57,6 +58,7 @@ export default class App {
     // Some APIs can only be used after this event occurs.
     App.initMainWindow();
     App.loadMainWindow();
+    storage.setDataPath(App.application.getPath('userData'));
   }
 
   private static onActivate() {
