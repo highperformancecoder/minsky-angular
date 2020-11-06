@@ -1,107 +1,98 @@
-[![Angular Logo](https://www.vectorlogo.zone/logos/angular/angular-icon.svg)](https://angular.io/) [![Electron Logo](https://www.vectorlogo.zone/logos/electronjs/electronjs-icon.svg)](https://electronjs.org/)
+# Minsky
 
-![Maintained][maintained-badge]
-[![Travis Build Status][build-badge]][build]
-[![Make a pull request][prs-badge]][prs]
-[![License](http://img.shields.io/badge/Licence-MIT-brightgreen.svg)](LICENSE.md)
+This project was generated using [Nx](https://nx.dev).
 
-[![Watch on GitHub][github-watch-badge]][github-watch]
-[![Star on GitHub][github-star-badge]][github-star]
-[![Tweet][twitter-badge]][twitter]
+<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
 
-# Introduction
+🔎 **Nx is a set of Extensible Dev Tools for Monorepos.**
 
-Bootstrap and package your project with Angular 9 and Electron 8 (Typescript + SASS + Hot Reload) for creating Desktop applications.
+## Quick Start & Documentation
 
-Currently runs with:
+[Nx Documentation](https://nx.dev/angular)
 
--   Angular v9.1.11
--   Electron v9.0.4
--   Electron Builder v22.7.0
+[10-minute video showing all Nx features](https://nx.dev/angular/getting-started/what-is-nx)
 
-With this sample, you can :
+[Interactive Tutorial](https://nx.dev/angular/tutorial/01-create-application)
 
--   Run your app in a local development environment with Electron & Hot reload
--   Run your app in a production environment
--   Package your app into an executable file for Linux, Windows & Mac
+## Adding capabilities to your workspace
 
-/!\ Hot reload only pertains to the renderer process. The main electron process is not able to be hot reloaded, only restarted.
+Nx supports many plugins which add capabilities for developing different types of applications and different tools.
 
-/!\ Angular 9.x CLI needs Node 10.13 or later to work correctly.
+These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
 
-## Getting Started
+Below are our core plugins:
 
-Clone this repository locally :
+- [Angular](https://angular.io)
+  - `ng add @nrwl/angular`
+- [React](https://reactjs.org)
+  - `ng add @nrwl/react`
+- Web (no framework frontends)
+  - `ng add @nrwl/web`
+- [Nest](https://nestjs.com)
+  - `ng add @nrwl/nest`
+- [Express](https://expressjs.com)
+  - `ng add @nrwl/express`
+- [Node](https://nodejs.org)
+  - `ng add @nrwl/node`
 
-```bash
-git clone https://github.com/maximegris/angular-electron.git
-```
+There are also many [community plugins](https://nx.dev/nx-community) you could add.
 
-Install dependencies with npm :
+## Generate an application
 
-```bash
-npm install
-```
+Run `ng g @nrwl/angular:app my-app` to generate an application.
 
-There is an issue with `yarn` and `node_modules` when the application is built by the packager. Please use `npm` as dependencies manager.
+> You can use any of the plugins above to generate applications as well.
 
-If you want to generate Angular components with Angular-cli , you **MUST** install `@angular/cli` in npm global context.
-Please follow [Angular-cli documentation](https://github.com/angular/angular-cli) if you had installed a previous version of `angular-cli`.
+When using Nx, you can create multiple applications and libraries in the same workspace.
 
-```bash
-npm install -g @angular/cli
-```
+## Generate a library
 
-## To build for development
+Run `ng g @nrwl/angular:lib my-lib` to generate a library.
 
--   **in a terminal window** -> npm start
+> You can also use any of the plugins above to generate libraries as well.
 
-Voila! You can use your Angular + Electron app in a local development environment with hot reload !
+Libraries are sharable across libraries and applications. They can be imported from `@minsky/mylib`.
 
-The application code is managed by `main.ts`. In this sample, the app runs with a simple Angular App (http://localhost:4200) and an Electron window.
-The Angular component contains an example of Electron and NodeJS native lib import.
-You can disable "Developer Tools" by commenting `win.webContents.openDevTools();` in `main.ts`.
+## Development server
 
-## Included Commands
+Run `ng serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
 
-| Command                  | Description                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------ |
-| `npm run ng:serve:web`   | Execute the app in the browser                                                       |
-| `npm run build`          | Build the app. Your built files are in the /dist folder.                             |
-| `npm run build:prod`     | Build the app with Angular aot. Your built files are in the /dist folder.            |
-| `npm run electron:local` | Builds your application and start electron                                           |
-| `npm run electron:build` | Builds your application and creates an app consumable based on your operating system |
+## Code scaffolding
 
-**Your application is optimised. Only /dist folder and node dependencies are included in the executable.**
+Run `ng g component my-component --project=my-app` to generate a new component.
 
-## You want to use a specific lib (like rxjs) in electron main thread ?
+## Build
 
-YES! You can do it! Just by importing your library in npm dependencies section (not **devDependencies**) with `npm install --save`. It will be loaded by electron during build phase and added to your final package. Then use your library by importing it in `main.ts` file. Quite simple, isn't it ?
+Run `ng build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## Browser mode
+## Running unit tests
 
-Maybe you want to execute the application in the browser with hot reload ? Just run `npm run ng:serve:web`.
-**Note that you can't use Electron or NodeJS native libraries in this case.** Please check `providers/electron.service.ts` to watch how conditional import of electron/Native libraries is done.
+Run `ng test my-app` to execute the unit tests via [Jest](https://jestjs.io).
 
-## Branch & Packages version
+Run `nx affected:test` to execute the unit tests affected by a change.
 
--   Angular 4 & Electron 1 : Branch [angular4](https://github.com/maximegris/angular-electron/tree/angular4)
--   Angular 5 & Electron 1 : Branch [angular5](https://github.com/maximegris/angular-electron/tree/angular5)
--   Angular 6 & Electron 3 : Branch [angular6](https://github.com/maximegris/angular-electron/tree/angular6)
--   Angular 7 & Electron 3 : Branch [angular7](https://github.com/maximegris/angular-electron/tree/angular7)
--   Angular 8 & Electron 7 : Branch [angular8](https://github.com/maximegris/angular-electron/tree/angular8)
--   Angular 9 & Electron 9 : (master)
+## Running end-to-end tests
 
-[build-badge]: https://travis-ci.org/maximegris/angular-electron.svg?branch=master&style=style=flat-square
-[build]: https://travis-ci.org/maximegris/angular-electron
-[license-badge]: https://img.shields.io/badge/license-Apache2-blue.svg?style=style=flat-square
-[license]: https://github.com/maximegris/angular-electron/blob/master/LICENSE.md
-[prs-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
-[prs]: http://makeapullrequest.com
-[github-watch-badge]: https://img.shields.io/github/watchers/maximegris/angular-electron.svg?style=social
-[github-watch]: https://github.com/maximegris/angular-electron/watchers
-[github-star-badge]: https://img.shields.io/github/stars/maximegris/angular-electron.svg?style=social
-[github-star]: https://github.com/maximegris/angular-electron/stargazers
-[twitter]: https://twitter.com/intent/tweet?text=Check%20out%20angular-electron!%20https://github.com/maximegris/angular-electron%20%F0%9F%91%8D
-[twitter-badge]: https://img.shields.io/twitter/url/https/github.com/maximegris/angular-electron.svg?style=social
-[maintained-badge]: https://img.shields.io/badge/maintained-yes-brightgreen
+Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
+
+Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
+
+## Understand your workspace
+
+Run `nx dep-graph` to see a diagram of the dependencies of your projects.
+
+## Further help
+
+Visit the [Nx Documentation](https://nx.dev/angular) to learn more.
+
+## ☁ Nx Cloud
+
+### Computation Memoization in the Cloud
+
+<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
+
+Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
+
+Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
+
+Visit [Nx Cloud](https://nx.app/) to learn more.
