@@ -7,7 +7,6 @@ import { ElectronService } from '../electron/electron.service';
 })
 export class TopMenuService {
   template: Electron.Menu;
-
   constructor(private electronService: ElectronService) {
     electronService.ipcRenderer.on('refresh-menu', (event) => {
       this.topMenu();
@@ -15,6 +14,8 @@ export class TopMenuService {
   }
 
   topMenu() {
+    const menuDir = '/home/jarvis/Documents/minsky/apps/minsky-electron';
+
     const openFunc = this.openFunc;
     const remote = this.electronService.remote;
     const fs = this.electronService.fs;
@@ -31,7 +32,7 @@ export class TopMenuService {
                 420,
                 440,
                 '',
-                '/menu/file/about/about.html',
+                menuDir + '/menu/file/about/about.html',
                 '#ffffff'
               );
               remote.shell.beep();
@@ -141,7 +142,8 @@ export class TopMenuService {
                 240,
                 153,
                 '',
-                '/menu/file/dimensional-analysis/dimensional-analysis.html',
+                menuDir +
+                  '/menu/file/dimensional-analysis/dimensional-analysis.html',
                 '#ffffff'
               );
             },
@@ -167,7 +169,7 @@ export class TopMenuService {
                 250,
                 500,
                 'Log simulation',
-                '/menu/file/log-simulation/log-simulation.html',
+                menuDir + '/menu/file/log-simulation/log-simulation.html',
                 null
               );
             },
@@ -199,7 +201,7 @@ export class TopMenuService {
                 400,
                 230,
                 '',
-                '/menu/file/object-browser/object_browser.html',
+                menuDir + '/menu/file/object-browser/object_browser.html',
                 null
               );
             },
@@ -211,7 +213,7 @@ export class TopMenuService {
                 290,
                 153,
                 '',
-                '/menu/file/select-items/select_items.html',
+                menuDir + '/menu/file/select-items/select_items.html',
                 '#ffffff'
               );
             },
@@ -254,7 +256,7 @@ export class TopMenuService {
                 420,
                 250,
                 'Dimensions',
-                '/menu/edit/dimensions/dimensions-popup.html',
+                menuDir + '/menu/edit/dimensions/dimensions-popup.html',
                 null
               );
             },
@@ -272,7 +274,7 @@ export class TopMenuService {
                 420,
                 200,
                 'Bookmark this position',
-                '/menu/bookmark-position/bookmark-position.html',
+                menuDir + '/menu/bookmark-position/bookmark-position.html',
                 null
               );
             },
@@ -306,7 +308,7 @@ export class TopMenuService {
                     500,
                     550,
                     'Specify variable name',
-                    '/menu/create-variable/create-variable.html',
+                    menuDir + '/menu/create-variable/create-variable.html',
                     null
                   );
                 },
@@ -318,7 +320,7 @@ export class TopMenuService {
                     500,
                     550,
                     'Specify variable name',
-                    '/menu/create-variable/create-variable.html',
+                    menuDir + '/menu/create-variable/create-variable.html',
                     null
                   );
                 },
@@ -330,7 +332,7 @@ export class TopMenuService {
                     500,
                     550,
                     'Specify variable name',
-                    '/menu/create-variable/create-variable.html',
+                    menuDir + '/menu/create-variable/create-variable.html',
                     null
                   );
                 },
@@ -581,7 +583,7 @@ export class TopMenuService {
                 550,
                 450,
                 'Preferences',
-                '/menu/preferences/preferences.html',
+                menuDir + '/menu/preferences/preferences.html',
                 null
               );
             },
@@ -593,7 +595,8 @@ export class TopMenuService {
                 450,
                 320,
                 'Background Colour',
-                '/menu/options/background-color/background-color.html',
+                menuDir +
+                  '/menu/options/background-color/background-color.html',
                 null
               );
             },
@@ -610,7 +613,8 @@ export class TopMenuService {
                 550,
                 550,
                 'Runge Kutta',
-                '/menu/runge-kutta-parameters/runge-kutta-parameters.html',
+                menuDir +
+                  '/menu/runge-kutta-parameters/runge-kutta-parameters.html',
                 null
               );
             },

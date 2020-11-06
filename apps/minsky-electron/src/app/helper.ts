@@ -1,7 +1,6 @@
 import { BrowserWindow, ipcMain, Menu, MenuItem } from 'electron';
 import * as storage from 'electron-json-storage';
 import App from './app';
-
 const window = App.mainWindow;
 
 let storageBackgroundColor;
@@ -155,12 +154,11 @@ export function createMenuPopUp(
     },
   });
   menuWindow.setMenu(null);
-  menuWindow.loadURL('file://' + __dirname + dirPath);
-
+  menuWindow.loadURL(`file://${dirPath}`);
   menuWindow.once('ready-to-show', () => {
     menuWindow.show();
   });
-  // menuWindow.webContents.openDevTools();      // command to inspect popup
+  // menuWindow.webContents.openDevTools(); // command to inspect popup
   menuWindow.on('closed', () => {
     menuWindow = null;
   });
