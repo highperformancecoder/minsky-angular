@@ -83,8 +83,7 @@ export default class App {
         nodeIntegration: true,
         backgroundThrottling: false,
         affinity: 'window',
-        //TODO: allow if isDevelopmentMode
-        // allowRunningInsecureContent: serve ? true : false,
+        allowRunningInsecureContent: this.isDevelopmentMode ? true : false,
       },
       x: 0,
       y: 0,
@@ -93,6 +92,10 @@ export default class App {
     });
     App.mainWindow.setMenu(null);
     App.mainWindow.center();
+
+    if (this.isDevelopmentMode()) {
+      App.mainWindow.webContents.openDevTools({ mode: 'detach' });
+    }
 
     // if main window is ready to show, close the splash window and show the main window
     App.mainWindow.once('ready-to-show', () => {
