@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { dialog } from 'electron';
 import { ElectronService } from '../electron/electron.service';
 
 @Injectable({
@@ -8,9 +7,11 @@ import { ElectronService } from '../electron/electron.service';
 export class TopMenuService {
   template: Electron.Menu;
   constructor(private electronService: ElectronService) {
-    electronService.ipcRenderer.on('refresh-menu', (event) => {
-      this.topMenu();
-    });
+    if (electronService.isElectron) {
+      electronService.ipcRenderer.on('refresh-menu', (event) => {
+        this.topMenu();
+      });
+    }
   }
 
   topMenu() {
@@ -19,6 +20,7 @@ export class TopMenuService {
     const openFunc = this.openFunc;
     const remote = this.electronService.remote;
     const fs = this.electronService.fs;
+    const dialog = this.electronService.dialog;
     const createMenuPopUp = this.createMenuPopUp;
     this.template = this.electronService.remote.Menu.buildFromTemplate([
       {
