@@ -3,13 +3,10 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'minsky-temp',
   templateUrl: './temp.component.html',
-  styleUrls: ['./temp.component.scss']
+  styleUrls: ['./temp.component.scss'],
 })
 export class TempComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

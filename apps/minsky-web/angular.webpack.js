@@ -13,7 +13,11 @@ module.exports = (config, options) => {
       }
 
       let fileReplacementParts = fileReplacement['with'].split('.');
-      if (['dev', 'prod', 'test', 'electron-renderer'].indexOf(fileReplacementParts[1]) < 0) {
+      if (
+        ['dev', 'prod', 'test', 'electron-renderer'].indexOf(
+          fileReplacementParts[1]
+        ) < 0
+      ) {
         config.target = fileReplacementParts[1];
       }
       break;
@@ -21,4 +25,4 @@ module.exports = (config, options) => {
   }
 
   return config;
-}
+};

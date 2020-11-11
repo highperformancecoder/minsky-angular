@@ -1,24 +1,24 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BookmarkPositionComponent } from '../../components/menu/bookmark-position/bookmark-position.component'
+import { BookmarkPositionComponent } from '../../components/menu/bookmark-position/bookmark-position.component';
 
 describe('BookmarkPositionComponent', () => {
-	let component: BookmarkPositionComponent
-	let fixture: ComponentFixture<BookmarkPositionComponent>
+  let component: BookmarkPositionComponent;
+  let fixture: ComponentFixture<BookmarkPositionComponent>;
 
-	beforeEach(async(() => {
-		TestBed.configureTestingModule({
-			declarations: [BookmarkPositionComponent],
-		}).compileComponents()
-	}))
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [BookmarkPositionComponent],
+    }).compileComponents();
+  }));
 
-	beforeEach(() => {
-		fixture = TestBed.createComponent(BookmarkPositionComponent)
-		component = fixture.componentInstance
-		fixture.detectChanges()
-	})
+  beforeEach(() => {
+    fixture = TestBed.createComponent(BookmarkPositionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-	it('should create', () => {
-		expect(component).toBeTruthy()
-	})
-})
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

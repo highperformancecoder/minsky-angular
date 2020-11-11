@@ -1,24 +1,24 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RungeKuttaParametersComponent } from '../../components/menu/runge-kutta-parameters/runge-kutta-parameters.component'
+import { RungeKuttaParametersComponent } from '../../components/menu/runge-kutta-parameters/runge-kutta-parameters.component';
 
 describe('RungeKuttaParametersComponent', () => {
-	let component: RungeKuttaParametersComponent
-	let fixture: ComponentFixture<RungeKuttaParametersComponent>
+  let component: RungeKuttaParametersComponent;
+  let fixture: ComponentFixture<RungeKuttaParametersComponent>;
 
-	beforeEach(async(() => {
-		TestBed.configureTestingModule({
-			declarations: [RungeKuttaParametersComponent],
-		}).compileComponents()
-	}))
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [RungeKuttaParametersComponent],
+    }).compileComponents();
+  }));
 
-	beforeEach(() => {
-		fixture = TestBed.createComponent(RungeKuttaParametersComponent)
-		component = fixture.componentInstance
-		fixture.detectChanges()
-	})
+  beforeEach(() => {
+    fixture = TestBed.createComponent(RungeKuttaParametersComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-	it('should create', () => {
-		expect(component).toBeTruthy()
-	})
-})
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

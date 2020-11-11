@@ -1,63 +1,63 @@
 @import '../theme/variables.scss';
 :host {
-	display: flex;
-	flex-direction: column;
-	height: $app-height;
-	width: $app-width;
+  display: flex;
+  flex-direction: column;
+  height: $app-height;
+  width: $app-width;
 }
 
 .example-button-row {
-	a {
-		border: 2px solid $toolbar-border-light;
-		background-color: $toolbar-bg;
-		color: $toolbar-border-focus;
-		&:active,
-		&:focus {
-			border: 2px solid $toolbar-border;
-		}
-	}
-	.mat-button-base {
-		margin: 5px 5px 5px 0;
-	}
+  a {
+    border: 2px solid $toolbar-border-light;
+    background-color: $toolbar-bg;
+    color: $toolbar-border-focus;
+    &:active,
+    &:focus {
+      border: 2px solid $toolbar-border;
+    }
+  }
+  .mat-button-base {
+    margin: 5px 5px 5px 0;
+  }
 }
 
 .tabs-section {
-	border-top: 1px solid $toolbar-box;
-	flex: 1;
-	.tabs {
-		display: flex;
-		border-bottom: 1px solid $toolbar-box;
-		.tab {
-			border-left: 2px solid $toolbar-border;
-			background-color: $toolbar-bg;
-			padding: $padding;
-			color: black;
-			label {
-				padding: 3px;
-				margin: 2px;
-				font-size: $primary-font;
-			}
-			label:focus {
-				outline: none;
-			}
-		}
-		.tab:focus {
-			outline: none;
-		}
-	}
+  border-top: 1px solid $toolbar-box;
+  flex: 1;
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid $toolbar-box;
+    .tab {
+      border-left: 2px solid $toolbar-border;
+      background-color: $toolbar-bg;
+      padding: $padding;
+      color: black;
+      label {
+        padding: 3px;
+        margin: 2px;
+        font-size: $primary-font;
+      }
+      label:focus {
+        outline: none;
+      }
+    }
+    .tab:focus {
+      outline: none;
+    }
+  }
 }
 
 .spinner {
-	position: absolute;
-	top: 60%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	::ng-deep .mat-progress-spinner circle,
-	.mat-spinner circle {
-		stroke: $primary-yellow;
-	}
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  ::ng-deep .mat-progress-spinner circle,
+  .mat-spinner circle {
+    stroke: $primary-yellow;
+  }
 }
 
 .active-bg {
-	background-color: $white !important;
+  background-color: $white !important;
 }

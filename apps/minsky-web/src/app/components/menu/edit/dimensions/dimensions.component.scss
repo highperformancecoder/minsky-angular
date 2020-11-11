@@ -2,16 +2,16 @@
 @import '../../../../../theme/variables.scss';
 
 .popup-wrapper {
-	margin: 0 auto;
-	max-width: 27.713vw;
+  margin: 0 auto;
+  max-width: 27.713vw;
 
-	.input-width {
-		width: 100%;
-	}
-	.text-center {
-		text-align: center;
-	}
-	label {
-		text-align: center !important;
-	}
+  .input-width {
+    width: 100%;
+  }
+  .text-center {
+    text-align: center;
+  }
+  label {
+    text-align: center !important;
+  }
 }

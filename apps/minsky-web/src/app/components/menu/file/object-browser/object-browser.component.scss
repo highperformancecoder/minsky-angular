@@ -1,27 +1,27 @@
 @import '../../../../../theme/variables.scss';
 .main {
-	display: flex;
-	justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 input,
 button {
-	margin-left: 1px;
-	padding: 2px;
-	border: 2px solid $toolbar-color;
-	background-color: $toolbar-bg;
+  margin-left: 1px;
+  padding: 2px;
+  border: 2px solid $toolbar-color;
+  background-color: $toolbar-bg;
 }
 a {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 .content {
-	margin-top: 2px;
-	box-sizing: border-box;
-	width: 30.4vw;
-	height: 27.943vh;
-	padding-right: 230px;
-	border: 1px solid $toolbar-bg;
-	overflow: auto;
-	direction: rtl;
-	font-size: $primary-font;
+  margin-top: 2px;
+  box-sizing: border-box;
+  width: 30.4vw;
+  height: 27.943vh;
+  padding-right: 230px;
+  border: 1px solid $toolbar-bg;
+  overflow: auto;
+  direction: rtl;
+  font-size: $primary-font;
 }

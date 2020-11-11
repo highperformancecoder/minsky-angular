@@ -1,33 +1,33 @@
 @import '../../../../theme/variables.scss';
 
 .popup-wrapper {
-	margin: 0 auto;
-	max-width: 27.713vw;
+  margin: 0 auto;
+  max-width: 27.713vw;
 }
 
 .popup-title {
-	margin: 30px 0;
-	text-align: center;
+  margin: 30px 0;
+  text-align: center;
 }
 
 .form-control {
-	margin-bottom: $margin;
-	label {
-		min-width: 11.547vw;
-		display: inline-block;
-		text-align: right;
-		margin-right: $margin;
-	}
-	.radio-wrapper {
-		margin-right: 30px;
-	}
+  margin-bottom: $margin;
+  label {
+    min-width: 11.547vw;
+    display: inline-block;
+    text-align: right;
+    margin-right: $margin;
+  }
+  .radio-wrapper {
+    margin-right: 30px;
+  }
 }
 
 .form-buttons {
-	margin: 30px 0;
-	text-align: center;
+  margin: 30px 0;
+  text-align: center;
 
-	.btn {
-		display: inline-block;
-	}
+  .btn {
+    display: inline-block;
+  }
 }
