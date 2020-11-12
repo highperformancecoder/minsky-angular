@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ElectronService } from '../../../../core/services';
+import { ElectronService } from '@minsky/core';
 
 @Component({
   selector: 'app-about',

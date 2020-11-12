@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BrowserModule } from '@angular/platform-browser';
+import { CoreModule } from '@minsky/core';
 import { MenuModule } from '@minsky/menu';
 // NG Translate
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -18,7 +19,6 @@ import { HeaderComponent } from './components/header/header.component';
 import { ParametersComponent } from './components/parameters/parameters.component';
 import { VariablesComponent } from './components/variables/variables.component';
 import { WiringComponent } from './components/wiring/wiring.component';
-import { CoreModule } from './core/core.module';
 import { HomeModule } from './home/home.module';
 import { MaterialModule } from './material.module';
 import { SharedModule } from './shared/shared.module';

@@ -1,15 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { ElectronService } from '../../../../core/services';
+import { Component } from '@angular/core';
+import { ElectronService } from '@minsky/core';
 
 @Component({
   selector: 'app-dimensions',
   templateUrl: './dimensions.component.html',
   styleUrls: ['./dimensions.component.scss'],
 })
-export class DimensionsComponent implements OnInit {
+export class DimensionsComponent {
   constructor(private electronService: ElectronService) {}
 
-  ngOnInit(): void {}
   submitBtn() {
     this.electronService.ipcRenderer.send('global-menu-popup:cancel');
   }

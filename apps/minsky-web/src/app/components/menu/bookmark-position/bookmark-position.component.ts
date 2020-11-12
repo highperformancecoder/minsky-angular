@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { ElectronService } from '@minsky/core';
 import * as electron from 'electron';
 import * as storage from 'electron-json-storage';
-import { ElectronService } from '../../../core/services';
 
 @Component({
   selector: 'app-bookmark-position',

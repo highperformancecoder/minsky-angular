@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
+import { ElectronService } from '@minsky/core';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ElectronService } from './core/services/electron/electron.service';
 
 export class Message {
   id: string;

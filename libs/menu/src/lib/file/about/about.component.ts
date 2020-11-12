@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ElectronService } from '@minsky/core';
 
 @Component({
   selector: 'minsky-about',
@@ -6,10 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./about.component.scss'],
 })
 export class AboutComponent {
-  // constructor(private electronService: ElectronService) {}
+  constructor(private electronService: ElectronService) {}
 
   onClickOk() {
     console.log('button clicked');
-    // this.electronService.ipcRenderer.send('global-menu-popup:cancel');
+    this.electronService.ipcRenderer.send('global-menu-popup:cancel');
   }
 }
