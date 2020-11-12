@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EquationsComponent } from './components/equations/equations.component';
-import { MenuModule } from './components/menu/menu-module';
 import { ParametersComponent } from './components/parameters/parameters.component';
 import { VariablesComponent } from './components/variables/variables.component';
 import { WiringComponent } from './components/wiring/wiring.component';
@@ -31,17 +30,17 @@ const routes: Routes = [
     component: VariablesComponent,
   },
   {
+    path: 'menu',
+    loadChildren: () => import('@minsky/menu').then((m) => m.MenuModule),
+  },
+  {
     path: '**',
     component: PageNotFoundComponent,
   },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes, { useHash: true }),
-    HomeRoutingModule,
-    MenuModule,
-  ],
+  imports: [RouterModule.forRoot(routes, { useHash: true }), HomeRoutingModule],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

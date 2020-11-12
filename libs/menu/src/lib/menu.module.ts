@@ -4,7 +4,7 @@ import { FileModule } from './file/file.module';
 import { MenuRoutingModule } from './menu-routing.module';
 
 @NgModule({
-  imports: [CommonModule, MenuRoutingModule, FileModule],
+  imports: [CommonModule, FileModule, MenuRoutingModule],
   declarations: [],
   exports: [],
 })

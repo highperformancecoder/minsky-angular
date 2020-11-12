@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { ElectronService, TopMenuService } from '@minsky/core';
 import { TranslateService } from '@ngx-translate/core';
 // Import the resized event model
@@ -20,7 +21,8 @@ export class AppComponent {
     private electronService: ElectronService,
     private cmService: CommunicationService,
     private topMenuService: TopMenuService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public router: Router
   ) {
     this.translate.setDefaultLang('en');
     console.log('AppConfig', AppConfig);
