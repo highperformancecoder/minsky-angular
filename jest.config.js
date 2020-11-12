@@ -5,5 +5,6 @@ module.exports = {
     '<rootDir>/apps/minsky-server',
     '<rootDir>/libs/menu',
     '<rootDir>/libs/core',
+    '<rootDir>/libs/shared',
   ],
 };

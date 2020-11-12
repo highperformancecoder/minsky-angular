@@ -17,7 +17,8 @@
     "baseUrl": ".",
     "paths": {
       "@minsky/menu": ["libs/menu/src/index.ts"],
-      "@minsky/core": ["libs/core/src/index.ts"]
+      "@minsky/core": ["libs/core/src/index.ts"],
+      "@minsky/shared": ["libs/shared/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
