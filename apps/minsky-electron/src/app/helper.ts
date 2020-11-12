@@ -169,3 +169,42 @@ export function createMenuPopUp(
     }
   });
 }
+export function createMenuPopUpWithRouting({
+  width = 500,
+  height = 500,
+  title,
+  backgroundColor = '#ffffff',
+  url = 'http://localhost:4200',
+}) {
+  let menuWindow = new BrowserWindow({
+    width,
+    height,
+    title,
+    resizable: false,
+    minimizable: false,
+    show: false,
+    parent: window,
+    modal: true,
+    backgroundColor,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+  });
+  menuWindow.setMenu(null);
+
+  menuWindow.loadURL(url);
+
+  menuWindow.once('ready-to-show', () => {
+    menuWindow.show();
+  });
+  // menuWindow.webContents.openDevTools(); // command to inspect popup
+  menuWindow.on('closed', () => {
+    menuWindow = null;
+  });
+  // Closing global popup event_______
+  ipcMain.on('global-menu-popup:cancel', () => {
+    if (menuWindow) {
+      menuWindow.close();
+    }
+  });
+}

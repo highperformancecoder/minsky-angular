@@ -34,17 +34,10 @@ export class TopMenuService {
                 width: 420,
                 height: 440,
                 title: '',
-                url: 'http://localhost:4200/#/about',
-                bgColor: '#ffffff',
+                url: 'http://localhost:4200/#/menu/file/about',
+                backgroundColor: '#ffffff',
               });
 
-              // createMenuPopUp(
-              //   420,
-              //   440,
-              //   '',
-              //   menuDir + '/menu/file/about/about.html',
-              //   '#ffffff'
-              // );
               remote.shell.beep();
             },
           },
@@ -148,14 +141,22 @@ export class TopMenuService {
           {
             label: 'Dimensional Analysis',
             click() {
-              createMenuPopUp(
-                240,
-                153,
-                '',
-                menuDir +
-                  '/menu/file/dimensional-analysis/dimensional-analysis.html',
-                '#ffffff'
-              );
+              createMenuPopUpWithRouting({
+                width: 240,
+                height: 153,
+                title: '',
+                url: 'http://localhost:4200/#/menu/file/dimensional-analysis',
+                backgroundColor: '#ffffff',
+              });
+
+              // createMenuPopUp(
+              //   240,
+              //   153,
+              //   '',
+              //   menuDir +
+              //     '/menu/file/dimensional-analysis/dimensional-analysis.html',
+              //   '#ffffff'
+              // );
             },
           },
           {
@@ -662,13 +663,19 @@ export class TopMenuService {
     this.electronService.ipcRenderer.send('create-new-window', data);
   };
 
-  createMenuPopUpWithRouting = ({ width, height, title, url, bgColor }) => {
+  createMenuPopUpWithRouting = ({
+    width,
+    height,
+    title,
+    url,
+    backgroundColor,
+  }) => {
     this.electronService.ipcRenderer.send('create-menu-popup', {
       width,
       height,
       title,
       url,
-      bgColor,
+      backgroundColor,
     });
   };
 

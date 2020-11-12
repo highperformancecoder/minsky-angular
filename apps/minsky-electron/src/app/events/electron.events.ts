@@ -11,6 +11,7 @@ import {
   addUpdateBookmarkList,
   checkBackgroundAndApplyTextColor,
   createMenuPopUp,
+  createMenuPopUpWithRouting,
   deleteBookmark,
   goToSelectedBookmark,
   setStorageBackgroundColor,
@@ -80,11 +81,14 @@ ipcMain.on('background-color:ok', (event, data) => {
 });
 
 ipcMain.on('create-new-window', (event, data) => {
-  console.log(data);
   const { width, height, title, dirPath, bgColor } = data;
   createMenuPopUp(width, height, title, dirPath, bgColor);
 });
 
-ipcMain.on('ready-template', (event) => {
+ipcMain.on('create-menu-popup', (event, data) => {
+  createMenuPopUpWithRouting(data);
+});
+
+ipcMain.on('ready-template', () => {
   addUpdateBookmarkList(Menu.getApplicationMenu());
 });

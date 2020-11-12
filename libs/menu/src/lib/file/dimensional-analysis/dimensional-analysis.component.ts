@@ -1,15 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ElectronService } from '@minsky/core';
 
 @Component({
-  selector: 'app-dimensional-analysis',
+  selector: 'minsky-dimensional-analysis',
   templateUrl: './dimensional-analysis.component.html',
   styleUrls: ['./dimensional-analysis.component.scss'],
 })
-export class DimensionalAnalysisComponent implements OnInit {
+export class DimensionalAnalysisComponent {
   constructor(private electronService: ElectronService) {}
-
-  ngOnInit(): void {}
 
   onClick() {
     this.electronService.ipcRenderer.send('global-menu-popup:cancel');
