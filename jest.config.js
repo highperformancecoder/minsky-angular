@@ -4,5 +4,6 @@ module.exports = {
     '<rootDir>/apps/minsky-electron',
     '<rootDir>/apps/minsky-server',
     '<rootDir>/libs/menu',
+    '<rootDir>/libs/core',
   ],
 };

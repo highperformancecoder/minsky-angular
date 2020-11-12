@@ -16,7 +16,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@minsky/menu": ["libs/menu/src/index.ts"]
+      "@minsky/menu": ["libs/menu/src/index.ts"],
+      "@minsky/core": ["libs/core/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
