@@ -1,15 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ElectronService } from '@minsky/core';
 
 @Component({
-  selector: 'app-select-items',
+  selector: 'minsky-select-items',
   templateUrl: './select-items.component.html',
   styleUrls: ['./select-items.component.scss'],
 })
-export class SelectItemsComponent implements OnInit {
+export class SelectItemsComponent {
   constructor(private electronService: ElectronService) {}
 
-  ngOnInit(): void {}
   onClickOk() {
     this.electronService.ipcRenderer.send('global-menu-popup:cancel');
   }

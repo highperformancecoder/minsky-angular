@@ -176,13 +176,21 @@ export class TopMenuService {
           {
             label: 'Log simulation',
             click() {
-              createMenuPopUp(
-                250,
-                500,
-                'Log simulation',
-                menuDir + '/menu/file/log-simulation/log-simulation.html',
-                null
-              );
+              createMenuPopUpWithRouting({
+                width: 250,
+                height: 500,
+                title: 'Log simulation',
+                url: 'http://localhost:4200/#/menu/file/log-simulation',
+                backgroundColor: '#ffffff',
+              });
+
+              // createMenuPopUp(
+              //   250,
+              //   500,
+              //   'Log simulation',
+              //   menuDir + '/menu/file/log-simulation/log-simulation.html',
+              //   null
+              // );
             },
           },
           {
@@ -208,6 +216,14 @@ export class TopMenuService {
           {
             label: 'Object Browser',
             click() {
+              createMenuPopUpWithRouting({
+                width: 400,
+                height: 230,
+                title: '',
+                url: 'http://localhost:4200/#/menu/file/object-browser',
+                backgroundColor: '#ffffff',
+              });
+
               createMenuPopUp(
                 400,
                 230,
@@ -220,6 +236,14 @@ export class TopMenuService {
           {
             label: 'Select items',
             click() {
+              createMenuPopUpWithRouting({
+                width: 290,
+                height: 153,
+                title: '',
+                url: 'http://localhost:4200/#/menu/file/select-items',
+                backgroundColor: '#ffffff',
+              });
+
               createMenuPopUp(
                 290,
                 153,
