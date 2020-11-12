@@ -313,13 +313,21 @@ export class TopMenuService {
           {
             label: 'Bookmark this position',
             click() {
-              createMenuPopUp(
-                420,
-                200,
-                'Bookmark this position',
-                menuDir + '/menu/bookmark-position/bookmark-position.html',
-                null
-              );
+              createMenuPopUpWithRouting({
+                width: 420,
+                height: 200,
+                title: 'Bookmark this position',
+                url: 'http://localhost:4200/#/menu/bookmarks/bookmark-position',
+                backgroundColor: '#ffffff',
+              });
+
+              // createMenuPopUp(
+              //   420,
+              //   200,
+              //   'Bookmark this position',
+              //   menuDir + '/menu/bookmark-position/bookmark-position.html',
+              //   null
+              // );
             },
           },
           {

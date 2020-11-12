@@ -10,6 +10,11 @@ const menuRoutes: Route[] = [
     path: 'edit',
     loadChildren: () => import('./edit/edit.module').then((m) => m.EditModule),
   },
+  {
+    path: 'bookmarks',
+    loadChildren: () =>
+      import('./bookmarks/bookmarks.module').then((m) => m.BookmarksModule),
+  },
 ];
 
 @NgModule({
