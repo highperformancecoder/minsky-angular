@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../../material.module';
 import { SharedModule } from '../../shared/shared.module';
 import { CreateVariableComponent } from './create-variable/create-variable.component';
-import { DimensionsComponent } from './edit/dimensions/dimensions.component';
 import { GodleyTableComponent } from './insert/godley-table/godley-table.component';
 import { PreferencesComponent } from './preferences/preferences.component';
 import { RungeKuttaParametersComponent } from './runge-kutta-parameters/runge-kutta-parameters.component';
@@ -12,7 +11,6 @@ import { RungeKuttaParametersComponent } from './runge-kutta-parameters/runge-ku
 @NgModule({
   declarations: [
     CreateVariableComponent,
-    DimensionsComponent,
     PreferencesComponent,
     RungeKuttaParametersComponent,
     GodleyTableComponent,

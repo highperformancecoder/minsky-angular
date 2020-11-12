@@ -6,6 +6,10 @@ const menuRoutes: Route[] = [
     path: 'file',
     loadChildren: () => import('./file/file.module').then((m) => m.FileModule),
   },
+  {
+    path: 'edit',
+    loadChildren: () => import('./edit/edit.module').then((m) => m.EditModule),
+  },
 ];
 
 @NgModule({

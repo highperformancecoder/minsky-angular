@@ -224,13 +224,13 @@ export class TopMenuService {
                 backgroundColor: '#ffffff',
               });
 
-              createMenuPopUp(
-                400,
-                230,
-                '',
-                menuDir + '/menu/file/object-browser/object_browser.html',
-                null
-              );
+              // createMenuPopUp(
+              //   400,
+              //   230,
+              //   '',
+              //   menuDir + '/menu/file/object-browser/object_browser.html',
+              //   null
+              // );
             },
           },
           {
@@ -244,13 +244,13 @@ export class TopMenuService {
                 backgroundColor: '#ffffff',
               });
 
-              createMenuPopUp(
-                290,
-                153,
-                '',
-                menuDir + '/menu/file/select-items/select_items.html',
-                '#ffffff'
-              );
+              // createMenuPopUp(
+              //   290,
+              //   153,
+              //   '',
+              //   menuDir + '/menu/file/select-items/select_items.html',
+              //   '#ffffff'
+              // );
             },
           },
           {
@@ -287,13 +287,21 @@ export class TopMenuService {
           {
             label: 'Dimensions',
             click() {
-              createMenuPopUp(
-                420,
-                250,
-                'Dimensions',
-                menuDir + '/menu/edit/dimensions/dimensions-popup.html',
-                null
-              );
+              createMenuPopUpWithRouting({
+                width: 420,
+                height: 250,
+                title: 'Dimensions',
+                url: 'http://localhost:4200/#/menu/edit/dimensions',
+                backgroundColor: '#ffffff',
+              });
+
+              // createMenuPopUp(
+              //   420,
+              //   250,
+              //   'Dimensions',
+              //   menuDir + '/menu/edit/dimensions/dimensions-popup.html',
+              //   null
+              // );
             },
           },
         ],

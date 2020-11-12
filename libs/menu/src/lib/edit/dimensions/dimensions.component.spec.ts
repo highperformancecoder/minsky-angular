@@ -1,16 +1,17 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DimensionsComponent } from '../../components/menu/edit/dimensions/dimensions.component';
+import { DimensionsComponent } from './dimensions.component';
 
 describe('DimensionsComponent', () => {
   let component: DimensionsComponent;
   let fixture: ComponentFixture<DimensionsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [DimensionsComponent],
-    }).compileComponents();
-  }));
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ DimensionsComponent ]
+    })
+    .compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DimensionsComponent);
