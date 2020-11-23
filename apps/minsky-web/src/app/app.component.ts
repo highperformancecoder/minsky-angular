@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { ElectronService, TopMenuService } from '@minsky/core';
+import {
+  CommunicationService,
+  ElectronService,
+  TopMenuService,
+} from '@minsky/core';
 import { TranslateService } from '@ngx-translate/core';
 // Import the resized event model
 import { ResizedEvent } from 'angular-resize-event';
 import { AppConfig } from '../environments/environment';
-import { CommunicationService } from './communication.service';
 
 @Component({
   selector: 'app-root',

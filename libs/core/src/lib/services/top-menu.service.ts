@@ -363,13 +363,13 @@ export class TopMenuService {
                     backgroundColor: '#ffffff',
                   });
 
-                  createMenuPopUp(
+                  /* createMenuPopUp(
                     500,
                     550,
                     'Specify variable name',
                     menuDir + '/menu/create-variable/create-variable.html',
                     null
-                  );
+                  ); */
                 },
               },
               {
@@ -383,13 +383,13 @@ export class TopMenuService {
                     backgroundColor: '#ffffff',
                   });
 
-                  createMenuPopUp(
+                  /* createMenuPopUp(
                     500,
                     550,
                     'Specify variable name',
                     menuDir + '/menu/create-variable/create-variable.html',
                     null
-                  );
+                  ); */
                 },
               },
               {
@@ -403,13 +403,13 @@ export class TopMenuService {
                     backgroundColor: '#ffffff',
                   });
 
-                  createMenuPopUp(
+                  /* createMenuPopUp(
                     500,
                     550,
                     'Specify variable name',
                     menuDir + '/menu/create-variable/create-variable.html',
                     null
-                  );
+                  ); */
                 },
               },
             ],

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommunicationService } from '../../communication.service';
+import { CommunicationService } from '@minsky/core';
 
 @Component({
   selector: 'app-wiring',

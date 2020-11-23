@@ -1,15 +1,12 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { InsertRoutingModule } from './insert-routing.module';
+import { NgModule } from '@angular/core';
+import { SharedModule } from '@minsky/shared';
 import { CreateVariableComponent } from './create-variable/create-variable.component';
-
+import { GodleyTableComponent } from './godley-table/godley-table.component';
+import { InsertRoutingModule } from './insert-routing.module';
 
 @NgModule({
-  declarations: [CreateVariableComponent],
-  imports: [
-    CommonModule,
-    InsertRoutingModule
-  ]
+  declarations: [CreateVariableComponent, GodleyTableComponent],
+  imports: [CommonModule, InsertRoutingModule, SharedModule],
 })
-export class InsertModule { }
+export class InsertModule {}

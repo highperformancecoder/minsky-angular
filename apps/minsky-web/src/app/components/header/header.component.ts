@@ -1,18 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-
-import { CommunicationService } from './../../communication.service';
-import { HeaderEvent } from '../../../interfaces/FEEvents';
+import { Component } from '@angular/core';
+import { CommunicationService } from '@minsky/core';
+import { HeaderEvent } from '@minsky/shared';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   HEADER_EVENT: HeaderEvent;
   constructor(private commService: CommunicationService) {}
-
-  ngOnInit() {}
 
   buttonClicked() {
     // this.commService

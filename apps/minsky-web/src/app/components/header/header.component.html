@@ -3,11 +3,7 @@
     <button class="btn record-btn" title="Record" (click)="recordButton()">
       <img src="assets/images/icons/record.svg" alt="" class="btn-icon" />
     </button>
-    <button
-      class="btn replay-btn"
-      title="Simulate/Recording Replay"
-      (click)="recordingReplyButton()"
-    >
+    <button class="btn replay-btn" title="Simulate/Recording Replay" (click)="recordingReplyButton()">
       <img src="assets/images/icons/replay.svg" alt="" class="btn-icon" />
     </button>
   </div>
@@ -15,18 +11,14 @@
   <div class="simulation-controls">
     <div class="checkbox-control">
       <div class="checkbox-wrapper">
-        <input
-          type="checkbox"
-          id="reverseSimulationCheckbox"
-          class="reverse-simulation-checkbox"
-          (click)="reverseCheckboxButton()"
-        />
+        <input type="checkbox" id="reverseSimulationCheckbox" class="reverse-simulation-checkbox"
+          (click)="reverseCheckboxButton()" />
       </div>
       <label for="reverseSimulationCheckbox">Reverse</label>
     </div>
   </div>
   <div class="toolbar">
-    <app-toolbar></app-toolbar>
+    <minsky-toolbar></minsky-toolbar>
   </div>
   <div class="time-info m-a-0">
     <span class="time">t:0</span>

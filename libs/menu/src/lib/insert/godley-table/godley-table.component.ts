@@ -1,15 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ElectronService } from '@minsky/core';
 
 @Component({
-  selector: 'app-godley-table',
+  selector: 'minsky-godley-table',
   templateUrl: './godley-table.component.html',
   styleUrls: ['./godley-table.component.scss'],
 })
-export class GodleyTableComponent implements OnInit {
+export class GodleyTableComponent {
   constructor(private electronService: ElectronService) {}
-
-  ngOnInit(): void {}
 
   godleyTableOk() {
     console.log('button clicked');

@@ -1,10 +1,13 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Route } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { Route, RouterModule } from '@angular/router';
+import { ToolbarComponent } from './toolbar/toolbar.component';
 
 export const sharedRoutes: Route[] = [];
 
 @NgModule({
   imports: [CommonModule, RouterModule],
+  declarations: [ToolbarComponent],
+  exports: [ToolbarComponent],
 })
 export class SharedModule {}

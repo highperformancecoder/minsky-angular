@@ -5,6 +5,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BrowserModule } from '@angular/platform-browser';
 import { CoreModule } from '@minsky/core';
 import { MenuModule } from '@minsky/menu';
+import { SharedModule } from '@minsky/shared';
 // NG Translate
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -21,7 +22,7 @@ import { VariablesComponent } from './components/variables/variables.component';
 import { WiringComponent } from './components/wiring/wiring.component';
 import { HomeModule } from './home/home.module';
 import { MaterialModule } from './material.module';
-import { SharedModule } from './shared/shared.module';
+import { SharedModule as OldSharedModule } from './shared/shared.module';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -45,6 +46,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
     HttpClientModule,
     CoreModule,
     SharedModule,
+    OldSharedModule,
     HomeModule,
     MenuModule,
     MaterialModule,

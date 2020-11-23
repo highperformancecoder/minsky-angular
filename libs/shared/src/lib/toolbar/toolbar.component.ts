@@ -1,17 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { CommunicationService } from '../../../communication.service';
-import { HeaderEvent } from '../../../../interfaces/FEEvents';
+import { Component } from '@angular/core';
+import { CommunicationService } from '@minsky/core';
+import { HeaderEvent } from '@minsky/shared';
 
 @Component({
-  selector: 'app-toolbar',
+  selector: 'minsky-toolbar',
   templateUrl: './toolbar.component.html',
   styleUrls: ['./toolbar.component.scss'],
 })
-export class ToolbarButtonComponent implements OnInit {
+export class ToolbarComponent {
   HEADER_EVENT: HeaderEvent;
   constructor(private commService: CommunicationService) {}
-
-  ngOnInit(): void {}
 
   playButton() {
     this.commService.sendEvent(this.HEADER_EVENT, {
