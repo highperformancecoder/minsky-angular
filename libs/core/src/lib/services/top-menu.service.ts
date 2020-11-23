@@ -419,57 +419,42 @@ export class TopMenuService {
             submenu: [
               {
                 label: 'add',
-                click() {
-                  console.log('add');
-                },
               },
               {
                 label: 'subtract',
-                click() {},
               },
               {
                 label: 'multiple',
-                click() {},
               },
               {
                 label: 'divide',
-                click() {},
               },
               {
                 label: 'min',
-                click() {},
               },
               {
                 label: 'max',
-                click() {},
               },
               {
                 label: 'and',
-                click() {},
               },
               {
                 label: 'or',
-                click() {},
               },
               {
                 label: 'log',
-                click() {},
               },
               {
                 label: 'pow',
-                click() {},
               },
               {
                 label: 'lt',
-                click() {},
               },
               {
                 label: 'le',
-                click() {},
               },
               {
                 label: 'eq',
-                click() {},
               },
             ],
           },
@@ -478,72 +463,54 @@ export class TopMenuService {
             submenu: [
               {
                 label: 'copy',
-                click() {},
               },
               {
                 label: 'sqrt',
-                click() {},
               },
               {
                 label: 'exp',
-                click() {},
               },
               {
                 label: 'ln',
-                click() {},
               },
               {
                 label: 'sin',
-                click() {},
               },
               {
                 label: 'cos',
-                click() {},
               },
               {
                 label: 'tan',
-                click() {},
               },
               {
                 label: 'asin',
-                click() {},
               },
               {
                 label: 'acos',
-                click() {},
               },
               {
                 label: 'atan',
-
-                click() {},
               },
               {
                 label: 'sinh',
-                click() {},
               },
               {
                 label: 'cosh',
-                click() {},
               },
               {
                 label: 'tanh',
-                click() {},
               },
               {
                 label: 'abs',
-                click() {},
               },
               {
                 label: 'floor',
-                click() {},
               },
               {
                 label: 'frac',
-                click() {},
               },
               {
                 label: 'not',
-                click() {},
               },
             ],
           },
@@ -552,35 +519,27 @@ export class TopMenuService {
             submenu: [
               {
                 label: 'sum',
-                click() {},
               },
               {
                 label: 'product',
-                click() {},
               },
               {
                 label: 'infimum',
-                click() {},
               },
               {
                 label: 'supremum',
-                click() {},
               },
               {
                 label: 'any',
-                click() {},
               },
               {
                 label: 'all',
-                click() {},
               },
               {
                 label: 'infIndex',
-                click() {},
               },
               {
                 label: 'supIndex',
-                click() {},
               },
             ],
           },
@@ -589,15 +548,12 @@ export class TopMenuService {
             submenu: [
               {
                 label: 'runningSum',
-                click() {},
               },
               {
                 label: 'runningProduct',
-                click() {},
               },
               {
                 label: 'difference',
-                click() {},
               },
             ],
           },
@@ -606,45 +562,35 @@ export class TopMenuService {
             submenu: [
               {
                 label: 'innerProduct',
-                click() {},
               },
               {
                 label: 'outerProduct',
-                click() {},
               },
               {
                 label: 'index',
-                click() {},
               },
               {
                 label: 'gather',
-                click() {},
               },
             ],
           },
           {
             label: 'time',
-            click() {},
           },
           {
             label: 'integrate',
-            click() {},
           },
           {
             label: 'differentiate',
-            click() {},
           },
           {
             label: 'data',
-            click() {},
           },
           {
             label: 'ravel',
-            click() {},
           },
           {
             label: 'plot',
-            click() {},
           },
         ],
       },
@@ -654,13 +600,21 @@ export class TopMenuService {
           {
             label: 'Preferences',
             click() {
-              createMenuPopUp(
+              createMenuPopUpWithRouting({
+                width: 500,
+                height: 450,
+                title: 'Preferences',
+                url: 'http://localhost:4200/#/menu/options/preferences',
+                backgroundColor: '#ffffff',
+              });
+
+              /* createMenuPopUp(
                 550,
                 450,
                 'Preferences',
                 menuDir + '/menu/preferences/preferences.html',
                 null
-              );
+              ); */
             },
           },
           {

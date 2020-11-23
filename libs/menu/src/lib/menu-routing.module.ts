@@ -20,6 +20,11 @@ const menuRoutes: Route[] = [
     loadChildren: () =>
       import('./insert/insert.module').then((m) => m.InsertModule),
   },
+  {
+    path: 'options',
+    loadChildren: () =>
+      import('./options//options.module').then((m) => m.OptionsModule),
+  },
 ];
 
 @NgModule({
