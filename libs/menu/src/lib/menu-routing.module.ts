@@ -25,6 +25,13 @@ const menuRoutes: Route[] = [
     loadChildren: () =>
       import('./options/options.module').then((m) => m.OptionsModule),
   },
+  {
+    path: 'runge-kutta',
+    loadChildren: () =>
+      import('./runge-kutta/runge-kutta.module').then(
+        (m) => m.RungeKuttaModule
+      ),
+  },
 ];
 
 @NgModule({

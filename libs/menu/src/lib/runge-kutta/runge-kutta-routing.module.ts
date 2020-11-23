@@ -1,10 +1,13 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { RungeKuttaParametersComponent } from './runge-kutta-parameters/runge-kutta-parameters.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  { path: 'runge-kutta-parameters', component: RungeKuttaParametersComponent },
+];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class RungeKuttaRoutingModule { }
+export class RungeKuttaRoutingModule {}

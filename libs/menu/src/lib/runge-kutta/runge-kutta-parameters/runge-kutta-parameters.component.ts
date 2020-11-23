@@ -1,15 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ElectronService } from '@minsky/core';
 
 @Component({
-  selector: 'app-runge-kutta-parameters',
+  selector: 'minsky-runge-kutta-parameters',
   templateUrl: './runge-kutta-parameters.component.html',
   styleUrls: ['./runge-kutta-parameters.component.scss'],
 })
-export class RungeKuttaParametersComponent implements OnInit {
+export class RungeKuttaParametersComponent {
   constructor(private electronService: ElectronService) {}
 
-  ngOnInit(): void {}
   onCancel() {
     this.electronService.ipcRenderer.send('global-menu-popup:cancel');
   }

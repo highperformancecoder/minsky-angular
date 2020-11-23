@@ -646,14 +646,23 @@ export class TopMenuService {
           {
             label: 'Runge Kutta',
             click() {
-              createMenuPopUp(
-                550,
-                550,
-                'Runge Kutta',
-                menuDir +
-                  '/menu/runge-kutta-parameters/runge-kutta-parameters.html',
-                null
-              );
+              createMenuPopUpWithRouting({
+                width: 550,
+                height: 550,
+                title: 'Runge Kutta',
+                url:
+                  'http://localhost:4200/#/menu/runge-kutta/runge-kutta-parameters',
+                backgroundColor: '#ffffff',
+              });
+
+              // createMenuPopUp(
+              //   550,
+              //   550,
+              //   'Runge Kutta',
+              //   menuDir +
+              //     '/menu/runge-kutta-parameters/runge-kutta-parameters.html',
+              //   null
+              // );
             },
           },
         ],
