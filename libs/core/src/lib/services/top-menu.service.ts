@@ -620,14 +620,22 @@ export class TopMenuService {
           {
             label: 'Background Colour',
             click() {
-              createMenuPopUp(
-                450,
-                320,
-                'Background Colour',
-                menuDir +
-                  '/menu/options/background-color/background-color.html',
-                null
-              );
+              createMenuPopUpWithRouting({
+                width: 450,
+                height: 320,
+                title: 'Background Colour',
+                url: 'http://localhost:4200/#/menu/options/background-color',
+                backgroundColor: '#ffffff',
+              });
+
+              // createMenuPopUp(
+              //   450,
+              //   320,
+              //   'Background Colour',
+              //   menuDir +
+              //     '/menu/options/background-color/background-color.html',
+              //   null
+              // );
             },
           },
         ],

@@ -23,7 +23,7 @@ const menuRoutes: Route[] = [
   {
     path: 'options',
     loadChildren: () =>
-      import('./options//options.module').then((m) => m.OptionsModule),
+      import('./options/options.module').then((m) => m.OptionsModule),
   },
 ];
 

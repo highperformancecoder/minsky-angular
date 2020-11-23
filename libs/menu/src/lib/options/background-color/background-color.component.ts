@@ -5,7 +5,7 @@ import { ElectronService } from '@minsky/core';
 import * as electron from 'electron';
 import * as storage from 'electron-json-storage';
 @Component({
-  selector: 'app-background-color',
+  selector: 'minsky-background-color',
   templateUrl: './background-color.component.html',
   styleUrls: ['./background-color.component.scss'],
 })
