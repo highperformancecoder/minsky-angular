@@ -355,6 +355,14 @@ export class TopMenuService {
               {
                 label: 'variable',
                 click() {
+                  createMenuPopUpWithRouting({
+                    width: 500,
+                    height: 550,
+                    title: 'Specify variable name',
+                    url: 'http://localhost:4200/#/menu/insert/create-variable',
+                    backgroundColor: '#ffffff',
+                  });
+
                   createMenuPopUp(
                     500,
                     550,
@@ -367,6 +375,14 @@ export class TopMenuService {
               {
                 label: 'constant',
                 click() {
+                  createMenuPopUpWithRouting({
+                    width: 500,
+                    height: 550,
+                    title: 'Specify variable name',
+                    url: 'http://localhost:4200/#/menu/insert/create-variable',
+                    backgroundColor: '#ffffff',
+                  });
+
                   createMenuPopUp(
                     500,
                     550,
@@ -379,6 +395,14 @@ export class TopMenuService {
               {
                 label: 'parameter',
                 click() {
+                  createMenuPopUpWithRouting({
+                    width: 500,
+                    height: 550,
+                    title: 'Specify variable name',
+                    url: 'http://localhost:4200/#/menu/insert/create-variable',
+                    backgroundColor: '#ffffff',
+                  });
+
                   createMenuPopUp(
                     500,
                     550,

@@ -15,6 +15,11 @@ const menuRoutes: Route[] = [
     loadChildren: () =>
       import('./bookmarks/bookmarks.module').then((m) => m.BookmarksModule),
   },
+  {
+    path: 'insert',
+    loadChildren: () =>
+      import('./insert/insert.module').then((m) => m.InsertModule),
+  },
 ];
 
 @NgModule({
