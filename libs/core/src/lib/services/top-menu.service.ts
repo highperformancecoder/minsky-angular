@@ -148,15 +148,6 @@ export class TopMenuService {
                 url: 'http://localhost:4200/#/menu/file/dimensional-analysis',
                 backgroundColor: '#ffffff',
               });
-
-              // createMenuPopUp(
-              //   240,
-              //   153,
-              //   '',
-              //   menuDir +
-              //     '/menu/file/dimensional-analysis/dimensional-analysis.html',
-              //   '#ffffff'
-              // );
             },
           },
           {
@@ -183,14 +174,6 @@ export class TopMenuService {
                 url: 'http://localhost:4200/#/menu/file/log-simulation',
                 backgroundColor: '#ffffff',
               });
-
-              // createMenuPopUp(
-              //   250,
-              //   500,
-              //   'Log simulation',
-              //   menuDir + '/menu/file/log-simulation/log-simulation.html',
-              //   null
-              // );
             },
           },
           {
@@ -223,14 +206,6 @@ export class TopMenuService {
                 url: 'http://localhost:4200/#/menu/file/object-browser',
                 backgroundColor: '#ffffff',
               });
-
-              // createMenuPopUp(
-              //   400,
-              //   230,
-              //   '',
-              //   menuDir + '/menu/file/object-browser/object_browser.html',
-              //   null
-              // );
             },
           },
           {
@@ -243,14 +218,6 @@ export class TopMenuService {
                 url: 'http://localhost:4200/#/menu/file/select-items',
                 backgroundColor: '#ffffff',
               });
-
-              // createMenuPopUp(
-              //   290,
-              //   153,
-              //   '',
-              //   menuDir + '/menu/file/select-items/select_items.html',
-              //   '#ffffff'
-              // );
             },
           },
           {
@@ -294,14 +261,6 @@ export class TopMenuService {
                 url: 'http://localhost:4200/#/menu/edit/dimensions',
                 backgroundColor: '#ffffff',
               });
-
-              // createMenuPopUp(
-              //   420,
-              //   250,
-              //   'Dimensions',
-              //   menuDir + '/menu/edit/dimensions/dimensions-popup.html',
-              //   null
-              // );
             },
           },
         ],
@@ -345,6 +304,15 @@ export class TopMenuService {
         submenu: [
           {
             label: 'Godley Table',
+            click() {
+              createMenuPopUpWithRouting({
+                width: 500,
+                height: 550,
+                title: 'Insert Godley Table',
+                url: 'http://localhost:4200/#/menu/insert/godley-table',
+                backgroundColor: '#ffffff',
+              });
+            },
           },
           {
             label: 'Variable',
@@ -362,14 +330,6 @@ export class TopMenuService {
                     url: 'http://localhost:4200/#/menu/insert/create-variable',
                     backgroundColor: '#ffffff',
                   });
-
-                  /* createMenuPopUp(
-                    500,
-                    550,
-                    'Specify variable name',
-                    menuDir + '/menu/create-variable/create-variable.html',
-                    null
-                  ); */
                 },
               },
               {
@@ -382,14 +342,6 @@ export class TopMenuService {
                     url: 'http://localhost:4200/#/menu/insert/create-variable',
                     backgroundColor: '#ffffff',
                   });
-
-                  /* createMenuPopUp(
-                    500,
-                    550,
-                    'Specify variable name',
-                    menuDir + '/menu/create-variable/create-variable.html',
-                    null
-                  ); */
                 },
               },
               {
@@ -402,14 +354,6 @@ export class TopMenuService {
                     url: 'http://localhost:4200/#/menu/insert/create-variable',
                     backgroundColor: '#ffffff',
                   });
-
-                  /* createMenuPopUp(
-                    500,
-                    550,
-                    'Specify variable name',
-                    menuDir + '/menu/create-variable/create-variable.html',
-                    null
-                  ); */
                 },
               },
             ],
@@ -607,14 +551,6 @@ export class TopMenuService {
                 url: 'http://localhost:4200/#/menu/options/preferences',
                 backgroundColor: '#ffffff',
               });
-
-              /* createMenuPopUp(
-                550,
-                450,
-                'Preferences',
-                menuDir + '/menu/preferences/preferences.html',
-                null
-              ); */
             },
           },
           {
@@ -627,15 +563,6 @@ export class TopMenuService {
                 url: 'http://localhost:4200/#/menu/options/background-color',
                 backgroundColor: '#ffffff',
               });
-
-              // createMenuPopUp(
-              //   450,
-              //   320,
-              //   'Background Colour',
-              //   menuDir +
-              //     '/menu/options/background-color/background-color.html',
-              //   null
-              // );
             },
           },
         ],
@@ -654,15 +581,6 @@ export class TopMenuService {
                   'http://localhost:4200/#/menu/runge-kutta/runge-kutta-parameters',
                 backgroundColor: '#ffffff',
               });
-
-              // createMenuPopUp(
-              //   550,
-              //   550,
-              //   'Runge Kutta',
-              //   menuDir +
-              //     '/menu/runge-kutta-parameters/runge-kutta-parameters.html',
-              //   null
-              // );
             },
           },
         ],

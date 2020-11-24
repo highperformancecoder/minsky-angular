@@ -1,5 +1,9 @@
 @import './../../../../../shared/src/lib/theme/variables.scss';
 
+* {
+  margin: 0;
+  padding: 0;
+}
 .about {
   margin: 30px 25px 0px 20px;
   display: flex;
@@ -24,18 +28,10 @@
 
 .footer_btn {
   background-color: $toolbar-bg;
-  height: 6.593vh;
+  height: 42px;
   position: fixed;
   bottom: 0;
   width: 100%;
-
-  button {
-    width: 17%;
-    height: 60%;
-    float: right;
-    margin: 2% 5%;
-    outline: none;
-  }
 }
 
 .mt-10 {
@@ -44,4 +40,12 @@
 
 .mt-20 {
   margin: 20px 0px;
+}
+
+.footer_btn > button {
+  width: 17%;
+  height: 60%;
+  float: right;
+  margin: 2% 5%;
+  outline: none;
 }
