@@ -13,8 +13,7 @@ export class BackgroundColorComponent {
   public disabled = false;
   public color: ThemePalette = 'primary';
   public touchUi = false;
-  defaultClr = '#c1c1c1';
-  colorCtr: AbstractControl = new FormControl(null, [Validators.required]);
+  colorCtr: AbstractControl = new FormControl('#c1c1c1', [Validators.required]);
 
   public options = [
     { value: true, label: 'True' },
@@ -36,11 +35,10 @@ export class BackgroundColorComponent {
   }
 
   onClickOk() {
-    /*  const selectedClrCode = $('#color-picker').spectrum('get')
-			const data = {
-			color: selectedClrCode.toHexString(),
-		} */
-    // this.eleService.ipcRenderer.send('background-color:ok', data)
+    const data = {
+      color: this.colorCtr.value,
+    };
+    this.eleService.ipcRenderer.send('background-color:ok', data);
     this.eleService.ipcRenderer.on(
       'background-color:ok-reply',
       (event, arg) => {

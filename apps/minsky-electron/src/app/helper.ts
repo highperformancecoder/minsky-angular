@@ -197,7 +197,7 @@ export function createMenuPopUpWithRouting({
   menuWindow.once('ready-to-show', () => {
     menuWindow.show();
   });
-  // menuWindow.webContents.openDevTools(); // command to inspect popup
+  menuWindow.webContents.openDevTools({ mode: 'detach' }); // command to inspect popup
   menuWindow.on('closed', () => {
     menuWindow = null;
   });

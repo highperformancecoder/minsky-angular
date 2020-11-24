@@ -64,7 +64,6 @@
     "rxjs": "~6.6.3",
     "socket.io": "^2.3.0",
     "socketio-file-upload": "^0.7.2",
-    "spectrum-colorpicker2": "^2.0.4",
     "zone.js": "^0.10.2"
   },
   "devDependencies": {
