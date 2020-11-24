@@ -7,6 +7,6 @@ import { PreferencesComponent } from './preferences/preferences.component';
 
 @NgModule({
   declarations: [PreferencesComponent, BackgroundColorComponent],
-  imports: [CommonModule, OptionsRoutingModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, OptionsRoutingModule],
 })
 export class OptionsModule {}

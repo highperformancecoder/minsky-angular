@@ -1,15 +1,17 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { BookmarksRoutingModule } from './bookmarks-routing.module';
+import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '@minsky/shared';
 import { BookmarkPositionComponent } from './bookmark-position/bookmark-position.component';
-
+import { BookmarksRoutingModule } from './bookmarks-routing.module';
 
 @NgModule({
   declarations: [BookmarkPositionComponent],
   imports: [
     CommonModule,
-    BookmarksRoutingModule
-  ]
+    BookmarksRoutingModule,
+    SharedModule,
+    ReactiveFormsModule,
+  ],
 })
-export class BookmarksModule { }
+export class BookmarksModule {}

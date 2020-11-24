@@ -21,7 +21,7 @@ import { ParametersComponent } from './components/parameters/parameters.componen
 import { VariablesComponent } from './components/variables/variables.component';
 import { WiringComponent } from './components/wiring/wiring.component';
 import { HomeModule } from './home/home.module';
-import { MaterialModule } from './material.module';
+// import { MaterialModule } from './material.module';
 import { SharedModule as OldSharedModule } from './shared/shared.module';
 
 // AoT requires an exported function for factories
@@ -49,7 +49,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
     OldSharedModule,
     HomeModule,
     MenuModule,
-    MaterialModule,
+    // MaterialModule,
     MatProgressSpinnerModule,
     AppRoutingModule,
     AngularResizedEventModule,
