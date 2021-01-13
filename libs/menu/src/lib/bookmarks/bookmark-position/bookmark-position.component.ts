@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ElectronService } from '@minsky/core';
+import * as debug from 'debug';
 import * as electron from 'electron';
 import * as storage from 'electron-json-storage';
+
+const logInfo = debug('minsky:web:info');
+const logError = debug('minsky:web:error');
 
 @Component({
   selector: 'minsky-bookmark-position',
@@ -26,7 +30,7 @@ export class BookmarkPositionComponent {
         if (err) throw err;
         if (!isExist) {
           storage.set(this.bookmarkFileName, [], (error) => {
-            console.log('file error.....');
+            logError('file error.....', error);
           });
         }
       });
@@ -55,7 +59,7 @@ export class BookmarkPositionComponent {
       if (err) throw err;
       if (!isExist)
         storage.set(bookmarkFileName, [], (err) => {
-          console.log('file error.....');
+          logError('file error.....',err);
         });
     });
     setTimeout(() => {

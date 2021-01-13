@@ -15,6 +15,12 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "debug",
+              "electron-json-storage",
+              "css-element-queries",
+              "socket.io-client"
+            ],
             "outputPath": "dist/apps/minsky-web",
             "index": "apps/minsky-web/src/index.html",
             "main": "apps/minsky-web/src/main.ts",

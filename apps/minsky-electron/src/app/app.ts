@@ -80,6 +80,7 @@ export default class App {
       height: height,
       show: false,
       webPreferences: {
+        enableRemoteModule: true,
         nodeIntegration: true,
         backgroundThrottling: false,
         affinity: 'window',

@@ -8,7 +8,10 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 // Import the resized event model
 import { ResizedEvent } from 'angular-resize-event';
+import * as debug from 'debug';
 import { AppConfig } from '../environments/environment';
+
+const logInfo = debug('minsky:web:info');
 
 @Component({
   selector: 'app-root',
@@ -28,18 +31,18 @@ export class AppComponent {
     public router: Router
   ) {
     this.translate.setDefaultLang('en');
-    console.log('AppConfig', AppConfig);
+    logInfo('AppConfig', AppConfig);
 
     if (electronService.isElectron) {
-      console.log(process.env);
-      console.log('Run in electron');
-      console.log('Electron ipcRenderer', this.electronService.ipcRenderer);
-      console.log('NodeJS childProcess', this.electronService.childProcess);
+      logInfo(process.env);
+      logInfo('Run in electron');
+      logInfo('Electron ipcRenderer', this.electronService.ipcRenderer);
+      logInfo('NodeJS childProcess', this.electronService.childProcess);
       // code for top menu
       this.topMenuService.topMenu();
       this.windowDetails();
     } else {
-      console.log('Run in browser');
+      logInfo('Run in browser');
     }
     this.openFile();
     this.saveFile();
@@ -52,7 +55,7 @@ export class AppComponent {
     const winHandle = this.electronService.remote
       .getCurrentWindow()
       .getNativeWindowHandle();
-    console.log(winHandle);
+    logInfo(winHandle);
     this.emitData(winHandle);
   }
 
@@ -62,7 +65,7 @@ export class AppComponent {
       width: window.innerWidth,
       height: window.innerHeight,
     };
-    console.log(
+    logInfo(
       'width:' + window.innerWidth + ' ' + 'height:' + window.innerHeight
     );
     this.emitData(windowDetail);
@@ -73,7 +76,7 @@ export class AppComponent {
       resizeWidth: event.newWidth,
       resizeHeight: event.newHeight,
     };
-    console.log(
+    logInfo(
       'resizeWidth:' + event.newWidth + ' ' + 'resizeHeight:' + event.newWidth
     );
     this.cmService.canvasOffsetValues();
@@ -83,7 +86,7 @@ export class AppComponent {
   saveFile() {
     this.cmService.directory.subscribe((value) => {
       this.directory = value;
-      // console.log(this.directory)
+      // logInfo(this.directory)
       this.emitData(this.directory);
     });
   }
@@ -91,7 +94,7 @@ export class AppComponent {
   openFile() {
     this.cmService.openDirectory.subscribe((value) => {
       this.openFileDirectory = value;
-      // console.log(this.openFileDirectory)
+      // logInfo(this.openFileDirectory)
       this.emitData(this.openFileDirectory);
     });
   }

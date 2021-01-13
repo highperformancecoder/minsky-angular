@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ElectronService } from '@minsky/core';
+import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { ElectronService } from './electron.service';
 
+const logInfo = debug('minsky:web:info');
 export class Message {
   id: string;
   body: string;
@@ -54,7 +56,7 @@ export class CommunicationService {
   public dispatchEvents(eventName) {
     this.socket.on(eventName, (data) => {
       // common code for dispatch events
-      console.log('Event received', data);
+      logInfo('Event received', data);
       document.querySelector(data.id).dispatchEvent(data.event);
     });
   }
@@ -63,7 +65,7 @@ export class CommunicationService {
     return new Observable((observer) => {
       this.socket.on('RESPONSE', (message) => {
         observer.next(message);
-        console.log(message);
+        logInfo(message);
       });
     });
   };
@@ -90,9 +92,9 @@ export class CommunicationService {
 
   canvasSticky() {
     if (window.pageYOffset >= this.sticky) {
-      console.log('window.pageYOffset >= sticky');
+      logInfo('window.pageYOffset >= sticky');
     } else {
-      console.log('Not window.pageYOffset >= sticky');
+      logInfo('Not window.pageYOffset >= sticky');
     }
     if (window.pageYOffset >= this.sticky) {
       this.canvasDetail.classList.add('sticky');

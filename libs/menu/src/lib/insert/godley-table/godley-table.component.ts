@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ElectronService } from '@minsky/core';
+import * as debug from 'debug';
 
+const logInfo = debug('minsky:web:info');
 @Component({
   selector: 'minsky-godley-table',
   templateUrl: './godley-table.component.html',
@@ -10,7 +12,7 @@ export class GodleyTableComponent {
   constructor(private electronService: ElectronService) {}
 
   godleyTableOk() {
-    console.log('button clicked');
+    logInfo('button clicked');
     this.electronService.ipcRenderer.send('godley-table:ok', '');
   }
   onCancel() {

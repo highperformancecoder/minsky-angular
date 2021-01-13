@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ElectronService } from '@minsky/core';
+import * as debug from 'debug';
 
+const logInfo = debug('minsky:web:info');
 @Component({
   selector: 'minsky-create-variable',
   templateUrl: './create-variable.component.html',
@@ -10,7 +12,7 @@ export class CreateVariableComponent {
   constructor(private electronService: ElectronService) {}
 
   createVariableCancel() {
-    console.log('button clicked');
+    logInfo('button clicked');
     this.electronService.ipcRenderer.send('create-variable:ok', '');
   }
 

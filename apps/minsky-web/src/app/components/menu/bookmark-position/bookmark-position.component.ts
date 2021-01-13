@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ElectronService } from '@minsky/core';
+import * as debug from 'debug';
 import * as electron from 'electron';
 import * as storage from 'electron-json-storage';
+
+const logError = debug('minsky:web:error');
 
 @Component({
   selector: 'app-bookmark-position',
@@ -29,7 +32,7 @@ export class BookmarkPositionComponent {
         if (err) throw err;
         if (!isExist) {
           storage.set(this.bookmarkFileName, [], (error) => {
-            console.log('file error.....');
+            logError('file error.....', error);
           });
         }
       });

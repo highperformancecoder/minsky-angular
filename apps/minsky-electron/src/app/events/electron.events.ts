@@ -3,6 +3,7 @@
  * between the frontend to the electron backend.
  */
 
+import * as debug from 'debug';
 import { app, ipcMain, Menu, MenuItem } from 'electron';
 import * as storage from 'electron-json-storage';
 import { environment } from '../../environments/environment';
@@ -16,6 +17,10 @@ import {
   goToSelectedBookmark,
   setStorageBackgroundColor,
 } from './../helper';
+
+const logError = debug('minsky:electron:error');
+const logUpdateEvent = debug('minsky:electron:update_event');
+
 export default class ElectronEvents {
   static bootstrapElectronEvents(): Electron.IpcMain {
     return ipcMain;
@@ -24,7 +29,7 @@ export default class ElectronEvents {
 
 // Retrieve app version
 ipcMain.handle('get-app-version', (event) => {
-  console.log(`Fetching application version... [v${environment.version}]`);
+  logUpdateEvent(`Fetching application version... [v${environment.version}]`);
 
   return environment.version;
 });
@@ -72,7 +77,9 @@ ipcMain.on('save-bookmark', (event, data) => {
 
 ipcMain.on('background-color:ok', (event, data) => {
   storage.set('backgroundColor', { color: data.color }, (error) => {
-    if (error) console.error(error);
+    if (error) {
+      logError(error);
+    }
   });
 
   checkBackgroundAndApplyTextColor(data.color);

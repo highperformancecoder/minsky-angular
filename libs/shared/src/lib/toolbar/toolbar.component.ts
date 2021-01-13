@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { CommunicationService } from '@minsky/core';
 import { HeaderEvent } from '@minsky/shared';
+import * as debug from 'debug';
 
+const logInfo = debug('minsky:web:info');
 @Component({
   selector: 'minsky-toolbar',
   templateUrl: './toolbar.component.html',
@@ -16,7 +18,7 @@ export class ToolbarComponent {
       action: 'CLICKED',
       target: 'PLAY_BUTTON',
     });
-    console.log('playButton');
+    logInfo('playButton');
   }
 
   resetButton() {
@@ -24,7 +26,7 @@ export class ToolbarComponent {
       action: 'CLICKED',
       target: 'RESET_BUTTON',
     });
-    console.log('resetButton');
+    logInfo('resetButton');
   }
 
   stepButton() {
@@ -32,7 +34,7 @@ export class ToolbarComponent {
       action: 'CLICKED',
       target: 'STEP_BUTTON',
     });
-    console.log('stepbutton');
+    logInfo('stepbutton');
   }
 
   simulationSpeed(value) {
@@ -40,7 +42,7 @@ export class ToolbarComponent {
       action: 'CLICKED',
       target: 'SIMULATION_SPEED',
     });
-    console.log('simulation speed', value);
+    logInfo('simulation speed', value);
   }
 
   zoomOutButton() {
@@ -48,7 +50,7 @@ export class ToolbarComponent {
       action: 'CLICKED',
       target: 'ZOOMOUT_BUTTON',
     });
-    console.log('zoomOutButton');
+    logInfo('zoomOutButton');
   }
 
   zoomInButton() {
@@ -56,7 +58,7 @@ export class ToolbarComponent {
       action: 'CLICKED',
       target: 'ZOOMIN_BUTTON',
     });
-    console.log('zoomInButton');
+    logInfo('zoomInButton');
   }
 
   resetZoomButton() {
@@ -64,7 +66,7 @@ export class ToolbarComponent {
       action: 'CLICKED',
       target: 'RESETZOOM_BUTTON',
     });
-    console.log('resetZoomButton');
+    logInfo('resetZoomButton');
   }
 
   zoomTofitButton() {
@@ -72,6 +74,6 @@ export class ToolbarComponent {
       action: 'CLICKED',
       target: 'ZOOMTOFIT_BUTTON',
     });
-    console.log('zoomTofitButton ');
+    logInfo('zoomTofitButton ');
   }
 }

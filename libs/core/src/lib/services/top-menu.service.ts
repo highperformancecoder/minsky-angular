@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { ElectronService } from '@minsky/core';
+import * as debug from 'debug';
+import { ElectronService } from './electron.service';
+
+const logInfo = debug('minsky:web:info');
+const logError = debug('minsky:web:error');
 
 @Injectable({
   providedIn: 'root',
@@ -51,7 +55,7 @@ export class TopMenuService {
             label: 'New System',
             accelerator: 'CmdOrCtrl + N',
             click() {
-              console.log('TODO -> topMenu -> New System');
+              logInfo('TODO -> topMenu -> New System');
               // win.hide();
               // createWindow();
             },
@@ -66,13 +70,13 @@ export class TopMenuService {
               });
               files
                 .then((result) => {
-                  console.log(result.canceled);
-                  console.log(result.filePaths);
-                  console.log(fs.readFileSync(result.filePaths[0]).toString());
+                  logInfo(result.canceled);
+                  logInfo(result.filePaths);
+                  logInfo(fs.readFileSync(result.filePaths[0]).toString());
                   openFunc(result);
                 })
                 .catch((err) => {
-                  console.log(err);
+                  logError(err);
                 });
             },
           },
@@ -102,15 +106,15 @@ export class TopMenuService {
                   filters: [{ name: 'text', extensions: ['txt'] }],
                 })
                 .then((result) => {
-                  console.log(result);
+                  logInfo(result);
                   this.saveFunc(result);
                   fs.writeFile(result.filePath, content, (err) => {
-                    if (err) console.log(err);
+                    if (err) logError(err);
                   });
                 })
                 .catch((err) => {
                   this.saveFunc('data error');
-                  console.log('file is not saved');
+                  logError('file is not saved', err);
                 });
             },
           },
@@ -127,14 +131,14 @@ export class TopMenuService {
               });
               files
                 .then((result) => {
-                  console.log(result.canceled);
-                  console.log(result.filePaths);
+                  logInfo(result.canceled);
+                  logInfo(result.filePaths);
                   for (const file of result.filePaths) {
-                    console.log(fs.readFileSync(file).toString());
+                    logInfo(fs.readFileSync(file).toString());
                   }
                 })
                 .catch((err) => {
-                  console.log('file is not selected');
+                  logError('file is not selected', err);
                 });
             },
           },

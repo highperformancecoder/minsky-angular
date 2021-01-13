@@ -1,6 +1,10 @@
+import * as debug from 'debug';
 import { BrowserWindow, ipcMain, Menu, MenuItem } from 'electron';
 import * as storage from 'electron-json-storage';
 import App from './app';
+
+const logError = debug('minsky:electron:error');
+
 const window = App.mainWindow;
 
 let storageBackgroundColor;
@@ -58,7 +62,7 @@ export function deleteBookmark() {
       ind > -1 ? data.splice(ind, 1) : new Error('Bookmark Not Found');
       // tslint:disable-next-line: no-shadowed-variable
       storage.set('bookmarks', data, (error) => {
-        console.log(error);
+        logError(error);
       });
       window.webContents.send('refresh-menu');
 
@@ -151,6 +155,7 @@ export function createMenuPopUp(
     backgroundColor: menuBackgroundColor,
     webPreferences: {
       nodeIntegration: true,
+      enableRemoteModule: true,
     },
   });
   menuWindow.setMenu(null);
@@ -188,6 +193,7 @@ export function createMenuPopUpWithRouting({
     backgroundColor,
     webPreferences: {
       nodeIntegration: true,
+      enableRemoteModule: true,
     },
   });
   menuWindow.setMenu(null);
