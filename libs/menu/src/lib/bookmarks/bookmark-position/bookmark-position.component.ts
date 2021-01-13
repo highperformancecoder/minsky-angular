@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { ElectronService } from '@minsky/core';
 import * as electron from 'electron';
 import * as storage from 'electron-json-storage';
@@ -13,10 +13,7 @@ export class BookmarkPositionComponent {
   formBookmark: FormGroup;
   bookmark: any;
   bookmarkFileName = 'bookmarks';
-  constructor(
-    private eleService: ElectronService,
-    private formBuilder: FormBuilder
-  ) {
+  constructor(private eleService: ElectronService) {
     storage.setDataPath(
       (electron.app || eleService.remote.app).getPath('userData')
     );
@@ -50,3 +47,23 @@ export class BookmarkPositionComponent {
     this.eleService.ipcRenderer.send('global-menu-popup:cancel');
   }
 }
+
+/* document.getElementById('bookmark-ok-btn').addEventListener('click', () => {
+  const name = document.getElementById('bookmarkName').value;
+  if (name) {
+    storage.has(bookmarkFileName, (err, isExist) => {
+      if (err) throw err;
+      if (!isExist)
+        storage.set(bookmarkFileName, [], (err) => {
+          console.log('file error.....');
+        });
+    });
+    setTimeout(() => {
+      ipcRenderer.send('save-bookmark', {
+        bookmarkTitle: name,
+        fileName: bookmarkFileName,
+      });
+    }, 400);
+  }
+});
+ */
