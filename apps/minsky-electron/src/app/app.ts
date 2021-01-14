@@ -80,6 +80,8 @@ export default class App {
       height: height,
       show: false,
       webPreferences: {
+        contextIsolation: true,
+        preload: join(__dirname, 'preload.js'),
         enableRemoteModule: true,
         nodeIntegration: true,
         backgroundThrottling: false,

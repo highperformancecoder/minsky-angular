@@ -163,7 +163,8 @@
           "options": {
             "name": "minsky-electron",
             "frontendProject": "minsky-web",
-            "out": "dist/packages"
+            "outputPath": "dist/packages",
+            "prepackageOnly": true
           }
         },
         "make": {
@@ -171,7 +172,7 @@
           "options": {
             "name": "minsky-electron",
             "frontendProject": "minsky-web",
-            "out": "dist/executables"
+            "outputPath": "dist/executables"
           }
         },
         "lint": {
