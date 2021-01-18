@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormControl, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { ElectronService } from '@minsky/core';
-import * as electron from 'electron';
-import * as storage from 'electron-json-storage';
+// import * as electron from 'electron';
+// import * as storage from 'electron-json-storage';
 @Component({
   selector: 'minsky-background-color',
   templateUrl: './background-color.component.html',
@@ -23,7 +23,7 @@ export class BackgroundColorComponent {
   public listColors = ['primary', 'accent', 'warn'];
 
   constructor(private eleService: ElectronService) {
-    storage.setDataPath(
+    /*   storage.setDataPath(
       (electron.app || electron.remote.app).getPath('userData')
     );
     storage.get('backgroundColor', (error, data: any) => {
@@ -31,7 +31,7 @@ export class BackgroundColorComponent {
       if (data.color !== undefined) {
         this.color = data.color;
       }
-    });
+    }); */
   }
 
   onClickOk() {

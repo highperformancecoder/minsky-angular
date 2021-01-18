@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ElectronService } from '@minsky/core';
 import * as debug from 'debug';
-import * as electron from 'electron';
-import * as storage from 'electron-json-storage';
+// import * as electron from 'electron';
+// import * as storage from 'electron-json-storage';
 
 const logInfo = debug('minsky:web:info');
 const logError = debug('minsky:web:error');
@@ -18,22 +18,24 @@ export class BookmarkPositionComponent {
   bookmark: any;
   bookmarkFileName = 'bookmarks';
   constructor(private eleService: ElectronService) {
-    storage.setDataPath(
-      (electron.app || eleService.remote.app).getPath('userData')
-    );
+    if (this.eleService.isElectron) {
+      /*    storage.setDataPath(
+        (electron.app || eleService.remote.app).getPath('userData')
+      ); */
+    }
   }
 
   onClickOk() {
     const name = this.bookmark;
     if (name) {
-      storage.has(this.bookmarkFileName, (err, isExist) => {
+      /*       storage.has(this.bookmarkFileName, (err, isExist) => {
         if (err) throw err;
         if (!isExist) {
           storage.set(this.bookmarkFileName, [], (error) => {
             logError('file error.....', error);
           });
         }
-      });
+      }); */
       setTimeout(() => {
         this.eleService.ipcRenderer.send('save-bookmark', {
           bookmarkTitle: name,

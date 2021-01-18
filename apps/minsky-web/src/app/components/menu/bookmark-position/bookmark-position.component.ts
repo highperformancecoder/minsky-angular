@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ElectronService } from '@minsky/core';
 import * as debug from 'debug';
-import * as electron from 'electron';
-import * as storage from 'electron-json-storage';
+// import * as electron from 'electron';
+// import * as storage from 'electron-json-storage';
 
 const logError = debug('minsky:web:error');
 
@@ -12,7 +12,7 @@ const logError = debug('minsky:web:error');
   templateUrl: './bookmark-position.component.html',
   styleUrls: ['./bookmark-position.component.scss'],
 })
-export class BookmarkPositionComponent {
+class BookmarkPositionComponent {
   formBookmark: FormGroup;
   bookmark: any;
   bookmarkFileName = 'bookmarks';
@@ -20,33 +20,37 @@ export class BookmarkPositionComponent {
     private eleService: ElectronService,
     private formBuilder: FormBuilder
   ) {
-    storage.setDataPath(
-      (electron.app || eleService.remote.app).getPath('userData')
-    );
+    if (this.eleService.isElectron) {
+      /*  storage.setDataPath(
+        (electron.app || eleService.remote.app).getPath('userData')
+      ); */
+    }
   }
 
   onClickOk() {
-    const name = this.bookmark;
-    if (name) {
-      storage.has(this.bookmarkFileName, (err, isExist) => {
-        if (err) throw err;
-        if (!isExist) {
-          storage.set(this.bookmarkFileName, [], (error) => {
-            logError('file error.....', error);
+    if (this.eleService.isElectron) {
+      const name = this.bookmark;
+      if (name) {
+        /*   storage.has(this.bookmarkFileName, (err, isExist) => {
+          if (err) throw err;
+          if (!isExist) {
+            storage.set(this.bookmarkFileName, [], (error) => {
+              console.log('file error.....');
+            });
+          }
+        }); */
+        setTimeout(() => {
+          this.eleService.ipcRenderer.send('save-bookmark', {
+            bookmarkTitle: name,
+            fileName: this.bookmarkFileName,
           });
-        }
-      });
-      setTimeout(() => {
-        this.eleService.ipcRenderer.send('save-bookmark', {
-          bookmarkTitle: name,
-          fileName: this.bookmarkFileName,
-        });
-      }, 400);
-    }
+        }, 400);
+      }
 
-    this.eleService.ipcRenderer.on('bookmark-done-reply', (event, arg) => {
-      this.close();
-    });
+      this.eleService.ipcRenderer.on('bookmark-done-reply', (event, arg) => {
+        this.close();
+      });
+    }
   }
 
   close() {
