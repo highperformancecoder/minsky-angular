@@ -1,0 +1,42 @@
+@import '../../../../../shared/src/lib/theme/variables.scss';
+* {
+  margin: 0;
+  padding: 0;
+}
+.dimension {
+  margin: 20px 25px 0px 20px;
+  display: flex;
+  flex-direction: row;
+  font-size: $primary-font;
+}
+.wrapper {
+  margin-top: $margin;
+}
+.dot {
+  margin-right: 5%;
+  height: 12%;
+  width: 12%;
+  background-color: $brand-primary;
+  border-radius: 50%;
+  border: 3px solid $brand-primary;
+  color: $white;
+  font-weight: bold;
+  font-size: $secondary-font;
+  text-align: center;
+}
+
+.footer_btn {
+  background-color: $toolbar-bg;
+  height: 42px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer_btn > button {
+  width: 30%;
+  height: 50%;
+  float: right;
+  margin: 4% 5%;
+  outline: none;
+}

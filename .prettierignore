@@ -1,4 +1,4 @@
-package.json
-package-lock.json
-yarn.lock
-dist
+# Add files here to ignore them from prettier formatting
+
+/dist
+/coverage

@@ -1,0 +1,31 @@
+@import '../../../../../shared/src/lib/theme/variables.scss';
+* {
+  margin: 0;
+  padding: 0;
+}
+.main {
+  display: flex;
+  justify-content: center;
+}
+input,
+button {
+  margin-left: 1px;
+  padding: 2px;
+  border: 2px solid $toolbar-color;
+  background-color: $toolbar-bg;
+}
+a {
+  text-decoration: none;
+}
+
+.content {
+  margin-top: 2px;
+  box-sizing: border-box;
+  width: 395px;
+  height: 178px;
+  padding-right: 230px;
+  border: 1px solid $toolbar-bg;
+  overflow: auto;
+  direction: rtl;
+  font-size: $primary-font;
+}

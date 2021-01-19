@@ -1,0 +1,17 @@
+@import '../../../../../shared/src/lib/theme/common-style.scss';
+@import '../../../../../shared/src/lib/theme/variables.scss';
+
+.popup-wrapper {
+  font-family: $font-family;
+  margin: 0 auto;
+  max-width: 360px;
+}
+.input-width {
+  width: 100%;
+}
+.text-center {
+  text-align: center;
+}
+label {
+  text-align: center !important;
+}

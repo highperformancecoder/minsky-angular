@@ -1,0 +1,32 @@
+<div class="popup-wrapper text-center">
+  <div class="form-wrapper">
+    <form action="">
+      <div class="form-control">
+        <label for="dimension">Dimension</label>
+        <input type="text" class="dimension input-width" id="dimension" />
+      </div>
+
+      <div class="form-control">
+        <label for="type">Type</label>
+        <select name="type" id="type" class="input-width">
+          <option value="string">string</option>
+          <option value="value">value</option>
+          <option value="time">time</option>
+        </select>
+      </div>
+
+      <div class="form-control">
+        <label for="unitsFormat">Units/Format</label>
+        <select name="units-format" id="unitsFormat" class="input-width">
+        </select>
+      </div>
+
+      <div class="form-control form-buttons">
+        <button class="btn ok-btn" (click)="submitBtn()">OK</button>
+        <button class="btn cancel-btn" (click)="cancelBtn()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,158 +1,346 @@
 {
-	"$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-	"version": 1,
-	"newProjectRoot": "projects",
-	"projects": {
-		"angular-electron": {
-			"root": "",
-			"sourceRoot": "src",
-			"projectType": "application",
-			"architect": {
-				"build": {
-					"builder": "@angular-builders/custom-webpack:browser",
-					"options": {
-						"outputPath": "dist",
-						"index": "src/index.html",
-						"main": "src/main.ts",
-						"tsConfig": "src/tsconfig.app.json",
-						"polyfills": "src/polyfills.ts",
-						"assets": ["src/assets"],
-						"styles": ["src/styles.scss"],
-						"scripts": [],
-						"customWebpackConfig": {
-							"path": "./angular.webpack.js"
-						}
-					},
-					"configurations": {
-						"dev": {
-							"optimization": false,
-							"outputHashing": "all",
-							"sourceMap": true,
-							"extractCss": true,
-							"namedChunks": false,
-							"aot": false,
-							"extractLicenses": true,
-							"vendorChunk": false,
-							"buildOptimizer": false,
-							"fileReplacements": [
-								{
-									"replace": "src/environments/environment.ts",
-									"with": "src/environments/environment.dev.ts"
-								}
-							]
-						},
-						"web": {
-							"optimization": false,
-							"outputHashing": "all",
-							"sourceMap": true,
-							"extractCss": true,
-							"namedChunks": false,
-							"aot": false,
-							"extractLicenses": true,
-							"vendorChunk": false,
-							"buildOptimizer": false,
-							"fileReplacements": [
-								{
-									"replace": "src/environments/environment.ts",
-									"with": "src/environments/environment.web.ts"
-								}
-							]
-						},
-						"production": {
-							"optimization": true,
-							"outputHashing": "all",
-							"sourceMap": false,
-							"extractCss": true,
-							"namedChunks": false,
-							"aot": true,
-							"extractLicenses": true,
-							"vendorChunk": false,
-							"buildOptimizer": true,
-							"fileReplacements": [
-								{
-									"replace": "src/environments/environment.ts",
-									"with": "src/environments/environment.prod.ts"
-								}
-							]
-						}
-					}
-				},
-				"serve": {
-					"builder": "@angular-builders/custom-webpack:dev-server",
-					"options": {
-						"browserTarget": "angular-electron:build"
-					},
-					"configurations": {
-						"dev": {
-							"browserTarget": "angular-electron:build:dev"
-						},
-						"web": {
-							"browserTarget": "angular-electron:build:web"
-						},
-						"production": {
-							"browserTarget": "angular-electron:build:production"
-						}
-					}
-				},
-				"extract-i18n": {
-					"builder": "@angular-devkit/build-angular:extract-i18n",
-					"options": {
-						"browserTarget": "angular-electron:build"
-					}
-				},
-				"test": {
-					"builder": "@angular-builders/custom-webpack:karma",
-					"options": {
-						"main": "src/test.ts",
-						"polyfills": "src/polyfills-test.ts",
-						"tsConfig": "src/tsconfig.spec.json",
-						"karmaConfig": "src/karma.conf.js",
-						"scripts": [],
-						"styles": ["src/styles.scss"],
-						"assets": ["src/assets"],
-						"customWebpackConfig": {
-							"path": "./angular.webpack.js",
-							"target": "electron-renderer"
-						}
-					}
-				},
-				"lint": {
-					"builder": "@angular-devkit/build-angular:tslint",
-					"options": {
-						"tsConfig": [
-							"src/tsconfig.app.json",
-							"src/tsconfig.spec.json"
-						],
-						"exclude": ["**/node_modules/**"]
-					}
-				}
-			}
-		},
-		"angular-electron-e2e": {
-			"root": "e2e",
-			"projectType": "application",
-			"architect": {
-				"lint": {
-					"builder": "@angular-devkit/build-angular:tslint",
-					"options": {
-						"tsConfig": ["e2e/tsconfig.e2e.json"],
-						"exclude": ["**/node_modules/**"]
-					}
-				}
-			}
-		}
-	},
-	"defaultProject": "angular-electron",
-	"schematics": {
-		"@schematics/angular:component": {
-			"prefix": "app",
-			"style": "scss"
-		},
-		"@schematics/angular:directive": {
-			"prefix": "app"
-		}
-	},
-	"cli": {
-		"analytics": false
-	}
+  "version": 1,
+  "projects": {
+    "minsky-web": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "apps/minsky-web",
+      "sourceRoot": "apps/minsky-web/src",
+      "prefix": "minsky",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "allowedCommonJsDependencies": [
+              "debug",
+              "electron-json-storage",
+              "css-element-queries",
+              "socket.io-client"
+            ],
+            "outputPath": "dist/apps/minsky-web",
+            "index": "apps/minsky-web/src/index.html",
+            "main": "apps/minsky-web/src/main.ts",
+            "polyfills": "apps/minsky-web/src/polyfills.ts",
+            "tsConfig": "apps/minsky-web/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/minsky-web/src/favicon.ico",
+              "apps/minsky-web/src/assets"
+            ],
+            "styles": ["apps/minsky-web/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/minsky-web/src/environments/environment.ts",
+                  "with": "apps/minsky-web/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "minsky-web:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "minsky-web:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "minsky-web:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/minsky-web/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/minsky-web/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "minsky-web-e2e": {
+      "root": "apps/minsky-web-e2e",
+      "sourceRoot": "apps/minsky-web-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/minsky-web-e2e/cypress.json",
+            "tsConfig": "apps/minsky-web-e2e/tsconfig.e2e.json",
+            "devServerTarget": "minsky-web:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "minsky-web:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/minsky-web-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "minsky-electron": {
+      "root": "apps/minsky-electron",
+      "sourceRoot": "apps/minsky-electron/src",
+      "projectType": "application",
+      "prefix": "minsky-electron",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "nx-electron:build",
+          "options": {
+            "outputPath": "dist/apps/minsky-electron",
+            "main": "apps/minsky-electron/src/main.ts",
+            "tsConfig": "apps/minsky-electron/tsconfig.app.json",
+            "assets": ["apps/minsky-electron/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/minsky-electron/src/environments/environment.ts",
+                  "with": "apps/minsky-electron/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "nx-electron:execute",
+          "options": {
+            "buildTarget": "minsky-electron:build"
+          }
+        },
+        "package": {
+          "builder": "nx-electron:package",
+          "options": {
+            "name": "minsky-electron",
+            "frontendProject": "minsky-web",
+            "outputPath": "dist/packages",
+            "prepackageOnly": true
+          }
+        },
+        "make": {
+          "builder": "nx-electron:make",
+          "options": {
+            "name": "minsky-electron",
+            "frontendProject": "minsky-web",
+            "outputPath": "dist/executables"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/minsky-electron/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/minsky-electron/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "minsky-server": {
+      "root": "apps/minsky-server",
+      "sourceRoot": "apps/minsky-server/src",
+      "projectType": "application",
+      "prefix": "minsky-server",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@nrwl/node:build",
+          "options": {
+            "outputPath": "dist/apps/minsky-server",
+            "main": "apps/minsky-server/src/main.ts",
+            "tsConfig": "apps/minsky-server/tsconfig.app.json",
+            "assets": ["apps/minsky-server/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/minsky-server/src/environments/environment.ts",
+                  "with": "apps/minsky-server/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "minsky-server:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/minsky-server/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/minsky-server/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "menu": {
+      "projectType": "library",
+      "root": "libs/menu",
+      "sourceRoot": "libs/menu/src",
+      "prefix": "minsky",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/menu/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/menu/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      }
+    },
+    "core": {
+      "projectType": "library",
+      "root": "libs/core",
+      "sourceRoot": "libs/core/src",
+      "prefix": "minsky",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/core/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/core/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      }
+    },
+    "shared": {
+      "projectType": "library",
+      "root": "libs/shared",
+      "sourceRoot": "libs/shared/src",
+      "prefix": "minsky",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/shared/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/shared/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/angular"
+  },
+  "schematics": {
+    "@nrwl/angular": {
+      "application": {
+        "linter": "eslint"
+      },
+      "library": {
+        "linter": "eslint"
+      },
+      "storybook-configuration": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/angular:application": {
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "cypress"
+    },
+    "@nrwl/angular:library": {
+      "unitTestRunner": "jest"
+    }
+  },
+  "defaultProject": "minsky-web"
 }
