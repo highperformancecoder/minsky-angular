@@ -111,6 +111,8 @@ io.on('new-message', (message) => {
   io.emit(message);
 });
 
-server.listen(port, () => {
-  logServerEvent(`Started on port: ${port}`);
-});
+export function startServer(): void {
+  server.listen(port, () => {
+    logServerEvent(`Started on port: ${port}`);
+  });
+}

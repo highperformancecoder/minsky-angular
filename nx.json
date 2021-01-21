@@ -33,9 +33,6 @@
     "minsky-electron": {
       "tags": []
     },
-    "minsky-server": {
-      "tags": []
-    },
     "menu": {
       "tags": []
     },
@@ -43,6 +40,9 @@
       "tags": []
     },
     "shared": {
+      "tags": []
+    },
+    "minsky-server": {
       "tags": []
     }
   }

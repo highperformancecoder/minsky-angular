@@ -1,3 +1,4 @@
+import { startServer } from '@minsky/minsky-server';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
 import * as storage from 'electron-json-storage';
 import { join } from 'path';
@@ -58,15 +59,9 @@ export default class App {
     // Some APIs can only be used after this event occurs.
     App.initMainWindow();
     App.loadMainWindow();
-    setInterval(() => {
-      console.log(
-        '🚀 ~ file: app.ts ~ line 87 ~ App ~ setInterval ~ BrowserWindow.getAllWindows();',
-        BrowserWindow.getAllWindows().map((b) => {
-          return { id: b.id, size: b.getSize() };
-        })
-      );
-    }, 5000);
-    BrowserWindow.getAllWindows();
+
+    startServer();
+
     storage.setDataPath(App.application.getPath('userData'));
   }
 
