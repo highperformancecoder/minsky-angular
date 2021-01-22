@@ -1,10 +1,11 @@
 import { startServer } from '@minsky/minsky-server';
+import { ActiveWindow } from '@minsky/shared';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
 import * as storage from 'electron-json-storage';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
-import { rendererAppName, rendererAppPort } from './constants';
+import { activeWindows, rendererAppName, rendererAppPort } from './constants';
 
 export default class App {
   // Keep a global reference of the window object, if you don't, the window will
@@ -57,10 +58,11 @@ export default class App {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
+    (async () => {
+      await startServer(/* { serverPortRangeEnd, serverPortRangeStart } */);
+    })();
     App.initMainWindow();
     App.loadMainWindow();
-
-    startServer();
 
     storage.setDataPath(App.application.getPath('userData'));
   }
@@ -106,7 +108,9 @@ export default class App {
     App.mainWindow.center();
 
     if (this.isDevelopmentMode()) {
-      App.mainWindow.webContents.openDevTools({ mode: 'detach' });
+      App.mainWindow.webContents.openDevTools({
+        mode: 'detach',
+      });
     }
 
     // if main window is ready to show, close the splash window and show the main window
@@ -121,6 +125,19 @@ export default class App {
     // });
 
     // Emitted when the window is closed.
+
+    const mainWindowDetails: ActiveWindow = {
+      id: App.mainWindow.id,
+      size: App.mainWindow.getSize(),
+      isMainWindow: true,
+      context: App.mainWindow,
+    };
+    activeWindows.set(App.mainWindow.id, mainWindowDetails);
+
+    App.mainWindow.on('close', () => {
+      activeWindows.delete(App.mainWindow.id);
+    });
+
     App.mainWindow.on('closed', () => {
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time

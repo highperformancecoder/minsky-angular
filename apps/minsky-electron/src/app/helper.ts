@@ -1,7 +1,9 @@
+import { ActiveWindow } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, ipcMain, Menu, MenuItem } from 'electron';
 import * as storage from 'electron-json-storage';
 import App from './app';
+import { activeWindows } from './constants';
 
 const logError = debug('minsky:electron:error');
 
@@ -204,9 +206,30 @@ export function createMenuPopUpWithRouting({
     menuWindow.show();
   });
   menuWindow.webContents.openDevTools({ mode: 'detach' }); // command to inspect popup
+
+  const menuWindowDetails: ActiveWindow = {
+    id: menuWindow.id,
+    size: menuWindow.getSize(),
+    isMainWindow: false,
+    context: menuWindow,
+  };
+
+  activeWindows.set(menuWindow.id, menuWindowDetails);
+
+  console.log('🚀 ~ file: helper.ts ~ line 222 ~ activeWindows', activeWindows);
+
+  menuWindow.on('close', () => {
+    activeWindows.delete(menuWindow.id);
+    console.log(
+      '🚀 ~ file: helper.ts ~ line 231 ~ menuWindow.on ~ activeWindows',
+      activeWindows
+    );
+  });
+
   menuWindow.on('closed', () => {
     menuWindow = null;
   });
+
   // Closing global popup event_______
   ipcMain.on('global-menu-popup:cancel', () => {
     if (menuWindow) {
