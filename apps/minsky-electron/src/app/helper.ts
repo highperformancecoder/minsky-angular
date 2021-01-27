@@ -216,14 +216,8 @@ export function createMenuPopUpWithRouting({
 
   activeWindows.set(menuWindow.id, menuWindowDetails);
 
-  console.log('🚀 ~ file: helper.ts ~ line 222 ~ activeWindows', activeWindows);
-
   menuWindow.on('close', () => {
     activeWindows.delete(menuWindow.id);
-    console.log(
-      '🚀 ~ file: helper.ts ~ line 231 ~ menuWindow.on ~ activeWindows',
-      activeWindows
-    );
   });
 
   menuWindow.on('closed', () => {

@@ -21,7 +21,6 @@ const logInfo = debug('minsky:web:info');
 export class AppComponent {
   loader = false;
   directory: string[];
-  openFileDirectory: any;
 
   constructor(
     private electronService: ElectronService,
@@ -93,9 +92,7 @@ export class AppComponent {
 
   openFile() {
     this.cmService.openDirectory.subscribe((value) => {
-      this.openFileDirectory = value;
-      // logInfo(this.openFileDirectory)
-      this.emitData(this.openFileDirectory);
+      this.emitData(value);
     });
   }
 
