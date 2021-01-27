@@ -4,7 +4,7 @@
 #include <cairo-xlib.h>
 #include <X11/Xlib.h>
 
-#define electronWindowId 73400321
+#define electronWindowId 96468993
 #define ewSizeX  1280
 #define ewSizeY  720
 
