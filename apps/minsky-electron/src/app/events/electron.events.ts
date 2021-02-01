@@ -11,7 +11,8 @@ import App from '../app';
 import {
   addUpdateBookmarkList,
   checkBackgroundAndApplyTextColor,
-  createMenuPopUp,
+  createMenu,
+  // createMenuPopUp,
   createMenuPopUpWithRouting,
   deleteBookmark,
   goToSelectedBookmark,
@@ -87,15 +88,22 @@ ipcMain.on('background-color:ok', (event, data) => {
   event.reply('background-color:ok-reply');
 });
 
-ipcMain.on('create-new-window', (event, data) => {
+/* ipcMain.on('create-new-window', (event, data) => {
   const { width, height, title, dirPath, bgColor } = data;
   createMenuPopUp(width, height, title, dirPath, bgColor);
 });
-
+ */
 ipcMain.on('create-menu-popup', (event, data) => {
+  console.log(
+    '🚀 ~ file: electron.events.ts ~ line 96 ~ ipcMain.on ~ create-menu-popup'
+  );
   createMenuPopUpWithRouting(data);
 });
 
 ipcMain.on('ready-template', () => {
   addUpdateBookmarkList(Menu.getApplicationMenu());
+});
+
+ipcMain.on('load-menu', () => {
+  createMenu();
 });

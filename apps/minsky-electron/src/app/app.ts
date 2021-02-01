@@ -1,11 +1,12 @@
 import { startServer } from '@minsky/minsky-server';
 import { ActiveWindow } from '@minsky/shared';
-import { BrowserWindow, dialog, screen, shell } from 'electron';
+import { BrowserWindow, dialog, ipcMain, screen, shell } from 'electron';
 import * as storage from 'electron-json-storage';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
-import { activeWindows, rendererAppName, rendererAppPort } from './constants';
+import { activeWindows, rendererAppName, rendererAppURL } from './constants';
+import { getWindowId } from './helper';
 
 export default class App {
   // Keep a global reference of the window object, if you don't, the window will
@@ -63,6 +64,8 @@ export default class App {
     })();
     App.initMainWindow();
     App.loadMainWindow();
+
+    ipcMain.emit('load-menu');
 
     storage.setDataPath(App.application.getPath('userData'));
   }
@@ -131,6 +134,7 @@ export default class App {
       size: App.mainWindow.getSize(),
       isMainWindow: true,
       context: App.mainWindow,
+      windowId: getWindowId(this.mainWindow),
     };
     activeWindows.set(App.mainWindow.id, mainWindowDetails);
 
@@ -149,7 +153,7 @@ export default class App {
   private static loadMainWindow() {
     // load the index.html of the app.
     if (!App.application.isPackaged) {
-      App.mainWindow.loadURL(`http://localhost:${rendererAppPort}`);
+      App.mainWindow.loadURL(rendererAppURL);
     } else {
       App.mainWindow.loadURL(
         format({

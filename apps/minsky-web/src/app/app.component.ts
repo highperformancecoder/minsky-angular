@@ -1,10 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  CommunicationService,
-  ElectronService,
-  TopMenuService,
-} from '@minsky/core';
+import { CommunicationService, ElectronService } from '@minsky/core';
 import { TranslateService } from '@ngx-translate/core';
 // Import the resized event model
 import { ResizedEvent } from 'angular-resize-event';
@@ -25,7 +21,6 @@ export class AppComponent {
   constructor(
     private electronService: ElectronService,
     private cmService: CommunicationService,
-    private topMenuService: TopMenuService,
     private translate: TranslateService,
     public router: Router
   ) {
@@ -37,8 +32,6 @@ export class AppComponent {
       logInfo('Run in electron');
       logInfo('Electron ipcRenderer', this.electronService.ipcRenderer);
       logInfo('NodeJS childProcess', this.electronService.childProcess);
-      // code for top menu
-      this.topMenuService.topMenu();
       this.windowDetails();
     } else {
       logInfo('Run in browser');

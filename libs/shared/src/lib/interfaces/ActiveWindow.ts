@@ -5,4 +5,5 @@ export interface ActiveWindow {
   size: number[];
   isMainWindow: boolean;
   context: BrowserWindow;
+  windowId: number;
 }
