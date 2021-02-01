@@ -55,6 +55,15 @@ export default class App {
     }
   }
 
+  private static onWindowsChange() {
+    const windowsInfo = BrowserWindow.getAllWindows().map((b) => {
+      const nid = b.getNativeWindowHandle();
+      const handle = nid.readUInt32LE(0);
+      return { handle: handle, nid: nid, id: b.id, size: b.getSize() };
+    });
+    console.log(windowsInfo);
+  }
+
   private static onReady() {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
@@ -79,7 +88,8 @@ export default class App {
   }
 
   private static initMainWindow() {
-    const workAreaSize = screen.getPrimaryDisplay().workAreaSize;
+    const display = screen.getPrimaryDisplay();
+    const workAreaSize = display.workAreaSize;
     const width = Math.min(1280, workAreaSize.width || 1280);
     const height = Math.min(720, workAreaSize.height || 720);
 
@@ -176,6 +186,7 @@ export default class App {
 
     App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
     App.application.on('ready', App.onReady); // App is ready to load data
+    App.application.on('browser-window-created', App.onWindowsChange);
     App.application.on('activate', App.onActivate); // App is activated
   }
 }
