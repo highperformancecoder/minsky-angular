@@ -5,8 +5,8 @@ import * as os from 'os';
 import * as socketIO from 'socket.io';
 const app = express();
 
-const logUiEvent = debug('minsky:ui_event');
 const logServerEvent = debug('minsky:server');
+const logUiEvent = debug('minsky:ui_event');
 
 const server = new http.Server(app);
 
@@ -111,6 +111,16 @@ io.on('new-message', (message) => {
   io.emit(message);
 });
 
-server.listen(port, () => {
-  logServerEvent(`Started on port: ${port}`);
-});
+export async function startServer(/* {
+  serverPortRangeStart,
+  serverPortRangeEnd,
+} */) {
+  /* const port = await getPort({
+    port: getPort.makeRange(serverPortRangeStart, serverPortRangeEnd),
+  }); */
+
+  server.listen(port, () => {
+    // process.env.serverPort = 'port';
+    logServerEvent(`Started on port: ${port}`);
+  });
+}

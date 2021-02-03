@@ -30,8 +30,28 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
+// function getSocketIoConfigForElectron() {
+//   return new Promise((resolve, reject) => {
+//     portscanner.findAPortInUse(3000, 3005, function (error, port) {
+//       if (error) {
+//         reject(error);
+//       }
+
+//       console.log('PORT IN USE AT: ' + port);
+
+//       resolve({ url: `http://localhost:${port}`, options: {} });
+//     });
+//   });
+// }
+
+// process.env.serverPort = '3000';
+
 const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
+/* const config: SocketIoConfig = isElectron()
+  ? { url: 'http://localhost:3000', options: {} }
+  : { url: 'http://localhost:3000', options: {} };
+ */
 @NgModule({
   declarations: [
     AppComponent,

@@ -3,15 +3,19 @@
  * between the frontend to the electron backend.
  */
 
+import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
 import { app, ipcMain, Menu, MenuItem } from 'electron';
 import * as storage from 'electron-json-storage';
+import { join } from 'path';
 import { environment } from '../../environments/environment';
 import App from '../app';
+import { activeWindows } from '../constants';
 import {
   addUpdateBookmarkList,
   checkBackgroundAndApplyTextColor,
-  createMenuPopUp,
+  createMenu,
+  // createMenuPopUp,
   createMenuPopUpWithRouting,
   deleteBookmark,
   goToSelectedBookmark,
@@ -87,15 +91,53 @@ ipcMain.on('background-color:ok', (event, data) => {
   event.reply('background-color:ok-reply');
 });
 
-ipcMain.on('create-new-window', (event, data) => {
+/* ipcMain.on('create-new-window', (event, data) => {
   const { width, height, title, dirPath, bgColor } = data;
   createMenuPopUp(width, height, title, dirPath, bgColor);
 });
-
+ */
 ipcMain.on('create-menu-popup', (event, data) => {
+  console.log(
+    '🚀 ~ file: electron.events.ts ~ line 96 ~ ipcMain.on ~ create-menu-popup'
+  );
   createMenuPopUpWithRouting(data);
 });
 
 ipcMain.on('ready-template', () => {
   addUpdateBookmarkList(Menu.getApplicationMenu());
+});
+
+let cairo: ChildProcess;
+
+ipcMain.on('cairo', (event) => {
+  const txt = `${event}`;
+  if (cairo) {
+    cairo.stdin.write(txt + '\n');
+  } else {
+    const { windowId } = activeWindows.get(1);
+    cairo = spawn(
+      join(__dirname, '..', '..', '..', '/cairo-subwindow-test/main'),
+      [txt, `${windowId}`]
+    );
+
+    cairo.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+    });
+
+    cairo.stderr.on('data', (data) => {
+      console.log(`stderr: ${data}`);
+    });
+
+    cairo.on('error', (error) => {
+      console.log(`error: ${error.message}`);
+    });
+
+    cairo.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+    });
+  }
+});
+
+ipcMain.on('load-menu', () => {
+  createMenu();
 });

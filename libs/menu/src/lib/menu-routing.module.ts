@@ -32,6 +32,11 @@ const menuRoutes: Route[] = [
         (m) => m.RungeKuttaModule
       ),
   },
+  {
+    path: 'cairo',
+    loadChildren: () =>
+      import('./cairo/cairo.module').then((m) => m.CairoModule),
+  },
 ];
 
 @NgModule({

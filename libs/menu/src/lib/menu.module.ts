@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
+import { CairoModule } from './cairo/cairo.module';
 import { EditModule } from './edit/edit.module';
 import { FileModule } from './file/file.module';
 import { InsertModule } from './insert/insert.module';
@@ -18,6 +19,7 @@ import { RungeKuttaModule } from './runge-kutta/runge-kutta.module';
     InsertModule,
     OptionsModule,
     RungeKuttaModule,
+    CairoModule,
   ],
   declarations: [],
   exports: [],

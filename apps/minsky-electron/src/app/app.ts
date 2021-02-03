@@ -1,9 +1,12 @@
-import { BrowserWindow, dialog, screen, shell } from 'electron';
+import { startServer } from '@minsky/minsky-server';
+import { ActiveWindow } from '@minsky/shared';
+import { BrowserWindow, dialog, ipcMain, screen, shell } from 'electron';
 import * as storage from 'electron-json-storage';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
-import { rendererAppName, rendererAppPort } from './constants';
+import { activeWindows, rendererAppName, rendererAppURL } from './constants';
+import { getWindowId } from './helper';
 
 export default class App {
   // Keep a global reference of the window object, if you don't, the window will
@@ -56,7 +59,7 @@ export default class App {
     const windowsInfo = BrowserWindow.getAllWindows().map((b) => {
       const nid = b.getNativeWindowHandle();
       const handle = nid.readUInt32LE(0);
-      return { handle : handle, nid : nid, id: b.id, size: b.getSize() };
+      return { handle: handle, nid: nid, id: b.id, size: b.getSize() };
     });
     console.log(windowsInfo);
   }
@@ -65,8 +68,14 @@ export default class App {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
+    (async () => {
+      await startServer(/* { serverPortRangeEnd, serverPortRangeStart } */);
+    })();
     App.initMainWindow();
     App.loadMainWindow();
+
+    ipcMain.emit('load-menu');
+
     storage.setDataPath(App.application.getPath('userData'));
   }
 
@@ -112,7 +121,9 @@ export default class App {
     App.mainWindow.center();
 
     if (this.isDevelopmentMode()) {
-      App.mainWindow.webContents.openDevTools({ mode: 'detach' });
+      App.mainWindow.webContents.openDevTools({
+        mode: 'detach',
+      });
     }
 
     // if main window is ready to show, close the splash window and show the main window
@@ -127,6 +138,25 @@ export default class App {
     // });
 
     // Emitted when the window is closed.
+
+    const mainWindowDetails: ActiveWindow = {
+      id: App.mainWindow.id,
+      size: App.mainWindow.getSize(),
+      isMainWindow: true,
+      context: App.mainWindow,
+      windowId: getWindowId(this.mainWindow),
+    };
+    activeWindows.set(App.mainWindow.id, mainWindowDetails);
+
+    console.log(
+      '🚀 ~ file: app.ts ~ line 152 ~ App ~ initMainWindow ~ activeWindows',
+      activeWindows
+    );
+
+    App.mainWindow.on('close', () => {
+      activeWindows.delete(App.mainWindow.id);
+    });
+
     App.mainWindow.on('closed', () => {
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time
@@ -138,7 +168,7 @@ export default class App {
   private static loadMainWindow() {
     // load the index.html of the app.
     if (!App.application.isPackaged) {
-      App.mainWindow.loadURL(`http://localhost:${rendererAppPort}`);
+      App.mainWindow.loadURL(rendererAppURL);
     } else {
       App.mainWindow.loadURL(
         format({
