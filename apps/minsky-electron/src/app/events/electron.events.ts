@@ -110,11 +110,7 @@ ipcMain.on('ready-template', () => {
 let cairo: ChildProcess;
 
 ipcMain.on('cairo', (event, txt) => {
-  console.log(
-    '🚀 ~ file: electron.events.ts ~ line 113 ~ ipcMain.on ~ txt',
-    txt
-  );
-  if (cairo?.connected) {
+  if (cairo) {
     cairo.stdin.write(txt);
   } else {
     const { windowId } = activeWindows.get(1);
