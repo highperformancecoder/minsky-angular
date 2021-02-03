@@ -4,17 +4,16 @@
 #include <cairo-xlib.h>
 #include <X11/Xlib.h>
 
-#define electronWindowId 96468993
 #define ewSizeX  1280
 #define ewSizeY  720
 
 //This function should give us a new x11 surface to draw on.
-cairo_surface_t* create_x11_surface(Display *d, int width, int height)
+cairo_surface_t* create_x11_surface(Display *d, int width, int height,char *electronWindowId)
 {
     int screen = DefaultScreen(d);
     //Drawable da =  XCreateSimpleWindow(d, DefaultRootWindow(d), 0, 0, x, y, 0, 0, 0);
-    Drawable da = XCreateSimpleWindow(d, electronWindowId, 0, 200, ewSizeX, ewSizeY-200, 0, 0, 0);
-    
+    Drawable da = XCreateSimpleWindow(d, atoi(electronWindowId), 0, 200, ewSizeX, ewSizeY-200, 0, 0, 0);
+
     XSelectInput(d, da, ButtonPressMask | KeyPressMask);
     XMapWindow(d, da);
 
@@ -29,14 +28,17 @@ int main(int argc, char** argv)
         fprintf(stderr, "Failed to open display\n");
         return 1;
     }
+    char *window_id = argv[2];
+
     //create a new cairo surface in an x11 window as well as a cairo_t* to draw
     //on the x11 window with.
-    cairo_surface_t* surface = create_x11_surface(d, 600, 300);
+    cairo_surface_t* surface = create_x11_surface(d, 600, 300,window_id);
     cairo_t* cr = cairo_create(surface);
+
     char *text = argv[1];
     size_t text_len = 0;
 
-    if (argc != 2)
+    if (argc != 3)
         text = NULL;
     else
         text_len = strlen(text);
@@ -64,7 +66,7 @@ int main(int argc, char** argv)
         char c = getchar();
 
 	strncat(text, &c, 1);
-       
+
 	 // change the text around so we can see the screen update.
 	 // memmove(text, &text[1], text_len);
 

@@ -5,8 +5,8 @@ import * as os from 'os';
 import * as socketIO from 'socket.io';
 const app = express();
 
-const logUiEvent = debug('minsky:ui_event');
 const logServerEvent = debug('minsky:server');
+const logUiEvent = debug('minsky:ui_event');
 
 const server = new http.Server(app);
 

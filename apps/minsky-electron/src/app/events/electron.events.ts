@@ -3,11 +3,14 @@
  * between the frontend to the electron backend.
  */
 
+import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
 import { app, ipcMain, Menu, MenuItem } from 'electron';
 import * as storage from 'electron-json-storage';
+import { join } from 'path';
 import { environment } from '../../environments/environment';
 import App from '../app';
+import { activeWindows } from '../constants';
 import {
   addUpdateBookmarkList,
   checkBackgroundAndApplyTextColor,
@@ -102,6 +105,41 @@ ipcMain.on('create-menu-popup', (event, data) => {
 
 ipcMain.on('ready-template', () => {
   addUpdateBookmarkList(Menu.getApplicationMenu());
+});
+
+let cairo: ChildProcess;
+
+ipcMain.on('cairo', (event, txt) => {
+  console.log(
+    '🚀 ~ file: electron.events.ts ~ line 113 ~ ipcMain.on ~ txt',
+    txt
+  );
+  if (cairo?.connected) {
+    cairo.stdin.write(txt);
+  } else {
+    const { windowId } = activeWindows.get(1);
+
+    cairo = spawn(
+      join(__dirname, '..', '..', '..', '/cairo-subwindow-test/main'),
+      [txt, windowId]
+    );
+
+    cairo.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+    });
+
+    cairo.stderr.on('data', (data) => {
+      console.log(`stderr: ${data}`);
+    });
+
+    cairo.on('error', (error) => {
+      console.log(`error: ${error.message}`);
+    });
+
+    cairo.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+    });
+  }
 });
 
 ipcMain.on('load-menu', () => {

@@ -148,6 +148,11 @@ export default class App {
     };
     activeWindows.set(App.mainWindow.id, mainWindowDetails);
 
+    console.log(
+      '🚀 ~ file: app.ts ~ line 152 ~ App ~ initMainWindow ~ activeWindows',
+      activeWindows
+    );
+
     App.mainWindow.on('close', () => {
       activeWindows.delete(App.mainWindow.id);
     });

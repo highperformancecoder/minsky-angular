@@ -198,6 +198,7 @@ export function createMenuPopUpWithRouting({
   title,
   backgroundColor = '#ffffff',
   url = rendererAppURL,
+  modal = true,
 }) {
   const window = getMainWindow();
 
@@ -209,7 +210,7 @@ export function createMenuPopUpWithRouting({
     minimizable: false,
     show: false,
     parent: window,
-    modal: true,
+    modal,
     backgroundColor,
     webPreferences: {
       nodeIntegration: true,
@@ -824,6 +825,24 @@ export function createMenu() {
               title: 'Runge Kutta',
               url: `${rendererAppURL}/#/menu/runge-kutta/runge-kutta-parameters`,
               backgroundColor: '#ffffff',
+            });
+          },
+        },
+      ],
+    },
+    {
+      label: 'Cairo',
+      submenu: [
+        {
+          label: 'Cairo',
+          click() {
+            createMenuPopUpWithRouting({
+              width: 550,
+              height: 550,
+              title: 'Cairo',
+              url: `${rendererAppURL}/#/menu/cairo/cairo-integration`,
+              backgroundColor: '#ffffff',
+              modal: false,
             });
           },
         },
