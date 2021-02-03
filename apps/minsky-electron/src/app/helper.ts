@@ -309,8 +309,8 @@ export function createMenu() {
                 properties: ['openFile'],
                 filters: [{ name: '*.mky', extensions: ['mky'] }],
               });
-
-              logMenuEvent(_dialog);
+              ipcMain.emit('cairo', _dialog.filePaths[0].toString());
+              // logMenuEvent(_dialog.filePaths[0].toString());
               // logMenuEvent(fs.readFileSync(_dialog?.filePaths[0]).toString());
 
               // _communicationService.emitValues('Values', _dialog);

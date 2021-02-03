@@ -109,14 +109,16 @@ ipcMain.on('ready-template', () => {
 
 let cairo: ChildProcess;
 
-ipcMain.on('cairo', (event, txt) => {
+ipcMain.on('cairo', (event) => {
+  const txt = `${event}`;
+
   if (cairo) {
     cairo.stdin.write(txt + '\n');
   } else {
     const { windowId } = activeWindows.get(1);
     cairo = spawn(
       join(__dirname, '..', '..', '..', '/cairo-subwindow-test/main'),
-      [txt, windowId]
+      [txt, `${windowId}`]
     );
 
     cairo.stdout.on('data', (data) => {
