@@ -23,6 +23,11 @@ cairo_surface_t* create_x11_surface(Display *d, int width, int height,char *elec
 
 int main(int argc, char** argv)
 {
+    if (argc != 3) {
+        printf("Usage %s  <initial_text> <windowId>\n", argv[0]);
+        return 1;
+    }
+
     Display *d = XOpenDisplay(NULL);
     if (d == NULL) {
         fprintf(stderr, "Failed to open display\n");
@@ -45,7 +50,9 @@ int main(int argc, char** argv)
 
     while(1)
     {
+        printf("Clearing surface\n");
         // Clear the background
+        cairo_move_to(cr, 0, 0);
         cairo_set_source_rgb(cr, 1, 1, 1);
         cairo_paint(cr);
 
@@ -55,17 +62,17 @@ int main(int argc, char** argv)
         cairo_set_source_rgb(cr, 0.8, 0.8, 1.0);
         cairo_move_to(cr, 10.0, 25.0);
 
-        if (text)
-            cairo_show_text(cr, text);
-        else
-            cairo_show_text(cr, "usage: ./p1 <string>");
+        if (text) {
+            cairo_show_text(cr, argv[1]);
+        }
+
 
         cairo_surface_flush(surface);
         XFlush(d);
 
+        printf("Waiting \n");
         char c = getchar();
-
-	strncat(text, &c, 1);
+	    strncat(text, &c, 1);
 
 	 // change the text around so we can see the screen update.
 	 // memmove(text, &text[1], text_len);
