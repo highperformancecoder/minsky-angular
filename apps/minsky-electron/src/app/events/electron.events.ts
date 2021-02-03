@@ -114,11 +114,11 @@ ipcMain.on('cairo', (event, txt) => {
     '🚀 ~ file: electron.events.ts ~ line 113 ~ ipcMain.on ~ txt',
     txt
   );
-  if (cairo?.connected) {
+  if (cairo) {
     cairo.stdin.write(txt);
   } else {
     const { windowId } = activeWindows.get(1);
-
+    console.log("NEW CAIRO INSTANCE");
     cairo = spawn(
       join(__dirname, '..', '..', '..', '/cairo-subwindow-test/main'),
       [txt, windowId]
