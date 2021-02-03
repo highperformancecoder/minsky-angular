@@ -65,7 +65,7 @@ int main(int argc, char** argv)
         if (text) {
             cairo_show_text(cr, text);
         }
-        
+
         cairo_surface_flush(surface);
         XFlush(d);
 
@@ -74,6 +74,12 @@ int main(int argc, char** argv)
         ssize_t lineSize = 0;
         lineSize = getline(&text, &len, stdin);
         
+        if ((text)[lineSize - 1] == '\n') {
+            (text)[lineSize - 1] = '\0';
+            --lineSize;
+        }
+
+
         if(strcmp(text, "quit") == 0) {
             printf("Got Quit Command %s\n", text);
             break;
