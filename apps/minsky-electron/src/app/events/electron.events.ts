@@ -111,7 +111,6 @@ let cairo: ChildProcess;
 
 ipcMain.on('cairo', (event) => {
   const txt = `${event}`;
-
   if (cairo) {
     cairo.stdin.write(txt + '\n');
   } else {
