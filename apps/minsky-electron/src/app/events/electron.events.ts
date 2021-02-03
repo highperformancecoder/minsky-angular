@@ -115,10 +115,9 @@ ipcMain.on('cairo', (event, txt) => {
     txt
   );
   if (cairo) {
-    cairo.stdin.write(txt);
+    cairo.stdin.write(txt + "\n");
   } else {
     const { windowId } = activeWindows.get(1);
-    console.log("NEW CAIRO INSTANCE");
     cairo = spawn(
       join(__dirname, '..', '..', '..', '/cairo-subwindow-test/main'),
       [txt, windowId]
