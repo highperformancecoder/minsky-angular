@@ -111,10 +111,9 @@ let cairo: ChildProcess;
 
 ipcMain.on('cairo', (event, txt) => {
   if (cairo) {
-    cairo.stdin.write(txt);
+    cairo.stdin.write(txt + '\n');
   } else {
     const { windowId } = activeWindows.get(1);
-
     cairo = spawn(
       join(__dirname, '..', '..', '..', '/cairo-subwindow-test/main'),
       [txt, windowId]
