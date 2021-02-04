@@ -4,8 +4,8 @@ import { arch, platform } from 'os';
 import App from '../app';
 import { updateServerUrl } from '../constants';
 
-const logError = debug('minsky:electron:error');
-const logUpdateEvent = debug('minsky:electron:update_event');
+const logError = debug('minsky:electron_error');
+const logUpdateEvent = debug('minsky:electron_update_event');
 
 export default class UpdateEvents {
   // initialize auto update service - most be invoked only in production

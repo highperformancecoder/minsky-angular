@@ -13,8 +13,9 @@ import { readFileSync, writeFile } from 'fs';
 import * as os from 'os';
 import { activeWindows, rendererAppURL } from './constants';
 
-const logError = debug('minsky:electron:error');
-const logMenuEvent = debug('minsky:electron:menu_logs');
+const logError = debug('minsky:electron_error');
+const logMenuEvent = debug('minsky:electron_menu_logs');
+const logWindows = debug('minsky:electron_windows');
 
 function getMainWindow(): BrowserWindow {
   return activeWindows.get(1).context;
@@ -238,7 +239,7 @@ export function createMenuPopUpWithRouting({
 
   activeWindows.set(menuWindow.id, menuWindowDetails);
 
-  console.log('🚀 ~ file: helper.ts ~ line 239 ~ activeWindows', activeWindows);
+  logWindows(activeWindows);
 
   menuWindow.on('close', () => {
     activeWindows.delete(menuWindow.id);
@@ -310,12 +311,6 @@ export function createMenu() {
                 filters: [{ name: '*.mky', extensions: ['mky'] }],
               });
               ipcMain.emit('cairo', _dialog.filePaths[0].toString());
-              // logMenuEvent(_dialog.filePaths[0].toString());
-              // logMenuEvent(fs.readFileSync(_dialog?.filePaths[0]).toString());
-
-              // _communicationService.emitValues('Values', _dialog);
-              // _communicationService.dispatchEvents('Values'); */
-              // openFunc(_dialog);
             } catch (error) {
               logError(error);
             }

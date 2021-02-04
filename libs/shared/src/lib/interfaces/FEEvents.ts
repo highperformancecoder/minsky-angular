@@ -8,9 +8,4 @@ enum FEEvents {
   WINDOWRESIZE,
 }
 
-class HeaderEvent {
-  action: string;
-  target: string;
-}
-
-export { FEEvents, HeaderEvent };
+export { FEEvents };

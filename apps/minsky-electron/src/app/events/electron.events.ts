@@ -22,8 +22,10 @@ import {
   setStorageBackgroundColor,
 } from './../helper';
 
-const logError = debug('minsky:electron:error');
-const logUpdateEvent = debug('minsky:electron:update_event');
+const logError = debug('minsky:electron_error');
+const logUpdateEvent = debug('minsky:electron_update_event');
+const logChildProcessEvent = debug('minsky:electron_child_process');
+const logCairo = debug('minsky:electron_cairo');
 
 export default class ElectronEvents {
   static bootstrapElectronEvents(): Electron.IpcMain {
@@ -97,9 +99,6 @@ ipcMain.on('background-color:ok', (event, data) => {
 });
  */
 ipcMain.on('create-menu-popup', (event, data) => {
-  console.log(
-    '🚀 ~ file: electron.events.ts ~ line 96 ~ ipcMain.on ~ create-menu-popup'
-  );
   createMenuPopUpWithRouting(data);
 });
 
@@ -109,8 +108,17 @@ ipcMain.on('ready-template', () => {
 
 let cairo: ChildProcess;
 
-ipcMain.on('cairo', (event) => {
-  const txt = `${event}`;
+ipcMain.on('cairo', (event, msg) => {
+  let txt: string;
+
+  if (typeof event === 'string') {
+    txt = event;
+  } else {
+    txt = JSON.stringify(msg);
+  }
+
+  logCairo(txt);
+
   if (cairo) {
     cairo.stdin.write(txt + '\n');
   } else {
@@ -121,19 +129,19 @@ ipcMain.on('cairo', (event) => {
     );
 
     cairo.stdout.on('data', (data) => {
-      console.log(`stdout: ${data}`);
+      logChildProcessEvent(`stdout: ${data}`);
     });
 
     cairo.stderr.on('data', (data) => {
-      console.log(`stderr: ${data}`);
+      logChildProcessEvent(`stderr: ${data}`);
     });
 
     cairo.on('error', (error) => {
-      console.log(`error: ${error.message}`);
+      logChildProcessEvent(`error: ${error.message}`);
     });
 
     cairo.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
+      logChildProcessEvent(`child process exited with code ${code}`);
     });
   }
 });

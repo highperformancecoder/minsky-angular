@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { CommunicationService } from '@minsky/core';
-import { HeaderEvent } from '@minsky/shared';
 import * as debug from 'debug';
 
 const logInfo = debug('minsky:web:info');
@@ -10,11 +9,11 @@ const logInfo = debug('minsky:web:info');
   styleUrls: ['./toolbar.component.scss'],
 })
 export class ToolbarComponent {
-  HEADER_EVENT: HeaderEvent;
+  headerEvent = 'HEADER_EVENT';
   constructor(private commService: CommunicationService) {}
 
   playButton() {
-    this.commService.sendEvent(this.HEADER_EVENT, {
+    this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
       target: 'PLAY_BUTTON',
     });
@@ -22,7 +21,7 @@ export class ToolbarComponent {
   }
 
   resetButton() {
-    this.commService.sendEvent(this.HEADER_EVENT, {
+    this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
       target: 'RESET_BUTTON',
     });
@@ -30,7 +29,7 @@ export class ToolbarComponent {
   }
 
   stepButton() {
-    this.commService.sendEvent(this.HEADER_EVENT, {
+    this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
       target: 'STEP_BUTTON',
     });
@@ -38,7 +37,7 @@ export class ToolbarComponent {
   }
 
   simulationSpeed(value) {
-    this.commService.sendEvent(this.HEADER_EVENT, {
+    this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
       target: 'SIMULATION_SPEED',
     });
@@ -46,7 +45,7 @@ export class ToolbarComponent {
   }
 
   zoomOutButton() {
-    this.commService.sendEvent(this.HEADER_EVENT, {
+    this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
       target: 'ZOOMOUT_BUTTON',
     });
@@ -54,7 +53,7 @@ export class ToolbarComponent {
   }
 
   zoomInButton() {
-    this.commService.sendEvent(this.HEADER_EVENT, {
+    this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
       target: 'ZOOMIN_BUTTON',
     });
@@ -62,15 +61,15 @@ export class ToolbarComponent {
   }
 
   resetZoomButton() {
-    this.commService.sendEvent(this.HEADER_EVENT, {
+    this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
       target: 'RESETZOOM_BUTTON',
     });
     logInfo('resetZoomButton');
   }
 
-  zoomTofitButton() {
-    this.commService.sendEvent(this.HEADER_EVENT, {
+  zoomToFitButton() {
+    this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
       target: 'ZOOMTOFIT_BUTTON',
     });

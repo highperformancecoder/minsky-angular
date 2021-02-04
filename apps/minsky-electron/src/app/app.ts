@@ -1,5 +1,6 @@
 import { startServer } from '@minsky/minsky-server';
 import { ActiveWindow } from '@minsky/shared';
+import * as debug from 'debug';
 import { BrowserWindow, dialog, ipcMain, screen, shell } from 'electron';
 import * as storage from 'electron-json-storage';
 import { join } from 'path';
@@ -7,6 +8,8 @@ import { format } from 'url';
 import { environment } from '../environments/environment';
 import { activeWindows, rendererAppName, rendererAppURL } from './constants';
 import { getWindowId } from './helper';
+
+const logWindows = debug('minsky:electron_windows');
 
 export default class App {
   // Keep a global reference of the window object, if you don't, the window will
@@ -53,15 +56,6 @@ export default class App {
       event.preventDefault();
       shell.openExternal(url);
     }
-  }
-
-  private static onWindowsChange() {
-    const windowsInfo = BrowserWindow.getAllWindows().map((b) => {
-      const nid = b.getNativeWindowHandle();
-      const handle = nid.readUInt32LE(0);
-      return { handle: handle, nid: nid, id: b.id, size: b.getSize() };
-    });
-    console.log(windowsInfo);
   }
 
   private static onReady() {
@@ -146,12 +140,10 @@ export default class App {
       context: App.mainWindow,
       windowId: getWindowId(this.mainWindow),
     };
+
     activeWindows.set(App.mainWindow.id, mainWindowDetails);
 
-    console.log(
-      '🚀 ~ file: app.ts ~ line 152 ~ App ~ initMainWindow ~ activeWindows',
-      activeWindows
-    );
+    logWindows(activeWindows);
 
     App.mainWindow.on('close', () => {
       activeWindows.delete(App.mainWindow.id);
@@ -191,7 +183,6 @@ export default class App {
 
     App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
     App.application.on('ready', App.onReady); // App is ready to load data
-    App.application.on('browser-window-created', App.onWindowsChange);
     App.application.on('activate', App.onActivate); // App is activated
   }
 }

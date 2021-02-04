@@ -82,7 +82,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('canvasEvent', (data) => {
-    // code for mouse events
+    // remove the if condition to use the mousemove events
     if (data.type !== 'mousemove') {
       logUiEvent('Canvas Event: ', data);
     }

@@ -35,7 +35,6 @@ class BookmarkPositionComponent {
           if (err) throw err;
           if (!isExist) {
             storage.set(this.bookmarkFileName, [], (error) => {
-              console.log('file error.....');
             });
           }
         }); */

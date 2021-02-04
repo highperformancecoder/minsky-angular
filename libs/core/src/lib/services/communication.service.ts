@@ -10,6 +10,11 @@ export class Message {
   body: string;
 }
 
+interface HeaderEvent {
+  action: string;
+  target: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -40,17 +45,30 @@ export class CommunicationService {
     this.socket.emit(message, data);
   }
 
-  public sendEvent(event, message) {
+  public sendEvent(event: string, message: HeaderEvent) {
     this.socket.emit(event, message);
+
+    if (this.electronService.isElectron) {
+      this.electronService.ipcRenderer.send('cairo', {
+        ...message,
+        event,
+      });
+    }
   }
 
-  public mouseEvents(eventName, event) {
+  public mouseEvents(event, message) {
     const clickData = {
-      type: event.type,
-      clientX: event.clientX,
-      clientY: event.clientY,
+      type: message.type,
+      clientX: message.clientX,
+      clientY: message.clientY,
     };
-    this.socket.emit(eventName, clickData);
+    if (this.electronService.isElectron) {
+      this.electronService.ipcRenderer.send('cairo', {
+        ...clickData,
+        event,
+      });
+    }
+    this.socket.emit(event, clickData);
   }
 
   public dispatchEvents(eventName) {

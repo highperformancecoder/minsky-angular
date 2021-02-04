@@ -13,10 +13,7 @@ document.getElementById('bookmark-ok-btn').addEventListener('click', () => {
   if (name) {
     storage.has(bookmarkFileName, (err, isExist) => {
       if (err) throw err;
-      if (!isExist)
-        storage.set(bookmarkFileName, [], (err) => {
-          // console.log('file error.....');
-        });
+      if (!isExist) storage.set(bookmarkFileName, [], (err) => {});
     });
     setTimeout(() => {
       ipcRenderer.send('save-bookmark', {

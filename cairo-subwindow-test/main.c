@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 
         //draw some text
         cairo_select_font_face(cr, "serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-        cairo_set_font_size(cr, 32.0);
+        cairo_set_font_size(cr, 16.0);
         cairo_set_source_rgb(cr, 0.8, 0.8, 1.0);
         cairo_move_to(cr, 10.0, 25.0);
 
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
         size_t len = 0;
         ssize_t lineSize = 0;
         lineSize = getline(&text, &len, stdin);
-        
+
         if ((text)[lineSize - 1] == '\n') {
             (text)[lineSize - 1] = '\0';
             --lineSize;
