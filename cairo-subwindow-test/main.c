@@ -12,7 +12,7 @@ cairo_surface_t* create_x11_surface(Display *d, int width, int height,char *elec
 {
     int screen = DefaultScreen(d);
     //Drawable da =  XCreateSimpleWindow(d, DefaultRootWindow(d), 0, 0, x, y, 0, 0, 0);
-    Drawable da = XCreateSimpleWindow(d, atoi(electronWindowId), 0, 200, ewSizeX, ewSizeY-200, 0, 0, 0);
+    Drawable da = XCreateSimpleWindow(d, atoi(electronWindowId), 0, 200, ewSizeX-20, ewSizeY-200, 0, 0, 0);
 
     // XSelectInput(d, da, ButtonPressMask | KeyPressMask);
     XMapWindow(d, da);
