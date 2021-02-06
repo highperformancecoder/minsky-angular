@@ -123,6 +123,9 @@ ipcMain.on('cairo', (event, msg) => {
     cairo.stdin.write(txt + '\n');
   } else {
     const { windowId } = activeWindows.get(1);
+    console.log("Native window id: ", windowId);
+    // return;
+
     cairo = spawn(
       join(__dirname, '..', '..', '..', '/cairo-subwindow-test/main'),
       [txt, `${windowId}`]
