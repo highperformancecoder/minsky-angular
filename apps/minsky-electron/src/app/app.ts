@@ -50,7 +50,7 @@ export default class App {
     App.mainWindow = null;
   }
 
-  private static onRedirect(event: any, url: string) {
+  private static onRedirect(event, url: string) {
     if (url !== App.mainWindow.webContents.getURL()) {
       // this is a normal external redirect, open it in a new browser window
       event.preventDefault();

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ElectronService } from '@minsky/core';
-import * as debug from 'debug';
+// import * as debug from 'debug';
 // import * as electron from 'electron';
 // import * as storage from 'electron-json-storage';
 
-const logInfo = debug('minsky:web:info');
-const logError = debug('minsky:web:error');
+// const logInfo = debug('minsky:web:info');
+// const logError = debug('minsky:web:error');
 
 @Component({
   selector: 'minsky-bookmark-position',

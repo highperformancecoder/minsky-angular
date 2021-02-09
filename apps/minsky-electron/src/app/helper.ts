@@ -153,46 +153,6 @@ function applyCssToBackground(css) {
   window.webContents.insertCSS(css);
 }
 
-// this function open new popup window
-/* export function createMenuPopUp(
-  width,
-  height,
-  title,
-  dirPath,
-  menuBackgroundColor
-) {
-  menuBackgroundColor = menuBackgroundColor || getStorageBackgroundColor();
-  let menuWindow = new BrowserWindow({
-    width,
-    height,
-    title,
-    resizable: false,
-    minimizable: false,
-    show: false,
-    parent: window,
-    modal: true,
-    backgroundColor: menuBackgroundColor,
-    webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true,
-    },
-  });
-  menuWindow.setMenu(null);
-  menuWindow.loadURL(`file://${dirPath}`);
-  menuWindow.once('ready-to-show', () => {
-    menuWindow.show();
-  });
-  // menuWindow.webContents.openDevTools(); // command to inspect popup
-  menuWindow.on('closed', () => {
-    menuWindow = null;
-  });
-  // Closing global popup event_______
-  ipcMain.on('global-menu-popup:cancel', (event) => {
-    if (menuWindow) {
-      menuWindow.close();
-    }
-  });
-} */
 export function createMenuPopUpWithRouting({
   width = 500,
   height = 500,
