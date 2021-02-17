@@ -21,9 +21,10 @@ interface HeaderEvent {
 export class CommunicationService {
   canvasDetail: HTMLElement;
   sticky: number;
+  windowHeight: number;
+  windowWidth: number;
   leftOffset: number;
   topOffset: number;
-  offSetValue: string;
   directory = new BehaviorSubject<string[]>([]);
   openDirectory = new BehaviorSubject<string[]>([]);
   constructor(
@@ -49,8 +50,16 @@ export class CommunicationService {
     this.socket.emit(event, message);
 
     if (this.electronService.isElectron) {
+      const metadata = {
+        top: this.topOffset,
+        left: this.leftOffset,
+        height: this.windowHeight,
+        width: this.windowWidth,
+      };
+
       this.electronService.ipcRenderer.send('cairo', {
         ...message,
+        ...metadata,
         event,
       });
     }
@@ -63,8 +72,16 @@ export class CommunicationService {
       clientY: message.clientY,
     };
     if (this.electronService.isElectron) {
+      const metadata = {
+        top: this.topOffset,
+        left: this.leftOffset,
+        height: this.windowHeight,
+        width: this.windowWidth,
+      };
+
       this.electronService.ipcRenderer.send('cairo', {
         ...clickData,
+        ...metadata,
         event,
       });
     }
@@ -99,10 +116,11 @@ export class CommunicationService {
       // Get the offset position of the canvas
       this.topOffset = this.canvasDetail.offsetTop;
       this.leftOffset = this.canvasDetail.offsetLeft;
-      this.offSetValue =
+
+      const offSetValue =
         'top:' + this.topOffset + ' ' + 'left:' + this.leftOffset;
 
-      this.emitValues('Values', this.offSetValue);
+      this.emitValues('Values', offSetValue);
     });
 
     this.dispatchEvents('Values');

@@ -71,6 +71,9 @@ export class AppComponent {
     logInfo(
       'resizeWidth:' + event.newWidth + ' ' + 'resizeHeight:' + event.newWidth
     );
+    this.cmService.windowHeight = event.newHeight;
+    this.cmService.windowWidth = event.newWidth;
+
     this.cmService.canvasOffsetValues();
     this.emitData(windowResizeDetail);
   }
