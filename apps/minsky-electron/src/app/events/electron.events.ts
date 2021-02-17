@@ -3,14 +3,12 @@
  * between the frontend to the electron backend.
  */
 
-import { ChildProcess, spawn } from 'child_process';
+import { CairoPayload } from '@minsky/shared';
 import * as debug from 'debug';
 import { app, ipcMain, Menu, MenuItem } from 'electron';
 import * as storage from 'electron-json-storage';
-import { join } from 'path';
 import { environment } from '../../environments/environment';
 import App from '../app';
-import { activeWindows } from '../constants';
 import {
   addUpdateBookmarkList,
   checkBackgroundAndApplyTextColor,
@@ -18,14 +16,15 @@ import {
   // createMenuPopUp,
   createMenuPopUpWithRouting,
   deleteBookmark,
+
   goToSelectedBookmark,
-  setStorageBackgroundColor,
+  handleCairo,
+  setStorageBackgroundColor
 } from './../helper';
+
 
 const logError = debug('minsky:electron_error');
 const logUpdateEvent = debug('minsky:electron_update_event');
-const logChildProcessEvent = debug('minsky:electron_child_process');
-const logCairo = debug('minsky:electron_cairo');
 
 export default class ElectronEvents {
   static bootstrapElectronEvents(): Electron.IpcMain {
@@ -106,49 +105,13 @@ ipcMain.on('ready-template', () => {
   addUpdateBookmarkList(Menu.getApplicationMenu());
 });
 
-let cairo: ChildProcess;
-
-ipcMain.on('cairo', (event, msg) => {
-  let txt: string;
-
-  if (typeof event === 'string') {
-    txt = event;
-  } else {
-    txt = JSON.stringify(msg);
-  }
-
-  logCairo(txt);
-
-  if (cairo) {
-    cairo.stdin.write(txt + '\n');
-  } else {
-    const { windowId } = activeWindows.get(1);
-    console.log('Native window id: ', windowId);
-    // return;
-
-    cairo = spawn(
-      join(__dirname, '..', '..', '..', '/cairo-subwindow-test/main'),
-      [txt, `${windowId}`]
-    );
-
-    cairo.stdout.on('data', (data) => {
-      logChildProcessEvent(`stdout: ${data}`);
-    });
-
-    cairo.stderr.on('data', (data) => {
-      logChildProcessEvent(`stderr: ${data}`);
-    });
-
-    cairo.on('error', (error) => {
-      logChildProcessEvent(`error: ${error.message}`);
-    });
-
-    cairo.on('close', (code) => {
-      logChildProcessEvent(`child process exited with code ${code}`);
-    });
-  }
+ipcMain.on('cairo', (event, payload: CairoPayload) => {
+  handleCairo(event, payload);
 });
 
 ipcMain.on('load-menu', () => {
   createMenu();
 });
+
+
+

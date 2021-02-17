@@ -1,4 +1,5 @@
-import { ActiveWindow } from '@minsky/shared';
+import { ActiveWindow, CairoPayload } from '@minsky/shared';
+import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
 import {
   BrowserWindow,
@@ -6,16 +7,21 @@ import {
   ipcMain,
   Menu,
   MenuItem,
-  shell,
+  shell
 } from 'electron';
 import * as storage from 'electron-json-storage';
 import { readFileSync, writeFile } from 'fs';
-import * as os from 'os';
+import { join } from 'path';
+import App from './app';
 import { activeWindows, rendererAppURL } from './constants';
+import { getWindowId } from './windowHelper';
+
 
 const logError = debug('minsky:electron_error');
 const logMenuEvent = debug('minsky:electron_menu_logs');
 const logWindows = debug('minsky:electron_windows');
+const logChildProcessEvent = debug('minsky:electron_child_process');
+const logCairo = debug('minsky:electron_cairo');
 
 function getMainWindow(): BrowserWindow {
   return activeWindows.get(1).context;
@@ -87,23 +93,24 @@ export function deleteBookmark() {
       // ToDo add code to delete bookmark
 
       /* const innerSubmenu = template
-				.getMenuItemById('main-bookmark')
-				.submenu.getMenuItemById('delete-bookmark').submenu.items
-			const outerSubmenu = template.getMenuItemById('main-bookmark')
-				.submenu.items
-			const innerIdx = innerSubmenu.findIndex(
-				(ele) => ele.label === this.title
-			)
-			const outerIdx = outerSubmenu.findIndex(
-				(ele) => ele.label === this.title
-			)
-			innerSubmenu[innerIdx].visible = false
-			outerSubmenu[outerIdx].visible = false */
+        .getMenuItemById('main-bookmark')
+        .submenu.getMenuItemById('delete-bookmark').submenu.items
+      const outerSubmenu = template.getMenuItemById('main-bookmark')
+        .submenu.items
+      const innerIdx = innerSubmenu.findIndex(
+        (ele) => ele.label === this.title
+      )
+      const outerIdx = outerSubmenu.findIndex(
+        (ele) => ele.label === this.title
+      )
+      innerSubmenu[innerIdx].visible = false
+      outerSubmenu[outerIdx].visible = false */
 
       // innerIdx > -1 ? innerSubmenu.splice(innerIdx, 1) : new Error("Bookmark Not Found");
     }
   });
 }
+
 
 export function checkBackgroundAndApplyTextColor(color) {
   // Variables for red, green, blue values
@@ -217,15 +224,6 @@ export function createMenuPopUpWithRouting({
   });
 }
 
-export function getWindowId(menuWindow: BrowserWindow) {
-  const offset = 0;
-  const windowId =
-    os.endianness() == 'LE'
-      ? menuWindow.getNativeWindowHandle().readInt32LE(offset)
-      : menuWindow.getNativeWindowHandle().readInt32BE(offset);
-
-  return windowId;
-}
 
 export function createMenu() {
   const menu = Menu.buildFromTemplate([
@@ -270,7 +268,14 @@ export function createMenu() {
                 properties: ['openFile'],
                 filters: [{ name: '*.mky', extensions: ['mky'] }],
               });
-              ipcMain.emit('cairo', _dialog.filePaths[0].toString());
+
+              const loadPayload: CairoPayload = { command: '/minsky/load', filepath: _dialog.filePaths[0].toString() }
+              const renderPayload: CairoPayload = { command: '/minsky/canvas/renderFrame' }
+
+              handleCairo(null, loadPayload)
+
+              handleCairo(null, renderPayload)
+
             } catch (error) {
               logError(error);
             }
@@ -819,4 +824,85 @@ export function createMenu() {
   ]);
 
   Menu.setApplicationMenu(menu);
+}
+
+export function handleCairo(event: Electron.IpcMainEvent, payload: CairoPayload) {
+  let command: string;
+
+  if (typeof event === 'string') {
+    command = event;
+  } else {
+    command = payload.command;
+  }
+
+  logCairo(command);
+
+  if (App.cairo) {
+    executeCommandOnMinskyServer(App.cairo, payload);
+  } else {
+    const { windowId } = activeWindows.get(1);
+    console.log('Native window id: ', windowId);
+
+    App.cairo = spawn(
+      join(__dirname, '..', '..', '..', '..', '/minsky-RESTService/RESTService/minsky-RESTService')
+    );
+
+    App.cairo.stdout.on('data', (data) => {
+      logChildProcessEvent(`stdout: ${data}`);
+    });
+
+    App.cairo.stderr.on('data', (data) => {
+      logChildProcessEvent(`stderr: ${data}`);
+    });
+
+    App.cairo.on('error', (error) => {
+      logChildProcessEvent(`error: ${error.message}`);
+    });
+
+    App.cairo.on('close', (code) => {
+      logChildProcessEvent(`child process exited with code ${code}`);
+    });
+
+    command = '/minsky/canvas/initializeNativeWindow';
+    const _payload: CairoPayload = { command, windowId, ...payload };
+
+    /* 
+/minsky/canvas/initializeNativeWindow 67108871
+/minsky/load "/home/minsky/minsky-RESTService/examples/1Free.mky"
+/minsky/canvas/renderFrame
+    */
+
+    /*    App.cairo.stdin.write(`/minsky/canvas/initializeNativeWindow 67108871`);
+       App.cairo.stdin.write(`/minsky/load "/home/minsky/minsky-RESTService/examples/1Free.mky"`);
+       App.cairo.stdin.write(`/minsky/canvas/renderFrame`);
+    */
+    executeCommandOnMinskyServer(App.cairo, _payload);
+
+  }
+}
+
+
+export function executeCommandOnMinskyServer(cairo: ChildProcess, payload: CairoPayload) {
+
+  switch (payload.command) {
+    case '/minsky/canvas/initializeNativeWindow':
+      console.log(`${payload.command} ${payload.windowId}`)
+      // cairo.stdin.write(`${payload.command} ${payload.windowId} ${payload.left} ${payload.top}`);
+      cairo.stdin.write(`${payload.command} ${payload.windowId}`);
+      break;
+
+    case '/minsky/load':
+      console.log(`${payload.command} "${payload.filepath}"`)
+      cairo.stdin.write(`${payload.command} "${payload.filepath}"`);
+      break;
+
+    case '/minsky/canvas/renderFrame':
+      cairo.stdin.write(`${payload.command}`);
+      break;
+
+    default:
+      break;
+  }
+
+
 }

@@ -1,5 +1,6 @@
 import { startServer } from '@minsky/minsky-server';
 import { ActiveWindow } from '@minsky/shared';
+import { ChildProcess } from 'child_process';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, ipcMain, screen, shell } from 'electron';
 import * as storage from 'electron-json-storage';
@@ -7,7 +8,7 @@ import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
 import { activeWindows, rendererAppName, rendererAppURL } from './constants';
-import { getWindowId } from './helper';
+import { getWindowId } from './windowHelper';
 
 const logWindows = debug('minsky:electron_windows');
 
@@ -17,6 +18,7 @@ export default class App {
   static mainWindow: Electron.BrowserWindow;
   static application: Electron.App;
   static BrowserWindow;
+  static cairo: ChildProcess;
 
   public static isDevelopmentMode() {
     const isEnvironmentSet: boolean = 'ELECTRON_IS_DEV' in process.env;
