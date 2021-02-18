@@ -260,7 +260,7 @@ export function createMenu() {
         {
           label: 'Open',
           accelerator: 'CmdOrCtrl + O',
-          enabled: false,
+          enabled: true,
           async click() {
             try {
               const _dialog = await dialog.showOpenDialog({
@@ -870,31 +870,38 @@ export function handleCairo(
     !App.cairo &&
     command === '/minsky/canvas/initializeNativeWindow'
   ) {
-    App.cairo = spawn(payload.filepath);
+    try {
+      App.cairo = spawn(payload.filepath);
+      if (App.cairo) {
+        App.cairo.stdout.on('data', (data) => {
+          log.info(`stdout: ${data}`);
+          // logChildProcessEvent(`stdout: ${data}`);
+        });
+        App.cairo.stderr.on('data', (data) => {
+          log.info(`stderr: ${data}`);
+          dialog.showErrorBox('cairo stderr', `${data}`);
+        });
+        App.cairo.on('error', (error) => {
+          log.info(`error: ${error.message}`);
+        });
+        App.cairo.on('close', (code) => {
+          log.info(`child process exited with code ${code}`);
+        });
+        executeCommandOnMinskyServer(App.cairo, payload);
+        const proceed = dialog.showMessageBoxSync(App.mainWindow, {
+          type: 'info',
+          title: 'Minsky Service Started',
+          message: 'You can now choose model files to be loaded',
+        });
+      }
+    } catch {
+        dialog.showErrorBox("Execution error", "Could not execute chosen file");
+        App.cairo = null;
+    }
 
-    App.cairo.stdout.on('data', (data) => {
-      log.info(`stdout: ${data}`);
-      // logChildProcessEvent(`stdout: ${data}`);
-    });
-
-    App.cairo.stderr.on('data', (data) => {
-      log.info(`stderr: ${data}`);
-      dialog.showErrorBox('cairo stderr', `${data}`);
-    });
-
-    App.cairo.on('error', (error) => {
-      log.info(`error: ${error.message}`);
-    });
-
-    App.cairo.on('close', (code) => {
-      log.info(`child process exited with code ${code}`);
-    });
-
-    executeCommandOnMinskyServer(App.cairo, payload);
-
-    Menu.getApplicationMenu()
-      .items.find((i) => i.label === 'File')
-      .submenu.items.find((i) => i.label === 'Open').enabled = true;
+    // Menu.getApplicationMenu()
+    //   .items.find((i) => i.label === 'File')
+    //   .submenu.items.find((i) => i.label === 'Open').enabled = true;
   } else {
     logError('Please select the minsky executable first...');
   }
