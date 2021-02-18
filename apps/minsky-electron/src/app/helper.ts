@@ -786,53 +786,6 @@ export function createMenu() {
       ],
     },
     {
-      label: 'Cairo (TEST)',
-      submenu: [
-        {
-          label: 'Cairo (TEST)',
-          click() {
-            createMenuPopUpWithRouting({
-              width: 550,
-              height: 550,
-              title: 'Cairo',
-              url: `${rendererAppURL}/#/menu/cairo/cairo-integration`,
-              backgroundColor: '#ffffff',
-              modal: false,
-            });
-          },
-        },
-      ],
-    },
-    {
-      label: 'RESTServer (TEST)',
-      submenu: [
-        {
-          label: 'Select RESTServer Executable (TEST)',
-          accelerator: 'CmdOrCtrl+Shift+O',
-          async click() {
-            try {
-              const _dialog = await dialog.showOpenDialog({
-                properties: ['openFile'],
-                filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
-              });
-
-              const initPayload: CairoPayload = {
-                command: '/minsky/canvas/initializeNativeWindow',
-                filepath: _dialog.filePaths[0].toString(),
-                windowId: activeWindows.get(1).windowId,
-                top: App.topOffset,
-                left: App.leftOffset,
-              };
-
-              handleCairo(null, initPayload);
-            } catch (error) {
-              logError(error);
-            }
-          },
-        },
-      ],
-    },
-    {
       role: 'help',
       submenu: [
         {
@@ -879,7 +832,6 @@ export function handleCairo(
         });
         App.cairo.stderr.on('data', (data) => {
           log.info(`stderr: ${data}`);
-          dialog.showErrorBox('cairo stderr', `${data}`);
         });
         App.cairo.on('error', (error) => {
           log.info(`error: ${error.message}`);
@@ -887,16 +839,19 @@ export function handleCairo(
         App.cairo.on('close', (code) => {
           log.info(`child process exited with code ${code}`);
         });
+
         executeCommandOnMinskyServer(App.cairo, payload);
-        const proceed = dialog.showMessageBoxSync(App.mainWindow, {
+
+        dialog.showMessageBoxSync(App.mainWindow, {
           type: 'info',
           title: 'Minsky Service Started',
           message: 'You can now choose model files to be loaded',
         });
       }
     } catch {
-        dialog.showErrorBox("Execution error", "Could not execute chosen file");
-        App.cairo = null;
+      dialog.showErrorBox('Execution error', 'Could not execute chosen file');
+
+      App.cairo = null;
     }
 
     // Menu.getApplicationMenu()
@@ -915,7 +870,9 @@ export function executeCommandOnMinskyServer(
   let stdinCommand = '';
   switch (payload.command) {
     case '/minsky/canvas/initializeNativeWindow':
-      stdinCommand = `${payload.command} ${payload.windowId} ${payload.left} ${payload.top}${newLine}`;
+      stdinCommand = `${payload.command} ${activeWindows.get(1).windowId} ${
+        App.leftOffset
+      } ${App.topOffset}${newLine}`;
       cairo.stdin.write(stdinCommand);
       break;
 

@@ -43,7 +43,13 @@
           <label> Variables </label>
         </a>
 
-        <!-- <button>aa</button> -->
+        <button
+          class="variables minsky-service"
+          mat-stroked-button
+          (click)="toggleMinskyService()"
+        >
+          {{ toggleButtonText }}
+        </button>
       </div>
       <router-outlet></router-outlet>
     </div>

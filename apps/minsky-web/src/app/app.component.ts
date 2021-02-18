@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
+import { CairoPayload } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 // Import the resized event model
 import { ResizedEvent } from 'angular-resize-event';
@@ -8,6 +9,7 @@ import * as debug from 'debug';
 import { AppConfig } from '../environments/environment';
 
 const logInfo = debug('minsky:web:info');
+const logError = debug('minsky:web:error');
 
 @Component({
   selector: 'app-root',
@@ -17,6 +19,7 @@ const logInfo = debug('minsky:web:info');
 export class AppComponent {
   loader = false;
   directory: string[];
+  toggleButtonText = 'Start Minsky Service';
 
   constructor(
     private electronService: ElectronService,
@@ -102,5 +105,27 @@ export class AppComponent {
   emitData(data) {
     this.cmService.emitValues('Values', data);
     this.cmService.dispatchEvents('Values');
+  }
+
+  async toggleMinskyService() {
+    if (this.electronService.isElectron) {
+      try {
+        const _dialog = await this.electronService.remote.dialog.showOpenDialog(
+          {
+            properties: ['openFile'],
+            filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
+          }
+        );
+
+        const initPayload: CairoPayload = {
+          command: '/minsky/canvas/initializeNativeWindow',
+          filepath: _dialog.filePaths[0].toString(),
+        };
+
+        this.electronService.ipcRenderer.send('cairo', initPayload);
+      } catch (error) {
+        logError(error);
+      }
+    }
   }
 }
