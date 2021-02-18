@@ -7,15 +7,13 @@ import {
   ipcMain,
   Menu,
   MenuItem,
-  shell
+  shell,
 } from 'electron';
 import * as storage from 'electron-json-storage';
 import { readFileSync, writeFile } from 'fs';
-import { join } from 'path';
 import App from './app';
 import { activeWindows, rendererAppURL } from './constants';
 import { getWindowId } from './windowHelper';
-
 
 const logError = debug('minsky:electron_error');
 const logMenuEvent = debug('minsky:electron_menu_logs');
@@ -110,7 +108,6 @@ export function deleteBookmark() {
     }
   });
 }
-
 
 export function checkBackgroundAndApplyTextColor(color) {
   // Variables for red, green, blue values
@@ -224,7 +221,6 @@ export function createMenuPopUpWithRouting({
   });
 }
 
-
 export function createMenu() {
   const menu = Menu.buildFromTemplate([
     {
@@ -262,6 +258,7 @@ export function createMenu() {
         {
           label: 'Open',
           accelerator: 'CmdOrCtrl + O',
+          enabled: false,
           async click() {
             try {
               const _dialog = await dialog.showOpenDialog({
@@ -269,13 +266,17 @@ export function createMenu() {
                 filters: [{ name: '*.mky', extensions: ['mky'] }],
               });
 
-              const loadPayload: CairoPayload = { command: '/minsky/load', filepath: _dialog.filePaths[0].toString() }
-              const renderPayload: CairoPayload = { command: '/minsky/canvas/renderFrame' }
+              const loadPayload: CairoPayload = {
+                command: '/minsky/load',
+                filepath: _dialog.filePaths[0].toString(),
+              };
+              const renderPayload: CairoPayload = {
+                command: '/minsky/canvas/renderFrame',
+              };
 
-              handleCairo(null, loadPayload)
+              handleCairo(null, loadPayload);
 
-              handleCairo(null, renderPayload)
-
+              handleCairo(null, renderPayload);
             } catch (error) {
               logError(error);
             }
@@ -485,14 +486,6 @@ export function createMenu() {
               url: `${rendererAppURL}/#/menu/bookmarks/bookmark-position`,
               backgroundColor: '#ffffff',
             });
-
-            // createMenuPopUp(
-            //   420,
-            //   200,
-            //   'Bookmark this position',
-            //   menuDir + '/menu/bookmark-position/bookmark-position.html',
-            //   null
-            // );
           },
         },
         {
@@ -791,10 +784,10 @@ export function createMenu() {
       ],
     },
     {
-      label: 'Cairo',
+      label: 'Cairo (TEST)',
       submenu: [
         {
-          label: 'Cairo',
+          label: 'Cairo (TEST)',
           click() {
             createMenuPopUpWithRouting({
               width: 550,
@@ -804,6 +797,35 @@ export function createMenu() {
               backgroundColor: '#ffffff',
               modal: false,
             });
+          },
+        },
+      ],
+    },
+    {
+      label: 'RESTServer (TEST)',
+      submenu: [
+        {
+          label: 'Select RESTServer Executable (TEST)',
+          accelerator: 'CmdOrCtrl+Shift+O',
+          async click() {
+            try {
+              const _dialog = await dialog.showOpenDialog({
+                properties: ['openFile'],
+                filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
+              });
+
+              const initPayload: CairoPayload = {
+                command: '/minsky/canvas/initializeNativeWindow',
+                filepath: _dialog.filePaths[0].toString(),
+                windowId: activeWindows.get(1).windowId,
+                top: App.topOffset,
+                left: App.leftOffset,
+              };
+
+              handleCairo(null, initPayload);
+            } catch (error) {
+              logError(error);
+            }
           },
         },
       ],
@@ -826,7 +848,10 @@ export function createMenu() {
   Menu.setApplicationMenu(menu);
 }
 
-export function handleCairo(event: Electron.IpcMainEvent, payload: CairoPayload) {
+export function handleCairo(
+  event: Electron.IpcMainEvent,
+  payload: CairoPayload
+) {
   let command: string;
 
   if (typeof event === 'string') {
@@ -839,13 +864,11 @@ export function handleCairo(event: Electron.IpcMainEvent, payload: CairoPayload)
 
   if (App.cairo) {
     executeCommandOnMinskyServer(App.cairo, payload);
-  } else {
-    const { windowId } = activeWindows.get(1);
-    console.log('Native window id: ', windowId);
-
-    App.cairo = spawn(
-      join(__dirname, '..', '..', '..', '..', '/minsky-RESTService/RESTService/minsky-RESTService')
-    );
+  } else if (
+    !App.cairo &&
+    command === '/minsky/canvas/initializeNativeWindow'
+  ) {
+    App.cairo = spawn(payload.filepath);
 
     App.cairo.stdout.on('data', (data) => {
       logChildProcessEvent(`stdout: ${data}`);
@@ -863,46 +886,39 @@ export function handleCairo(event: Electron.IpcMainEvent, payload: CairoPayload)
       logChildProcessEvent(`child process exited with code ${code}`);
     });
 
-    command = '/minsky/canvas/initializeNativeWindow';
-    const _payload: CairoPayload = { command, windowId, ...payload };
+    executeCommandOnMinskyServer(App.cairo, payload);
 
-    /* 
-/minsky/canvas/initializeNativeWindow 67108871
-/minsky/load "/home/minsky/minsky-RESTService/examples/1Free.mky"
-/minsky/canvas/renderFrame
-    */
-
-    /*    App.cairo.stdin.write(`/minsky/canvas/initializeNativeWindow 67108871`);
-       App.cairo.stdin.write(`/minsky/load "/home/minsky/minsky-RESTService/examples/1Free.mky"`);
-       App.cairo.stdin.write(`/minsky/canvas/renderFrame`);
-    */
-    executeCommandOnMinskyServer(App.cairo, _payload);
-
+    Menu.getApplicationMenu()
+      .items.find((i) => i.label === 'File')
+      .submenu.items.find((i) => i.label === 'Open').enabled = true;
+  } else {
+    logError('Please select the minsky executable first...');
   }
 }
 
-
-export function executeCommandOnMinskyServer(cairo: ChildProcess, payload: CairoPayload) {
+export function executeCommandOnMinskyServer(
+  cairo: ChildProcess,
+  payload: CairoPayload
+) {
+  const newLine = '\n';
 
   switch (payload.command) {
     case '/minsky/canvas/initializeNativeWindow':
-      console.log(`${payload.command} ${payload.windowId}`)
-      // cairo.stdin.write(`${payload.command} ${payload.windowId} ${payload.left} ${payload.top}`);
-      cairo.stdin.write(`${payload.command} ${payload.windowId}`);
+      console.log(`${payload.command} ${payload.windowId}`);
+      cairo.stdin.write(
+        `${payload.command} ${payload.windowId} ${payload.left} ${payload.top}${newLine}`
+      );
       break;
 
     case '/minsky/load':
-      console.log(`${payload.command} "${payload.filepath}"`)
-      cairo.stdin.write(`${payload.command} "${payload.filepath}"`);
+      cairo.stdin.write(`${payload.command} "${payload.filepath}"${newLine}`);
       break;
 
     case '/minsky/canvas/renderFrame':
-      cairo.stdin.write(`${payload.command}`);
+      cairo.stdin.write(`${payload.command}${newLine}`);
       break;
 
     default:
       break;
   }
-
-
 }

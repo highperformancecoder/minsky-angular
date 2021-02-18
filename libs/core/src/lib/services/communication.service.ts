@@ -21,8 +21,6 @@ interface HeaderEvent {
 export class CommunicationService {
   canvasDetail: HTMLElement;
   sticky: number;
-  windowHeight: number;
-  windowWidth: number;
   leftOffset: number;
   topOffset: number;
   directory = new BehaviorSubject<string[]>([]);
@@ -50,16 +48,8 @@ export class CommunicationService {
     this.socket.emit(event, message);
 
     if (this.electronService.isElectron) {
-      const metadata = {
-        top: this.topOffset,
-        left: this.leftOffset,
-        height: this.windowHeight,
-        width: this.windowWidth,
-      };
-
       this.electronService.ipcRenderer.send('cairo', {
         ...message,
-        ...metadata,
         event,
       });
     }
@@ -72,16 +62,8 @@ export class CommunicationService {
       clientY: message.clientY,
     };
     if (this.electronService.isElectron) {
-      const metadata = {
-        top: this.topOffset,
-        left: this.leftOffset,
-        height: this.windowHeight,
-        width: this.windowWidth,
-      };
-
       this.electronService.ipcRenderer.send('cairo', {
         ...clickData,
-        ...metadata,
         event,
       });
     }
@@ -120,6 +102,14 @@ export class CommunicationService {
       const offSetValue =
         'top:' + this.topOffset + ' ' + 'left:' + this.leftOffset;
 
+      if (this.electronService.isElectron) {
+        const payload = {
+          type: 'OFFSET',
+          value: { top: this.topOffset, left: this.leftOffset },
+        };
+
+        this.electronService.ipcRenderer.send('app-layout-changed', payload);
+      }
       this.emitValues('Values', offSetValue);
     });
 

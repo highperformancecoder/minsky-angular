@@ -3,7 +3,7 @@
  * between the frontend to the electron backend.
  */
 
-import { CairoPayload } from '@minsky/shared';
+import { AppLayoutPayload, CairoPayload } from '@minsky/shared';
 import * as debug from 'debug';
 import { app, ipcMain, Menu, MenuItem } from 'electron';
 import * as storage from 'electron-json-storage';
@@ -16,12 +16,10 @@ import {
   // createMenuPopUp,
   createMenuPopUpWithRouting,
   deleteBookmark,
-
   goToSelectedBookmark,
   handleCairo,
-  setStorageBackgroundColor
+  setStorageBackgroundColor,
 } from './../helper';
-
 
 const logError = debug('minsky:electron_error');
 const logUpdateEvent = debug('minsky:electron_update_event');
@@ -109,9 +107,23 @@ ipcMain.on('cairo', (event, payload: CairoPayload) => {
   handleCairo(event, payload);
 });
 
+ipcMain.on('app-layout-changed', (event, { type, value }: AppLayoutPayload) => {
+  switch (type) {
+    case 'RESIZE':
+      App.mainWindowHeight = value.height;
+      App.mainWindowHeight = value.width;
+      break;
+
+    case 'OFFSET':
+      App.topOffset = value.top;
+      App.leftOffset = value.left;
+      break;
+
+    default:
+      break;
+  }
+});
+
 ipcMain.on('load-menu', () => {
   createMenu();
 });
-
-
-

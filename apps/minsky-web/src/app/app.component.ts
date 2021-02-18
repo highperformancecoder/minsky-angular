@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { CairoPayload } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 // Import the resized event model
 import { ResizedEvent } from 'angular-resize-event';
@@ -41,10 +40,6 @@ export class AppComponent {
     this.saveFile();
     this.windowSize();
     this.cmService.canvasOffsetValues();
-    if (electronService.isElectron) {
-      const payload: CairoPayload = { top: this.cmService.topOffset, left: this.cmService.leftOffset }
-      this.electronService.ipcRenderer.send('cairo', payload)
-    }
   }
 
   windowDetails() {
@@ -76,8 +71,15 @@ export class AppComponent {
     logInfo(
       'resizeWidth:' + event.newWidth + ' ' + 'resizeHeight:' + event.newWidth
     );
-    this.cmService.windowHeight = event.newHeight;
-    this.cmService.windowWidth = event.newWidth;
+
+    if (this.electronService.isElectron) {
+      const payload = {
+        type: 'RESIZE',
+        value: { height: event.newHeight, width: event.newWidth },
+      };
+
+      this.electronService.ipcRenderer.send('app-layout-changed', payload);
+    }
 
     this.cmService.canvasOffsetValues();
     this.emitData(windowResizeDetail);

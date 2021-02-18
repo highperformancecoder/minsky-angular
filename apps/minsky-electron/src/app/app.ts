@@ -19,6 +19,10 @@ export default class App {
   static application: Electron.App;
   static BrowserWindow;
   static cairo: ChildProcess;
+  static topOffset: number;
+  static leftOffset: number;
+  static mainWindowHeight: number;
+  static mainWindowWidth: number;
 
   public static isDevelopmentMode() {
     const isEnvironmentSet: boolean = 'ELECTRON_IS_DEV' in process.env;
@@ -112,6 +116,7 @@ export default class App {
       y: 0,
       title: 'Minsky',
       icon: __dirname + '/assets/favicon.png',
+      resizable: false,
     });
     App.mainWindow.setMenu(null);
     App.mainWindow.center();
