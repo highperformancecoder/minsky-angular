@@ -10,11 +10,13 @@ import {
   shell,
 } from 'electron';
 import * as storage from 'electron-json-storage';
+import * as log from 'electron-log';
 import { readFileSync, writeFile } from 'fs';
 import App from './app';
 import { activeWindows, rendererAppURL } from './constants';
 import { getWindowId } from './windowHelper';
 
+log.info(JSON.stringify(process.env, null, 2));
 const logError = debug('minsky:electron_error');
 const logMenuEvent = debug('minsky:electron_menu_logs');
 const logWindows = debug('minsky:electron_windows');
@@ -871,19 +873,21 @@ export function handleCairo(
     App.cairo = spawn(payload.filepath);
 
     App.cairo.stdout.on('data', (data) => {
-      logChildProcessEvent(`stdout: ${data}`);
+      log.info(`stdout: ${data}`);
+      // logChildProcessEvent(`stdout: ${data}`);
     });
 
     App.cairo.stderr.on('data', (data) => {
-      logChildProcessEvent(`stderr: ${data}`);
+      log.info(`stderr: ${data}`);
+      dialog.showErrorBox('cairo stderr', `${data}`);
     });
 
     App.cairo.on('error', (error) => {
-      logChildProcessEvent(`error: ${error.message}`);
+      log.info(`error: ${error.message}`);
     });
 
     App.cairo.on('close', (code) => {
-      logChildProcessEvent(`child process exited with code ${code}`);
+      log.info(`child process exited with code ${code}`);
     });
 
     executeCommandOnMinskyServer(App.cairo, payload);
@@ -901,24 +905,26 @@ export function executeCommandOnMinskyServer(
   payload: CairoPayload
 ) {
   const newLine = '\n';
-
+  let stdinCommand = '';
   switch (payload.command) {
     case '/minsky/canvas/initializeNativeWindow':
-      console.log(`${payload.command} ${payload.windowId}`);
-      cairo.stdin.write(
-        `${payload.command} ${payload.windowId} ${payload.left} ${payload.top}${newLine}`
-      );
+      stdinCommand = `${payload.command} ${payload.windowId} ${payload.left} ${payload.top}${newLine}`;
+      cairo.stdin.write(stdinCommand);
       break;
 
     case '/minsky/load':
-      cairo.stdin.write(`${payload.command} "${payload.filepath}"${newLine}`);
+      stdinCommand = `${payload.command} "${payload.filepath}"${newLine}`;
+      cairo.stdin.write(stdinCommand);
       break;
 
     case '/minsky/canvas/renderFrame':
-      cairo.stdin.write(`${payload.command}${newLine}`);
+      stdinCommand = `${payload.command}${newLine}`;
+      cairo.stdin.write(stdinCommand);
       break;
 
     default:
       break;
   }
+
+  log.silly(stdinCommand);
 }
