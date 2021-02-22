@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
 import { CairoPayload } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
-// Import the resized event model
 import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
 import { AppConfig } from '../environments/environment';
@@ -33,9 +32,6 @@ export class AppComponent {
     if (electronService.isElectron) {
       logInfo(process.env);
       logInfo('Run in electron');
-      logInfo('Electron ipcRenderer', this.electronService.ipcRenderer);
-      logInfo('NodeJS childProcess', this.electronService.childProcess);
-      this.windowDetails();
     } else {
       logInfo('Run in browser');
     }
@@ -45,24 +41,17 @@ export class AppComponent {
     this.cmService.canvasOffsetValues();
   }
 
-  windowDetails() {
-    // code for X11 window
-    const winHandle = this.electronService.remote
-      .getCurrentWindow()
-      .getNativeWindowHandle();
-    logInfo(winHandle);
-    this.emitData(winHandle);
-  }
-
   windowSize() {
     // code for window size
     const windowDetail = {
       width: window.innerWidth,
       height: window.innerHeight,
     };
+
     logInfo(
       'width:' + window.innerWidth + ' ' + 'height:' + window.innerHeight
     );
+
     this.emitData(windowDetail);
   }
 
@@ -71,6 +60,7 @@ export class AppComponent {
       resizeWidth: event.newWidth,
       resizeHeight: event.newHeight,
     };
+
     logInfo(
       'resizeWidth:' + event.newWidth + ' ' + 'resizeHeight:' + event.newWidth
     );
@@ -82,16 +72,16 @@ export class AppComponent {
       };
 
       this.electronService.ipcRenderer.send('app-layout-changed', payload);
+    } else {
+      this.emitData(windowResizeDetail);
     }
 
     this.cmService.canvasOffsetValues();
-    this.emitData(windowResizeDetail);
   }
 
   saveFile() {
     this.cmService.directory.subscribe((value) => {
       this.directory = value;
-      // logInfo(this.directory)
       this.emitData(this.directory);
     });
   }
@@ -110,12 +100,10 @@ export class AppComponent {
   async toggleMinskyService() {
     if (this.electronService.isElectron) {
       try {
-        const _dialog = await this.electronService.remote.dialog.showOpenDialog(
-          {
-            properties: ['openFile'],
-            filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
-          }
-        );
+        const _dialog = await this.electronService.dialog.showOpenDialog({
+          properties: ['openFile'],
+          filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
+        });
 
         const initPayload: CairoPayload = {
           command: '/minsky/canvas/initializeNativeWindow',

@@ -45,13 +45,13 @@ export class CommunicationService {
   }
 
   public sendEvent(event: string, message: HeaderEvent) {
-    this.socket.emit(event, message);
-
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.send('cairo', {
         ...message,
         event,
       });
+    } else {
+      this.socket.emit(event, message);
     }
   }
 
@@ -61,13 +61,15 @@ export class CommunicationService {
       clientX: message.clientX,
       clientY: message.clientY,
     };
+
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.send('cairo', {
         ...clickData,
         event,
       });
+    } else {
+      this.socket.emit(event, clickData);
     }
-    this.socket.emit(event, clickData);
   }
 
   public dispatchEvents(eventName) {
@@ -109,11 +111,14 @@ export class CommunicationService {
         };
 
         this.electronService.ipcRenderer.send('app-layout-changed', payload);
+      } else {
+        this.emitValues('Values', offSetValue);
       }
-      this.emitValues('Values', offSetValue);
     });
 
-    this.dispatchEvents('Values');
+    if (!this.electronService.isElectron) {
+      this.dispatchEvents('Values');
+    }
   }
 
   canvasSticky() {
