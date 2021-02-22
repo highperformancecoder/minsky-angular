@@ -27,7 +27,7 @@ export class ElectronService {
       this.webFrame = (<any>window).require('electron').webFrame;
       this.remote = (<any>window).require('electron').remote;
       this.ipcMain = (<any>window).require('electron').ipcMain;
-      this.dialog = (<any>window).require('electron').dialog;
+      this.dialog = (<any>window).require('electron').remote.dialog;
       this.childProcess = (<any>window).require('child_process');
       this.fs = (<any>window).require('fs');
     }
