@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HeaderEvent } from '@minsky/shared';
 import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -8,11 +9,6 @@ const logInfo = debug('minsky:web:info');
 export class Message {
   id: string;
   body: string;
-}
-
-interface HeaderEvent {
-  action: string;
-  target: string;
 }
 
 @Injectable({

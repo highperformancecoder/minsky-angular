@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommunicationService } from '@minsky/core';
+import { HeaderEvent } from '@minsky/shared';
 import * as debug from 'debug';
 
 const logInfo = debug('minsky:web:info');
@@ -12,6 +13,10 @@ const logInfo = debug('minsky:web:info');
 export class HeaderComponent {
   headerEvent = 'HEADER_EVENT';
   constructor(private commService: CommunicationService) {}
+
+  handleToolbarEvent(event: HeaderEvent) {
+    this.commService.sendEvent(this.headerEvent, event);
+  }
 
   recordButton() {
     this.commService.sendEvent(this.headerEvent, {

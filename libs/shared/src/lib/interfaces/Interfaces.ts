@@ -12,3 +12,8 @@ export interface AppLayoutPayload {
   type: string;
   value: any;
 }
+
+export interface HeaderEvent {
+  action: string;
+  target: string;
+}

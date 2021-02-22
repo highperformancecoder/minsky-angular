@@ -111,16 +111,8 @@ io.on('new-message', (message) => {
   io.emit(message);
 });
 
-export async function startServer(/* {
-  serverPortRangeStart,
-  serverPortRangeEnd,
-} */) {
-  /* const port = await getPort({
-    port: getPort.makeRange(serverPortRangeStart, serverPortRangeEnd),
-  }); */
-
+export async function startServer() {
   server.listen(port, () => {
-    // process.env.serverPort = 'port';
     logServerEvent(`Started on port: ${port}`);
   });
 }

@@ -16,7 +16,6 @@ import App from './app';
 import { activeWindows, rendererAppURL } from './constants';
 import { getWindowId } from './windowHelper';
 
-log.info(JSON.stringify(process.env, null, 2));
 const logError = debug('minsky:electron_error');
 const logMenuEvent = debug('minsky:electron_menu_logs');
 const logWindows = debug('minsky:electron_windows');

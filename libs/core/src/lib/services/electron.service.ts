@@ -20,8 +20,6 @@ export class ElectronService {
   isElectron = isElectron();
 
   constructor() {
-    // Conditional imports
-
     if (this.isElectron) {
       this.ipcRenderer = (<any>window).require('electron').ipcRenderer;
       this.webFrame = (<any>window).require('electron').webFrame;

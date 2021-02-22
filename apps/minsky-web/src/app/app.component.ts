@@ -30,7 +30,6 @@ export class AppComponent {
     logInfo('AppConfig', AppConfig);
 
     if (electronService.isElectron) {
-      logInfo(process.env);
       logInfo('Run in electron');
     } else {
       logInfo('Run in browser');
