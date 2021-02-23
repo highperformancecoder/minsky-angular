@@ -819,10 +819,7 @@ export function handleCairo(
 
   if (App.cairo) {
     executeCommandOnMinskyServer(App.cairo, payload);
-  } else if (
-    !App.cairo &&
-    command === '/minsky/canvas/initializeNativeWindow'
-  ) {
+  } else if (!App.cairo && (command === 'startMinskyProcess')) {
     try {
       App.cairo = spawn(payload.filepath);
       if (App.cairo) {
@@ -869,16 +866,12 @@ export function executeCommandOnMinskyServer(
   const newLine = '\n';
   let stdinCommand = null;
   switch (payload.command) {
-    case '/minsky/canvas/initializeNativeWindow':
-      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${App.leftOffset}, ${App.topOffset}] ${newLine}`;
-      break;
-
     case '/minsky/load':
       stdinCommand = `${payload.command} "${payload.filepath}"${newLine}`;
       break;
 
     case '/minsky/canvas/renderFrame':
-      stdinCommand = `${payload.command}${newLine}`;
+      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${App.leftOffset}, ${App.topOffset}] ${newLine}`;
       break;
 
     default:

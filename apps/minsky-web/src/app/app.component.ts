@@ -106,7 +106,7 @@ export class AppComponent {
         });
 
         const initPayload: CairoPayload = {
-          command: '/minsky/canvas/initializeNativeWindow',
+          command: 'startMinskyProcess',
           filepath: _dialog.filePaths[0].toString(),
         };
 
