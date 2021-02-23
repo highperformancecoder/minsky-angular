@@ -866,27 +866,26 @@ export function executeCommandOnMinskyServer(
   payload: CairoPayload
 ) {
   const newLine = '\n';
-  let stdinCommand = '';
+  let stdinCommand = null;
   switch (payload.command) {
     case '/minsky/canvas/initializeNativeWindow':
-      stdinCommand = `${payload.command} ${activeWindows.get(1).windowId} ${
-        App.leftOffset
-      } ${App.topOffset}${newLine}`;
-      cairo.stdin.write(stdinCommand);
+      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${App.leftOffset}, ${App.topOffset}] ${newLine}`;
       break;
 
     case '/minsky/load':
       stdinCommand = `${payload.command} "${payload.filepath}"${newLine}`;
-      cairo.stdin.write(stdinCommand);
       break;
 
     case '/minsky/canvas/renderFrame':
       stdinCommand = `${payload.command}${newLine}`;
-      cairo.stdin.write(stdinCommand);
       break;
 
     default:
       break;
+  }
+  if(stdinCommand) {
+    console.log(stdinCommand);
+    cairo.stdin.write(stdinCommand);
   }
 
   log.silly(stdinCommand);
