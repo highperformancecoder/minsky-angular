@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { EquationsComponent } from './components/equations/equations.component';
-import { ParametersComponent } from './components/parameters/parameters.component';
-import { VariablesComponent } from './components/variables/variables.component';
-import { WiringComponent } from './components/wiring/wiring.component';
-import { HomeRoutingModule } from './home/home-routing.module';
-import { PageNotFoundComponent } from './shared/components';
+import {
+  EquationsComponent,
+  PageNotFoundComponent,
+  ParametersComponent,
+  VariablesComponent,
+  WiringComponent,
+} from '@minsky/shared';
 
 const routes: Routes = [
   {
@@ -40,7 +41,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true }), HomeRoutingModule],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
