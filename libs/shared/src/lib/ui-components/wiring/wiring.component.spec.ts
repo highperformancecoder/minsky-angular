@@ -1,19 +1,18 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { WiringComponent } from './wiring.component';
 
-import { HeaderComponent } from '../../components/header/header.component';
-
-describe('HeaderComponent', () => {
-  let component: HeaderComponent;
-  let fixture: ComponentFixture<HeaderComponent>;
+describe('WiringComponent', () => {
+  let component: WiringComponent;
+  let fixture: ComponentFixture<WiringComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [HeaderComponent],
+      declarations: [WiringComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HeaderComponent);
+    fixture = TestBed.createComponent(WiringComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

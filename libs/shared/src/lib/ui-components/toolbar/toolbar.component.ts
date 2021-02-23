@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { HeaderEvent } from '../interfaces/Interfaces';
+import { HeaderEvent } from '../../interfaces/Interfaces';
 
 @Component({
   selector: 'minsky-toolbar',

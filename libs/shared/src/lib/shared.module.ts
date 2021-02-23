@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Route, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MaterialModule } from './material/material.module';
-import { ToolbarComponent } from './toolbar/toolbar.component';
+import { UiComponentsModule } from './ui-components/ui-components.module';
 
 export const sharedRoutes: Route[] = [];
 
@@ -15,8 +15,9 @@ export const sharedRoutes: Route[] = [];
     MaterialModule,
     TranslateModule,
     FormsModule,
+    UiComponentsModule,
   ],
-  declarations: [ToolbarComponent],
-  exports: [ToolbarComponent, MaterialModule, TranslateModule, FormsModule],
+  declarations: [],
+  exports: [MaterialModule, TranslateModule, FormsModule, UiComponentsModule],
 })
 export class SharedModule {}
