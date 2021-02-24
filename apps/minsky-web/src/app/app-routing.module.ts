@@ -6,6 +6,7 @@ import {
   ParametersComponent,
   VariablesComponent,
   WiringComponent,
+  XTermComponent,
 } from '@minsky/shared';
 
 const routes: Routes = [
@@ -33,6 +34,10 @@ const routes: Routes = [
   {
     path: 'menu',
     loadChildren: () => import('@minsky/menu').then((m) => m.MenuModule),
+  },
+  {
+    path: 'experiment/xterm',
+    component: XTermComponent,
   },
   {
     path: '**',

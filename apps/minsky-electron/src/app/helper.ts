@@ -814,23 +814,25 @@ export function handleCairo(
     command = payload.command;
   }
 
-  logCairo(command);
-
   if (App.cairo) {
     executeCommandOnMinskyServer(App.cairo, payload);
-  } else if (!App.cairo && (command === 'startMinskyProcess')) {
+  } else if (!App.cairo && command === 'startMinskyProcess') {
     try {
       App.cairo = spawn(payload.filepath);
       if (App.cairo) {
         App.cairo.stdout.on('data', (data) => {
           log.info(`stdout: ${data}`);
-          // logChildProcessEvent(`stdout: ${data}`);
+          App.mainWindow.webContents.send('cairo-reply', `${data}`);
         });
         App.cairo.stderr.on('data', (data) => {
           log.info(`stderr: ${data}`);
+          App.mainWindow.webContents.send('cairo-reply', `${data}`);
+          // event.sender.send('cairo-reply', `${data}`);
         });
         App.cairo.on('error', (error) => {
           log.info(`error: ${error.message}`);
+          App.mainWindow.webContents.send('cairo-reply', `${error.message}`);
+          // event.sender.send('cairo-reply', `${error.message}`);
         });
         App.cairo.on('close', (code) => {
           log.info(`child process exited with code ${code}`);
@@ -870,16 +872,20 @@ export function executeCommandOnMinskyServer(
       break;
 
     case '/minsky/canvas/renderFrame':
-      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${App.leftOffset}, ${App.topOffset}] ${newLine}`;
+      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${
+        App.leftOffset
+      }, ${App.topOffset}] ${newLine}`;
       break;
 
     default:
+      stdinCommand = payload.command;
       break;
   }
-  if(stdinCommand) {
+  if (stdinCommand) {
     console.log(stdinCommand);
-    cairo.stdin.write(stdinCommand);
+    cairo.stdin.write(stdinCommand + newLine);
   }
-
-  log.silly(stdinCommand);
+  if (stdinCommand) {
+    log.silly(stdinCommand);
+  }
 }

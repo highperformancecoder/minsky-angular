@@ -19,6 +19,7 @@ export class AppComponent {
   loader = false;
   directory: string[];
   toggleButtonText = 'Start Minsky Service';
+  isTerminalDisabled = true;
 
   constructor(
     private electronService: ElectronService,
@@ -110,9 +111,22 @@ export class AppComponent {
         };
 
         this.electronService.ipcRenderer.send('cairo', initPayload);
+
+        this.isTerminalDisabled = false;
       } catch (error) {
         logError(error);
       }
+    }
+  }
+
+  async startTerminal() {
+    if (this.electronService.isElectron) {
+      this.electronService.ipcRenderer.send('create-menu-popup', {
+        title: 'x-term',
+        url: 'http://localhost:4200/#/experiment/xterm',
+        modal: false,
+        width: 900,
+      });
     }
   }
 }

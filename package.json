@@ -59,6 +59,7 @@
     "get-port": "^5.1.1",
     "global": "^4.4.0",
     "is-electron": "^2.2.0",
+    "ng-terminal": "^3.0.2",
     "ngx-socket-io": "^3.2.0",
     "portscanner": "^2.2.0",
     "rxjs": "~6.6.3",

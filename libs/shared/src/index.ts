@@ -9,3 +9,4 @@ export * from './lib/ui-components/parameters/parameters.component';
 export * from './lib/ui-components/toolbar/toolbar.component';
 export * from './lib/ui-components/variables/variables.component';
 export * from './lib/ui-components/wiring/wiring.component';
+export * from './lib/ui-components/x-term/x-term.component';

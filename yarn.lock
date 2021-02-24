@@ -207,7 +207,7 @@
     "universal-analytics" "0.4.23"
     "uuid" "8.3.0"
 
-"@angular/common@^10.2.4":
+"@angular/common@^10.2.4", "@angular/common@>=8.2.14":
   "integrity" "sha512-bBfsLJNDQaC2OI1mReDJuSZ/uBb7Pf3HVpRmlQKNIPllIxqX1hLH8I3Plodrns9m32JMJ6FMsQthcP0KMdRCJA=="
   "resolved" "https://registry.npmjs.org/@angular/common/-/common-10.2.4.tgz"
   "version" "10.2.4"
@@ -240,7 +240,7 @@
   dependencies:
     "tslib" "^2.0.0"
 
-"@angular/core@^10.2.4":
+"@angular/core@^10.2.4", "@angular/core@>=6.0.0", "@angular/core@>=8.2.14":
   "integrity" "sha512-5xpAvmZwD9nZ8eWx10urjibqEeePGEiFXVMEn3IaJWgfdOcMmeSoioW9JUllT3w85+DlNVWbRbhz0YfE9a4jyw=="
   "resolved" "https://registry.npmjs.org/@angular/core/-/core-10.2.4.tgz"
   "version" "10.2.4"
@@ -3032,6 +3032,13 @@
   "integrity" "sha1-l6ERlkmyEa0zaR2fn0hqjsn74KM="
   "resolved" "https://registry.npmjs.org/alphanum-sort/-/alphanum-sort-1.0.2.tgz"
   "version" "1.0.2"
+
+"angular-resizable-element@^3.3.2":
+  "integrity" "sha512-PT7p3CGva1BmcTt8LA80yOblHqynZHPQYQ1KMMLgllCn3UZx/+0eCRtSXKwnWT5IYHBg9qI3tmd92SFExa1UMg=="
+  "resolved" "https://registry.npmjs.org/angular-resizable-element/-/angular-resizable-element-3.3.5.tgz"
+  "version" "3.3.5"
+  dependencies:
+    "tslib" "^1.9.0"
 
 "angular-resize-event@^2.0.1":
   "integrity" "sha512-MSSsPb35nIBqPnLwslA3SC0ojTc4nBIaT4y0Plri+fCDUKCunPf7MpJrF/cTI/9wCpvVvEIcuzHfTrA6kp03mA=="
@@ -10420,6 +10427,16 @@
   "resolved" "https://registry.npmjs.org/next-tick/-/next-tick-1.0.0.tgz"
   "version" "1.0.0"
 
+"ng-terminal@^3.0.2":
+  "integrity" "sha512-HDmyjKA9I573kYcnYbjscWgbGIk0FazPCsJA/3XVgVQY41vxr0S0PtjHk+oZ7kdRIunJMOBhUu+9ELko6LyEVg=="
+  "resolved" "https://registry.npmjs.org/ng-terminal/-/ng-terminal-3.0.2.tgz"
+  "version" "3.0.2"
+  dependencies:
+    "angular-resizable-element" "^3.3.2"
+    "tslib" "^1.9.0"
+    "xterm" "^4.6.0"
+    "xterm-addon-fit" "^0.4.0"
+
 "ngx-socket-io@^3.2.0":
   "integrity" "sha512-gxphw9yiHvnCavZutCRG6JCYNeguIon5Fxo4+8VCnMThtEy45vrZ3UmczR1ZH9vjJTkoaAS8YtqG8TdqDu5DkQ=="
   "resolved" "https://registry.npmjs.org/ngx-socket-io/-/ngx-socket-io-3.2.0.tgz"
@@ -12831,7 +12848,7 @@
   dependencies:
     "aproba" "^1.1.1"
 
-"rxjs@^6.3.3", "rxjs@^6.4.0", "rxjs@^6.5.4", "rxjs@^6.6.0", "rxjs@^6.6.3", "rxjs@~6.6.3":
+"rxjs@^6.3.3", "rxjs@^6.4.0", "rxjs@^6.5.4", "rxjs@^6.6.0", "rxjs@^6.6.3", "rxjs@>=6.4.0", "rxjs@~6.6.3":
   "integrity" "sha512-trsQc+xYYXZ3urjOiJOuCOa5N3jAZ3eiSpQB5hIT8zGlL2QfnHLJ2r7GMkBGuIausdJN1OneaI6gQlsqNHHmZQ=="
   "resolved" "https://registry.npmjs.org/rxjs/-/rxjs-6.6.3.tgz"
   "version" "6.6.3"
@@ -15472,6 +15489,16 @@
   "version" "2.1.2"
   dependencies:
     "object-keys" "~0.4.0"
+
+"xterm-addon-fit@^0.4.0":
+  "integrity" "sha512-p4BESuV/g2L6pZzFHpeNLLnep9mp/DkF3qrPglMiucSFtD8iJxtMufEoEJbN8LZwB4i+8PFpFvVuFrGOSpW05w=="
+  "resolved" "https://registry.npmjs.org/xterm-addon-fit/-/xterm-addon-fit-0.4.0.tgz"
+  "version" "0.4.0"
+
+"xterm@^4.0.0", "xterm@^4.6.0":
+  "integrity" "sha512-Wn66I8YpSVkgP3R95GjABC6Eb21pFfnCSnyIqKIIoUI13ohvwd0KGVzUDfyEFfSAzKbPJfrT2+vt7SfUXBZQKQ=="
+  "resolved" "https://registry.npmjs.org/xterm/-/xterm-4.10.0.tgz"
+  "version" "4.10.0"
 
 "y18n@^4.0.0":
   "integrity" "sha512-r9S/ZyXu/Xu9q1tYlpsLIsa3EeLXXk0VwlxqTcFRfg9EhMW+17kbt9G0NrgCmhGb5vT2hyhJZLfDGx+7+5Uj/w=="

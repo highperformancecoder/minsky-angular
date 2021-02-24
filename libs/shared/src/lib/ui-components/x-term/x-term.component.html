@@ -1,0 +1,10 @@
+<ng-terminal
+  #term
+  [displayOption]="displayOptionBounded"
+  [ngClass]="{
+    'ng-terminal':
+      displayOption.activateDraggableOnEdge == undefined &&
+      displayOption.fixedGrid == undefined
+  }"
+>
+</ng-terminal>
