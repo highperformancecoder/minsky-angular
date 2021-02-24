@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { NgTerminalModule } from 'ng-terminal';
+import { CliInputComponent } from './cli-input/cli-input.component';
 import { EquationsComponent } from './equations/equations.component';
 import { HeaderComponent } from './header/header.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
@@ -20,8 +22,9 @@ import { XTermComponent } from './x-term/x-term.component';
     ParametersComponent,
     VariablesComponent,
     XTermComponent,
+    CliInputComponent,
   ],
-  imports: [CommonModule, NgTerminalModule],
+  imports: [CommonModule, NgTerminalModule, ReactiveFormsModule],
   exports: [
     ToolbarComponent,
     PageNotFoundComponent,
@@ -31,6 +34,7 @@ import { XTermComponent } from './x-term/x-term.component';
     ParametersComponent,
     VariablesComponent,
     XTermComponent,
+    CliInputComponent,
   ],
 })
 export class UiComponentsModule {}

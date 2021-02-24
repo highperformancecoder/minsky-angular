@@ -94,8 +94,8 @@ export class CommunicationService {
       this.canvasDetail = document.getElementById('offsetValue');
 
       // Get the offset position of the canvas
-      this.topOffset = this.canvasDetail?.offsetTop;
-      this.leftOffset = this.canvasDetail?.offsetLeft;
+      this.topOffset = this.canvasDetail.offsetTop;
+      this.leftOffset = this.canvasDetail.offsetLeft;
 
       const offSetValue =
         'top:' + this.topOffset + ' ' + 'left:' + this.leftOffset;

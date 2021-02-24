@@ -1,0 +1,12 @@
+<p>Input</p>
+<textarea type="text" [formControl]="form" cols="100" rows="5"></textarea>
+<br />
+
+{{ this.form.value }}
+<br />
+<br />
+<button (click)="handleSubmit()">Submit</button>
+<button style="margin-left: 24px" (click)="render()">Render</button>
+
+<hr />
+<p>Output</p>

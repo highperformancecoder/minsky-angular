@@ -2,6 +2,7 @@ export * from './lib/interfaces/ActiveWindow';
 export * from './lib/interfaces/FEEvents';
 export * from './lib/interfaces/Interfaces';
 export * from './lib/shared.module';
+export * from './lib/ui-components/cli-input/cli-input.component';
 export * from './lib/ui-components/equations/equations.component';
 export * from './lib/ui-components/header/header.component';
 export * from './lib/ui-components/page-not-found/page-not-found.component';
