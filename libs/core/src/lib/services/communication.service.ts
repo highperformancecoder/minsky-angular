@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HeaderEvent } from '@minsky/shared';
+import { CairoPayload, HeaderEvent } from '@minsky/shared';
 import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -52,19 +52,54 @@ export class CommunicationService {
   }
 
   public mouseEvents(event, message) {
+    const { type, clientX, clientY } = message;
+
     const clickData = {
-      type: message.type,
-      clientX: message.clientX,
-      clientY: message.clientY,
+      type,
+      clientX,
+      clientY,
     };
 
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('cairo', {
-        ...clickData,
-        event,
-      });
+      let command = '';
+      switch (type) {
+        case 'mousemove':
+          command = `/minsky/canvas/mouseMove`;
+          break;
+        case 'mouseup':
+          command = '/minsky/canvas/mouseUp';
+          break;
+        case 'mousedown':
+          command = '/minsky/canvas/mouseDown';
+          break;
+
+        default:
+          break;
+      }
+
+      if (command) {
+        command = `${command} [${clientX},${clientY}]`;
+
+        const payload: CairoPayload = {
+          command,
+        };
+
+        this.electronService.ipcRenderer.send('cairo', payload);
+
+        this.render();
+      }
     } else {
       this.socket.emit(event, clickData);
+    }
+  }
+
+  render() {
+    if (this.electronService.isElectron) {
+      const payload: CairoPayload = {
+        command: '/minsky/canvas/renderFrame',
+      };
+
+      this.electronService.ipcRenderer.send('cairo', payload);
     }
   }
 

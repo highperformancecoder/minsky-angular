@@ -735,6 +735,14 @@ export function createMenu() {
         },
         {
           label: 'plot',
+          click() {
+            const loadPayload: CairoPayload = {
+              command: '/minsky/canvas/addPlot',
+            };
+
+            handleCairo(null, loadPayload);
+            render();
+          },
         },
       ],
     },
@@ -888,4 +896,12 @@ export function executeCommandOnMinskyServer(
   if (stdinCommand) {
     log.silly(stdinCommand);
   }
+}
+
+export function render() {
+  const renderPayload: CairoPayload = {
+    command: '/minsky/canvas/renderFrame',
+  };
+
+  handleCairo(null, renderPayload);
 }
