@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { NgTerminalModule } from 'ng-terminal';
+import { MaterialModule } from '../material/material.module';
 import { CliInputComponent } from './cli-input/cli-input.component';
 import { EquationsComponent } from './equations/equations.component';
 import { HeaderComponent } from './header/header.component';
@@ -11,7 +13,6 @@ import { ToolbarComponent } from './toolbar/toolbar.component';
 import { VariablesComponent } from './variables/variables.component';
 import { WiringComponent } from './wiring/wiring.component';
 import { XTermComponent } from './x-term/x-term.component';
-
 @NgModule({
   declarations: [
     ToolbarComponent,
@@ -24,7 +25,14 @@ import { XTermComponent } from './x-term/x-term.component';
     XTermComponent,
     CliInputComponent,
   ],
-  imports: [CommonModule, NgTerminalModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    NgTerminalModule,
+    NgSelectModule,
+    MaterialModule,
+  ],
   exports: [
     ToolbarComponent,
     PageNotFoundComponent,

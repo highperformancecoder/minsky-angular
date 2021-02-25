@@ -1,12 +1,59 @@
-<p>Input</p>
-<textarea type="text" [formControl]="form" cols="100" rows="5"></textarea>
+<h3>
+  <b>
+    <u class="center">Input</u>
+  </b>
+</h3>
+<form [formGroup]="form" class="command">
+  <ng-select
+    formControlName="command"
+    style="width: 65%; height: 30px"
+    placeholder="Command"
+  >
+    <ng-option *ngFor="let command of _commands" [value]="command">{{
+      command
+    }}</ng-option>
+  </ng-select>
+  <mat-form-field style="width: 30%">
+    <mat-label>args</mat-label>
+    <input
+      matInput
+      style="height: 25px"
+      formControlName="args"
+      placeholder="Ex. abc,99,0.1"
+    />
+  </mat-form-field>
+</form>
+<br />
+<br />
+<div class="center">
+  {{ this.command }}
+</div>
+<br />
 <br />
 
-{{ this.form.value }}
+<div class="center">
+  <button
+    mat-raised-button
+    [disabled]="isSubmitDisabled()"
+    (click)="handleSubmit()"
+  >
+    Submit
+  </button>
+  <button
+    mat-raised-button
+    style="margin-left: 24px"
+    type="button"
+    (click)="render()"
+  >
+    Render
+  </button>
+</div>
 <br />
-<br />
-<button (click)="handleSubmit()">Submit</button>
-<button style="margin-left: 24px" (click)="render()">Render</button>
 
+<br />
 <hr />
-<p>Output</p>
+<h3>
+  <b>
+    <u class="center">Output</u>
+  </b>
+</h3>
