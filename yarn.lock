@@ -10444,6 +10444,11 @@
     "xterm" "^4.6.0"
     "xterm-addon-fit" "^0.4.0"
 
+"ngx-auto-unsubscribe@^3.0.1":
+  "integrity" "sha512-Yp3o2HxjGYNv2yZ0QwR5Wkh6Al3b07J3v7hhcdZhqm7DTJuXMmisaNi5zhnXq2+7rtCg0jaTBsA/SWhtS7zZbw=="
+  "resolved" "https://registry.npmjs.org/ngx-auto-unsubscribe/-/ngx-auto-unsubscribe-3.0.1.tgz"
+  "version" "3.0.1"
+
 "ngx-socket-io@^3.2.0":
   "integrity" "sha512-gxphw9yiHvnCavZutCRG6JCYNeguIon5Fxo4+8VCnMThtEy45vrZ3UmczR1ZH9vjJTkoaAS8YtqG8TdqDu5DkQ=="
   "resolved" "https://registry.npmjs.org/ngx-socket-io/-/ngx-socket-io-3.2.0.tgz"

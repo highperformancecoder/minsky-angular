@@ -21,6 +21,7 @@ export class CommunicationService {
   topOffset: number;
   directory = new BehaviorSubject<string[]>([]);
   openDirectory = new BehaviorSubject<string[]>([]);
+
   constructor(
     private socket: Socket,
     private electronService: ElectronService
