@@ -859,10 +859,6 @@ export function handleCairo(
 
       App.cairo = null;
     }
-
-    // Menu.getApplicationMenu()
-    //   .items.find((i) => i.label === 'File')
-    //   .submenu.items.find((i) => i.label === 'Open').enabled = true;
   } else {
     logError('Please select the minsky executable first...');
   }
@@ -876,13 +872,13 @@ export function executeCommandOnMinskyServer(
   let stdinCommand = null;
   switch (payload.command) {
     case '/minsky/load':
-      stdinCommand = `${payload.command} "${payload.filepath}"${newLine}`;
+      stdinCommand = `${payload.command} "${payload.filepath}"`;
       break;
 
     case '/minsky/canvas/renderFrame':
-      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${
+      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId},${
         App.leftOffset
-      }, ${App.topOffset}] ${newLine}`;
+      },${App.topOffset}]`;
       break;
 
     default:
@@ -890,11 +886,8 @@ export function executeCommandOnMinskyServer(
       break;
   }
   if (stdinCommand) {
-    console.log(stdinCommand);
-    cairo.stdin.write(stdinCommand + newLine);
-  }
-  if (stdinCommand) {
     log.silly(stdinCommand);
+    cairo.stdin.write(stdinCommand + newLine);
   }
 }
 
