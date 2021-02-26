@@ -1,9 +1,7 @@
 export interface CairoPayload {
-  top?: number;
-  left?: number;
-  height?: number;
-  width?: number;
-  filepath?: string;
+  mouseX?: number;
+  mouseY?: number;
+  filePath?: string;
   command?: string;
   windowId?: number;
 }

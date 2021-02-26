@@ -48,37 +48,37 @@ export class CommunicationService {
 
       switch (target) {
         case 'PLAY':
-          command = `/minsky/canvas/mouseMove`;
+          command = `/minsky/list`;
           break;
         case 'RESET':
-          command = `/minsky/canvas/mouseMove`;
+          command = `/minsky/list`;
           break;
         case 'STEP':
-          command = `/minsky/canvas/mouseMove`;
+          command = `/minsky/list`;
           break;
         case 'SIMULATION_SPEED':
-          command = `/minsky/canvas/mouseMove`;
+          command = `/minsky/list`;
           break;
         case 'ZOOM_OUT':
-          command = `/minsky/canvas/mouseMove`;
+          command = `/minsky/list`;
           break;
         case 'ZOOM_IN':
           command = `/minsky/canvas/model/zoom`;
           break;
         case 'RESET_ZOOM':
-          command = `/minsky/canvas/mouseMove`;
+          command = `/minsky/list`;
           break;
         case 'ZOOM_TO_FIT':
-          command = `/minsky/canvas/mouseMove`;
+          command = `/minsky/list`;
           break;
         case 'RECORD':
-          command = `/minsky/canvas/mouseMove`;
+          command = `/minsky/list`;
           break;
         case 'RECORDING_REPLAY':
-          command = '/minsky/canvas/mouseUp';
+          command = '/minsky/list';
           break;
         case 'REVERSE_CHECKBOX':
-          command = '/minsky/canvas/mouseDown';
+          command = '/minsky/list';
           break;
 
         default:
@@ -124,17 +124,14 @@ export class CommunicationService {
         default:
           break;
       }
-
+      
       if (command) {
-        // TODO: remove the hardcoded 140 and add the actual offset
-        command = `${command} [${clientX - 140},${clientY - 140}]`;
-
         const payload: CairoPayload = {
-          command,
+          command : command,
+          mouseX : clientX,
+          mouseY : clientY
         };
-
         this.electronService.ipcRenderer.send('cairo', payload);
-
         this.render();
       }
     } else {
