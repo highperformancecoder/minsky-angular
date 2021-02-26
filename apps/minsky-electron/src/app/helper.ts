@@ -856,7 +856,6 @@ export function handleCairo(
       }
     } catch {
       dialog.showErrorBox('Execution error', 'Could not execute chosen file');
-
       App.cairo = null;
     }
   } else {
