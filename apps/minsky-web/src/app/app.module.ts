@@ -6,6 +6,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from '@minsky/core';
 import { SharedModule } from '@minsky/shared';
+import { UiComponentsModule } from '@minsky/ui-components';
 // NG Translate
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -35,6 +36,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
     MatProgressSpinnerModule,
     AppRoutingModule,
     AngularResizedEventModule,
+    UiComponentsModule,
     SocketIoModule.forRoot(config),
     TranslateModule.forRoot({
       loader: {

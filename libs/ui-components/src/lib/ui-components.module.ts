@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MaterialModule } from '@minsky/shared';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgTerminalModule } from 'ng-terminal';
-import { MaterialModule } from '../material/material.module';
 import { CliInputComponent } from './cli-input/cli-input.component';
 import { EquationsComponent } from './equations/equations.component';
 import { HeaderComponent } from './header/header.component';

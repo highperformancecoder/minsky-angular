@@ -7,7 +7,7 @@ import {
   ParametersComponent,
   VariablesComponent,
   WiringComponent,
-} from '@minsky/shared';
+} from '@minsky/ui-components';
 
 const routes: Routes = [
   {

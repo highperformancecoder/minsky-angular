@@ -44,6 +44,9 @@
     },
     "minsky-server": {
       "tags": []
+    },
+    "ui-components": {
+      "tags": []
     }
   }
 }
