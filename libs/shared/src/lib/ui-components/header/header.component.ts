@@ -21,7 +21,7 @@ export class HeaderComponent {
   recordButton() {
     this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
-      target: 'RECORD_BUTTON',
+      target: 'RECORD',
     });
     logInfo('recordButtons');
   }
@@ -29,7 +29,7 @@ export class HeaderComponent {
   recordingReplyButton() {
     this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
-      target: 'RECORDING_REPLAY_BUTTON',
+      target: 'RECORDING_REPLAY',
     });
     logInfo('recordingReplyButton');
   }
@@ -37,7 +37,7 @@ export class HeaderComponent {
   reverseCheckboxButton() {
     this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
-      target: 'REVERSE_CHECKBOX_BUTTON',
+      target: 'REVERSE_CHECKBOX',
     });
     logInfo('reverseCheckboxButton');
   }

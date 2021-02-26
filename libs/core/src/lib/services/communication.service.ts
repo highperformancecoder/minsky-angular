@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { CairoPayload, HeaderEvent } from '@minsky/shared';
 import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { ElectronService } from './electron.service';
 
 const logInfo = debug('minsky:web:info');
@@ -42,11 +42,58 @@ export class CommunicationService {
   }
 
   public sendEvent(event: string, message: HeaderEvent) {
+    const { target } = message;
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('cairo', {
-        ...message,
-        event,
-      });
+      let command = '';
+
+      switch (target) {
+        case 'PLAY':
+          command = `/minsky/canvas/mouseMove`;
+          break;
+        case 'RESET':
+          command = `/minsky/canvas/mouseMove`;
+          break;
+        case 'STEP':
+          command = `/minsky/canvas/mouseMove`;
+          break;
+        case 'SIMULATION_SPEED':
+          command = `/minsky/canvas/mouseMove`;
+          break;
+        case 'ZOOM_OUT':
+          command = `/minsky/canvas/mouseMove`;
+          break;
+        case 'ZOOM_IN':
+          command = `/minsky/canvas/model/zoom`;
+          break;
+        case 'RESET_ZOOM':
+          command = `/minsky/canvas/mouseMove`;
+          break;
+        case 'ZOOM_TO_FIT':
+          command = `/minsky/canvas/mouseMove`;
+          break;
+        case 'RECORD':
+          command = `/minsky/canvas/mouseMove`;
+          break;
+        case 'RECORDING_REPLAY':
+          command = '/minsky/canvas/mouseUp';
+          break;
+        case 'REVERSE_CHECKBOX':
+          command = '/minsky/canvas/mouseDown';
+          break;
+
+        default:
+          break;
+      }
+
+      if (command) {
+        const payload: CairoPayload = {
+          command,
+        };
+
+        this.electronService.ipcRenderer.send('cairo', payload);
+
+        this.render();
+      }
     } else {
       this.socket.emit(event, message);
     }
@@ -79,7 +126,8 @@ export class CommunicationService {
       }
 
       if (command) {
-        command = `${command} [${clientX},${clientY}]`;
+        // TODO: remove the hardcoded 140 and add the actual offset
+        command = `${command} [${clientX - 140},${clientY - 140}]`;
 
         const payload: CairoPayload = {
           command,
@@ -111,15 +159,6 @@ export class CommunicationService {
       document.querySelector(data.id).dispatchEvent(data.event);
     });
   }
-
-  public getMessages = () => {
-    return new Observable((observer) => {
-      this.socket.on('RESPONSE', (message) => {
-        observer.next(message);
-        logInfo(message);
-      });
-    });
-  };
 
   canvasOffsetValues() {
     // code for canvas offset values

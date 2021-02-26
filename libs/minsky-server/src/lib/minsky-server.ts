@@ -20,63 +20,51 @@ io.on('connection', (socket) => {
     switch (message.target) {
       case 'RECORD_BUTTON':
         logUiEvent('record button clicked');
-        socket.emit('RESPONSE', { msg: 'Recording Started' });
         break;
 
       case 'REFRESH_BUTTON':
         logUiEvent('refresh button clicked');
         // TODO: send updated canvas
-        socket.emit('RESPONSE', { msg: 'Refreshing' });
         break;
 
       case 'RECORDING_REPLAY_BUTTON':
         logUiEvent('Recording replay button clicked');
-        socket.emit('RESPONSE', { msg: 'Recording Replay Started' });
         break;
 
       case 'REVERSE_CHECKBOX_BUTTON':
         logUiEvent('Reverse checkbox button clicked');
-        socket.emit('RESPONSE', { msg: 'Reverse checked' });
         break;
 
       case 'STOP_BUTTON':
         logUiEvent('Stop button clicked');
-        socket.emit('RESPONSE', { msg: 'Recording Stop' });
         break;
 
       case 'STEP_BUTTON':
         logUiEvent('Step button clicked');
-        socket.emit('RESPONSE', { msg: 'Recording Step' });
         break;
 
       case 'ZOOMOUT_BUTTON':
         logUiEvent('ZoomOut button clicked');
-        socket.emit('RESPONSE', { msg: 'ZoomOut' });
         break;
 
       case 'ZOOMIN_BUTTON':
         logUiEvent('ZoomIn button clicked');
-        socket.emit('RESPONSE', { msg: 'ZoomIn' });
         break;
 
       case 'RESET_BUTTON':
         logUiEvent('Reset button clicked');
-        socket.emit('RESPONSE', { msg: 'Reset Recording' });
         break;
 
       case 'RESETZOOM_BUTTON':
         logUiEvent('Reset zoom button clicked');
-        socket.emit('RESPONSE', { msg: 'Reset Zoom' });
         break;
 
       case 'ZOOMTOFIT_BUTTON':
         logUiEvent('Zoom to fit button clicked');
-        socket.emit('RESPONSE', { msg: 'Zoom Fit' });
         break;
 
       case 'SIMULATION_SPEED':
         logUiEvent('Simulation speed clicked');
-        socket.emit('RESPONSE', { msg: 'Updating Simulation Speed' });
         break;
     }
   });

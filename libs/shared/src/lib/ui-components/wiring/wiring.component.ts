@@ -11,7 +11,6 @@ import { sampleTime } from 'rxjs/operators';
   styleUrls: ['./wiring.component.scss'],
 })
 export class WiringComponent implements OnInit, OnDestroy {
-  messageList: string[] = [];
   minskyCanvas: HTMLElement;
 
   mouseMove$: Observable<MouseEvent>;
@@ -43,10 +42,6 @@ export class WiringComponent implements OnInit, OnDestroy {
     });
 
     this.cmService.dispatchEvents('canvasEvent');
-
-    this.cmService.getMessages().subscribe((message: string) => {
-      this.messageList.push(message);
-    });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
