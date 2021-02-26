@@ -1,36 +1,25 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { ElectronService } from '@minsky/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { DisplayOption, NgTerminal } from 'ng-terminal';
-import { CairoPayload } from '../../interfaces/Interfaces';
 @Component({
   selector: 'minsky-x-term',
   templateUrl: './x-term.component.html',
   styleUrls: ['./x-term.component.scss'],
 })
-export class XTermComponent implements OnInit, AfterViewInit {
+export class XTermComponent implements AfterViewInit {
   @ViewChild('term', { static: true }) child: NgTerminal;
+  @Output() onCommandEntered: EventEmitter<string>;
+
   displayOption: DisplayOption = {};
   displayOptionBounded: DisplayOption = {};
 
   currentLine = '';
 
-  constructor(private electronService: ElectronService) {}
-
-  ngOnInit(): void {
-    // if (this.electronService.isElectron) {
-    this.electronService.ipcRenderer.on('cairo-reply', (event, stdout) => {
-      console.log(
-        '🚀 ~ file: x-term.component.ts ~ line 56 ~ XTermComponent ~ this.electronService.ipcRenderer.on ~ event',
-        event
-      );
-      console.log(
-        '🚀 ~ file: x-term.component.ts ~ line 56 ~ XTermComponent ~ this.electronService.ipcRenderer.on ~ stdout',
-        stdout
-      );
-      // this.child.write(`${stdout} \r\n$`);
-    });
-    // }
-  }
   ngAfterViewInit() {
     this.child.write('Start typing the minsky commands here. \r\n$ ');
     this.child.keyEventInput.subscribe((e) => {
@@ -46,11 +35,9 @@ export class XTermComponent implements OnInit, AfterViewInit {
           '🚀 ~ file: x-term.component.ts ~ line 33 ~ XTermComponent ~ this.child.keyEventInput.subscribe ~ currentLine',
           this.currentLine
         );
-        if (this.currentLine && this.electronService.isElectron) {
-          const payload: CairoPayload = {
-            command: this.currentLine,
-          };
-          this.electronService.ipcRenderer.send('cairo', payload);
+
+        if (this.currentLine) {
+          this.onCommandEntered.emit(this.currentLine);
         }
 
         this.currentLine = '';

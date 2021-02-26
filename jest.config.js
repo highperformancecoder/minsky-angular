@@ -7,5 +7,6 @@ module.exports = {
     '<rootDir>/libs/core',
     '<rootDir>/libs/shared',
     '<rootDir>/libs/minsky-server',
+    '<rootDir>/libs/ui-components',
   ],
 };

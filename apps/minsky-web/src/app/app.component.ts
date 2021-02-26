@@ -107,7 +107,7 @@ export class AppComponent {
 
         const initPayload: CairoPayload = {
           command: 'startMinskyProcess',
-          filepath: _dialog.filePaths[0].toString(),
+          filePath: _dialog.filePaths[0].toString(),
         };
 
         this.electronService.ipcRenderer.send('cairo', initPayload);

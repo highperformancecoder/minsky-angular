@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other theme files */
-@import './theme/variables.scss';
-
+@import './../../../libs/shared/src/lib/theme/variables.scss';
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '~@ng-select/ng-select/themes/material.theme.css';
 html,
 body {
   margin: 0;

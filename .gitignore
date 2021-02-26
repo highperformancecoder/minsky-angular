@@ -33,9 +33,9 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+minsky-RESTService
 
 # System Files
 .DS_Store
 Thumbs.db
 package-lock.json
-minsky-RESTService

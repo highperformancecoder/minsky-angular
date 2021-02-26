@@ -269,7 +269,7 @@ export function createMenu() {
 
               const loadPayload: CairoPayload = {
                 command: '/minsky/load',
-                filepath: _dialog.filePaths[0].toString(),
+                filePath: _dialog.filePaths[0].toString(),
               };
               const renderPayload: CairoPayload = {
                 command: '/minsky/canvas/renderFrame',
@@ -735,6 +735,14 @@ export function createMenu() {
         },
         {
           label: 'plot',
+          click() {
+            const loadPayload: CairoPayload = {
+              command: '/minsky/canvas/addPlot',
+            };
+
+            handleCairo(null, loadPayload);
+            render();
+          },
         },
       ],
     },
@@ -818,7 +826,7 @@ export function handleCairo(
     executeCommandOnMinskyServer(App.cairo, payload);
   } else if (!App.cairo && command === 'startMinskyProcess') {
     try {
-      App.cairo = spawn(payload.filepath);
+      App.cairo = spawn(payload.filePath);
       if (App.cairo) {
         App.cairo.stdout.on('data', (data) => {
           log.info(`stdout: ${data}`);
@@ -848,13 +856,8 @@ export function handleCairo(
       }
     } catch {
       dialog.showErrorBox('Execution error', 'Could not execute chosen file');
-
       App.cairo = null;
     }
-
-    // Menu.getApplicationMenu()
-    //   .items.find((i) => i.label === 'File')
-    //   .submenu.items.find((i) => i.label === 'Open').enabled = true;
   } else {
     logError('Please select the minsky executable first...');
   }
@@ -868,13 +871,23 @@ export function executeCommandOnMinskyServer(
   let stdinCommand = null;
   switch (payload.command) {
     case '/minsky/load':
-      stdinCommand = `${payload.command} "${payload.filepath}"${newLine}`;
+      stdinCommand = `${payload.command} "${payload.filePath}"`;
       break;
 
     case '/minsky/canvas/renderFrame':
-      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${
-        App.leftOffset
-      }, ${App.topOffset}] ${newLine}`;
+      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${App.leftOffset}, ${App.topOffset}]`;
+      break;
+
+    case '/minsky/canvas/mouseMove':
+      stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${payload.mouseY - App.topOffset}]`;
+      break;
+
+    case '/minsky/canvas/mouseDown':
+      stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${payload.mouseY - App.topOffset}]`;
+      break;
+
+    case '/minsky/canvas/mouseUp':
+      stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${payload.mouseY - App.topOffset}]`;
       break;
 
     default:
@@ -882,10 +895,15 @@ export function executeCommandOnMinskyServer(
       break;
   }
   if (stdinCommand) {
-    console.log(stdinCommand);
+    log.silly(stdinCommand);
     cairo.stdin.write(stdinCommand + newLine);
   }
-  if (stdinCommand) {
-    log.silly(stdinCommand);
-  }
+}
+
+export function render() {
+  const renderPayload: CairoPayload = {
+    command: '/minsky/canvas/renderFrame',
+  };
+
+  handleCairo(null, renderPayload);
 }

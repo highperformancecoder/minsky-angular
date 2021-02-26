@@ -207,7 +207,7 @@
     "universal-analytics" "0.4.23"
     "uuid" "8.3.0"
 
-"@angular/common@^10.2.4", "@angular/common@>=8.2.14":
+"@angular/common@^10.2.4", "@angular/common@>=10.0.0 <11.0.0", "@angular/common@>=8.2.14":
   "integrity" "sha512-bBfsLJNDQaC2OI1mReDJuSZ/uBb7Pf3HVpRmlQKNIPllIxqX1hLH8I3Plodrns9m32JMJ6FMsQthcP0KMdRCJA=="
   "resolved" "https://registry.npmjs.org/@angular/common/-/common-10.2.4.tgz"
   "version" "10.2.4"
@@ -240,14 +240,14 @@
   dependencies:
     "tslib" "^2.0.0"
 
-"@angular/core@^10.2.4", "@angular/core@>=6.0.0", "@angular/core@>=8.2.14":
+"@angular/core@^10.2.4", "@angular/core@>=10.0.0 <11.0.0", "@angular/core@>=6.0.0", "@angular/core@>=8.2.14":
   "integrity" "sha512-5xpAvmZwD9nZ8eWx10urjibqEeePGEiFXVMEn3IaJWgfdOcMmeSoioW9JUllT3w85+DlNVWbRbhz0YfE9a4jyw=="
   "resolved" "https://registry.npmjs.org/@angular/core/-/core-10.2.4.tgz"
   "version" "10.2.4"
   dependencies:
     "tslib" "^2.0.0"
 
-"@angular/forms@^10.2.4":
+"@angular/forms@^10.2.4", "@angular/forms@>=10.0.0 <11.0.0":
   "integrity" "sha512-nrag/3+sjclH5mYqgM9UKzjotMGDCYBlPMqLt2Mj8rIxtAPRxfKmzAhxf4lRw3RTzMvOLM0rBRJagpi5glyLEw=="
   "resolved" "https://registry.npmjs.org/@angular/forms/-/forms-10.2.4.tgz"
   "version" "10.2.4"
@@ -1772,6 +1772,13 @@
     "loader-utils" "^2.0.0"
     "merge-source-map" "^1.1.0"
     "schema-utils" "^2.7.0"
+
+"@ng-select/ng-select@^5.1.0":
+  "integrity" "sha512-VcdZtr68PVsboUEFXfGF844qyYKPIrDNTGiLbQTEw593axCXO9GEL9YPD5QSangg+41w8F7/7ymkrrLpxfyRpw=="
+  "resolved" "https://registry.npmjs.org/@ng-select/ng-select/-/ng-select-5.1.0.tgz"
+  "version" "5.1.0"
+  dependencies:
+    "tslib" "^2.0.0"
 
 "@ngtools/webpack@10.2.1":
   "integrity" "sha512-RKJSoQufHHpLpsGWUas3WEYtFhnCXmf5GiYCEv8d36ITNRKHhQv38FHLq1aen8Jd7F0b3eZFX5JmGvb7JJmVVg=="
@@ -10437,6 +10444,11 @@
     "xterm" "^4.6.0"
     "xterm-addon-fit" "^0.4.0"
 
+"ngx-auto-unsubscribe@^3.0.1":
+  "integrity" "sha512-Yp3o2HxjGYNv2yZ0QwR5Wkh6Al3b07J3v7hhcdZhqm7DTJuXMmisaNi5zhnXq2+7rtCg0jaTBsA/SWhtS7zZbw=="
+  "resolved" "https://registry.npmjs.org/ngx-auto-unsubscribe/-/ngx-auto-unsubscribe-3.0.1.tgz"
+  "version" "3.0.1"
+
 "ngx-socket-io@^3.2.0":
   "integrity" "sha512-gxphw9yiHvnCavZutCRG6JCYNeguIon5Fxo4+8VCnMThtEy45vrZ3UmczR1ZH9vjJTkoaAS8YtqG8TdqDu5DkQ=="
   "resolved" "https://registry.npmjs.org/ngx-socket-io/-/ngx-socket-io-3.2.0.tgz"
@@ -14498,7 +14510,17 @@
     "minimist" "^1.2.0"
     "strip-bom" "^3.0.0"
 
-"tslib@^1.10.0", "tslib@^1.8.1", "tslib@^1.9.0":
+"tslib@^1.10.0", "tslib@^1.8.1":
+  "integrity" "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
+  "resolved" "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
+  "version" "1.14.1"
+
+"tslib@^1.8.1":
+  "integrity" "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
+  "resolved" "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
+  "version" "1.14.1"
+
+"tslib@^1.9.0":
   "integrity" "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
   "resolved" "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   "version" "1.14.1"

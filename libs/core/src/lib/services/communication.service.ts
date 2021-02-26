@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HeaderEvent } from '@minsky/shared';
+import { CairoPayload, HeaderEvent } from '@minsky/shared';
 import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { ElectronService } from './electron.service';
 
 const logInfo = debug('minsky:web:info');
@@ -21,6 +21,7 @@ export class CommunicationService {
   topOffset: number;
   directory = new BehaviorSubject<string[]>([]);
   openDirectory = new BehaviorSubject<string[]>([]);
+
   constructor(
     private socket: Socket,
     private electronService: ElectronService
@@ -41,30 +42,110 @@ export class CommunicationService {
   }
 
   public sendEvent(event: string, message: HeaderEvent) {
+    const { target } = message;
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('cairo', {
-        ...message,
-        event,
-      });
+      let command = '';
+
+      switch (target) {
+        case 'PLAY':
+          command = `/minsky/list`;
+          break;
+        case 'RESET':
+          command = `/minsky/list`;
+          break;
+        case 'STEP':
+          command = `/minsky/list`;
+          break;
+        case 'SIMULATION_SPEED':
+          command = `/minsky/list`;
+          break;
+        case 'ZOOM_OUT':
+          command = `/minsky/list`;
+          break;
+        case 'ZOOM_IN':
+          command = `/minsky/canvas/model/zoom`;
+          break;
+        case 'RESET_ZOOM':
+          command = `/minsky/list`;
+          break;
+        case 'ZOOM_TO_FIT':
+          command = `/minsky/list`;
+          break;
+        case 'RECORD':
+          command = `/minsky/list`;
+          break;
+        case 'RECORDING_REPLAY':
+          command = '/minsky/list';
+          break;
+        case 'REVERSE_CHECKBOX':
+          command = '/minsky/list';
+          break;
+
+        default:
+          break;
+      }
+
+      if (command) {
+        const payload: CairoPayload = {
+          command,
+        };
+
+        this.electronService.ipcRenderer.send('cairo', payload);
+
+        this.render();
+      }
     } else {
       this.socket.emit(event, message);
     }
   }
 
   public mouseEvents(event, message) {
+    const { type, clientX, clientY } = message;
+
     const clickData = {
-      type: message.type,
-      clientX: message.clientX,
-      clientY: message.clientY,
+      type,
+      clientX,
+      clientY,
     };
 
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('cairo', {
-        ...clickData,
-        event,
-      });
+      let command = '';
+      switch (type) {
+        case 'mousemove':
+          command = `/minsky/canvas/mouseMove`;
+          break;
+        case 'mouseup':
+          command = '/minsky/canvas/mouseUp';
+          break;
+        case 'mousedown':
+          command = '/minsky/canvas/mouseDown';
+          break;
+
+        default:
+          break;
+      }
+      
+      if (command) {
+        const payload: CairoPayload = {
+          command : command,
+          mouseX : clientX,
+          mouseY : clientY
+        };
+        this.electronService.ipcRenderer.send('cairo', payload);
+        this.render();
+      }
     } else {
       this.socket.emit(event, clickData);
+    }
+  }
+
+  render() {
+    if (this.electronService.isElectron) {
+      const payload: CairoPayload = {
+        command: '/minsky/canvas/renderFrame',
+      };
+
+      this.electronService.ipcRenderer.send('cairo', payload);
     }
   }
 
@@ -76,15 +157,6 @@ export class CommunicationService {
     });
   }
 
-  public getMessages = () => {
-    return new Observable((observer) => {
-      this.socket.on('RESPONSE', (message) => {
-        observer.next(message);
-        logInfo(message);
-      });
-    });
-  };
-
   canvasOffsetValues() {
     // code for canvas offset values
     document.addEventListener('DOMContentLoaded', () => {
@@ -94,8 +166,8 @@ export class CommunicationService {
       this.canvasDetail = document.getElementById('offsetValue');
 
       // Get the offset position of the canvas
-      this.topOffset = this.canvasDetail?.offsetTop;
-      this.leftOffset = this.canvasDetail?.offsetLeft;
+      this.topOffset = this.canvasDetail.offsetTop;
+      this.leftOffset = this.canvasDetail.offsetLeft;
 
       const offSetValue =
         'top:' + this.topOffset + ' ' + 'left:' + this.leftOffset;

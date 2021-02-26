@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
+  CliInputComponent,
   EquationsComponent,
   PageNotFoundComponent,
   ParametersComponent,
   VariablesComponent,
   WiringComponent,
-  XTermComponent,
-} from '@minsky/shared';
+} from '@minsky/ui-components';
 
 const routes: Routes = [
   {
@@ -37,7 +37,7 @@ const routes: Routes = [
   },
   {
     path: 'experiment/xterm',
-    component: XTermComponent,
+    component: CliInputComponent,
   },
   {
     path: '**',

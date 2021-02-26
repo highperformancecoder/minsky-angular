@@ -1,0 +1,15 @@
+.command {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.half-width {
+  width: 45%;
+}
+
+.center {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

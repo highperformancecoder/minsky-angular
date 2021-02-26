@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { HeaderEvent } from '../../interfaces/Interfaces';
+import { HeaderEvent } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-toolbar',
@@ -14,21 +14,21 @@ export class ToolbarComponent {
   playButton() {
     this.toolbarEvent.emit({
       action: 'CLICKED',
-      target: 'PLAY_BUTTON',
+      target: 'PLAY',
     });
   }
 
   resetButton() {
     this.toolbarEvent.emit({
       action: 'CLICKED',
-      target: 'RESET_BUTTON',
+      target: 'RESET',
     });
   }
 
   stepButton() {
     this.toolbarEvent.emit({
       action: 'CLICKED',
-      target: 'STEP_BUTTON',
+      target: 'STEP',
     });
   }
 
@@ -42,28 +42,28 @@ export class ToolbarComponent {
   zoomOutButton() {
     this.toolbarEvent.emit({
       action: 'CLICKED',
-      target: 'ZOOMOUT_BUTTON',
+      target: 'ZOOM_OUT',
     });
   }
 
   zoomInButton() {
     this.toolbarEvent.emit({
       action: 'CLICKED',
-      target: 'ZOOMIN_BUTTON',
+      target: 'ZOOM_IN',
     });
   }
 
   resetZoomButton() {
     this.toolbarEvent.emit({
       action: 'CLICKED',
-      target: 'RESETZOOM_BUTTON',
+      target: 'RESET_ZOOM',
     });
   }
 
   zoomToFitButton() {
     this.toolbarEvent.emit({
       action: 'CLICKED',
-      target: 'ZOOMTOFIT_BUTTON',
+      target: 'ZOOM_TO_FIT',
     });
   }
 }
