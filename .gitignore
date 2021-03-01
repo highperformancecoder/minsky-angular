@@ -39,3 +39,4 @@ minsky-RESTService
 .DS_Store
 Thumbs.db
 package-lock.json
+yarn.lock
