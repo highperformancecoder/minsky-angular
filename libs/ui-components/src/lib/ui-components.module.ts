@@ -15,9 +15,9 @@ import { WiringComponent } from './wiring/wiring.component';
 import { XTermComponent } from './x-term/x-term.component';
 @NgModule({
   declarations: [
+    HeaderComponent,
     ToolbarComponent,
     PageNotFoundComponent,
-    HeaderComponent,
     WiringComponent,
     EquationsComponent,
     ParametersComponent,
@@ -34,9 +34,9 @@ import { XTermComponent } from './x-term/x-term.component';
     MaterialModule,
   ],
   exports: [
-    ToolbarComponent,
     PageNotFoundComponent,
     HeaderComponent,
+    ToolbarComponent,
     WiringComponent,
     EquationsComponent,
     ParametersComponent,

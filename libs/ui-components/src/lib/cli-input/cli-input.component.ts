@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ElectronService } from '@minsky/core';
+import { CommunicationService } from '@minsky/core';
 import { CairoPayload, commands } from '@minsky/shared';
 
 @Component({
@@ -10,7 +10,7 @@ import { CairoPayload, commands } from '@minsky/shared';
 })
 export class CliInputComponent implements OnInit {
   form: FormGroup;
-  constructor(private electronService: ElectronService) {}
+  constructor(private communicationService: CommunicationService) {}
   _commands: Array<string>;
   command: string;
 
@@ -31,22 +31,15 @@ export class CliInputComponent implements OnInit {
     return !this.form.get('command').value;
   }
   render() {
-    if (this.electronService.isElectron) {
-      const payload: CairoPayload = {
-        command: '/minsky/canvas/renderFrame',
-      };
-      this.electronService.ipcRenderer.send('cairo', payload);
-    }
+    this.communicationService.sendCairoRenderEvent();
   }
 
   handleSubmit() {
-    if (this.electronService.isElectron) {
-      if (this.command) {
-        const payload: CairoPayload = {
-          command: this.command,
-        };
-        this.electronService.ipcRenderer.send('cairo', payload);
-      }
+    if (this.command) {
+      const payload: CairoPayload = {
+        command: this.command,
+      };
+      this.communicationService.sendCairoEvent(payload);
     }
   }
 

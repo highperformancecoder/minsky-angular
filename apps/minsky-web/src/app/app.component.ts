@@ -110,7 +110,9 @@ export class AppComponent {
           filePath: _dialog.filePaths[0].toString(),
         };
 
-        this.electronService.ipcRenderer.send('cairo', initPayload);
+        this.cmService.sendCairoEvent(initPayload);
+
+        // this.cmService.initMinskyResources();
 
         this.isTerminalDisabled = false;
       } catch (error) {
