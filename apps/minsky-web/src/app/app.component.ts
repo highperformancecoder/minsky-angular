@@ -101,20 +101,38 @@ export class AppComponent {
     if (this.electronService.isElectron) {
       try {
         const _dialog = await this.electronService.dialog.showOpenDialog({
-          properties: ['openFile'],
+          properties: ['openFile', 'multiSelections'],
           filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
         });
 
-        const initPayload: CairoPayload = {
-          command: 'startMinskyProcess',
-          filePath: _dialog.filePaths[0].toString(),
-        };
+        const minskyRestservicePath = _dialog.filePaths.find((p) =>
+          p.includes('minsky-RESTService')
+        );
 
-        this.cmService.sendCairoEvent(initPayload);
+        const groupIconPath = _dialog.filePaths.find((p) =>
+          p.includes('group')
+        );
 
-        // this.cmService.initMinskyResources();
+        const godleyIconPath = _dialog.filePaths.find((p) =>
+          p.includes('bank')
+        );
 
-        this.isTerminalDisabled = false;
+        if (minskyRestservicePath && groupIconPath && godleyIconPath) {
+          const initPayload: CairoPayload = {
+            command: 'startMinskyProcess',
+            filePath: minskyRestservicePath,
+          };
+
+          this.cmService.sendCairoEvent(initPayload);
+
+          this.cmService.initMinskyResources({ godleyIconPath, groupIconPath });
+
+          this.isTerminalDisabled = false;
+        } else {
+          throw new Error(
+            'please select minsky executable with group.svg and bank.svg'
+          );
+        }
       } catch (error) {
         logError(error);
       }

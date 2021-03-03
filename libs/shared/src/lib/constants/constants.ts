@@ -15,6 +15,8 @@ export const commandsMapping = {
   RESET_ZOOM: `/minsky/canvas/model/zoom`,
   RESET: '/list',
   REVERSE_CHECKBOX: '/list',
+  SET_GODLEY_ICON_RESOURCE: '/minsky/setGodleyIconResource',
+  SET_GROUP_ICON_RESOURCE: '/minsky/setGroupIconResource',
   SIMULATION_SPEED: '/list',
   STEP: '/list',
   ZOOM_IN: `/minsky/canvas/model/zoom`,

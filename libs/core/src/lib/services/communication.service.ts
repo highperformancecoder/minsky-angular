@@ -49,20 +49,29 @@ export class CommunicationService {
     this.socket.emit(message, data);
   }
 
-  // initMinskyResources() {
-  //   if (this.electronService.isElectron) {
-  //     const godleyIconPayload: CairoPayload = {
-  //       command: `/minsky/setGodleyIconResource "assets/bank.svg"`,
-  //     };
+  initMinskyResources({ godleyIconPath, groupIconPath }) {
+    if (this.electronService.isElectron) {
+      this.setGodleyIconResource(godleyIconPath);
 
-  //     this.sendCairoEvent(godleyIconPayload);
+      this.setGroupIconResource(groupIconPath);
+    }
+  }
 
-  //     // const groupIconResourcePayload: CairoPayload = {
-  //     //   command: `/minsky/setGroupIconResource "${__dirname}/assets/images/icons/group.svg"`,
-  //     // };
-  //     // this.sendCairoEvent(groupIconResourcePayload);
-  //   }
-  // }
+  private setGroupIconResource(path: string) {
+    const groupIconResourcePayload: CairoPayload = {
+      command: `${commandsMapping.SET_GROUP_ICON_RESOURCE} "${path}"`,
+    };
+
+    this.sendCairoEvent(groupIconResourcePayload);
+  }
+
+  private setGodleyIconResource(path: string) {
+    const godleyIconPayload: CairoPayload = {
+      command: `${commandsMapping.SET_GODLEY_ICON_RESOURCE} "${path}"`,
+    };
+
+    this.sendCairoEvent(godleyIconPayload);
+  }
 
   sendCairoEventAndRender(cairoPayload: CairoPayload) {
     if (this.electronService.isElectron) {
