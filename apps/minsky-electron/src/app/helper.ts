@@ -1,4 +1,4 @@
-import { ActiveWindow, CairoPayload } from '@minsky/shared';
+import { ActiveWindow, CairoPayload, commandsMapping } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
 import {
@@ -737,7 +737,7 @@ export function createMenu() {
           label: 'plot',
           click() {
             const loadPayload: CairoPayload = {
-              command: '/minsky/canvas/addPlot',
+              command: commandsMapping['ADD_PLOT'],
             };
 
             handleCairo(null, loadPayload);
@@ -875,19 +875,27 @@ export function executeCommandOnMinskyServer(
       break;
 
     case '/minsky/canvas/renderFrame':
-      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${App.leftOffset}, ${App.topOffset}]`;
+      stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${
+        App.leftOffset
+      }, ${App.topOffset}]`;
       break;
 
     case '/minsky/canvas/mouseMove':
-      stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${payload.mouseY - App.topOffset}]`;
+      stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
+        payload.mouseY - App.topOffset
+      }]`;
       break;
 
     case '/minsky/canvas/mouseDown':
-      stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${payload.mouseY - App.topOffset}]`;
+      stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
+        payload.mouseY - App.topOffset
+      }]`;
       break;
 
     case '/minsky/canvas/mouseUp':
-      stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${payload.mouseY - App.topOffset}]`;
+      stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
+        payload.mouseY - App.topOffset
+      }]`;
       break;
 
     default:
@@ -899,7 +907,6 @@ export function executeCommandOnMinskyServer(
     cairo.stdin.write(stdinCommand + newLine);
   }
 }
-
 export function render() {
   const renderPayload: CairoPayload = {
     command: '/minsky/canvas/renderFrame',

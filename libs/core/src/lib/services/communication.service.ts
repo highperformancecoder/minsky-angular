@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { CairoPayload, HeaderEvent } from '@minsky/shared';
+import {
+  CairoPayload,
+  commandsMapping,
+  HeaderEvent,
+  RESET_ZOOM_FACTOR,
+  ZOOM_IN_FACTOR,
+  ZOOM_OUT_FACTOR,
+  ZOOM_TO_FIT_FACTOR,
+} from '@minsky/shared';
 import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
@@ -41,44 +49,63 @@ export class CommunicationService {
     this.socket.emit(message, data);
   }
 
+  // initMinskyResources() {
+  //   if (this.electronService.isElectron) {
+  //     const godleyIconPayload: CairoPayload = {
+  //       command: `/minsky/setGodleyIconResource "assets/bank.svg"`,
+  //     };
+
+  //     this.sendCairoEvent(godleyIconPayload);
+
+  //     // const groupIconResourcePayload: CairoPayload = {
+  //     //   command: `/minsky/setGroupIconResource "${__dirname}/assets/images/icons/group.svg"`,
+  //     // };
+  //     // this.sendCairoEvent(groupIconResourcePayload);
+  //   }
+  // }
+
+  sendCairoEventAndRender(cairoPayload: CairoPayload) {
+    if (this.electronService.isElectron) {
+      this.sendCairoEvent(cairoPayload);
+
+      this.sendCairoRenderEvent();
+    }
+  }
+
+  sendCairoEvent(payload: CairoPayload) {
+    if (this.electronService.isElectron) {
+      this.electronService.ipcRenderer.send('cairo', payload);
+    }
+  }
+
   public sendEvent(event: string, message: HeaderEvent) {
     const { target } = message;
     if (this.electronService.isElectron) {
-      let command = '';
-
+      let command = commandsMapping[target];
+      const canvasWidth = this.canvasDetail.offsetWidth;
+      const canvasHeight = this.canvasDetail.offsetHeight;
       switch (target) {
-        case 'PLAY':
-          command = `/minsky/list`;
-          break;
-        case 'RESET':
-          command = `/minsky/list`;
-          break;
-        case 'STEP':
-          command = `/minsky/list`;
-          break;
-        case 'SIMULATION_SPEED':
-          command = `/minsky/list`;
-          break;
         case 'ZOOM_OUT':
-          command = `/minsky/list`;
+          command = ` ${command} [${canvasWidth / 2},${
+            canvasHeight / 2
+          },${ZOOM_OUT_FACTOR}]`;
           break;
         case 'ZOOM_IN':
-          command = `/minsky/canvas/model/zoom`;
+          command = `${command} [${canvasWidth / 2},${
+            canvasHeight / 2
+          },${ZOOM_IN_FACTOR}]`;
           break;
         case 'RESET_ZOOM':
-          command = `/minsky/list`;
+          // TODO:
+          command = `${command} [${canvasWidth / 2},${
+            canvasHeight / 2
+          },${RESET_ZOOM_FACTOR}]`;
           break;
         case 'ZOOM_TO_FIT':
-          command = `/minsky/list`;
-          break;
-        case 'RECORD':
-          command = `/minsky/list`;
-          break;
-        case 'RECORDING_REPLAY':
-          command = '/minsky/list';
-          break;
-        case 'REVERSE_CHECKBOX':
-          command = '/minsky/list';
+          // TODO:
+          command = `${command} [${canvasWidth / 2},${
+            canvasHeight / 2
+          },${ZOOM_TO_FIT_FACTOR}]`;
           break;
 
         default:
@@ -90,9 +117,7 @@ export class CommunicationService {
           command,
         };
 
-        this.electronService.ipcRenderer.send('cairo', payload);
-
-        this.render();
+        this.sendCairoEventAndRender(payload);
       }
     } else {
       this.socket.emit(event, message);
@@ -109,43 +134,27 @@ export class CommunicationService {
     };
 
     if (this.electronService.isElectron) {
-      let command = '';
-      switch (type) {
-        case 'mousemove':
-          command = `/minsky/canvas/mouseMove`;
-          break;
-        case 'mouseup':
-          command = '/minsky/canvas/mouseUp';
-          break;
-        case 'mousedown':
-          command = '/minsky/canvas/mouseDown';
-          break;
+      const command = commandsMapping[type];
 
-        default:
-          break;
-      }
-      
       if (command) {
         const payload: CairoPayload = {
-          command : command,
-          mouseX : clientX,
-          mouseY : clientY
+          command: command,
+          mouseX: clientX,
+          mouseY: clientY,
         };
-        this.electronService.ipcRenderer.send('cairo', payload);
-        this.render();
+        this.sendCairoEventAndRender(payload);
       }
     } else {
       this.socket.emit(event, clickData);
     }
   }
 
-  render() {
+  sendCairoRenderEvent() {
     if (this.electronService.isElectron) {
       const payload: CairoPayload = {
-        command: '/minsky/canvas/renderFrame',
+        command: commandsMapping['RENDER_FRAME'],
       };
-
-      this.electronService.ipcRenderer.send('cairo', payload);
+      this.sendCairoEvent(payload);
     }
   }
 
