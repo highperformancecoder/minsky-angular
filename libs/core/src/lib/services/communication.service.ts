@@ -152,7 +152,7 @@ export class CommunicationService {
   sendCairoRenderEvent() {
     if (this.electronService.isElectron) {
       const payload: CairoPayload = {
-        command: commandsMapping['RENDER_FRAME'],
+        command: commandsMapping.RENDER_FRAME,
       };
       this.sendCairoEvent(payload);
     }

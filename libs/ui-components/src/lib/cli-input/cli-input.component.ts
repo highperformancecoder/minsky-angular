@@ -1,18 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CommunicationService } from '@minsky/core';
+import { CommunicationService, ElectronService } from '@minsky/core';
 import { CairoPayload, commands } from '@minsky/shared';
+import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
+@AutoUnsubscribe()
 @Component({
   selector: 'minsky-cli-input',
   templateUrl: './cli-input.component.html',
   styleUrls: ['./cli-input.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CliInputComponent implements OnInit {
-  form: FormGroup;
-  constructor(private communicationService: CommunicationService) {}
+export class CliInputComponent implements OnInit, OnDestroy {
   _commands: Array<string>;
   command: string;
+  cairoReply: Array<string> = [];
+  form: FormGroup;
+
+  constructor(
+    public communicationService: CommunicationService,
+    private electronService: ElectronService,
+    private changeDetectionRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -22,9 +37,16 @@ export class CliInputComponent implements OnInit {
 
     this._commands = commands;
 
-    this.form.valueChanges.subscribe((v) => {
+    this.form.valueChanges.subscribe(() => {
       this.command = this.makeCommand();
     });
+
+    if (this.electronService.isElectron) {
+      this.electronService.ipcRenderer.on('cairo-reply', (event, stdout) => {
+        this.cairoReply.push(stdout);
+        this.changeDetectionRef.detectChanges();
+      });
+    }
   }
 
   isSubmitDisabled() {
@@ -48,4 +70,7 @@ export class CliInputComponent implements OnInit {
       this.form.get('args').value || ''
     }`.trim();
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  ngOnDestroy(): void {}
 }

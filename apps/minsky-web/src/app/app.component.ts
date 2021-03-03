@@ -128,6 +128,7 @@ export class AppComponent {
         url: 'http://localhost:4200/#/experiment/xterm',
         modal: false,
         width: 900,
+        height: 768,
       });
     }
   }
