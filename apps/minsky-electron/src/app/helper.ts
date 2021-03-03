@@ -505,13 +505,11 @@ export function createMenu() {
         {
           label: 'Godley Table',
           click() {
-            createMenuPopUpWithRouting({
-              width: 500,
-              height: 550,
-              title: 'Insert Godley Table',
-              url: `${rendererAppURL}/#/menu/insert/godley-table`,
-              backgroundColor: '#ffffff',
-            });
+            const addGodleyPayload: CairoPayload = {
+              command: commandsMapping.ADD_GODLEY,
+            };
+
+            handleCairo(null, addGodleyPayload);
           },
         },
         {

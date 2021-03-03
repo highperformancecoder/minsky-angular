@@ -4,6 +4,8 @@ export const RESET_ZOOM_FACTOR = 0;
 export const ZOOM_TO_FIT_FACTOR = 1;
 
 export const commandsMapping = {
+  ADD_GODLEY: '/minsky/canvas/addGodley',
+  ADD_GROUP: '/minsky/canvas/addGroup',
   ADD_PLOT: '/minsky/canvas/addPlot',
   mousedown: '/minsky/canvas/mouseDown',
   mousemove: `/minsky/canvas/mouseMove`,
