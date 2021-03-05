@@ -9,6 +9,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommunicationService, ElectronService } from '@minsky/core';
 import { CairoPayload, commands } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 @AutoUnsubscribe()
 @Component({
@@ -19,6 +21,7 @@ import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 })
 export class CliInputComponent implements OnInit, OnDestroy {
   _commands: Array<string>;
+  filteredOptions: Observable<string[]>;
   command: string;
   cairoReply: Array<string> = [];
   form: FormGroup;
@@ -36,6 +39,11 @@ export class CliInputComponent implements OnInit, OnDestroy {
     });
 
     this._commands = commands;
+
+    this.filteredOptions = this.form.get('command').valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filter(value))
+    );
 
     this.form.valueChanges.subscribe(() => {
       this.command = this.makeCommand();
@@ -69,6 +77,14 @@ export class CliInputComponent implements OnInit, OnDestroy {
     return `${this.form.get('command').value} ${
       this.form.get('args').value || ''
     }`.trim();
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this._commands.filter((option) =>
+      option.toLowerCase().includes(filterValue)
+    );
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
