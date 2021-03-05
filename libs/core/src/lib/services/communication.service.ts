@@ -49,25 +49,25 @@ export class CommunicationService {
     this.socket.emit(message, data);
   }
 
-  initMinskyResources({ godleyIconPath, groupIconPath }) {
+  initMinskyResources() {
     if (this.electronService.isElectron) {
-      this.setGodleyIconResource(godleyIconPath);
+      this.setGodleyIconResource();
 
-      this.setGroupIconResource(groupIconPath);
+      this.setGroupIconResource();
     }
   }
 
-  private setGroupIconResource(path: string) {
+  private setGroupIconResource() {
     const groupIconResourcePayload: CairoPayload = {
-      command: `${commandsMapping.SET_GROUP_ICON_RESOURCE} "${path}"`,
+      command: commandsMapping.SET_GROUP_ICON_RESOURCE,
     };
 
     this.sendCairoEvent(groupIconResourcePayload);
   }
 
-  private setGodleyIconResource(path: string) {
+  private setGodleyIconResource() {
     const godleyIconPayload: CairoPayload = {
-      command: `${commandsMapping.SET_GODLEY_ICON_RESOURCE} "${path}"`,
+      command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
     };
 
     this.sendCairoEvent(godleyIconPayload);

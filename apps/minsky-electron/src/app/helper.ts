@@ -12,6 +12,7 @@ import {
 import * as storage from 'electron-json-storage';
 import * as log from 'electron-log';
 import { readFileSync, writeFile } from 'fs';
+import { join } from 'path';
 import App from './app';
 import { activeWindows, rendererAppURL } from './constants';
 import { getWindowId } from './windowHelper';
@@ -903,6 +904,20 @@ export function executeCommandOnMinskyServer(
       stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
         payload.mouseY - App.topOffset
       }]`;
+      break;
+
+    case commandsMapping.SET_GODLEY_ICON_RESOURCE:
+      stdinCommand = `${payload.command} "${join(
+        __dirname,
+        'assets/godley.svg'
+      )}"`;
+      break;
+
+    case commandsMapping.SET_GROUP_ICON_RESOURCE:
+      stdinCommand = `${payload.command} "${join(
+        __dirname,
+        'assets/group.svg'
+      )}"`;
       break;
 
     default:
