@@ -825,7 +825,8 @@ export function handleCairo(
     executeCommandOnMinskyServer(App.cairo, payload);
   } else if (!App.cairo && command === 'startMinskyProcess') {
     try {
-      App.cairo = spawn(payload.filePath);
+      App.minskyRESTServicePath = payload.filePath;
+      App.cairo = spawn(App.minskyRESTServicePath);
       if (App.cairo) {
         App.cairo.stdout.on('data', (data) => {
           log.info(`stdout: ${data}`);
@@ -853,8 +854,6 @@ export function handleCairo(
         App.cairo.on('close', (code) => {
           log.info(`child process exited with code ${code}`);
         });
-
-        executeCommandOnMinskyServer(App.cairo, payload);
 
         dialog.showMessageBoxSync(App.mainWindow, {
           type: 'info',

@@ -83,7 +83,10 @@ export class CommunicationService {
 
   sendCairoEvent(payload: CairoPayload) {
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('cairo', payload);
+      this.electronService.ipcRenderer.send('cairo', {
+        ...payload,
+        command: payload.command.trim(),
+      });
     }
   }
 

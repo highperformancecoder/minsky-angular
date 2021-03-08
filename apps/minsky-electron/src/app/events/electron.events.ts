@@ -3,10 +3,17 @@
  * between the frontend to the electron backend.
  */
 
-import { AppLayoutPayload, CairoPayload } from '@minsky/shared';
+import {
+  AppLayoutPayload,
+  CairoPayload,
+  commandsMapping,
+  newLineCharacter,
+} from '@minsky/shared';
+import { spawn } from 'child_process';
 import * as debug from 'debug';
 import { app, ipcMain, Menu, MenuItem } from 'electron';
 import * as storage from 'electron-json-storage';
+import * as log from 'electron-log';
 import { environment } from '../../environments/environment';
 import App from '../app';
 import {
@@ -105,6 +112,32 @@ ipcMain.on('ready-template', () => {
 
 ipcMain.on('cairo', (event, payload: CairoPayload) => {
   handleCairo(event, payload);
+});
+
+ipcMain.on('get-minsky-commands', (event) => {
+  let listOfCommands = [];
+
+  const _cairo = spawn(App.minskyRESTServicePath);
+  _cairo.stdin.write(commandsMapping.LIST + newLineCharacter);
+
+  setTimeout(() => {
+    _cairo.stdout.emit('close');
+  }, 1000);
+
+  _cairo.stdout
+    .on('data', (data) => {
+      listOfCommands = [
+        ...listOfCommands,
+        ...data.toString().trim().split(newLineCharacter),
+      ];
+    })
+    .on('error', (error) => {
+      log.error(`error: ${error.message}`);
+    })
+    .on('close', (code) => {
+      log.info(`"get-minsky-commands" child process exited with code ${code}`);
+      event.returnValue = listOfCommands;
+    });
 });
 
 ipcMain.on('app-layout-changed', (event, { type, value }: AppLayoutPayload) => {

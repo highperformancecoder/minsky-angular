@@ -23,6 +23,7 @@ export default class App {
   static leftOffset: number;
   static mainWindowHeight: number;
   static mainWindowWidth: number;
+  static minskyRESTServicePath: string;
 
   public static isDevelopmentMode() {
     const isEnvironmentSet: boolean = 'ELECTRON_IS_DEV' in process.env;

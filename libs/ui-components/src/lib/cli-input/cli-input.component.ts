@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { CairoPayload, commands } from '@minsky/shared';
+import { CairoPayload } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -20,7 +20,7 @@ import { map, startWith } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CliInputComponent implements OnInit, OnDestroy {
-  _commands: Array<string>;
+  commands: Array<string>;
   filteredOptions: Observable<string[]>;
   command: string;
   cairoReply: Array<string> = [];
@@ -38,8 +38,6 @@ export class CliInputComponent implements OnInit, OnDestroy {
       args: new FormControl(),
     });
 
-    this._commands = commands;
-
     this.filteredOptions = this.form.get('command').valueChanges.pipe(
       startWith(''),
       map((value) => this._filter(value))
@@ -54,6 +52,10 @@ export class CliInputComponent implements OnInit, OnDestroy {
         this.cairoReply.push(stdout);
         this.changeDetectionRef.detectChanges();
       });
+
+      this.commands = this.electronService.ipcRenderer.sendSync(
+        'get-minsky-commands'
+      );
     }
   }
 
@@ -82,7 +84,7 @@ export class CliInputComponent implements OnInit, OnDestroy {
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this._commands.filter((option) =>
+    return this.commands.filter((option) =>
       option.toLowerCase().includes(filterValue)
     );
   }
