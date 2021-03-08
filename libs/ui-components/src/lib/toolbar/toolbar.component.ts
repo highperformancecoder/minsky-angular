@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { CommunicationService } from '@minsky/core';
 import { HeaderEvent } from '@minsky/shared';
 
 @Component({
@@ -11,11 +12,24 @@ export class ToolbarComponent {
 
   headerEvent = 'HEADER_EVENT';
 
+  constructor(public communicationService: CommunicationService) {}
+
   playButton() {
-    this.toolbarEvent.emit({
-      action: 'CLICKED',
-      target: 'PLAY',
-    });
+    if (this.communicationService.showPlayButton$.value) {
+      this.toolbarEvent.emit({
+        action: 'CLICKED',
+        target: 'PLAY',
+      });
+    } else {
+      this.toolbarEvent.emit({
+        action: 'CLICKED',
+        target: 'PAUSE',
+      });
+    }
+
+    this.communicationService.showPlayButton$.next(
+      !this.communicationService.showPlayButton$.value
+    );
   }
 
   resetButton() {

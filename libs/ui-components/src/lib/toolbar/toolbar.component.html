@@ -1,7 +1,15 @@
 <div class="toolbar-section">
   <div class="play-controls m-a-0">
     <button class="btn play-btn" title="Play/Stop" (click)="playButton()">
-      <img src="assets/images/icons/play.svg" alt="" class="btn-icon" />
+      <img
+        src="{{
+          this.communicationService.showPlayButton$.value
+            ? 'assets/images/icons/play.svg'
+            : 'assets/images/icons/pause.svg'
+        }}"
+        alt="paly/pause button"
+        class="btn-icon"
+      />
     </button>
     <button class="btn reset-btn" title="Reset" (click)="resetButton()">
       <img src="assets/images/icons/stop.svg" alt="" class="btn-icon" />
