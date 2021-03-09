@@ -12,6 +12,7 @@ import {
 import * as storage from 'electron-json-storage';
 import * as log from 'electron-log';
 import { readFileSync, writeFile } from 'fs';
+import { join } from 'path';
 import App from './app';
 import { activeWindows, rendererAppURL } from './constants';
 import { getWindowId } from './windowHelper';
@@ -505,13 +506,11 @@ export function createMenu() {
         {
           label: 'Godley Table',
           click() {
-            createMenuPopUpWithRouting({
-              width: 500,
-              height: 550,
-              title: 'Insert Godley Table',
-              url: `${rendererAppURL}/#/menu/insert/godley-table`,
-              backgroundColor: '#ffffff',
-            });
+            const addGodleyPayload: CairoPayload = {
+              command: commandsMapping.ADD_GODLEY,
+            };
+
+            handleCairo(null, addGodleyPayload);
           },
         },
         {
@@ -737,7 +736,7 @@ export function createMenu() {
           label: 'plot',
           click() {
             const loadPayload: CairoPayload = {
-              command: commandsMapping['ADD_PLOT'],
+              command: commandsMapping.ADD_PLOT,
             };
 
             handleCairo(null, loadPayload);
@@ -826,27 +825,35 @@ export function handleCairo(
     executeCommandOnMinskyServer(App.cairo, payload);
   } else if (!App.cairo && command === 'startMinskyProcess') {
     try {
-      App.cairo = spawn(payload.filePath);
+      App.minskyRESTServicePath = payload.filePath;
+      App.cairo = spawn(App.minskyRESTServicePath);
       if (App.cairo) {
         App.cairo.stdout.on('data', (data) => {
           log.info(`stdout: ${data}`);
-          App.mainWindow.webContents.send('cairo-reply', `${data}`);
+
+          activeWindows.forEach((aw) => {
+            aw.context.webContents.send('cairo-reply', `stdout: ${data}`);
+          });
         });
+
         App.cairo.stderr.on('data', (data) => {
           log.info(`stderr: ${data}`);
-          App.mainWindow.webContents.send('cairo-reply', `${data}`);
-          // event.sender.send('cairo-reply', `${data}`);
+          activeWindows.forEach((aw) => {
+            aw.context.webContents.send('cairo-reply', `stderr: ${data}`);
+          });
         });
+
         App.cairo.on('error', (error) => {
           log.info(`error: ${error.message}`);
-          App.mainWindow.webContents.send('cairo-reply', `${error.message}`);
-          // event.sender.send('cairo-reply', `${error.message}`);
+          event.reply('cairo-error', `${error.message}`);
+          activeWindows.forEach((aw) => {
+            aw.context.webContents.send('cairo-reply', `error: ${error}`);
+          });
         });
+
         App.cairo.on('close', (code) => {
           log.info(`child process exited with code ${code}`);
         });
-
-        executeCommandOnMinskyServer(App.cairo, payload);
 
         dialog.showMessageBoxSync(App.mainWindow, {
           type: 'info',
@@ -896,6 +903,20 @@ export function executeCommandOnMinskyServer(
       stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
         payload.mouseY - App.topOffset
       }]`;
+      break;
+
+    case commandsMapping.SET_GODLEY_ICON_RESOURCE:
+      stdinCommand = `${payload.command} "${join(
+        __dirname,
+        'assets/godley.svg'
+      )}"`;
+      break;
+
+    case commandsMapping.SET_GROUP_ICON_RESOURCE:
+      stdinCommand = `${payload.command} "${join(
+        __dirname,
+        'assets/group.svg'
+      )}"`;
       break;
 
     default:

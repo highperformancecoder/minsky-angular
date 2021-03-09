@@ -30,6 +30,9 @@ export class CommunicationService {
   directory = new BehaviorSubject<string[]>([]);
   openDirectory = new BehaviorSubject<string[]>([]);
 
+  stepIntervalId;
+  showPlayButton$ = new BehaviorSubject<boolean>(true);
+
   constructor(
     private socket: Socket,
     private electronService: ElectronService
@@ -49,20 +52,29 @@ export class CommunicationService {
     this.socket.emit(message, data);
   }
 
-  // initMinskyResources() {
-  //   if (this.electronService.isElectron) {
-  //     const godleyIconPayload: CairoPayload = {
-  //       command: `/minsky/setGodleyIconResource "assets/bank.svg"`,
-  //     };
+  initMinskyResources() {
+    if (this.electronService.isElectron) {
+      this.setGodleyIconResource();
 
-  //     this.sendCairoEvent(godleyIconPayload);
+      this.setGroupIconResource();
+    }
+  }
 
-  //     // const groupIconResourcePayload: CairoPayload = {
-  //     //   command: `/minsky/setGroupIconResource "${__dirname}/assets/images/icons/group.svg"`,
-  //     // };
-  //     // this.sendCairoEvent(groupIconResourcePayload);
-  //   }
-  // }
+  private setGroupIconResource() {
+    const groupIconResourcePayload: CairoPayload = {
+      command: commandsMapping.SET_GROUP_ICON_RESOURCE,
+    };
+
+    this.sendCairoEvent(groupIconResourcePayload);
+  }
+
+  private setGodleyIconResource() {
+    const godleyIconPayload: CairoPayload = {
+      command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
+    };
+
+    this.sendCairoEvent(godleyIconPayload);
+  }
 
   sendCairoEventAndRender(cairoPayload: CairoPayload) {
     if (this.electronService.isElectron) {
@@ -74,16 +86,23 @@ export class CommunicationService {
 
   sendCairoEvent(payload: CairoPayload) {
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('cairo', payload);
+      this.electronService.ipcRenderer.send('cairo', {
+        ...payload,
+        command: payload.command.trim(),
+      });
     }
   }
 
-  public sendEvent(event: string, message: HeaderEvent) {
+  public sendEvent(event: string, message: HeaderEvent): void {
     const { target } = message;
     if (this.electronService.isElectron) {
       let command = commandsMapping[target];
+
       const canvasWidth = this.canvasDetail.offsetWidth;
       const canvasHeight = this.canvasDetail.offsetHeight;
+
+      let autoHandleMinskyProcess = true;
+
       switch (target) {
         case 'ZOOM_OUT':
           command = ` ${command} [${canvasWidth / 2},${
@@ -108,11 +127,34 @@ export class CommunicationService {
           },${ZOOM_TO_FIT_FACTOR}]`;
           break;
 
+        case 'PLAY':
+          autoHandleMinskyProcess = false;
+
+          this.stepIntervalId = setInterval(() => {
+            const payload: CairoPayload = {
+              command,
+            };
+
+            this.sendCairoEventAndRender(payload);
+          }, 1000);
+          break;
+
+        case 'PAUSE':
+          autoHandleMinskyProcess = false;
+
+          this.clearStepInterval();
+          break;
+
+        case 'RESET':
+          this.showPlayButton$.next(true);
+          this.clearStepInterval();
+          break;
+
         default:
           break;
       }
 
-      if (command) {
+      if (command && autoHandleMinskyProcess) {
         const payload: CairoPayload = {
           command,
         };
@@ -121,6 +163,12 @@ export class CommunicationService {
       }
     } else {
       this.socket.emit(event, message);
+    }
+  }
+
+  private clearStepInterval() {
+    if (this.stepIntervalId) {
+      clearInterval(this.stepIntervalId);
     }
   }
 
@@ -152,7 +200,7 @@ export class CommunicationService {
   sendCairoRenderEvent() {
     if (this.electronService.isElectron) {
       const payload: CairoPayload = {
-        command: commandsMapping['RENDER_FRAME'],
+        command: commandsMapping.RENDER_FRAME,
       };
       this.sendCairoEvent(payload);
     }

@@ -4,23 +4,29 @@
   </b>
 </h3>
 <form [formGroup]="form" class="command">
-  <ng-select
-    formControlName="command"
-    style="width: 65%; height: 30px"
-    placeholder="Command"
-  >
-    <ng-option *ngFor="let command of _commands" [value]="command">{{
-      command
-    }}</ng-option>
-  </ng-select>
-  <mat-form-field style="width: 30%">
-    <mat-label>args</mat-label>
+  <mat-form-field class="autocomplete">
+    <mat-label>Command</mat-label>
     <input
+      type="text"
+      placeholder="Pick one"
+      aria-label="Command"
       matInput
-      style="height: 25px"
-      formControlName="args"
-      placeholder="Ex. abc,99,0.1"
+      formControlName="command"
+      [matAutocomplete]="auto"
     />
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+      <mat-option
+        *ngFor="let option of filteredOptions | async"
+        [value]="option"
+      >
+        {{ option }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>args</mat-label>
+    <input matInput formControlName="args" placeholder="Ex. abc,99,0.1" />
   </mat-form-field>
 </form>
 <br />
@@ -39,14 +45,7 @@
   >
     Submit
   </button>
-  <button
-    mat-raised-button
-    style="margin-left: 24px"
-    type="button"
-    (click)="render()"
-  >
-    Render
-  </button>
+  <button mat-raised-button type="button" (click)="render()">Render</button>
 </div>
 <br />
 
@@ -57,3 +56,10 @@
     <u class="center">Output</u>
   </b>
 </h3>
+<div class="output">
+  <ul *ngFor="let output of this.cairoReply.slice().reverse()">
+    <li>
+      {{ output }}
+    </li>
+  </ul>
+</div>

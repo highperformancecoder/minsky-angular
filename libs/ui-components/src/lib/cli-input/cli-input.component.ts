@@ -1,18 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CommunicationService } from '@minsky/core';
-import { CairoPayload, commands } from '@minsky/shared';
+import { CommunicationService, ElectronService } from '@minsky/core';
+import { CairoPayload } from '@minsky/shared';
+import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
+@AutoUnsubscribe()
 @Component({
   selector: 'minsky-cli-input',
   templateUrl: './cli-input.component.html',
   styleUrls: ['./cli-input.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CliInputComponent implements OnInit {
-  form: FormGroup;
-  constructor(private communicationService: CommunicationService) {}
-  _commands: Array<string>;
+export class CliInputComponent implements OnInit, OnDestroy {
+  commands: Array<string>;
+  filteredOptions: Observable<string[]>;
   command: string;
+  cairoReply: Array<string> = [];
+  form: FormGroup;
+
+  constructor(
+    public communicationService: CommunicationService,
+    private electronService: ElectronService,
+    private changeDetectionRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -20,11 +38,25 @@ export class CliInputComponent implements OnInit {
       args: new FormControl(),
     });
 
-    this._commands = commands;
+    this.filteredOptions = this.form.get('command').valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filter(value))
+    );
 
-    this.form.valueChanges.subscribe((v) => {
+    this.form.valueChanges.subscribe(() => {
       this.command = this.makeCommand();
     });
+
+    if (this.electronService.isElectron) {
+      this.electronService.ipcRenderer.on('cairo-reply', (event, stdout) => {
+        this.cairoReply.push(stdout);
+        this.changeDetectionRef.detectChanges();
+      });
+
+      this.commands = this.electronService.ipcRenderer.sendSync(
+        'get-minsky-commands'
+      );
+    }
   }
 
   isSubmitDisabled() {
@@ -48,4 +80,15 @@ export class CliInputComponent implements OnInit {
       this.form.get('args').value || ''
     }`.trim();
   }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.commands.filter((option) =>
+      option.toLowerCase().includes(filterValue)
+    );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  ngOnDestroy(): void {}
 }
