@@ -22,7 +22,7 @@ export const commandsMapping = {
   REVERSE_CHECKBOX: '',
   SET_GODLEY_ICON_RESOURCE: '/minsky/setGodleyIconResource',
   SET_GROUP_ICON_RESOURCE: '/minsky/setGroupIconResource',
-  SIMULATION_SPEED: '',
+  SIMULATION_SPEED: '/minsky/nSteps',
   STEP: '/minsky/step',
   ZOOM_IN: `/minsky/canvas/model/zoom`,
   ZOOM_OUT: `/minsky/canvas/model/zoom`,

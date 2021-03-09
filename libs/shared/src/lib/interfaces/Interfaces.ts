@@ -14,4 +14,5 @@ export interface AppLayoutPayload {
 export interface HeaderEvent {
   action: string;
   target: string;
+  value?: unknown;
 }

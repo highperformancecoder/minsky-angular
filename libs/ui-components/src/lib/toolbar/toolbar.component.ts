@@ -50,6 +50,7 @@ export class ToolbarComponent {
     this.toolbarEvent.emit({
       action: 'CLICKED',
       target: 'SIMULATION_SPEED',
+      value: value,
     });
   }
 

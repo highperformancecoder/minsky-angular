@@ -127,6 +127,10 @@ export class CommunicationService {
           },${ZOOM_TO_FIT_FACTOR}]`;
           break;
 
+        case 'SIMULATION_SPEED':
+          command = `${command} ${message.value}`;
+          break;
+
         case 'PLAY':
           autoHandleMinskyProcess = false;
 
