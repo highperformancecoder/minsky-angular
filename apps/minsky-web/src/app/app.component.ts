@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { CairoPayload } from '@minsky/shared';
+import { MinskyProcessPayload } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
@@ -105,12 +105,12 @@ export class AppComponent {
           filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
         });
 
-        const initPayload: CairoPayload = {
+        const initPayload: MinskyProcessPayload = {
           command: 'startMinskyProcess',
           filePath: _dialog.filePaths[0].toString(),
         };
 
-        this.cmService.sendCairoEvent(initPayload);
+        this.cmService.sendMinskyCommand(initPayload);
 
         this.cmService.initMinskyResources();
 

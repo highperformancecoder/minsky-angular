@@ -5,8 +5,8 @@
 
 import {
   AppLayoutPayload,
-  CairoPayload,
   commandsMapping,
+  MinskyProcessPayload,
   newLineCharacter,
 } from '@minsky/shared';
 import { spawn } from 'child_process';
@@ -24,7 +24,7 @@ import {
   createMenuPopUpWithRouting,
   deleteBookmark,
   goToSelectedBookmark,
-  handleCairo,
+  handleMinskyProcess,
   setStorageBackgroundColor,
 } from './../helper';
 
@@ -110,21 +110,21 @@ ipcMain.on('ready-template', () => {
   addUpdateBookmarkList(Menu.getApplicationMenu());
 });
 
-ipcMain.on('cairo', (event, payload: CairoPayload) => {
-  handleCairo(event, payload);
+ipcMain.on('minsky-process', (event, payload: MinskyProcessPayload) => {
+  handleMinskyProcess(event, payload);
 });
 
 ipcMain.on('get-minsky-commands', (event) => {
   let listOfCommands = [];
 
-  const _cairo = spawn(App.minskyRESTServicePath);
-  _cairo.stdin.write(commandsMapping.LIST + newLineCharacter);
+  const getMinskyCommandsProcess = spawn(App.minskyRESTServicePath);
+  getMinskyCommandsProcess.stdin.write(commandsMapping.LIST + newLineCharacter);
 
   setTimeout(() => {
-    _cairo.stdout.emit('close');
+    getMinskyCommandsProcess.stdout.emit('close');
   }, 1000);
 
-  _cairo.stdout
+  getMinskyCommandsProcess.stdout
     .on('data', (data) => {
       listOfCommands = [
         ...listOfCommands,

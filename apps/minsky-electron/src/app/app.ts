@@ -18,7 +18,7 @@ export default class App {
   static mainWindow: Electron.BrowserWindow;
   static application: Electron.App;
   static BrowserWindow;
-  static cairo: ChildProcess;
+  static minskyProcess: ChildProcess;
   static topOffset: number;
   static leftOffset: number;
   static mainWindowHeight: number;

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {
-  CairoPayload,
   commandsMapping,
   HeaderEvent,
+  MinskyProcessPayload,
   RESET_ZOOM_FACTOR,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
@@ -61,32 +61,32 @@ export class CommunicationService {
   }
 
   private setGroupIconResource() {
-    const groupIconResourcePayload: CairoPayload = {
+    const groupIconResourcePayload: MinskyProcessPayload = {
       command: commandsMapping.SET_GROUP_ICON_RESOURCE,
     };
 
-    this.sendCairoEvent(groupIconResourcePayload);
+    this.sendMinskyCommand(groupIconResourcePayload);
   }
 
   private setGodleyIconResource() {
-    const godleyIconPayload: CairoPayload = {
+    const godleyIconPayload: MinskyProcessPayload = {
       command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
     };
 
-    this.sendCairoEvent(godleyIconPayload);
+    this.sendMinskyCommand(godleyIconPayload);
   }
 
-  sendCairoEventAndRender(cairoPayload: CairoPayload) {
+  sendMinskyCommandAndRender(minskyProcessPayload: MinskyProcessPayload) {
     if (this.electronService.isElectron) {
-      this.sendCairoEvent(cairoPayload);
+      this.sendMinskyCommand(minskyProcessPayload);
 
-      this.sendCairoRenderEvent();
+      this.sendMinskyRenderCommand();
     }
   }
 
-  sendCairoEvent(payload: CairoPayload) {
+  sendMinskyCommand(payload: MinskyProcessPayload) {
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('cairo', {
+      this.electronService.ipcRenderer.send('minsky-process', {
         ...payload,
         command: payload.command.trim(),
       });
@@ -135,11 +135,11 @@ export class CommunicationService {
           autoHandleMinskyProcess = false;
 
           this.stepIntervalId = setInterval(() => {
-            const payload: CairoPayload = {
+            const payload: MinskyProcessPayload = {
               command,
             };
 
-            this.sendCairoEventAndRender(payload);
+            this.sendMinskyCommandAndRender(payload);
           }, 1000);
           break;
 
@@ -159,11 +159,11 @@ export class CommunicationService {
       }
 
       if (command && autoHandleMinskyProcess) {
-        const payload: CairoPayload = {
+        const payload: MinskyProcessPayload = {
           command,
         };
 
-        this.sendCairoEventAndRender(payload);
+        this.sendMinskyCommandAndRender(payload);
       }
     } else {
       this.socket.emit(event, message);
@@ -189,24 +189,24 @@ export class CommunicationService {
       const command = commandsMapping[type];
 
       if (command) {
-        const payload: CairoPayload = {
+        const payload: MinskyProcessPayload = {
           command: command,
           mouseX: clientX,
           mouseY: clientY,
         };
-        this.sendCairoEventAndRender(payload);
+        this.sendMinskyCommandAndRender(payload);
       }
     } else {
       this.socket.emit(event, clickData);
     }
   }
 
-  sendCairoRenderEvent() {
+  sendMinskyRenderCommand() {
     if (this.electronService.isElectron) {
-      const payload: CairoPayload = {
+      const payload: MinskyProcessPayload = {
         command: commandsMapping.RENDER_FRAME,
       };
-      this.sendCairoEvent(payload);
+      this.sendMinskyCommand(payload);
     }
   }
 

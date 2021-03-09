@@ -1,4 +1,4 @@
-export interface CairoPayload {
+export interface MinskyProcessPayload {
   mouseX?: number;
   mouseY?: number;
   filePath?: string;

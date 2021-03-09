@@ -1,4 +1,8 @@
-import { ActiveWindow, CairoPayload, commandsMapping } from '@minsky/shared';
+import {
+  ActiveWindow,
+  commandsMapping,
+  MinskyProcessPayload,
+} from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
 import {
@@ -20,8 +24,6 @@ import { getWindowId } from './windowHelper';
 const logError = debug('minsky:electron_error');
 const logMenuEvent = debug('minsky:electron_menu_logs');
 const logWindows = debug('minsky:electron_windows');
-const logChildProcessEvent = debug('minsky:electron_child_process');
-const logCairo = debug('minsky:electron_cairo');
 
 function getMainWindow(): BrowserWindow {
   return activeWindows.get(1).context;
@@ -268,17 +270,17 @@ export function createMenu() {
                 filters: [{ name: '*.mky', extensions: ['mky'] }],
               });
 
-              const loadPayload: CairoPayload = {
+              const loadPayload: MinskyProcessPayload = {
                 command: '/minsky/load',
                 filePath: _dialog.filePaths[0].toString(),
               };
-              const renderPayload: CairoPayload = {
+              const renderPayload: MinskyProcessPayload = {
                 command: '/minsky/canvas/renderFrame',
               };
 
-              handleCairo(null, loadPayload);
+              handleMinskyProcess(null, loadPayload);
 
-              handleCairo(null, renderPayload);
+              handleMinskyProcess(null, renderPayload);
             } catch (error) {
               logError(error);
             }
@@ -506,11 +508,11 @@ export function createMenu() {
         {
           label: 'Godley Table',
           click() {
-            const addGodleyPayload: CairoPayload = {
+            const addGodleyPayload: MinskyProcessPayload = {
               command: commandsMapping.ADD_GODLEY,
             };
 
-            handleCairo(null, addGodleyPayload);
+            handleMinskyProcess(null, addGodleyPayload);
           },
         },
         {
@@ -735,11 +737,11 @@ export function createMenu() {
         {
           label: 'plot',
           click() {
-            const loadPayload: CairoPayload = {
+            const loadPayload: MinskyProcessPayload = {
               command: commandsMapping.ADD_PLOT,
             };
 
-            handleCairo(null, loadPayload);
+            handleMinskyProcess(null, loadPayload);
             render();
           },
         },
@@ -809,9 +811,9 @@ export function createMenu() {
   Menu.setApplicationMenu(menu);
 }
 
-export function handleCairo(
+export function handleMinskyProcess(
   event: Electron.IpcMainEvent,
-  payload: CairoPayload
+  payload: MinskyProcessPayload
 ) {
   let command: string;
 
@@ -821,37 +823,45 @@ export function handleCairo(
     command = payload.command;
   }
 
-  if (App.cairo) {
-    executeCommandOnMinskyServer(App.cairo, payload);
-  } else if (!App.cairo && command === 'startMinskyProcess') {
+  if (App.minskyProcess) {
+    executeCommandOnMinskyServer(App.minskyProcess, payload);
+  } else if (!App.minskyProcess && command === 'startMinskyProcess') {
     try {
       App.minskyRESTServicePath = payload.filePath;
-      App.cairo = spawn(App.minskyRESTServicePath);
-      if (App.cairo) {
-        App.cairo.stdout.on('data', (data) => {
+      App.minskyProcess = spawn(App.minskyRESTServicePath);
+      if (App.minskyProcess) {
+        App.minskyProcess.stdout.on('data', (data) => {
           log.info(`stdout: ${data}`);
 
           activeWindows.forEach((aw) => {
-            aw.context.webContents.send('cairo-reply', `stdout: ${data}`);
+            aw.context.webContents.send(
+              'minsky-process-reply',
+              `stdout: ${data}`
+            );
           });
         });
 
-        App.cairo.stderr.on('data', (data) => {
+        App.minskyProcess.stderr.on('data', (data) => {
           log.info(`stderr: ${data}`);
           activeWindows.forEach((aw) => {
-            aw.context.webContents.send('cairo-reply', `stderr: ${data}`);
+            aw.context.webContents.send(
+              'minsky-process-reply',
+              `stderr: ${data}`
+            );
           });
         });
 
-        App.cairo.on('error', (error) => {
+        App.minskyProcess.on('error', (error) => {
           log.info(`error: ${error.message}`);
-          event.reply('cairo-error', `${error.message}`);
           activeWindows.forEach((aw) => {
-            aw.context.webContents.send('cairo-reply', `error: ${error}`);
+            aw.context.webContents.send(
+              'minsky-process-reply',
+              `error: ${error.message}`
+            );
           });
         });
 
-        App.cairo.on('close', (code) => {
+        App.minskyProcess.on('close', (code) => {
           log.info(`child process exited with code ${code}`);
         });
 
@@ -863,7 +873,7 @@ export function handleCairo(
       }
     } catch {
       dialog.showErrorBox('Execution error', 'Could not execute chosen file');
-      App.cairo = null;
+      App.minskyProcess = null;
     }
   } else {
     logError('Please select the minsky executable first...');
@@ -871,8 +881,8 @@ export function handleCairo(
 }
 
 export function executeCommandOnMinskyServer(
-  cairo: ChildProcess,
-  payload: CairoPayload
+  minskyProcess: ChildProcess,
+  payload: MinskyProcessPayload
 ) {
   const newLine = '\n';
   let stdinCommand = null;
@@ -925,13 +935,14 @@ export function executeCommandOnMinskyServer(
   }
   if (stdinCommand) {
     log.silly(stdinCommand);
-    cairo.stdin.write(stdinCommand + newLine);
+    minskyProcess.stdin.write(stdinCommand + newLine);
   }
 }
+
 export function render() {
-  const renderPayload: CairoPayload = {
+  const renderPayload: MinskyProcessPayload = {
     command: '/minsky/canvas/renderFrame',
   };
 
-  handleCairo(null, renderPayload);
+  handleMinskyProcess(null, renderPayload);
 }

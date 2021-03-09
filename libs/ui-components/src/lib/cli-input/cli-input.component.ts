@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { CairoPayload } from '@minsky/shared';
+import { MinskyProcessPayload } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -23,7 +23,7 @@ export class CliInputComponent implements OnInit, OnDestroy {
   commands: Array<string>;
   filteredOptions: Observable<string[]>;
   command: string;
-  cairoReply: Array<string> = [];
+  minskyProcessReply: Array<string> = [];
   form: FormGroup;
 
   constructor(
@@ -48,10 +48,13 @@ export class CliInputComponent implements OnInit, OnDestroy {
     });
 
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.on('cairo-reply', (event, stdout) => {
-        this.cairoReply.push(stdout);
-        this.changeDetectionRef.detectChanges();
-      });
+      this.electronService.ipcRenderer.on(
+        'minsky-process-reply',
+        (event, stdout) => {
+          this.minskyProcessReply.push(stdout);
+          this.changeDetectionRef.detectChanges();
+        }
+      );
 
       this.commands = this.electronService.ipcRenderer.sendSync(
         'get-minsky-commands'
@@ -63,15 +66,15 @@ export class CliInputComponent implements OnInit, OnDestroy {
     return !this.form.get('command').value;
   }
   render() {
-    this.communicationService.sendCairoRenderEvent();
+    this.communicationService.sendMinskyRenderCommand();
   }
 
   handleSubmit() {
     if (this.command) {
-      const payload: CairoPayload = {
+      const payload: MinskyProcessPayload = {
         command: this.command,
       };
-      this.communicationService.sendCairoEvent(payload);
+      this.communicationService.sendMinskyCommand(payload);
     }
   }
 
