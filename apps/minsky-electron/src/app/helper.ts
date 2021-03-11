@@ -1,5 +1,6 @@
 import {
   ActiveWindow,
+  availableOperations,
   commandsMapping,
   MinskyProcessPayload,
 } from '@minsky/shared';
@@ -274,13 +275,8 @@ export function createMenu() {
                 command: '/minsky/load',
                 filePath: _dialog.filePaths[0].toString(),
               };
-              const renderPayload: MinskyProcessPayload = {
-                command: '/minsky/canvas/renderFrame',
-              };
 
-              handleMinskyProcess(null, loadPayload);
-
-              handleMinskyProcess(null, renderPayload);
+              handleMinskyProcessAndRender(loadPayload);
             } catch (error) {
               logError(error);
             }
@@ -438,6 +434,7 @@ export function createMenu() {
     },
     {
       label: 'Edit',
+
       submenu: [
         {
           label: 'Undo',
@@ -506,16 +503,23 @@ export function createMenu() {
       label: 'Insert',
       submenu: [
         {
-          label: 'Godley Table',
+          label: 'plot',
           click() {
-            const addGodleyPayload: MinskyProcessPayload = {
-              command: commandsMapping.ADD_GODLEY,
-            };
-
-            handleMinskyProcess(null, addGodleyPayload);
+            handleMinskyProcessAndRender({
+              command: commandsMapping.ADD_PLOT,
+            });
           },
         },
         {
+          label: 'Godley Table',
+          click() {
+            handleMinskyProcessAndRender({
+              command: commandsMapping.ADD_GODLEY,
+            });
+          },
+        },
+        {
+          // TODO:
           label: 'Variable',
           submenu: [
             {
@@ -564,42 +568,115 @@ export function createMenu() {
           submenu: [
             {
               label: 'add',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ADD}"`,
+                });
+              },
             },
             {
               label: 'subtract',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUBTRACT}"`,
+                });
+              },
             },
             {
-              label: 'multiple',
+              label: 'multiply',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MULTIPLY}"`,
+                });
+              },
             },
             {
               label: 'divide',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIVIDE}"`,
+                });
+              },
             },
             {
               label: 'min',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MIN}"`,
+                });
+              },
             },
             {
               label: 'max',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MAX}"`,
+                });
+              },
             },
             {
               label: 'and',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.AND_}"`,
+                });
+              },
             },
             {
               label: 'or',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.OR_}"`,
+                });
+              },
             },
             {
               label: 'log',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LOG}"`,
+                });
+              },
             },
             {
               label: 'pow',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.POW}"`,
+                });
+              },
+            },
+            {
+              label: 'polygamma',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.POLYGAMMA}"`,
+                });
+              },
             },
             {
               label: 'lt',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LT}"`,
+                });
+              },
             },
             {
               label: 'le',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LE}"`,
+                });
+              },
             },
             {
               label: 'eq',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.EQ}"`,
+                });
+              },
             },
           ],
         },
@@ -608,54 +685,155 @@ export function createMenu() {
           submenu: [
             {
               label: 'copy',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COPY}"`,
+                });
+              },
             },
             {
               label: 'sqrt',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SQRT}"`,
+                });
+              },
             },
             {
               label: 'exp',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.EXP}"`,
+                });
+              },
             },
             {
               label: 'ln',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LN}"`,
+                });
+              },
             },
             {
               label: 'sin',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SIN}"`,
+                });
+              },
             },
             {
               label: 'cos',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COS}"`,
+                });
+              },
             },
             {
               label: 'tan',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TAN}"`,
+                });
+              },
             },
             {
               label: 'asin',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ASIN}"`,
+                });
+              },
             },
             {
               label: 'acos',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ACOS}"`,
+                });
+              },
             },
             {
               label: 'atan',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ATAN}"`,
+                });
+              },
             },
             {
               label: 'sinh',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SINH}"`,
+                });
+              },
             },
             {
               label: 'cosh',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COSH}"`,
+                });
+              },
             },
             {
               label: 'tanh',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TANH}"`,
+                });
+              },
             },
             {
               label: 'abs',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ABS}"`,
+                });
+              },
             },
             {
               label: 'floor',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FLOOR}"`,
+                });
+              },
             },
             {
               label: 'frac',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FRAC}"`,
+                });
+              },
             },
             {
               label: 'not',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.NOT_}"`,
+                });
+              },
+            },
+            {
+              label: 'gamma',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.GAMMA}"`,
+                });
+              },
+            },
+            {
+              label: 'fact',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FACT}"`,
+                });
+              },
             },
           ],
         },
@@ -664,27 +842,67 @@ export function createMenu() {
           submenu: [
             {
               label: 'sum',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUM}"`,
+                });
+              },
             },
             {
               label: 'product',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.PRODUCT}"`,
+                });
+              },
             },
             {
               label: 'infimum',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INFIMUM}"`,
+                });
+              },
             },
             {
               label: 'supremum',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUPREMUM}"`,
+                });
+              },
             },
             {
               label: 'any',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ANY}"`,
+                });
+              },
             },
             {
               label: 'all',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ALL}"`,
+                });
+              },
             },
             {
               label: 'infIndex',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INF_INDEX}"`,
+                });
+              },
             },
             {
               label: 'supIndex',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUP_INDEX}"`,
+                });
+              },
             },
           ],
         },
@@ -693,12 +911,27 @@ export function createMenu() {
           submenu: [
             {
               label: 'runningSum',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.RUNNING_SUM}"`,
+                });
+              },
             },
             {
               label: 'runningProduct',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.RUNNING_PRODUCT}"`,
+                });
+              },
             },
             {
               label: 'difference',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIFFERENCE}"`,
+                });
+              },
             },
           ],
         },
@@ -707,42 +940,76 @@ export function createMenu() {
           submenu: [
             {
               label: 'innerProduct',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INNER_PRODUCT}"`,
+                });
+              },
             },
             {
               label: 'outerProduct',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.OUTER_PRODUCT}"`,
+                });
+              },
             },
             {
               label: 'index',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INDEX}"`,
+                });
+              },
             },
             {
               label: 'gather',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.GATHER}"`,
+                });
+              },
             },
           ],
         },
         {
           label: 'time',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TIME}"`,
+            });
+          },
         },
         {
           label: 'integrate',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INTEGRATE}"`,
+            });
+          },
         },
         {
           label: 'differentiate',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIFFERENTIATE}"`,
+            });
+          },
         },
         {
           label: 'data',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DATA}"`,
+            });
+          },
         },
         {
           label: 'ravel',
-        },
-        {
-          label: 'plot',
           click() {
-            const loadPayload: MinskyProcessPayload = {
-              command: commandsMapping.ADD_PLOT,
-            };
-
-            handleMinskyProcess(null, loadPayload);
-            render();
+            handleMinskyProcessAndRender({
+              command: commandsMapping.ADD_RAVEL,
+            });
           },
         },
       ],
@@ -887,29 +1154,29 @@ export function executeCommandOnMinskyServer(
   const newLine = '\n';
   let stdinCommand = null;
   switch (payload.command) {
-    case '/minsky/load':
+    case commandsMapping.LOAD:
       stdinCommand = `${payload.command} "${payload.filePath}"`;
       break;
 
-    case '/minsky/canvas/renderFrame':
+    case commandsMapping.RENDER_FRAME:
       stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${
         App.leftOffset
       }, ${App.topOffset}]`;
       break;
 
-    case '/minsky/canvas/mouseMove':
+    case commandsMapping.mousemove:
       stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
         payload.mouseY - App.topOffset
       }]`;
       break;
 
-    case '/minsky/canvas/mouseDown':
+    case commandsMapping.mousedown:
       stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
         payload.mouseY - App.topOffset
       }]`;
       break;
 
-    case '/minsky/canvas/mouseUp':
+    case commandsMapping.mouseup:
       stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
         payload.mouseY - App.topOffset
       }]`;
@@ -939,9 +1206,14 @@ export function executeCommandOnMinskyServer(
   }
 }
 
+export function handleMinskyProcessAndRender(payload: MinskyProcessPayload) {
+  handleMinskyProcess(null, payload);
+  render();
+}
+
 export function render() {
   const renderPayload: MinskyProcessPayload = {
-    command: '/minsky/canvas/renderFrame',
+    command: commandsMapping.RENDER_FRAME,
   };
 
   handleMinskyProcess(null, renderPayload);
