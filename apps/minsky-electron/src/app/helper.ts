@@ -6,15 +6,8 @@ import {
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
-import {
-  BrowserWindow,
-  dialog,
-  ipcMain,
-  Menu,
-  MenuItem,
-  shell,
-} from 'electron';
-import * as storage from 'electron-json-storage';
+import { BrowserWindow, dialog, ipcMain, Menu, shell } from 'electron';
+// import * as storage from 'electron-json-storage';
 import * as log from 'electron-log';
 import { readFileSync, writeFile } from 'fs';
 import { join } from 'path';
@@ -40,33 +33,32 @@ export function getStorageBackgroundColor() {
 }
 
 export function addUpdateBookmarkList(mainMenu: Menu) {
-  storage.get('bookmarks', (error, data: [{ title: string; click: any }]) => {
-    if (error) new Error('File not found or error selecting the file');
-    if (data) {
-      const outerSubMenu = mainMenu.getMenuItemById('main-bookmark').submenu;
-      const innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark')
-        .submenu;
-
-      outerSubMenu.append(new MenuItem({ type: 'separator' }));
-      if (Array.isArray(data)) {
-        data.forEach((ele) => {
-          outerSubMenu.append(
-            new MenuItem({
-              label: ele.title,
-              click: goToSelectedBookmark.bind(ele),
-            })
-          );
-          innerSubMenu.append(
-            new MenuItem({
-              label: ele.title,
-              click: deleteBookmark.bind(ele),
-            })
-          );
-        });
-      }
-      Menu.setApplicationMenu(mainMenu);
-    }
-  });
+  // storage.get('bookmarks', (error, data: [{ title: string; click: any }]) => {
+  //   if (error) new Error('File not found or error selecting the file');
+  //   if (data) {
+  //     const outerSubMenu = mainMenu.getMenuItemById('main-bookmark').submenu;
+  //     const innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark')
+  //       .submenu;
+  //     outerSubMenu.append(new MenuItem({ type: 'separator' }));
+  //     if (Array.isArray(data)) {
+  //       data.forEach((ele) => {
+  //         outerSubMenu.append(
+  //           new MenuItem({
+  //             label: ele.title,
+  //             click: goToSelectedBookmark.bind(ele),
+  //           })
+  //         );
+  //         innerSubMenu.append(
+  //           new MenuItem({
+  //             label: ele.title,
+  //             click: deleteBookmark.bind(ele),
+  //           })
+  //         );
+  //       });
+  //     }
+  //     Menu.setApplicationMenu(mainMenu);
+  //   }
+  // });
 }
 
 export function goToSelectedBookmark() {
@@ -78,40 +70,36 @@ export function goToSelectedBookmark() {
 }
 
 export function deleteBookmark() {
-  storage.get('bookmarks', (error, data: [{ title: string; click: any }]) => {
-    // tslint:disable-next-line: no-unused-expression
-    if (error) new Error('File not found');
-    if (data) {
-      const ind = data.findIndex((ele) => ele.title === this.title);
-      // tslint:disable-next-line: no-unused-expression
-      ind > -1 ? data.splice(ind, 1) : new Error('Bookmark Not Found');
-      // tslint:disable-next-line: no-shadowed-variable
-      storage.set('bookmarks', data, (error) => {
-        logError(error);
-      });
-      const window = getMainWindow();
-
-      window.webContents.send('refresh-menu');
-
-      // ToDo add code to delete bookmark
-
-      /* const innerSubmenu = template
-        .getMenuItemById('main-bookmark')
-        .submenu.getMenuItemById('delete-bookmark').submenu.items
-      const outerSubmenu = template.getMenuItemById('main-bookmark')
-        .submenu.items
-      const innerIdx = innerSubmenu.findIndex(
-        (ele) => ele.label === this.title
-      )
-      const outerIdx = outerSubmenu.findIndex(
-        (ele) => ele.label === this.title
-      )
-      innerSubmenu[innerIdx].visible = false
-      outerSubmenu[outerIdx].visible = false */
-
-      // innerIdx > -1 ? innerSubmenu.splice(innerIdx, 1) : new Error("Bookmark Not Found");
-    }
-  });
+  // storage.get('bookmarks', (error, data: [{ title: string; click: any }]) => {
+  //   // tslint:disable-next-line: no-unused-expression
+  //   if (error) new Error('File not found');
+  //   if (data) {
+  //     const ind = data.findIndex((ele) => ele.title === this.title);
+  //     // tslint:disable-next-line: no-unused-expression
+  //     ind > -1 ? data.splice(ind, 1) : new Error('Bookmark Not Found');
+  //     // tslint:disable-next-line: no-shadowed-variable
+  //     storage.set('bookmarks', data, (error) => {
+  //       logError(error);
+  //     });
+  //     const window = getMainWindow();
+  //     window.webContents.send('refresh-menu');
+  //     // ToDo add code to delete bookmark
+  //     /* const innerSubmenu = template
+  //       .getMenuItemById('main-bookmark')
+  //       .submenu.getMenuItemById('delete-bookmark').submenu.items
+  //     const outerSubmenu = template.getMenuItemById('main-bookmark')
+  //       .submenu.items
+  //     const innerIdx = innerSubmenu.findIndex(
+  //       (ele) => ele.label === this.title
+  //     )
+  //     const outerIdx = outerSubmenu.findIndex(
+  //       (ele) => ele.label === this.title
+  //     )
+  //     innerSubmenu[innerIdx].visible = false
+  //     outerSubmenu[outerIdx].visible = false */
+  //     // innerIdx > -1 ? innerSubmenu.splice(innerIdx, 1) : new Error("Bookmark Not Found");
+  //   }
+  // });
 }
 
 export function checkBackgroundAndApplyTextColor(color) {
@@ -284,11 +272,22 @@ export function createMenu() {
         },
         {
           label: 'Open Recent',
-          role: 'recentDocuments',
+          id: 'openRecent',
           submenu: [
+            { type: 'separator' },
             {
               label: 'Clear Recent',
-              role: 'clearRecentDocuments',
+              id: 'clearRecent',
+              click: () => {
+                App.store.set('recentFiles', []);
+                Menu.getApplicationMenu()
+                  .getMenuItemById('openRecent')
+                  .submenu.items.forEach((i) => {
+                    if (i.id !== 'clearRecent') {
+                      i.visible = false;
+                    }
+                  });
+              },
             },
           ],
         },
@@ -1100,21 +1099,10 @@ export function createMenu() {
   Menu.setApplicationMenu(menu);
 }
 
-export function handleMinskyProcess(
-  event: Electron.IpcMainEvent,
-  payload: MinskyProcessPayload
-) {
-  let command: string;
-
-  if (typeof event === 'string') {
-    command = event;
-  } else {
-    command = payload.command;
-  }
-
+export function handleMinskyProcess(event, payload: MinskyProcessPayload) {
   if (App.minskyProcess) {
     executeCommandOnMinskyServer(App.minskyProcess, payload);
-  } else if (!App.minskyProcess && command === 'startMinskyProcess') {
+  } else if (!App.minskyProcess && payload.command === 'startMinskyProcess') {
     try {
       App.minskyRESTServicePath = payload.filePath;
       App.minskyProcess = spawn(App.minskyRESTServicePath);
@@ -1169,6 +1157,16 @@ export function handleMinskyProcess(
   }
 }
 
+function addFileToRecentFiles(filepath: string) {
+  const recentFiles = App.store.get('recentFiles');
+
+  const exists = Boolean(recentFiles.find((f) => f === filepath));
+  if (!exists) {
+    recentFiles.push(filepath);
+    App.store.set('recentFiles', recentFiles);
+  }
+}
+
 export function executeCommandOnMinskyServer(
   minskyProcess: ChildProcess,
   payload: MinskyProcessPayload
@@ -1178,6 +1176,7 @@ export function executeCommandOnMinskyServer(
   switch (payload.command) {
     case commandsMapping.LOAD:
       stdinCommand = `${payload.command} "${payload.filePath}"`;
+      addFileToRecentFiles(payload.filePath);
       break;
 
     case commandsMapping.RENDER_FRAME:
