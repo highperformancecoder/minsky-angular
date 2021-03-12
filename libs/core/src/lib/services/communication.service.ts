@@ -154,6 +154,10 @@ export class CommunicationService {
           this.clearStepInterval();
           break;
 
+        case 'REVERSE_CHECKBOX':
+          command = `${command} ${message.value}`;
+          break;
+
         default:
           break;
       }

@@ -283,10 +283,12 @@ export function createMenu() {
           },
         },
         {
-          label: 'Recent Files',
+          label: 'Open Recent',
+          role: 'recentDocuments',
           submenu: [
             {
-              label: 'TestFile',
+              label: 'Clear Recent',
+              role: 'clearRecentDocuments',
             },
           ],
         },
@@ -391,7 +393,7 @@ export function createMenu() {
         },
         {
           label: 'Quit',
-          accelerator: 'Ctrl + Q',
+          accelerator: 'CmdOrCtrl + Q',
           role: 'quit',
         },
         {
@@ -434,27 +436,47 @@ export function createMenu() {
     },
     {
       label: 'Edit',
-
       submenu: [
         {
           label: 'Undo',
-          role: 'undo',
+          accelerator: 'CmdOrCtrl + Z',
+          click() {
+            const numberOfTimes = 1;
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.UNDO} ${numberOfTimes}`,
+            });
+          },
         },
         {
           label: 'Redo',
-          role: 'redo',
+          accelerator: 'CmdOrCtrl + Y',
         },
         {
           label: 'Cut',
-          role: 'cut',
+          accelerator: 'CmdOrCtrl + Shift + X',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.CUT}`,
+            });
+          },
         },
         {
           label: 'Copy',
-          role: 'copy',
+          accelerator: 'CmdOrCtrl + Shift + C',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.COPY}`,
+            });
+          },
         },
         {
           label: 'Paste',
-          role: 'paste',
+          accelerator: 'CmdOrCtrl + Shift + V',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.PASTE}`,
+            });
+          },
         },
         {
           label: 'Group selection',

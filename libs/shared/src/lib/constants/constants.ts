@@ -26,13 +26,18 @@ export const commandsMapping = {
   RENDER_FRAME: '/minsky/canvas/renderFrame',
   RESET_ZOOM: `/minsky/canvas/model/zoom`,
   RESET: '/minsky/reset',
-  REVERSE_CHECKBOX: '',
   SET_GODLEY_ICON_RESOURCE: '/minsky/setGodleyIconResource',
   SET_GROUP_ICON_RESOURCE: '/minsky/setGroupIconResource',
   SIMULATION_SPEED: '/minsky/nSteps',
   STEP: '/minsky/step',
   ZOOM_IN: `/minsky/canvas/model/zoom`,
   ZOOM_OUT: `/minsky/canvas/model/zoom`,
+  UNDO: `/minsky/undo`,
+  CUT: `/minsky/cut`,
+  COPY: `/minsky/copy`,
+  PASTE: `/minsky/paste`,
+  GROUP_SELECTION: `/minsky/canvas/groupSelection`,
+  REVERSE_CHECKBOX: `/minsky/reverse`,
 };
 
 export const availableOperations = {

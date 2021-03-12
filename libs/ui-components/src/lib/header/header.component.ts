@@ -34,10 +34,11 @@ export class HeaderComponent {
     logInfo('recordingReplyButton');
   }
 
-  reverseCheckboxButton() {
+  reverseCheckboxButton(event) {
     this.commService.sendEvent(this.headerEvent, {
       action: 'CLICKED',
       target: 'REVERSE_CHECKBOX',
+      value: event.target.checked,
     });
     logInfo('reverseCheckboxButton');
   }
