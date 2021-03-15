@@ -43,6 +43,7 @@ export const commandsMapping = {
   BOOKMARK_LIST: '/minsky/canvas/selection/bookmarkList',
   DELETE_BOOKMARK: '/minsky/canvas/selection/deleteBookmark',
   GOTO_BOOKMARK: '/minsky/canvas/selection/gotoBookmark',
+  DIMENSIONAL_ANALYSIS: '/minsky/dimensionalAnalysis',
 };
 
 export const minskyProcessReplyIndicators = {

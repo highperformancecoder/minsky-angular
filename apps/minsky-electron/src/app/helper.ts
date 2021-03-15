@@ -286,12 +286,8 @@ export function createMenu() {
         {
           label: 'Dimensional Analysis',
           click() {
-            createMenuPopUpWithRouting({
-              width: 240,
-              height: 153,
-              title: '',
-              url: `${rendererAppURL}/#/menu/file/dimensional-analysis`,
-              backgroundColor: '#ffffff',
+            handleMinskyProcessAndRender({
+              command: commandsMapping.DIMENSIONAL_ANALYSIS,
             });
           },
         },
