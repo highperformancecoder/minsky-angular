@@ -39,11 +39,16 @@ export const commandsMapping = {
   GROUP_SELECTION: `/minsky/canvas/groupSelection`,
   REVERSE_CHECKBOX: `/minsky/reverse`,
   T: `/minsky/t`,
+  ADD_BOOKMARK: '/minsky/canvas/selection/addBookmark',
+  BOOKMARK_LIST: '/minsky/canvas/selection/bookmarkList',
+  DELETE_BOOKMARK: '/minsky/canvas/selection/deleteBookmark',
+  GOTO_BOOKMARK: '/minsky/canvas/selection/gotoBookmark',
 };
 
 export const minskyProcessReplyIndicators = {
   T: '/minsky/t=>',
   DELTA_T: '/minsky/t0=>', //TODO:
+  BOOKMARK_LIST: '/minsky/canvas/selection/bookmarkList=>',
 };
 
 export const availableOperations = {

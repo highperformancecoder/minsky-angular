@@ -11,16 +11,12 @@ import {
 } from '@minsky/shared';
 import { spawn } from 'child_process';
 import * as debug from 'debug';
-import { app, ipcMain, Menu } from 'electron';
-// import * as storage from 'electron-json-storage';
+import { app, ipcMain } from 'electron';
 import * as log from 'electron-log';
 import { environment } from '../../environments/environment';
 import App from '../app';
 import {
-  addUpdateBookmarkList,
   checkBackgroundAndApplyTextColor,
-
-  // createMenuPopUp,
   createMenuPopUpWithRouting,
   handleMinskyProcess,
   setStorageBackgroundColor,
@@ -47,42 +43,6 @@ ipcMain.on('quit', (event, code) => {
   app.exit(code);
 });
 
-ipcMain.on('save-bookmark', (event, data) => {
-  if (data) {
-    const menu = Menu.getApplicationMenu();
-    // storage.get(data.fileName, (error, fileData: any) => {
-    //   if (error) throw error;
-    //   const dataToSave = {
-    //     title: data.bookmarkTitle,
-    //     url: App.mainWindow.webContents.getURL(),
-    //   };
-
-    //   fileData.push(dataToSave);
-    //   // tslint:disable-next-line: no-shadowed-variable
-    //   storage.set(data.fileName, fileData, (error) => {
-    //     if (error) throw error;
-    //   });
-    //   const outerSubMenu = menu.getMenuItemById('main-bookmark').submenu;
-    //   const innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark')
-    //     .submenu;
-    //   outerSubMenu.append(
-    //     new MenuItem({
-    //       label: data.bookmarkTitle,
-    //       click: goToSelectedBookmark.bind(dataToSave),
-    //     })
-    //   );
-    //   innerSubMenu.append(
-    //     new MenuItem({
-    //       label: data.bookmarkTitle,
-    //       click: deleteBookmark.bind(dataToSave),
-    //     })
-    //   );
-    //   Menu.setApplicationMenu(menu);
-    // });
-  }
-  event.reply('bookmark-done-reply');
-});
-
 ipcMain.on('background-color:ok', (event, data) => {
   // storage.set('backgroundColor', { color: data.color }, (error) => {
   //   if (error) {
@@ -95,17 +55,8 @@ ipcMain.on('background-color:ok', (event, data) => {
   event.reply('background-color:ok-reply');
 });
 
-/* ipcMain.on('create-new-window', (event, data) => {
-  const { width, height, title, dirPath, bgColor } = data;
-  createMenuPopUp(width, height, title, dirPath, bgColor);
-});
- */
 ipcMain.on('create-menu-popup', (event, data) => {
   createMenuPopUpWithRouting(data);
-});
-
-ipcMain.on('ready-template', () => {
-  addUpdateBookmarkList(Menu.getApplicationMenu());
 });
 
 ipcMain.on('minsky-process', (event, payload: MinskyProcessPayload) => {

@@ -17,7 +17,6 @@
           "options": {
             "allowedCommonJsDependencies": [
               "debug",
-              "electron-json-storage",
               "css-element-queries",
               "socket.io-client"
             ],

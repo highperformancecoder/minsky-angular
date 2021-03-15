@@ -3,7 +3,6 @@ import { ActiveWindow, commandsMapping } from '@minsky/shared';
 import { ChildProcess } from 'child_process';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, Menu, MenuItem, screen, shell } from 'electron';
-// import * as storage from 'electron-json-storage';
 import * as Store from 'electron-store';
 import { join } from 'path';
 import { format } from 'url';
