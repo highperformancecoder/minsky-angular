@@ -19,6 +19,9 @@ export class WiringComponent implements OnInit, OnDestroy {
   _availableOperations = availableOperations;
   _commandsMapping = commandsMapping;
 
+  t = 0;
+  deltaT = 0;
+
   constructor(
     private cmService: CommunicationService,
     private electronService: ElectronService

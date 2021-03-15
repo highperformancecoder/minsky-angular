@@ -140,6 +140,7 @@ export class CommunicationService {
             };
 
             this.sendMinskyCommandAndRender(payload);
+            this.sendMinskyCommandAndRender({ command: commandsMapping.T });
           }, 1000);
           break;
 
@@ -152,6 +153,12 @@ export class CommunicationService {
         case 'RESET':
           this.showPlayButton$.next(true);
           this.clearStepInterval();
+          break;
+
+        case 'STEP':
+          autoHandleMinskyProcess = false;
+          this.sendMinskyCommandAndRender({ command });
+          this.sendMinskyCommandAndRender({ command: commandsMapping.T });
           break;
 
         case 'REVERSE_CHECKBOX':

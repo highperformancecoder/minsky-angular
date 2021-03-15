@@ -38,6 +38,12 @@ export const commandsMapping = {
   PASTE: `/minsky/paste`,
   GROUP_SELECTION: `/minsky/canvas/groupSelection`,
   REVERSE_CHECKBOX: `/minsky/reverse`,
+  T: `/minsky/t`,
+};
+
+export const minskyProcessReplyIndicators = {
+  T: '/minsky/t=>',
+  DELTA_T: '/minsky/t0=>', //TODO:
 };
 
 export const availableOperations = {
