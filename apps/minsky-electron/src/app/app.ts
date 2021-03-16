@@ -15,6 +15,7 @@ const logWindows = debug('minsky:electron_windows');
 
 interface MinskyStore {
   recentFiles: Array<string>;
+  backgroundColor: string;
 }
 
 export default class App {
@@ -75,15 +76,18 @@ export default class App {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
+
     (async () => {
       await startServer(/* { serverPortRangeEnd, serverPortRangeStart } */);
     })();
+
     App.initMainWindow();
     App.loadMainWindow();
 
     App.store = new Store<MinskyStore>({
       defaults: {
         recentFiles: [],
+        backgroundColor: '#ffffff',
       },
     });
 
@@ -145,8 +149,8 @@ export default class App {
   private static initMainWindow() {
     const display = screen.getPrimaryDisplay();
     const workAreaSize = display.workAreaSize;
-    const width = Math.min(1280, workAreaSize.width || 1280);
-    const height = Math.min(720, workAreaSize.height || 720);
+    const width = Math.min(workAreaSize.width, 1280);
+    const height = Math.min(workAreaSize.height, 801);
 
     // Create the browser window.
     App.mainWindow = new BrowserWindow({

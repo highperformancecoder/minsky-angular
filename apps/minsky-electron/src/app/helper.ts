@@ -30,15 +30,6 @@ function getMainWindow(): BrowserWindow {
   return activeWindows.get(1).context;
 }
 
-let storageBackgroundColor;
-export function setStorageBackgroundColor(color) {
-  storageBackgroundColor = color;
-}
-
-export function getStorageBackgroundColor() {
-  return storageBackgroundColor;
-}
-
 export function checkBackgroundAndApplyTextColor(color) {
   // Variables for red, green, blue values
 
@@ -62,11 +53,8 @@ export function checkBackgroundAndApplyTextColor(color) {
       '0x' + color.slice(1).replace(color.length < 5 && /./g, '$&$&')
     );
 
-    // tslint:disable-next-line: no-bitwise
     r = colorArray >> 16;
-    // tslint:disable-next-line: no-bitwise
     g = (colorArray >> 8) & 255;
-    // tslint:disable-next-line: no-bitwise
     b = colorArray & 255;
   }
 
@@ -82,6 +70,7 @@ export function checkBackgroundAndApplyTextColor(color) {
     applyCssToBackground(css);
   }
 }
+
 function applyCssToBackground(css) {
   const window = getMainWindow();
   window.webContents.insertCSS(css);

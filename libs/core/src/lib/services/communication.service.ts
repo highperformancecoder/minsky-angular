@@ -52,6 +52,13 @@ export class CommunicationService {
     this.socket.emit(message, data);
   }
 
+  setBackgroundColor(color = null) {
+    if (this.electronService.isElectron)
+      this.electronService.ipcRenderer.send('set-background-color', {
+        color: color,
+      });
+  }
+
   initMinskyResources() {
     if (this.electronService.isElectron) {
       this.setGodleyIconResource();
@@ -234,8 +241,7 @@ export class CommunicationService {
     document.addEventListener('DOMContentLoaded', () => {
       // When the event DOMContentLoaded occurs, it is safe to access the DOM
 
-      window.addEventListener('scroll', this.canvasSticky);
-      this.canvasDetail = document.getElementById('offsetValue');
+      this.canvasDetail = document.getElementById('canvas');
 
       // Get the offset position of the canvas
       this.topOffset = this.canvasDetail.offsetTop;
@@ -258,19 +264,6 @@ export class CommunicationService {
 
     if (!this.electronService.isElectron) {
       this.dispatchEvents('Values');
-    }
-  }
-
-  canvasSticky() {
-    if (window.pageYOffset >= this.sticky) {
-      logInfo('window.pageYOffset >= sticky');
-    } else {
-      logInfo('Not window.pageYOffset >= sticky');
-    }
-    if (window.pageYOffset >= this.sticky) {
-      this.canvasDetail.classList.add('sticky');
-    } else {
-      this.canvasDetail.classList.remove('sticky');
     }
   }
 

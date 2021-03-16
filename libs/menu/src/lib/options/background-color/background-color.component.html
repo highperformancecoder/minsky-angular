@@ -1,9 +1,14 @@
 <div class="background-wrapper">
+  <div>{{ colorCtr.value }}</div>
   <input type="color" [formControl]="colorCtr" />
   <div class="background-buttons">
-    <button class="btn ok-btn" id="backgroundOk" (click)="onClickOk()">
+    <button
+      mat-stroked-button
+      class="btn ok-btn"
+      id="backgroundOk"
+      (click)="onClickOk()"
+    >
       OK
     </button>
-    <button class="cancel-btn" (click)="close()">Cancel</button>
   </div>
 </div>

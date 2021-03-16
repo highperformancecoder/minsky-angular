@@ -19,7 +19,6 @@ import {
   checkBackgroundAndApplyTextColor,
   createMenuPopUpWithRouting,
   handleMinskyProcess,
-  setStorageBackgroundColor,
 } from './../helper';
 
 const logError = debug('minsky:electron_error');
@@ -43,16 +42,11 @@ ipcMain.on('quit', (event, code) => {
   app.exit(code);
 });
 
-ipcMain.on('background-color:ok', (event, data) => {
-  // storage.set('backgroundColor', { color: data.color }, (error) => {
-  //   if (error) {
-  //     logError(error);
-  //   }
-  // });
-
-  checkBackgroundAndApplyTextColor(data.color);
-  setStorageBackgroundColor(data.color);
-  event.reply('background-color:ok-reply');
+ipcMain.on('set-background-color', (event, { color }) => {
+  if (color) {
+    App.store.set('backgroundColor', color);
+  }
+  checkBackgroundAndApplyTextColor(App.store.get('backgroundColor'));
 });
 
 ipcMain.on('create-menu-popup', (event, data) => {

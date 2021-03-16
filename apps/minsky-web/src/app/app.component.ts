@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
 import { MinskyProcessPayload } from '@minsky/shared';
@@ -15,7 +15,7 @@ const logError = debug('minsky:web:error');
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   loader = false;
   directory: string[];
   toggleButtonText = 'Start Minsky Service';
@@ -38,7 +38,12 @@ export class AppComponent {
     this.openFile();
     this.saveFile();
     this.windowSize();
+  }
+
+  ngAfterViewInit() {
     this.cmService.canvasOffsetValues();
+
+    this.cmService.setBackgroundColor();
   }
 
   windowSize() {

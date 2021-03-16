@@ -28,7 +28,7 @@ export class WiringComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.minskyCanvas = document.getElementById('offsetValue');
+    this.minskyCanvas = document.getElementById('canvas');
 
     this.mouseMove$ = fromEvent<MouseEvent>(
       this.minskyCanvas,
