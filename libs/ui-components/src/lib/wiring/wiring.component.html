@@ -13,7 +13,7 @@
       <img src="assets/images/icons/var.gif" alt="Variable" title="Variable" />
     </button>
 
-    <button class="tab" (click)="addOperation('integrate')">
+    <button class="tab" (click)="cmService.addOperation('integrate')">
       <img
         src="assets/images/icons/integrate.gif"
         alt="Integrate"
@@ -21,7 +21,7 @@
       />
     </button>
 
-    <button class="tab" (click)="addOperation('differentiate')">
+    <button class="tab" (click)="cmService.addOperation('differentiate')">
       <img
         src="assets/images/icons/differentiate.gif"
         alt="Differentiate"
@@ -29,332 +29,23 @@
       />
     </button>
 
-    <button class="tab" (click)="addOperation('time')">
+    <button class="tab" (click)="cmService.addOperation('time')">
       <img src="assets/images/icons/time.gif" alt="Time" title="Time" />
     </button>
 
-    <!-- euler start-->
-    <button
-      class="tab"
-      [matMenuTriggerFor]="euler"
-      aria-label="Fundamental Constants"
-    >
-      <img
-        src="assets/images/icons/euler.gif"
-        alt="Fundamental Constants"
-        title="Fundamental Constants"
-      />
-    </button>
+    <minsky-euler></minsky-euler>
 
-    <mat-menu yPosition="above" #euler="matMenu" class="horizontal">
-      <button mat-menu-item class="tab" (click)="addOperation('euler')">
-        <img src="assets/images/icons/euler.gif" alt="Euler" title="Euler" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('pi')">
-        <img src="assets/images/icons/pi.gif" alt="Pi" title="Pi" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('zero')">
-        <img src="assets/images/icons/zero.gif" alt="Zero" title="Zero" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('one')">
-        <img src="assets/images/icons/one.gif" alt="One" title="One" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('inf')">
-        <img src="assets/images/icons/inf.gif" alt="Inf" title="Inf" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('percent')">
-        <img
-          src="assets/images/icons/percent.gif"
-          alt="Percent"
-          title="Percent"
-        />
-      </button>
-    </mat-menu>
+    <minsky-binary-operations></minsky-binary-operations>
 
-    <!-- euler end-->
+    <minsky-functions></minsky-functions>
 
-    <!-- binary operations start-->
+    <minsky-reductions></minsky-reductions>
 
-    <button
-      class="tab"
-      [matMenuTriggerFor]="binaryOperations"
-      aria-label="Binary Operations"
-    >
-      <img
-        src="assets/images/icons/add.gif"
-        alt="Binary Operations"
-        title="Binary Operations"
-      />
-    </button>
+    <minsky-scans></minsky-scans>
 
-    <mat-menu yPosition="above" #binaryOperations="matMenu">
-      <button mat-menu-item class="tab" (click)="addOperation('add')">
-        <img src="assets/images/icons/add.gif" alt="Add" title="Add" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('subtract')">
-        <img
-          src="assets/images/icons/subtract.gif"
-          alt="Subtract"
-          title="Subtract"
-        />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('multiply')">
-        <img
-          src="assets/images/icons/multiply.gif"
-          alt="Multiply"
-          title="Multiply"
-        />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('divide')">
-        <img src="assets/images/icons/divide.gif" alt="Divide" title="Divide" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('min')">
-        <img src="assets/images/icons/min.gif" alt="Min" title="Min" />
-      </button>
+    <minsky-tensor-operations></minsky-tensor-operations>
 
-      <button mat-menu-item class="tab" (click)="addOperation('max')">
-        <img src="assets/images/icons/max.gif" alt="Max" title="Max" />
-      </button>
-
-      <button mat-menu-item class="tab" (click)="addOperation('and_')">
-        <img src="assets/images/icons/and_.gif" alt="And" title="And" />
-      </button>
-
-      <button mat-menu-item class="tab" (click)="addOperation('or_')">
-        <img src="assets/images/icons/or_.gif" alt="Or" title="Or" />
-      </button>
-
-      <button mat-menu-item class="tab" (click)="addOperation('log')">
-        <img src="assets/images/icons/log.gif" alt="Log" title="Log" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('pow')">
-        <img src="assets/images/icons/pow.gif" alt="Pow" title="Pow" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('polygamma')">
-        <img
-          src="assets/images/icons/polygamma.gif"
-          alt="Polygamma"
-          title="Polygamma"
-        />
-      </button>
-
-      <button mat-menu-item class="tab" (click)="addOperation('lt')">
-        <img src="assets/images/icons/lt.gif" alt="LT" title="LT" />
-      </button>
-
-      <button mat-menu-item class="tab" (click)="addOperation('le')">
-        <img src="assets/images/icons/le.gif" alt="LE" title="LE" />
-      </button>
-
-      <button mat-menu-item class="tab" (click)="addOperation('eq')">
-        <img src="assets/images/icons/eq.gif" alt="EQ" title="EQ" />
-      </button>
-    </mat-menu>
-
-    <!-- binary operations end-->
-
-    <!-- functions start-->
-    <button class="tab" [matMenuTriggerFor]="functions" aria-label="Functions">
-      <img
-        src="assets/images/icons/sqrt.gif"
-        alt="Functions"
-        title="Functions"
-      />
-    </button>
-
-    <mat-menu yPosition="above" #functions="matMenu">
-      <button mat-menu-item class="tab" (click)="addOperation('sqrt')">
-        <img src="assets/images/icons/sqrt.gif" alt="Sqrt" title="Sqrt" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('exp')">
-        <img src="assets/images/icons/exp.gif" alt="Exp" title="Exp" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('ln')">
-        <img src="assets/images/icons/ln.gif" alt="Ln" title="Ln" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('sin')">
-        <img src="assets/images/icons/sin.gif" alt="Sin" title="Sin" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('cos')">
-        <img src="assets/images/icons/cos.gif" alt="Cos" title="Cos" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('tan')">
-        <img src="assets/images/icons/tan.gif" alt="Tan" title="Tan" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('asin')">
-        <img src="assets/images/icons/asin.gif" alt="Asin" title="Asin" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('acos')">
-        <img src="assets/images/icons/acos.gif" alt="Acos" title="Acos" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('atan')">
-        <img src="assets/images/icons/atan.gif" alt="Atan" title="Atan" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('sinh')">
-        <img src="assets/images/icons/sinh.gif" alt="Sinh" title="Sinh" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('cosh')">
-        <img src="assets/images/icons/cosh.gif" alt="Cosh" title="Cosh" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('tanh')">
-        <img src="assets/images/icons/tanh.gif" alt="Tanh" title="Tanh" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('abs')">
-        <img src="assets/images/icons/abs.gif" alt="Abs" title="Abs" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('floor')">
-        <img src="assets/images/icons/floor.gif" alt="Floor" title="Floor" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('frac')">
-        <img src="assets/images/icons/frac.gif" alt="Frac" title="Frac" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('not_')">
-        <img src="assets/images/icons/not_.gif" alt="Not" title="Not" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('gamma')">
-        <img src="assets/images/icons/gamma.gif" alt="Gamma" title="Gamma" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('fact')">
-        <img src="assets/images/icons/fact.gif" alt="Fact" title="Fact" />
-      </button>
-    </mat-menu>
-    <!-- functions end-->
-
-    <!-- reductions start-->
-
-    <button
-      class="tab"
-      [matMenuTriggerFor]="reductions"
-      aria-label="Reductions"
-    >
-      <img
-        src="assets/images/icons/sum.gif"
-        alt="Reductions"
-        title="Reductions"
-      />
-    </button>
-
-    <mat-menu yPosition="above" #reductions="matMenu">
-      <button mat-menu-item class="tab" (click)="addOperation('sum')">
-        <img src="assets/images/icons/sum.gif" alt="sum" title="Sum" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('product')">
-        <img
-          src="assets/images/icons/product.gif"
-          alt="product"
-          title="Product"
-        />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('infimum')">
-        <img
-          src="assets/images/icons/infimum.gif"
-          alt="infimum"
-          title="Infimum"
-        />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('supremum')">
-        <img
-          src="assets/images/icons/supremum.gif"
-          alt="supremum"
-          title="Supremum"
-        />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('any')">
-        <img src="assets/images/icons/any.gif" alt="any" title="Any" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('all')">
-        <img src="assets/images/icons/all.gif" alt="all" title="All" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('infIndex')">
-        <img
-          src="assets/images/icons/infIndex.gif"
-          alt="infIndex"
-          title="InfIndex"
-        />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('supIndex')">
-        <img
-          src="assets/images/icons/supIndex.gif"
-          alt="supIndex"
-          title="SupIndex"
-        />
-      </button>
-    </mat-menu>
-
-    <!-- reductions end-->
-
-    <!-- scans start-->
-    <button class="tab" [matMenuTriggerFor]="scans" aria-label="Scans">
-      <img src="assets/images/icons/runningSum.gif" alt="Scans" title="Scans" />
-    </button>
-
-    <mat-menu yPosition="above" #scans="matMenu">
-      <button mat-menu-item class="tab" (click)="addOperation('runningSum')">
-        <img
-          src="assets/images/icons/runningSum.gif"
-          alt="runningSum"
-          title="Running Sum"
-        />
-      </button>
-      <button
-        mat-menu-item
-        class="tab"
-        (click)="addOperation('runningProduct')"
-      >
-        <img
-          src="assets/images/icons/runningProduct.gif"
-          alt="runningProduct"
-          title="Running Product"
-        />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('difference')">
-        <img
-          src="assets/images/icons/difference.gif"
-          alt="difference"
-          title="Difference"
-        />
-      </button>
-    </mat-menu>
-    <!-- scans end-->
-
-    <!-- tensorOperations start-->
-    <button
-      class="tab"
-      [matMenuTriggerFor]="tensorOperations"
-      aria-label="Tensor Operations"
-    >
-      <img
-        src="assets/images/icons/outerProduct.gif"
-        alt="Tensor Operations"
-        title="Tensor Operations"
-      />
-    </button>
-
-    <mat-menu yPosition="above" #tensorOperations="matMenu">
-      <button mat-menu-item class="tab" (click)="addOperation('innerProduct')">
-        <img
-          src="assets/images/icons/innerProduct.gif"
-          alt="innerProduct"
-          title="Inner Product"
-        />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('outerProduct')">
-        <img
-          src="assets/images/icons/outerProduct.gif"
-          alt="outerProduct"
-          title="Outer Product"
-        />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('index')">
-        <img src="assets/images/icons/index.gif" alt="index" title="Index" />
-      </button>
-      <button mat-menu-item class="tab" (click)="addOperation('gather')">
-        <img src="assets/images/icons/gather.gif" alt="gather" title="Gather" />
-      </button>
-    </mat-menu>
-    <!-- tensorOperations end-->
-
-    <button class="tab" (click)="addOperation('data')">
+    <button class="tab" (click)="cmService.addOperation('data')">
       <img src="assets/images/icons/data.gif" alt="Data" title="Data" />
     </button>
 
@@ -374,11 +65,10 @@
       <img src="assets/images/icons/sheet.gif" alt="Sheet" title="Sheet" />
     </button>
 
-    <button class="tab" (click)="addOperation('ADD_NOTE')">
+    <button class="tab" (click)="cmService.addOperation('ADD_NOTE')">
       <img src="assets/images/icons/note.gif" alt="Note" title="Note" />
     </button>
 
-    <!-- <button class="tab" (click)="addOperation('ravel')"> -->
     <button class="tab" (click)="insertElement('ADD_RAVEL')">
       <img src="assets/images/icons/ravel.gif" alt="Ravel" title="Ravel" />
     </button>

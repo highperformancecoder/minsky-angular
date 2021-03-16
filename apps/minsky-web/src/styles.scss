@@ -47,3 +47,45 @@ body {
     }
   }
 }
+
+.wiring-tabs {
+  display: flex;
+  .tab {
+    cursor: pointer;
+    width: $dimensions * 3;
+    border: 1px solid $toolbar-box;
+    background-color: $toolbar-bg;
+    border-radius: 4px;
+    margin: $margin;
+    height: $dimensions * 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .tab:focus {
+    outline: none;
+    border-left: 2px solid $toolbar-border-focus;
+    border-top: 2px solid $toolbar-box;
+    border-bottom: 1px solid $toolbar-bg;
+    border-right: 1px solid $toolbar-bg;
+    background: $white;
+  }
+
+  .mat-menu-item {
+    height: 2rem;
+    padding: 0 10px;
+  }
+
+  ::ng-deep .mat-menu-panel {
+    min-width: 50px !important;
+
+    // horizontal
+    max-width: none !important;
+    min-height: 50px !important;
+  }
+
+  // horizontal
+  ::ng-deep .mat-menu-content {
+    display: flex !important;
+  }
+}

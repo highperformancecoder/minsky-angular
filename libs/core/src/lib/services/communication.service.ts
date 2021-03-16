@@ -273,4 +273,12 @@ export class CommunicationService {
       this.canvasDetail.classList.remove('sticky');
     }
   }
+
+  addOperation(arg) {
+    if (this.electronService.isElectron) {
+      this.sendMinskyCommand({
+        command: `${commandsMapping.ADD_OPERATION} "${arg}"`,
+      });
+    }
+  }
 }

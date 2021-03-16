@@ -1,0 +1,62 @@
+<!-- functions start-->
+<button class="tab" [matMenuTriggerFor]="functions" aria-label="Functions">
+  <img src="assets/images/icons/sqrt.gif" alt="Functions" title="Functions" />
+</button>
+
+<mat-menu yPosition="above" #functions="matMenu">
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('sqrt')">
+    <img src="assets/images/icons/sqrt.gif" alt="Sqrt" title="Sqrt" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('exp')">
+    <img src="assets/images/icons/exp.gif" alt="Exp" title="Exp" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('ln')">
+    <img src="assets/images/icons/ln.gif" alt="Ln" title="Ln" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('sin')">
+    <img src="assets/images/icons/sin.gif" alt="Sin" title="Sin" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('cos')">
+    <img src="assets/images/icons/cos.gif" alt="Cos" title="Cos" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('tan')">
+    <img src="assets/images/icons/tan.gif" alt="Tan" title="Tan" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('asin')">
+    <img src="assets/images/icons/asin.gif" alt="Asin" title="Asin" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('acos')">
+    <img src="assets/images/icons/acos.gif" alt="Acos" title="Acos" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('atan')">
+    <img src="assets/images/icons/atan.gif" alt="Atan" title="Atan" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('sinh')">
+    <img src="assets/images/icons/sinh.gif" alt="Sinh" title="Sinh" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('cosh')">
+    <img src="assets/images/icons/cosh.gif" alt="Cosh" title="Cosh" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('tanh')">
+    <img src="assets/images/icons/tanh.gif" alt="Tanh" title="Tanh" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('abs')">
+    <img src="assets/images/icons/abs.gif" alt="Abs" title="Abs" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('floor')">
+    <img src="assets/images/icons/floor.gif" alt="Floor" title="Floor" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('frac')">
+    <img src="assets/images/icons/frac.gif" alt="Frac" title="Frac" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('not_')">
+    <img src="assets/images/icons/not_.gif" alt="Not" title="Not" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('gamma')">
+    <img src="assets/images/icons/gamma.gif" alt="Gamma" title="Gamma" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('fact')">
+    <img src="assets/images/icons/fact.gif" alt="Fact" title="Fact" />
+  </button>
+</mat-menu>
+<!-- functions end-->

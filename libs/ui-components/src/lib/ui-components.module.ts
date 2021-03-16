@@ -12,6 +12,12 @@ import { ToolbarComponent } from './toolbar/toolbar.component';
 import { VariablesComponent } from './variables/variables.component';
 import { WiringComponent } from './wiring/wiring.component';
 import { XTermComponent } from './x-term/x-term.component';
+import { EulerComponent } from './wiring/euler/euler.component';
+import { BinaryOperationsComponent } from './wiring/binary-operations/binary-operations.component';
+import { FunctionsComponent } from './wiring/functions/functions.component';
+import { ReductionsComponent } from './wiring/reductions/reductions.component';
+import { ScansComponent } from './wiring/scans/scans.component';
+import { TensorOperationsComponent } from './wiring/tensor-operations/tensor-operations.component';
 @NgModule({
   declarations: [
     HeaderComponent,
@@ -23,6 +29,12 @@ import { XTermComponent } from './x-term/x-term.component';
     VariablesComponent,
     XTermComponent,
     CliInputComponent,
+    EulerComponent,
+    BinaryOperationsComponent,
+    FunctionsComponent,
+    ReductionsComponent,
+    ScansComponent,
+    TensorOperationsComponent,
   ],
   imports: [
     CommonModule,

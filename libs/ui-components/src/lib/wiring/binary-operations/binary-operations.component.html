@@ -1,0 +1,91 @@
+<!-- binary operations start-->
+
+<button
+  class="tab"
+  [matMenuTriggerFor]="binaryOperations"
+  aria-label="Binary Operations"
+>
+  <img
+    src="assets/images/icons/add.gif"
+    alt="Binary Operations"
+    title="Binary Operations"
+  />
+</button>
+
+<mat-menu yPosition="above" #binaryOperations="matMenu">
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('add')">
+    <img src="assets/images/icons/add.gif" alt="Add" title="Add" />
+  </button>
+  <button
+    mat-menu-item
+    class="tab"
+    (click)="cmService.addOperation('subtract')"
+  >
+    <img
+      src="assets/images/icons/subtract.gif"
+      alt="Subtract"
+      title="Subtract"
+    />
+  </button>
+  <button
+    mat-menu-item
+    class="tab"
+    (click)="cmService.addOperation('multiply')"
+  >
+    <img
+      src="assets/images/icons/multiply.gif"
+      alt="Multiply"
+      title="Multiply"
+    />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('divide')">
+    <img src="assets/images/icons/divide.gif" alt="Divide" title="Divide" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('min')">
+    <img src="assets/images/icons/min.gif" alt="Min" title="Min" />
+  </button>
+
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('max')">
+    <img src="assets/images/icons/max.gif" alt="Max" title="Max" />
+  </button>
+
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('and_')">
+    <img src="assets/images/icons/and_.gif" alt="And" title="And" />
+  </button>
+
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('or_')">
+    <img src="assets/images/icons/or_.gif" alt="Or" title="Or" />
+  </button>
+
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('log')">
+    <img src="assets/images/icons/log.gif" alt="Log" title="Log" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('pow')">
+    <img src="assets/images/icons/pow.gif" alt="Pow" title="Pow" />
+  </button>
+  <button
+    mat-menu-item
+    class="tab"
+    (click)="cmService.addOperation('polygamma')"
+  >
+    <img
+      src="assets/images/icons/polygamma.gif"
+      alt="Polygamma"
+      title="Polygamma"
+    />
+  </button>
+
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('lt')">
+    <img src="assets/images/icons/lt.gif" alt="LT" title="LT" />
+  </button>
+
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('le')">
+    <img src="assets/images/icons/le.gif" alt="LE" title="LE" />
+  </button>
+
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('eq')">
+    <img src="assets/images/icons/eq.gif" alt="EQ" title="EQ" />
+  </button>
+</mat-menu>
+
+<!-- binary operations end-->

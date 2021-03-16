@@ -23,7 +23,7 @@ export class WiringComponent implements OnInit, OnDestroy {
   deltaT = 0;
 
   constructor(
-    private cmService: CommunicationService,
+    public cmService: CommunicationService,
     private electronService: ElectronService
   ) {}
 
@@ -58,14 +58,6 @@ export class WiringComponent implements OnInit, OnDestroy {
     if (this.electronService.isElectron) {
       this.cmService.sendMinskyCommand({
         command: commandsMapping[command],
-      });
-    }
-  }
-
-  addOperation(arg) {
-    if (this.electronService.isElectron) {
-      this.cmService.sendMinskyCommand({
-        command: `${commandsMapping.ADD_OPERATION} "${arg}"`,
       });
     }
   }
