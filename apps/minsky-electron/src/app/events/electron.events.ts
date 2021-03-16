@@ -93,7 +93,7 @@ ipcMain.on('app-layout-changed', (event, { type, value }: AppLayoutPayload) => {
   switch (type) {
     case 'RESIZE':
       App.mainWindowHeight = value.height;
-      App.mainWindowHeight = value.width;
+      App.mainWindowWidth = value.width;
       break;
 
     case 'OFFSET':
