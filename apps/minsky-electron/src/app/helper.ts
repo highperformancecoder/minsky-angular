@@ -80,7 +80,7 @@ export function createMenuPopUpWithRouting({
   width = 500,
   height = 500,
   title,
-  backgroundColor = '#ffffff',
+  backgroundColor = App.store.get('backgroundColor'),
   url = rendererAppURL,
   modal = true,
 }) {
@@ -153,7 +153,6 @@ export function createMenu() {
               height: 440,
               title: '',
               url: `${rendererAppURL}/#/menu/file/about`,
-              backgroundColor: '#ffffff',
             });
 
             shell.beep();
@@ -302,7 +301,6 @@ export function createMenu() {
               height: 500,
               title: 'Log simulation',
               url: `${rendererAppURL}/#/menu/file/log-simulation`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -334,7 +332,6 @@ export function createMenu() {
               height: 230,
               title: '',
               url: `${rendererAppURL}/#/menu/file/object-browser`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -346,7 +343,6 @@ export function createMenu() {
               height: 153,
               title: '',
               url: `${rendererAppURL}/#/menu/file/select-items`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -410,7 +406,6 @@ export function createMenu() {
               height: 250,
               title: 'Dimensions',
               url: `${rendererAppURL}/#/menu/edit/dimensions`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -474,7 +469,6 @@ export function createMenu() {
                   height: 550,
                   title: 'Specify variable name',
                   url: `${rendererAppURL}/#/menu/insert/create-variable`,
-                  backgroundColor: '#ffffff',
                 });
               },
             },
@@ -486,7 +480,6 @@ export function createMenu() {
                   height: 550,
                   title: 'Specify variable name',
                   url: `${rendererAppURL}/#/menu/insert/create-variable`,
-                  backgroundColor: '#ffffff',
                 });
               },
             },
@@ -498,7 +491,6 @@ export function createMenu() {
                   height: 550,
                   title: 'Specify variable name',
                   url: `${rendererAppURL}/#/menu/insert/create-variable`,
-                  backgroundColor: '#ffffff',
                 });
               },
             },
@@ -966,7 +958,6 @@ export function createMenu() {
               height: 450,
               title: 'Preferences',
               url: `${rendererAppURL}/#/menu/options/preferences`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -978,7 +969,6 @@ export function createMenu() {
               height: 320,
               title: 'Background Colour',
               url: `${rendererAppURL}/#/menu/options/background-color`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -995,7 +985,6 @@ export function createMenu() {
               height: 550,
               title: 'Runge Kutta',
               url: `${rendererAppURL}/#/menu/runge-kutta/runge-kutta-parameters`,
-              backgroundColor: '#ffffff',
             });
           },
         },

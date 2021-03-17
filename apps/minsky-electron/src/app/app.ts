@@ -1,5 +1,9 @@
 import { startServer } from '@minsky/minsky-server';
-import { ActiveWindow, commandsMapping } from '@minsky/shared';
+import {
+  ActiveWindow,
+  commandsMapping,
+  defaultBackgroundColor,
+} from '@minsky/shared';
 import { ChildProcess } from 'child_process';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, Menu, MenuItem, screen, shell } from 'electron';
@@ -87,7 +91,7 @@ export default class App {
     App.store = new Store<MinskyStore>({
       defaults: {
         recentFiles: [],
-        backgroundColor: '#ffffff',
+        backgroundColor: defaultBackgroundColor,
       },
     });
 

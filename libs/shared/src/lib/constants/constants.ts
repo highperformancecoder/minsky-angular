@@ -1,9 +1,10 @@
+export const defaultBackgroundColor = '#ffffff';
+export const newLineCharacter = '\n';
+
 export const ZOOM_IN_FACTOR = 1.5;
 export const ZOOM_OUT_FACTOR = 0.66;
 export const RESET_ZOOM_FACTOR = 0;
 export const ZOOM_TO_FIT_FACTOR = 1;
-
-export const newLineCharacter = '\n';
 
 export const commandsMapping = {
   ADD_GODLEY: '/minsky/canvas/addGodley',
