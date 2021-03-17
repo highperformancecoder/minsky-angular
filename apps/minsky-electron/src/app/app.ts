@@ -1,16 +1,26 @@
 import { startServer } from '@minsky/minsky-server';
-import { ActiveWindow } from '@minsky/shared';
+import {
+  ActiveWindow,
+  commandsMapping,
+  defaultBackgroundColor,
+} from '@minsky/shared';
 import { ChildProcess } from 'child_process';
 import * as debug from 'debug';
-import { BrowserWindow, dialog, ipcMain, screen, shell } from 'electron';
-import * as storage from 'electron-json-storage';
+import { BrowserWindow, dialog, Menu, MenuItem, screen, shell } from 'electron';
+import * as Store from 'electron-store';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
 import { activeWindows, rendererAppName, rendererAppURL } from './constants';
+import { createMenu, handleMinskyProcessAndRender } from './helper';
 import { getWindowId } from './windowHelper';
 
 const logWindows = debug('minsky:electron_windows');
+
+interface MinskyStore {
+  recentFiles: Array<string>;
+  backgroundColor: string;
+}
 
 export default class App {
   // Keep a global reference of the window object, if you don't, the window will
@@ -18,12 +28,13 @@ export default class App {
   static mainWindow: Electron.BrowserWindow;
   static application: Electron.App;
   static BrowserWindow;
-  static cairo: ChildProcess;
+  static minskyProcess: ChildProcess;
   static topOffset: number;
   static leftOffset: number;
   static mainWindowHeight: number;
   static mainWindowWidth: number;
   static minskyRESTServicePath: string;
+  static store: Store<MinskyStore>;
 
   public static isDevelopmentMode() {
     const isEnvironmentSet: boolean = 'ELECTRON_IS_DEV' in process.env;
@@ -69,15 +80,66 @@ export default class App {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
+
     (async () => {
       await startServer(/* { serverPortRangeEnd, serverPortRangeStart } */);
     })();
+
     App.initMainWindow();
     App.loadMainWindow();
 
-    ipcMain.emit('load-menu');
+    App.store = new Store<MinskyStore>({
+      defaults: {
+        recentFiles: [],
+        backgroundColor: defaultBackgroundColor,
+      },
+    });
 
-    storage.setDataPath(App.application.getPath('userData'));
+    App.initMenu();
+  }
+
+  private static initMenu() {
+    createMenu();
+
+    App.initRecentFiles(App.store.get('recentFiles'));
+
+    App.store.onDidChange('recentFiles', (recentFiles) => {
+      App.initRecentFiles(recentFiles);
+    });
+  }
+
+  private static initRecentFiles(recentFiles: string[]) {
+    const openRecentMenu = Menu.getApplicationMenu().getMenuItemById(
+      'openRecent'
+    );
+
+    recentFiles.forEach((filePath) => {
+      const menuItem = openRecentMenu.submenu.items.find(
+        (f) => f.label === filePath
+      );
+
+      if (menuItem && !menuItem.enabled) {
+        menuItem.enabled = true;
+      } else {
+        const position = 0;
+        openRecentMenu.submenu.insert(
+          position,
+          new MenuItem({
+            label: filePath,
+            click: () => {
+              handleMinskyProcessAndRender({
+                command: commandsMapping.LOAD,
+                filePath,
+              });
+
+              handleMinskyProcessAndRender({
+                command: commandsMapping.RENDER_FRAME,
+              });
+            },
+          })
+        );
+      }
+    });
   }
 
   private static onActivate() {
@@ -91,8 +153,8 @@ export default class App {
   private static initMainWindow() {
     const display = screen.getPrimaryDisplay();
     const workAreaSize = display.workAreaSize;
-    const width = Math.min(1280, workAreaSize.width || 1280);
-    const height = Math.min(720, workAreaSize.height || 720);
+    const width = Math.min(workAreaSize.width, 1280);
+    const height = Math.min(workAreaSize.height, 801);
 
     // Create the browser window.
     App.mainWindow = new BrowserWindow({

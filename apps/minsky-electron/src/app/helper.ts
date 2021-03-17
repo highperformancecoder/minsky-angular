@@ -1,4 +1,10 @@
-import { ActiveWindow, CairoPayload, commandsMapping } from '@minsky/shared';
+import {
+  ActiveWindow,
+  availableOperations,
+  commandsMapping,
+  MinskyProcessPayload,
+  minskyProcessReplyIndicators,
+} from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
 import {
@@ -9,7 +15,6 @@ import {
   MenuItem,
   shell,
 } from 'electron';
-import * as storage from 'electron-json-storage';
 import * as log from 'electron-log';
 import { readFileSync, writeFile } from 'fs';
 import { join } from 'path';
@@ -20,95 +25,9 @@ import { getWindowId } from './windowHelper';
 const logError = debug('minsky:electron_error');
 const logMenuEvent = debug('minsky:electron_menu_logs');
 const logWindows = debug('minsky:electron_windows');
-const logChildProcessEvent = debug('minsky:electron_child_process');
-const logCairo = debug('minsky:electron_cairo');
 
 function getMainWindow(): BrowserWindow {
   return activeWindows.get(1).context;
-}
-
-let storageBackgroundColor;
-export function setStorageBackgroundColor(color) {
-  storageBackgroundColor = color;
-}
-
-export function getStorageBackgroundColor() {
-  return storageBackgroundColor;
-}
-
-export function addUpdateBookmarkList(mainMenu: Menu) {
-  storage.get('bookmarks', (error, data: [{ title: string; click: any }]) => {
-    if (error) new Error('File not found or error selecting the file');
-    if (data) {
-      const outerSubMenu = mainMenu.getMenuItemById('main-bookmark').submenu;
-      const innerSubMenu = outerSubMenu.getMenuItemById('delete-bookmark')
-        .submenu;
-
-      outerSubMenu.append(new MenuItem({ type: 'separator' }));
-      if (Array.isArray(data)) {
-        data.forEach((ele) => {
-          outerSubMenu.append(
-            new MenuItem({
-              label: ele.title,
-              click: goToSelectedBookmark.bind(ele),
-            })
-          );
-          innerSubMenu.append(
-            new MenuItem({
-              label: ele.title,
-              click: deleteBookmark.bind(ele),
-            })
-          );
-        });
-      }
-      Menu.setApplicationMenu(mainMenu);
-    }
-  });
-}
-
-export function goToSelectedBookmark() {
-  const window = getMainWindow();
-
-  window.loadURL(this.url).catch((err) => {
-    throw new Error('Bookmarked url not found');
-  });
-}
-
-export function deleteBookmark() {
-  storage.get('bookmarks', (error, data: [{ title: string; click: any }]) => {
-    // tslint:disable-next-line: no-unused-expression
-    if (error) new Error('File not found');
-    if (data) {
-      const ind = data.findIndex((ele) => ele.title === this.title);
-      // tslint:disable-next-line: no-unused-expression
-      ind > -1 ? data.splice(ind, 1) : new Error('Bookmark Not Found');
-      // tslint:disable-next-line: no-shadowed-variable
-      storage.set('bookmarks', data, (error) => {
-        logError(error);
-      });
-      const window = getMainWindow();
-
-      window.webContents.send('refresh-menu');
-
-      // ToDo add code to delete bookmark
-
-      /* const innerSubmenu = template
-        .getMenuItemById('main-bookmark')
-        .submenu.getMenuItemById('delete-bookmark').submenu.items
-      const outerSubmenu = template.getMenuItemById('main-bookmark')
-        .submenu.items
-      const innerIdx = innerSubmenu.findIndex(
-        (ele) => ele.label === this.title
-      )
-      const outerIdx = outerSubmenu.findIndex(
-        (ele) => ele.label === this.title
-      )
-      innerSubmenu[innerIdx].visible = false
-      outerSubmenu[outerIdx].visible = false */
-
-      // innerIdx > -1 ? innerSubmenu.splice(innerIdx, 1) : new Error("Bookmark Not Found");
-    }
-  });
 }
 
 export function checkBackgroundAndApplyTextColor(color) {
@@ -134,11 +53,8 @@ export function checkBackgroundAndApplyTextColor(color) {
       '0x' + color.slice(1).replace(color.length < 5 && /./g, '$&$&')
     );
 
-    // tslint:disable-next-line: no-bitwise
     r = colorArray >> 16;
-    // tslint:disable-next-line: no-bitwise
     g = (colorArray >> 8) & 255;
-    // tslint:disable-next-line: no-bitwise
     b = colorArray & 255;
   }
 
@@ -154,6 +70,7 @@ export function checkBackgroundAndApplyTextColor(color) {
     applyCssToBackground(css);
   }
 }
+
 function applyCssToBackground(css) {
   const window = getMainWindow();
   window.webContents.insertCSS(css);
@@ -163,7 +80,7 @@ export function createMenuPopUpWithRouting({
   width = 500,
   height = 500,
   title,
-  backgroundColor = '#ffffff',
+  backgroundColor = App.store.get('backgroundColor'),
   url = rendererAppURL,
   modal = true,
 }) {
@@ -236,7 +153,6 @@ export function createMenu() {
               height: 440,
               title: '',
               url: `${rendererAppURL}/#/menu/file/about`,
-              backgroundColor: '#ffffff',
             });
 
             shell.beep();
@@ -268,27 +184,35 @@ export function createMenu() {
                 filters: [{ name: '*.mky', extensions: ['mky'] }],
               });
 
-              const loadPayload: CairoPayload = {
+              const loadPayload: MinskyProcessPayload = {
                 command: '/minsky/load',
                 filePath: _dialog.filePaths[0].toString(),
               };
-              const renderPayload: CairoPayload = {
-                command: '/minsky/canvas/renderFrame',
-              };
 
-              handleCairo(null, loadPayload);
-
-              handleCairo(null, renderPayload);
+              handleMinskyProcessAndRender(loadPayload);
             } catch (error) {
               logError(error);
             }
           },
         },
         {
-          label: 'Recent Files',
+          label: 'Open Recent',
+          id: 'openRecent',
           submenu: [
+            { type: 'separator' },
             {
-              label: 'TestFile',
+              label: 'Clear Recent',
+              id: 'clearRecent',
+              click: () => {
+                App.store.set('recentFiles', []);
+                Menu.getApplicationMenu()
+                  .getMenuItemById('openRecent')
+                  .submenu.items.forEach((i) => {
+                    if (i.id !== 'clearRecent') {
+                      i.visible = false;
+                    }
+                  });
+              },
             },
           ],
         },
@@ -350,12 +274,8 @@ export function createMenu() {
         {
           label: 'Dimensional Analysis',
           click() {
-            createMenuPopUpWithRouting({
-              width: 240,
-              height: 153,
-              title: '',
-              url: `${rendererAppURL}/#/menu/file/dimensional-analysis`,
-              backgroundColor: '#ffffff',
+            handleMinskyProcessAndRender({
+              command: commandsMapping.DIMENSIONAL_ANALYSIS,
             });
           },
         },
@@ -381,7 +301,6 @@ export function createMenu() {
               height: 500,
               title: 'Log simulation',
               url: `${rendererAppURL}/#/menu/file/log-simulation`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -393,7 +312,7 @@ export function createMenu() {
         },
         {
           label: 'Quit',
-          accelerator: 'Ctrl + Q',
+          accelerator: 'CmdOrCtrl + Q',
           role: 'quit',
         },
         {
@@ -413,7 +332,6 @@ export function createMenu() {
               height: 230,
               title: '',
               url: `${rendererAppURL}/#/menu/file/object-browser`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -425,7 +343,6 @@ export function createMenu() {
               height: 153,
               title: '',
               url: `${rendererAppURL}/#/menu/file/select-items`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -439,23 +356,44 @@ export function createMenu() {
       submenu: [
         {
           label: 'Undo',
-          role: 'undo',
+          accelerator: 'CmdOrCtrl + Z',
+          click() {
+            const numberOfTimes = 1;
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.UNDO} ${numberOfTimes}`,
+            });
+          },
         },
         {
           label: 'Redo',
-          role: 'redo',
+          accelerator: 'CmdOrCtrl + Y',
         },
         {
           label: 'Cut',
-          role: 'cut',
+          accelerator: 'CmdOrCtrl + Shift + X',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.CUT}`,
+            });
+          },
         },
         {
           label: 'Copy',
-          role: 'copy',
+          accelerator: 'CmdOrCtrl + Shift + C',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.COPY}`,
+            });
+          },
         },
         {
           label: 'Paste',
-          role: 'paste',
+          accelerator: 'CmdOrCtrl + Shift + V',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.PASTE}`,
+            });
+          },
         },
         {
           label: 'Group selection',
@@ -468,7 +406,6 @@ export function createMenu() {
               height: 250,
               title: 'Dimensions',
               url: `${rendererAppURL}/#/menu/edit/dimensions`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -481,39 +418,44 @@ export function createMenu() {
         {
           label: 'Bookmark this position',
           click() {
-            createMenuPopUpWithRouting({
-              width: 420,
-              height: 200,
-              title: 'Bookmark this position',
-              url: `${rendererAppURL}/#/menu/bookmarks/bookmark-position`,
-              backgroundColor: '#ffffff',
+            handleMinskyProcess(null, {
+              command: `${commandsMapping.ADD_BOOKMARK} "${Date.now()}"`,
+            });
+
+            handleMinskyProcess(null, {
+              command: commandsMapping.BOOKMARK_LIST,
             });
           },
         },
         {
-          label: 'Delete...',
+          label: 'Delete bookmark',
           id: 'delete-bookmark',
           submenu: [],
         },
-        {
-          type: 'separator',
-        },
+        { type: 'separator' },
       ],
     },
     {
       label: 'Insert',
       submenu: [
         {
-          label: 'Godley Table',
+          label: 'plot',
           click() {
-            const addGodleyPayload: CairoPayload = {
-              command: commandsMapping.ADD_GODLEY,
-            };
-
-            handleCairo(null, addGodleyPayload);
+            handleMinskyProcessAndRender({
+              command: commandsMapping.ADD_PLOT,
+            });
           },
         },
         {
+          label: 'Godley Table',
+          click() {
+            handleMinskyProcessAndRender({
+              command: commandsMapping.ADD_GODLEY,
+            });
+          },
+        },
+        {
+          // TODO:
           label: 'Variable',
           submenu: [
             {
@@ -527,7 +469,6 @@ export function createMenu() {
                   height: 550,
                   title: 'Specify variable name',
                   url: `${rendererAppURL}/#/menu/insert/create-variable`,
-                  backgroundColor: '#ffffff',
                 });
               },
             },
@@ -539,7 +480,6 @@ export function createMenu() {
                   height: 550,
                   title: 'Specify variable name',
                   url: `${rendererAppURL}/#/menu/insert/create-variable`,
-                  backgroundColor: '#ffffff',
                 });
               },
             },
@@ -551,7 +491,6 @@ export function createMenu() {
                   height: 550,
                   title: 'Specify variable name',
                   url: `${rendererAppURL}/#/menu/insert/create-variable`,
-                  backgroundColor: '#ffffff',
                 });
               },
             },
@@ -562,42 +501,115 @@ export function createMenu() {
           submenu: [
             {
               label: 'add',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ADD}"`,
+                });
+              },
             },
             {
               label: 'subtract',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUBTRACT}"`,
+                });
+              },
             },
             {
-              label: 'multiple',
+              label: 'multiply',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MULTIPLY}"`,
+                });
+              },
             },
             {
               label: 'divide',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIVIDE}"`,
+                });
+              },
             },
             {
               label: 'min',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MIN}"`,
+                });
+              },
             },
             {
               label: 'max',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MAX}"`,
+                });
+              },
             },
             {
               label: 'and',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.AND_}"`,
+                });
+              },
             },
             {
               label: 'or',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.OR_}"`,
+                });
+              },
             },
             {
               label: 'log',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LOG}"`,
+                });
+              },
             },
             {
               label: 'pow',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.POW}"`,
+                });
+              },
+            },
+            {
+              label: 'polygamma',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.POLYGAMMA}"`,
+                });
+              },
             },
             {
               label: 'lt',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LT}"`,
+                });
+              },
             },
             {
               label: 'le',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LE}"`,
+                });
+              },
             },
             {
               label: 'eq',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.EQ}"`,
+                });
+              },
             },
           ],
         },
@@ -606,54 +618,155 @@ export function createMenu() {
           submenu: [
             {
               label: 'copy',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COPY}"`,
+                });
+              },
             },
             {
               label: 'sqrt',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SQRT}"`,
+                });
+              },
             },
             {
               label: 'exp',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.EXP}"`,
+                });
+              },
             },
             {
               label: 'ln',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LN}"`,
+                });
+              },
             },
             {
               label: 'sin',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SIN}"`,
+                });
+              },
             },
             {
               label: 'cos',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COS}"`,
+                });
+              },
             },
             {
               label: 'tan',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TAN}"`,
+                });
+              },
             },
             {
               label: 'asin',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ASIN}"`,
+                });
+              },
             },
             {
               label: 'acos',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ACOS}"`,
+                });
+              },
             },
             {
               label: 'atan',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ATAN}"`,
+                });
+              },
             },
             {
               label: 'sinh',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SINH}"`,
+                });
+              },
             },
             {
               label: 'cosh',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COSH}"`,
+                });
+              },
             },
             {
               label: 'tanh',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TANH}"`,
+                });
+              },
             },
             {
               label: 'abs',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ABS}"`,
+                });
+              },
             },
             {
               label: 'floor',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FLOOR}"`,
+                });
+              },
             },
             {
               label: 'frac',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FRAC}"`,
+                });
+              },
             },
             {
               label: 'not',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.NOT_}"`,
+                });
+              },
+            },
+            {
+              label: 'gamma',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.GAMMA}"`,
+                });
+              },
+            },
+            {
+              label: 'fact',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FACT}"`,
+                });
+              },
             },
           ],
         },
@@ -662,27 +775,67 @@ export function createMenu() {
           submenu: [
             {
               label: 'sum',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUM}"`,
+                });
+              },
             },
             {
               label: 'product',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.PRODUCT}"`,
+                });
+              },
             },
             {
               label: 'infimum',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INFIMUM}"`,
+                });
+              },
             },
             {
               label: 'supremum',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUPREMUM}"`,
+                });
+              },
             },
             {
               label: 'any',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ANY}"`,
+                });
+              },
             },
             {
               label: 'all',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ALL}"`,
+                });
+              },
             },
             {
               label: 'infIndex',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INF_INDEX}"`,
+                });
+              },
             },
             {
               label: 'supIndex',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUP_INDEX}"`,
+                });
+              },
             },
           ],
         },
@@ -691,12 +844,27 @@ export function createMenu() {
           submenu: [
             {
               label: 'runningSum',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.RUNNING_SUM}"`,
+                });
+              },
             },
             {
               label: 'runningProduct',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.RUNNING_PRODUCT}"`,
+                });
+              },
             },
             {
               label: 'difference',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIFFERENCE}"`,
+                });
+              },
             },
           ],
         },
@@ -705,42 +873,76 @@ export function createMenu() {
           submenu: [
             {
               label: 'innerProduct',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INNER_PRODUCT}"`,
+                });
+              },
             },
             {
               label: 'outerProduct',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.OUTER_PRODUCT}"`,
+                });
+              },
             },
             {
               label: 'index',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INDEX}"`,
+                });
+              },
             },
             {
               label: 'gather',
+              click() {
+                handleMinskyProcessAndRender({
+                  command: `${commandsMapping.ADD_OPERATION} "${availableOperations.GATHER}"`,
+                });
+              },
             },
           ],
         },
         {
           label: 'time',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TIME}"`,
+            });
+          },
         },
         {
           label: 'integrate',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INTEGRATE}"`,
+            });
+          },
         },
         {
           label: 'differentiate',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIFFERENTIATE}"`,
+            });
+          },
         },
         {
           label: 'data',
+          click() {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DATA}"`,
+            });
+          },
         },
         {
           label: 'ravel',
-        },
-        {
-          label: 'plot',
           click() {
-            const loadPayload: CairoPayload = {
-              command: commandsMapping.ADD_PLOT,
-            };
-
-            handleCairo(null, loadPayload);
-            render();
+            handleMinskyProcessAndRender({
+              command: commandsMapping.ADD_RAVEL,
+            });
           },
         },
       ],
@@ -756,7 +958,6 @@ export function createMenu() {
               height: 450,
               title: 'Preferences',
               url: `${rendererAppURL}/#/menu/options/preferences`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -768,7 +969,6 @@ export function createMenu() {
               height: 320,
               title: 'Background Colour',
               url: `${rendererAppURL}/#/menu/options/background-color`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -785,7 +985,6 @@ export function createMenu() {
               height: 550,
               title: 'Runge Kutta',
               url: `${rendererAppURL}/#/menu/runge-kutta/runge-kutta-parameters`,
-              backgroundColor: '#ffffff',
             });
           },
         },
@@ -809,49 +1008,111 @@ export function createMenu() {
   Menu.setApplicationMenu(menu);
 }
 
-export function handleCairo(
-  event: Electron.IpcMainEvent,
-  payload: CairoPayload
-) {
-  let command: string;
+function populateBookmarks(bookmarkString: string) {
+  const bookmarks: string[] = JSON.parse(bookmarkString.split('=>').pop());
+  const mainSubmenu = Menu.getApplicationMenu().getMenuItemById('main-bookmark')
+    .submenu;
 
-  if (typeof event === 'string') {
-    command = event;
-  } else {
-    command = payload.command;
-  }
+  const deleteBookmarkSubmenu = Menu.getApplicationMenu()
+    .getMenuItemById('main-bookmark')
+    .submenu.getMenuItemById('delete-bookmark').submenu;
 
-  if (App.cairo) {
-    executeCommandOnMinskyServer(App.cairo, payload);
-  } else if (!App.cairo && command === 'startMinskyProcess') {
+  const disableAllBookmarksInListAndDelete = () => {
+    mainSubmenu.items.forEach((bookmark) => {
+      if (bookmark.id === 'minsky-bookmark') {
+        bookmark.visible = false;
+      }
+    });
+
+    deleteBookmarkSubmenu.items.forEach((bookmark) => {
+      if (bookmark.id === 'minsky-bookmark') {
+        bookmark.visible = false;
+      }
+    });
+  };
+
+  const addNewBookmarks = () => {
+    bookmarks.forEach((bookmark, index) => {
+      mainSubmenu.append(
+        new MenuItem({
+          id: 'minsky-bookmark',
+          label: bookmark,
+          click: () => {
+            handleMinskyProcessAndRender({
+              command: `${commandsMapping.GOTO_BOOKMARK} ${index}`,
+            });
+          },
+        })
+      );
+
+      deleteBookmarkSubmenu.append(
+        new MenuItem({
+          id: 'minsky-bookmark',
+          label: bookmark,
+          click: () => {
+            handleMinskyProcess(null, {
+              command: `${commandsMapping.DELETE_BOOKMARK} ${index}`,
+            });
+
+            handleMinskyProcess(null, {
+              command: commandsMapping.BOOKMARK_LIST,
+            });
+          },
+        })
+      );
+    });
+  };
+
+  disableAllBookmarksInListAndDelete();
+  addNewBookmarks();
+}
+
+export function handleMinskyProcess(event, payload: MinskyProcessPayload) {
+  if (App.minskyProcess) {
+    executeCommandOnMinskyServer(App.minskyProcess, payload);
+  } else if (!App.minskyProcess && payload.command === 'startMinskyProcess') {
     try {
       App.minskyRESTServicePath = payload.filePath;
-      App.cairo = spawn(App.minskyRESTServicePath);
-      if (App.cairo) {
-        App.cairo.stdout.on('data', (data) => {
+      App.minskyProcess = spawn(App.minskyRESTServicePath);
+      if (App.minskyProcess) {
+        App.minskyProcess.stdout.on('data', (data) => {
           log.info(`stdout: ${data}`);
 
           activeWindows.forEach((aw) => {
-            aw.context.webContents.send('cairo-reply', `stdout: ${data}`);
+            aw.context.webContents.send(
+              'minsky-process-reply',
+              `stdout: ${data}`
+            );
           });
+
+          if (
+            data.toString().includes(minskyProcessReplyIndicators.BOOKMARK_LIST)
+          ) {
+            populateBookmarks(data.toString());
+          }
         });
 
-        App.cairo.stderr.on('data', (data) => {
+        App.minskyProcess.stderr.on('data', (data) => {
           log.info(`stderr: ${data}`);
           activeWindows.forEach((aw) => {
-            aw.context.webContents.send('cairo-reply', `stderr: ${data}`);
+            aw.context.webContents.send(
+              'minsky-process-reply',
+              `stderr: ${data}`
+            );
           });
         });
 
-        App.cairo.on('error', (error) => {
+        App.minskyProcess.on('error', (error) => {
           log.info(`error: ${error.message}`);
-          event.reply('cairo-error', `${error.message}`);
           activeWindows.forEach((aw) => {
-            aw.context.webContents.send('cairo-reply', `error: ${error}`);
+            aw.context.webContents.send(
+              'minsky-process-reply',
+              `error: ${error.message}`
+            );
           });
         });
 
-        App.cairo.on('close', (code) => {
+        App.minskyProcess.on('close', (code) => {
           log.info(`child process exited with code ${code}`);
         });
 
@@ -863,43 +1124,54 @@ export function handleCairo(
       }
     } catch {
       dialog.showErrorBox('Execution error', 'Could not execute chosen file');
-      App.cairo = null;
+      App.minskyProcess = null;
     }
   } else {
     logError('Please select the minsky executable first...');
   }
 }
 
+function addFileToRecentFiles(filepath: string) {
+  const recentFiles = App.store.get('recentFiles');
+
+  const exists = Boolean(recentFiles.find((f) => f === filepath));
+  if (!exists) {
+    recentFiles.push(filepath);
+    App.store.set('recentFiles', recentFiles);
+  }
+}
+
 export function executeCommandOnMinskyServer(
-  cairo: ChildProcess,
-  payload: CairoPayload
+  minskyProcess: ChildProcess,
+  payload: MinskyProcessPayload
 ) {
   const newLine = '\n';
   let stdinCommand = null;
   switch (payload.command) {
-    case '/minsky/load':
+    case commandsMapping.LOAD:
       stdinCommand = `${payload.command} "${payload.filePath}"`;
+      addFileToRecentFiles(payload.filePath);
       break;
 
-    case '/minsky/canvas/renderFrame':
+    case commandsMapping.RENDER_FRAME:
       stdinCommand = `${payload.command} [${activeWindows.get(1).windowId}, ${
         App.leftOffset
       }, ${App.topOffset}]`;
       break;
 
-    case '/minsky/canvas/mouseMove':
+    case commandsMapping.mousemove:
       stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
         payload.mouseY - App.topOffset
       }]`;
       break;
 
-    case '/minsky/canvas/mouseDown':
+    case commandsMapping.mousedown:
       stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
         payload.mouseY - App.topOffset
       }]`;
       break;
 
-    case '/minsky/canvas/mouseUp':
+    case commandsMapping.mouseup:
       stdinCommand = `${payload.command} [${payload.mouseX - App.leftOffset}, ${
         payload.mouseY - App.topOffset
       }]`;
@@ -925,13 +1197,19 @@ export function executeCommandOnMinskyServer(
   }
   if (stdinCommand) {
     log.silly(stdinCommand);
-    cairo.stdin.write(stdinCommand + newLine);
+    minskyProcess.stdin.write(stdinCommand + newLine);
   }
 }
+
+export function handleMinskyProcessAndRender(payload: MinskyProcessPayload) {
+  handleMinskyProcess(null, payload);
+  render();
+}
+
 export function render() {
-  const renderPayload: CairoPayload = {
-    command: '/minsky/canvas/renderFrame',
+  const renderPayload: MinskyProcessPayload = {
+    command: commandsMapping.RENDER_FRAME,
   };
 
-  handleCairo(null, renderPayload);
+  handleMinskyProcess(null, renderPayload);
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {
-  CairoPayload,
   commandsMapping,
   HeaderEvent,
+  MinskyProcessPayload,
   RESET_ZOOM_FACTOR,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
@@ -52,6 +52,13 @@ export class CommunicationService {
     this.socket.emit(message, data);
   }
 
+  setBackgroundColor(color = null) {
+    if (this.electronService.isElectron)
+      this.electronService.ipcRenderer.send('set-background-color', {
+        color: color,
+      });
+  }
+
   initMinskyResources() {
     if (this.electronService.isElectron) {
       this.setGodleyIconResource();
@@ -61,32 +68,32 @@ export class CommunicationService {
   }
 
   private setGroupIconResource() {
-    const groupIconResourcePayload: CairoPayload = {
+    const groupIconResourcePayload: MinskyProcessPayload = {
       command: commandsMapping.SET_GROUP_ICON_RESOURCE,
     };
 
-    this.sendCairoEvent(groupIconResourcePayload);
+    this.sendMinskyCommand(groupIconResourcePayload);
   }
 
   private setGodleyIconResource() {
-    const godleyIconPayload: CairoPayload = {
+    const godleyIconPayload: MinskyProcessPayload = {
       command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
     };
 
-    this.sendCairoEvent(godleyIconPayload);
+    this.sendMinskyCommand(godleyIconPayload);
   }
 
-  sendCairoEventAndRender(cairoPayload: CairoPayload) {
+  sendMinskyCommandAndRender(minskyProcessPayload: MinskyProcessPayload) {
     if (this.electronService.isElectron) {
-      this.sendCairoEvent(cairoPayload);
+      this.sendMinskyCommand(minskyProcessPayload);
 
-      this.sendCairoRenderEvent();
+      this.sendMinskyRenderCommand();
     }
   }
 
-  sendCairoEvent(payload: CairoPayload) {
+  sendMinskyCommand(payload: MinskyProcessPayload) {
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('cairo', {
+      this.electronService.ipcRenderer.send('minsky-process', {
         ...payload,
         command: payload.command.trim(),
       });
@@ -127,15 +134,20 @@ export class CommunicationService {
           },${ZOOM_TO_FIT_FACTOR}]`;
           break;
 
+        case 'SIMULATION_SPEED':
+          command = `${command} ${message.value}`;
+          break;
+
         case 'PLAY':
           autoHandleMinskyProcess = false;
 
           this.stepIntervalId = setInterval(() => {
-            const payload: CairoPayload = {
+            const payload: MinskyProcessPayload = {
               command,
             };
 
-            this.sendCairoEventAndRender(payload);
+            this.sendMinskyCommandAndRender(payload);
+            this.sendMinskyCommandAndRender({ command: commandsMapping.T });
           }, 1000);
           break;
 
@@ -150,16 +162,26 @@ export class CommunicationService {
           this.clearStepInterval();
           break;
 
+        case 'STEP':
+          autoHandleMinskyProcess = false;
+          this.sendMinskyCommandAndRender({ command });
+          this.sendMinskyCommandAndRender({ command: commandsMapping.T });
+          break;
+
+        case 'REVERSE_CHECKBOX':
+          command = `${command} ${message.value}`;
+          break;
+
         default:
           break;
       }
 
       if (command && autoHandleMinskyProcess) {
-        const payload: CairoPayload = {
+        const payload: MinskyProcessPayload = {
           command,
         };
 
-        this.sendCairoEventAndRender(payload);
+        this.sendMinskyCommandAndRender(payload);
       }
     } else {
       this.socket.emit(event, message);
@@ -185,24 +207,24 @@ export class CommunicationService {
       const command = commandsMapping[type];
 
       if (command) {
-        const payload: CairoPayload = {
+        const payload: MinskyProcessPayload = {
           command: command,
           mouseX: clientX,
           mouseY: clientY,
         };
-        this.sendCairoEventAndRender(payload);
+        this.sendMinskyCommandAndRender(payload);
       }
     } else {
       this.socket.emit(event, clickData);
     }
   }
 
-  sendCairoRenderEvent() {
+  sendMinskyRenderCommand() {
     if (this.electronService.isElectron) {
-      const payload: CairoPayload = {
+      const payload: MinskyProcessPayload = {
         command: commandsMapping.RENDER_FRAME,
       };
-      this.sendCairoEvent(payload);
+      this.sendMinskyCommand(payload);
     }
   }
 
@@ -219,8 +241,7 @@ export class CommunicationService {
     document.addEventListener('DOMContentLoaded', () => {
       // When the event DOMContentLoaded occurs, it is safe to access the DOM
 
-      window.addEventListener('scroll', this.canvasSticky);
-      this.canvasDetail = document.getElementById('offsetValue');
+      this.canvasDetail = document.getElementById('canvas');
 
       // Get the offset position of the canvas
       this.topOffset = this.canvasDetail.offsetTop;
@@ -246,16 +267,11 @@ export class CommunicationService {
     }
   }
 
-  canvasSticky() {
-    if (window.pageYOffset >= this.sticky) {
-      logInfo('window.pageYOffset >= sticky');
-    } else {
-      logInfo('Not window.pageYOffset >= sticky');
-    }
-    if (window.pageYOffset >= this.sticky) {
-      this.canvasDetail.classList.add('sticky');
-    } else {
-      this.canvasDetail.classList.remove('sticky');
+  addOperation(arg) {
+    if (this.electronService.isElectron) {
+      this.sendMinskyCommand({
+        command: `${commandsMapping.ADD_OPERATION} "${arg}"`,
+      });
     }
   }
 }

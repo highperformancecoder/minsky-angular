@@ -1,4 +1,4 @@
-export interface CairoPayload {
+export interface MinskyProcessPayload {
   mouseX?: number;
   mouseY?: number;
   filePath?: string;
@@ -14,4 +14,5 @@ export interface AppLayoutPayload {
 export interface HeaderEvent {
   action: string;
   target: string;
+  value?: unknown;
 }

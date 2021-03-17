@@ -1,0 +1,44 @@
+<!-- tensorOperations start-->
+<button
+  class="tab"
+  [matMenuTriggerFor]="tensorOperations"
+  aria-label="Tensor Operations"
+>
+  <img
+    src="assets/images/icons/outerProduct.gif"
+    alt="Tensor Operations"
+    title="Tensor Operations"
+  />
+</button>
+
+<mat-menu yPosition="above" #tensorOperations="matMenu">
+  <button
+    mat-menu-item
+    class="tab"
+    (click)="cmService.addOperation('innerProduct')"
+  >
+    <img
+      src="assets/images/icons/innerProduct.gif"
+      alt="innerProduct"
+      title="Inner Product"
+    />
+  </button>
+  <button
+    mat-menu-item
+    class="tab"
+    (click)="cmService.addOperation('outerProduct')"
+  >
+    <img
+      src="assets/images/icons/outerProduct.gif"
+      alt="outerProduct"
+      title="Outer Product"
+    />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('index')">
+    <img src="assets/images/icons/index.gif" alt="index" title="Index" />
+  </button>
+  <button mat-menu-item class="tab" (click)="cmService.addOperation('gather')">
+    <img src="assets/images/icons/gather.gif" alt="gather" title="Gather" />
+  </button>
+</mat-menu>
+<!-- tensorOperations end-->

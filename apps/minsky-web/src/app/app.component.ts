@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { CairoPayload } from '@minsky/shared';
+import { MinskyProcessPayload } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
@@ -15,7 +15,7 @@ const logError = debug('minsky:web:error');
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   loader = false;
   directory: string[];
   toggleButtonText = 'Start Minsky Service';
@@ -38,7 +38,12 @@ export class AppComponent {
     this.openFile();
     this.saveFile();
     this.windowSize();
+  }
+
+  ngAfterViewInit() {
     this.cmService.canvasOffsetValues();
+
+    this.cmService.setBackgroundColor();
   }
 
   windowSize() {
@@ -105,12 +110,12 @@ export class AppComponent {
           filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
         });
 
-        const initPayload: CairoPayload = {
+        const initPayload: MinskyProcessPayload = {
           command: 'startMinskyProcess',
           filePath: _dialog.filePaths[0].toString(),
         };
 
-        this.cmService.sendCairoEvent(initPayload);
+        this.cmService.sendMinskyCommand(initPayload);
 
         this.cmService.initMinskyResources();
 

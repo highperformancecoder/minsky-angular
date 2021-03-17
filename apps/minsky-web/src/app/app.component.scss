@@ -9,7 +9,8 @@
 }
 
 .example-button-row {
-  a {
+  a,
+  button {
     border: 2px solid $toolbar-border-light;
     background-color: $toolbar-bg;
     color: $toolbar-border-focus;

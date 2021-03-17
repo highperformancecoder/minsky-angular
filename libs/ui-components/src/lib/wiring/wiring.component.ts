@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommunicationService } from '@minsky/core';
+import { CommunicationService, ElectronService } from '@minsky/core';
+import { availableOperations, commandsMapping } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
@@ -15,10 +16,19 @@ export class WiringComponent implements OnInit, OnDestroy {
 
   mouseMove$: Observable<MouseEvent>;
 
-  constructor(private cmService: CommunicationService) {}
+  _availableOperations = availableOperations;
+  _commandsMapping = commandsMapping;
+
+  t = 0;
+  deltaT = 0;
+
+  constructor(
+    public cmService: CommunicationService,
+    private electronService: ElectronService
+  ) {}
 
   ngOnInit() {
-    this.minskyCanvas = document.getElementById('offsetValue');
+    this.minskyCanvas = document.getElementById('canvas');
 
     this.mouseMove$ = fromEvent<MouseEvent>(
       this.minskyCanvas,
@@ -42,6 +52,14 @@ export class WiringComponent implements OnInit, OnDestroy {
     });
 
     this.cmService.dispatchEvents('canvasEvent');
+  }
+
+  insertElement(command) {
+    if (this.electronService.isElectron) {
+      this.cmService.sendMinskyCommand({
+        command: commandsMapping[command],
+      });
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

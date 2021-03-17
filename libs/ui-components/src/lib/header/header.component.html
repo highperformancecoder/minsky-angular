@@ -19,7 +19,7 @@
           type="checkbox"
           id="reverseSimulationCheckbox"
           class="reverse-simulation-checkbox"
-          (click)="reverseCheckboxButton()"
+          (click)="reverseCheckboxButton($event)"
         />
       </div>
       <label for="reverseSimulationCheckbox">Reverse</label>
@@ -30,8 +30,8 @@
       (toolbarEvent)="handleToolbarEvent($event)"
     ></minsky-toolbar>
   </div>
-  <div class="time-info m-a-0">
-    <span class="time">t:0</span>
-    <span class="delta-time">lt:0</span>
+  <div class="time-info">
+    <span class="time">t:{{ t }}</span>
+    <span class="delta-time">&Delta;t:{{ deltaT }}</span>
   </div>
 </div>
