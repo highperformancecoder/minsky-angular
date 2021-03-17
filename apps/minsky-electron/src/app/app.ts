@@ -1,26 +1,17 @@
 import { startServer } from '@minsky/minsky-server';
-import {
-  ActiveWindow,
-  commandsMapping,
-  defaultBackgroundColor,
-} from '@minsky/shared';
-import { ChildProcess } from 'child_process';
+import { ActiveWindow } from '@minsky/shared';
 import * as debug from 'debug';
-import { BrowserWindow, dialog, Menu, MenuItem, screen, shell } from 'electron';
-import * as Store from 'electron-store';
+import { BrowserWindow, dialog, screen, shell } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
-import { activeWindows, rendererAppName, rendererAppURL } from './constants';
-import { createMenu, handleMinskyProcessAndRender } from './helper';
-import { getWindowId } from './windowHelper';
+import { rendererAppName, rendererAppURL } from './constants';
+import { MenuManager } from './menuManager';
+import { RecentFilesManager } from './recentFilesManager';
+import { StoreManager } from './storeManager';
+import { WindowManager } from './windowManager';
 
 const logWindows = debug('minsky:electron_windows');
-
-interface MinskyStore {
-  recentFiles: Array<string>;
-  backgroundColor: string;
-}
 
 export default class App {
   // Keep a global reference of the window object, if you don't, the window will
@@ -28,13 +19,6 @@ export default class App {
   static mainWindow: Electron.BrowserWindow;
   static application: Electron.App;
   static BrowserWindow;
-  static minskyProcess: ChildProcess;
-  static topOffset: number;
-  static leftOffset: number;
-  static mainWindowHeight: number;
-  static mainWindowWidth: number;
-  static minskyRESTServicePath: string;
-  static store: Store<MinskyStore>;
 
   public static isDevelopmentMode() {
     const isEnvironmentSet: boolean = 'ELECTRON_IS_DEV' in process.env;
@@ -88,57 +72,16 @@ export default class App {
     App.initMainWindow();
     App.loadMainWindow();
 
-    App.store = new Store<MinskyStore>({
-      defaults: {
-        recentFiles: [],
-        backgroundColor: defaultBackgroundColor,
-      },
-    });
-
     App.initMenu();
   }
 
   private static initMenu() {
-    createMenu();
+    MenuManager.createMenu();
 
-    App.initRecentFiles(App.store.get('recentFiles'));
+    RecentFilesManager.initRecentFiles();
 
-    App.store.onDidChange('recentFiles', (recentFiles) => {
-      App.initRecentFiles(recentFiles);
-    });
-  }
-
-  private static initRecentFiles(recentFiles: string[]) {
-    const openRecentMenu = Menu.getApplicationMenu().getMenuItemById(
-      'openRecent'
-    );
-
-    recentFiles.forEach((filePath) => {
-      const menuItem = openRecentMenu.submenu.items.find(
-        (f) => f.label === filePath
-      );
-
-      if (menuItem && !menuItem.enabled) {
-        menuItem.enabled = true;
-      } else {
-        const position = 0;
-        openRecentMenu.submenu.insert(
-          position,
-          new MenuItem({
-            label: filePath,
-            click: () => {
-              handleMinskyProcessAndRender({
-                command: commandsMapping.LOAD,
-                filePath,
-              });
-
-              handleMinskyProcessAndRender({
-                command: commandsMapping.RENDER_FRAME,
-              });
-            },
-          })
-        );
-      }
+    StoreManager.store.onDidChange('recentFiles', () => {
+      RecentFilesManager.initRecentFiles();
     });
   }
 
@@ -208,15 +151,15 @@ export default class App {
       size: App.mainWindow.getSize(),
       isMainWindow: true,
       context: App.mainWindow,
-      windowId: getWindowId(this.mainWindow),
+      windowId: WindowManager.getWindowId(this.mainWindow),
     };
 
-    activeWindows.set(App.mainWindow.id, mainWindowDetails);
+    WindowManager.activeWindows.set(App.mainWindow.id, mainWindowDetails);
 
-    logWindows(activeWindows);
+    logWindows(WindowManager.activeWindows);
 
     App.mainWindow.on('close', () => {
-      activeWindows.delete(App.mainWindow.id);
+      WindowManager.activeWindows.delete(App.mainWindow.id);
     });
 
     App.mainWindow.on('closed', () => {
