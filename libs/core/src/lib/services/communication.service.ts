@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   commandsMapping,
+  events,
   HeaderEvent,
   MinskyProcessPayload,
   RESET_ZOOM_FACTOR,
@@ -54,7 +55,7 @@ export class CommunicationService {
 
   setBackgroundColor(color = null) {
     if (this.electronService.isElectron)
-      this.electronService.ipcRenderer.send('set-background-color', {
+      this.electronService.ipcRenderer.send(events.ipc.SET_BACKGROUND_COLOR, {
         color: color,
       });
   }
@@ -93,7 +94,7 @@ export class CommunicationService {
 
   sendMinskyCommand(payload: MinskyProcessPayload) {
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('minsky-process', {
+      this.electronService.ipcRenderer.send(events.ipc.MINSKY_PROCESS, {
         ...payload,
         command: payload.command.trim(),
       });
@@ -256,7 +257,10 @@ export class CommunicationService {
           value: { top: this.topOffset, left: this.leftOffset },
         };
 
-        this.electronService.ipcRenderer.send('app-layout-changed', payload);
+        this.electronService.ipcRenderer.send(
+          events.ipc.APP_LAYOUT_CHANGED,
+          payload
+        );
       } else {
         this.emitValues('Values', offSetValue);
       }

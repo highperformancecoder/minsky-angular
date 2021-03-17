@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { MinskyProcessPayload } from '@minsky/shared';
+import { events, MinskyProcessPayload } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
@@ -76,7 +76,10 @@ export class AppComponent implements AfterViewInit {
         value: { height: event.newHeight, width: event.newWidth },
       };
 
-      this.electronService.ipcRenderer.send('app-layout-changed', payload);
+      this.electronService.ipcRenderer.send(
+        events.ipc.APP_LAYOUT_CHANGED,
+        payload
+      );
     } else {
       this.emitData(windowResizeDetail);
     }
@@ -128,7 +131,7 @@ export class AppComponent implements AfterViewInit {
 
   async startTerminal() {
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('create-menu-popup', {
+      this.electronService.ipcRenderer.send(events.ipc.CREATE_MENU_POPUP, {
         title: 'x-term',
         url: 'http://localhost:4200/#/experiment/xterm',
         modal: false,

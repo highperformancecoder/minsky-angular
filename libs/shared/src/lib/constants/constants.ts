@@ -117,3 +117,17 @@ export const availableOperations = {
   COPY: 'copy',
   NUM_OPS: 'numOps',
 };
+
+export const events = {
+  ipc: {
+    SET_BACKGROUND_COLOR: 'set-background-color',
+    CREATE_MENU_POPUP: 'create-menu-popup',
+    MINSKY_PROCESS: 'minsky-process',
+    GET_MINSKY_COMMANDS: 'get-minsky-commands',
+    APP_LAYOUT_CHANGED: 'app-layout-changed',
+    POPULATE_BOOKMARKS: 'populate-bookmarks',
+    ADD_RECENT_FILE: 'add-recent-file',
+    GET_APP_VERSION: 'get-app-version',
+    MINSKY_PROCESS_REPLY: 'minsky-process-reply',
+  },
+};

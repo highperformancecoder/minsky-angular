@@ -1,5 +1,6 @@
 import {
   commandsMapping,
+  events,
   MinskyProcessPayload,
   minskyProcessReplyIndicators,
   newLineCharacter,
@@ -34,14 +35,14 @@ export class RestServiceManager {
 
             WindowManager.activeWindows.forEach((aw) => {
               aw.context.webContents.send(
-                'minsky-process-reply',
+                events.ipc.MINSKY_PROCESS_REPLY,
                 `stdout: ${stdout}`
               );
             });
 
             if (stdout.includes(minskyProcessReplyIndicators.BOOKMARK_LIST)) {
               const _event = null;
-              ipcMain.emit('populate-bookmarks', _event, stdout);
+              ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
             }
           });
 
@@ -49,7 +50,7 @@ export class RestServiceManager {
             log.info(`stderr: ${data}`);
             WindowManager.activeWindows.forEach((aw) => {
               aw.context.webContents.send(
-                'minsky-process-reply',
+                events.ipc.MINSKY_PROCESS_REPLY,
                 `stderr: ${data}`
               );
             });
@@ -59,7 +60,7 @@ export class RestServiceManager {
             log.info(`error: ${error.message}`);
             WindowManager.activeWindows.forEach((aw) => {
               aw.context.webContents.send(
-                'minsky-process-reply',
+                events.ipc.MINSKY_PROCESS_REPLY,
                 `error: ${error.message}`
               );
             });
@@ -105,7 +106,7 @@ export class RestServiceManager {
     switch (payload.command) {
       case commandsMapping.LOAD:
         stdinCommand = `${payload.command} "${payload.filePath}"`;
-        ipcMain.emit('add-recent-file', null, payload.filePath);
+        ipcMain.emit(events.ipc.ADD_RECENT_FILE, null, payload.filePath);
         break;
 
       case commandsMapping.RENDER_FRAME:

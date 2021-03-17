@@ -8,8 +8,4 @@ import { ElectronService } from '@minsky/core';
 })
 export class PreferencesComponent {
   constructor(private electronService: ElectronService) {}
-
-  onCancel() {
-    this.electronService.ipcRenderer.send('global-menu-popup:cancel');
-  }
 }

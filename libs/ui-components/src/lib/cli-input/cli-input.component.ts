@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { MinskyProcessPayload } from '@minsky/shared';
+import { events, MinskyProcessPayload } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -49,7 +49,7 @@ export class CliInputComponent implements OnInit, OnDestroy {
 
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.on(
-        'minsky-process-reply',
+        events.ipc.MINSKY_PROCESS_REPLY,
         (event, stdout) => {
           this.minskyProcessReply.push(stdout);
           this.changeDetectionRef.detectChanges();
@@ -57,7 +57,7 @@ export class CliInputComponent implements OnInit, OnDestroy {
       );
 
       this.commands = this.electronService.ipcRenderer.sendSync(
-        'get-minsky-commands'
+        events.ipc.GET_MINSKY_COMMANDS
       );
     }
   }

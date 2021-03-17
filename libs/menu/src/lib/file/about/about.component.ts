@@ -13,6 +13,5 @@ export class AboutComponent {
 
   onClickOk() {
     logInfo('button clicked');
-    this.electronService.ipcRenderer.send('global-menu-popup:cancel');
   }
 }

@@ -3,9 +3,9 @@
  * between the frontend to the electron backend.
  */
 
-import { AppLayoutPayload, MinskyProcessPayload } from '@minsky/shared';
+import { AppLayoutPayload, events, MinskyProcessPayload } from '@minsky/shared';
 import * as debug from 'debug';
-import { app, ipcMain } from 'electron';
+import { ipcMain } from 'electron';
 import { environment } from '../../environments/environment';
 import { BookmarkManager } from '../bookmarkManager';
 import { RecentFilesManager } from '../recentFilesManager';
@@ -21,19 +21,27 @@ export default class ElectronEvents {
   }
 }
 
+const {
+  ipc: {
+    ADD_RECENT_FILE,
+    APP_LAYOUT_CHANGED,
+    CREATE_MENU_POPUP,
+    GET_MINSKY_COMMANDS,
+    MINSKY_PROCESS,
+    POPULATE_BOOKMARKS,
+    SET_BACKGROUND_COLOR,
+    GET_APP_VERSION,
+  },
+} = events;
+
 // Retrieve app version
-ipcMain.handle('get-app-version', () => {
+ipcMain.handle(GET_APP_VERSION, () => {
   logUpdateEvent(`Fetching application version... [v${environment.version}]`);
 
   return environment.version;
 });
 
-// Handle App termination
-ipcMain.on('quit', (event, code) => {
-  app.exit(code);
-});
-
-ipcMain.on('set-background-color', (event, { color }) => {
+ipcMain.on(SET_BACKGROUND_COLOR, (event, { color }) => {
   if (color) {
     StoreManager.store.set('backgroundColor', color);
   }
@@ -42,30 +50,26 @@ ipcMain.on('set-background-color', (event, { color }) => {
   );
 });
 
-ipcMain.on('create-menu-popup', (event, data) => {
+ipcMain.on(CREATE_MENU_POPUP, (event, data) => {
   WindowManager.createMenuPopUpWithRouting(data);
 });
 
-ipcMain.on('minsky-process', (event, payload: MinskyProcessPayload) => {
+ipcMain.on(MINSKY_PROCESS, (event, payload: MinskyProcessPayload) => {
   RestServiceManager.handleMinskyProcess(event, payload);
 });
 
-ipcMain.on('get-minsky-commands', (event) => {
+ipcMain.on(GET_MINSKY_COMMANDS, (event) => {
   RestServiceManager.onGetMinskyCommands(event);
 });
 
-ipcMain.on('app-layout-changed', (event, payload: AppLayoutPayload) => {
+ipcMain.on(APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {
   WindowManager.onAppLayoutChanged(payload);
 });
 
-ipcMain.on('populate-bookmarks', (event, bookmarkString: string) => {
+ipcMain.on(POPULATE_BOOKMARKS, (event, bookmarkString: string) => {
   BookmarkManager.populateBookmarks(bookmarkString);
 });
 
-ipcMain.on('populate-bookmarks', (event, bookmarkString: string) => {
-  BookmarkManager.populateBookmarks(bookmarkString);
-});
-
-ipcMain.on('add-recent-file', (event, filePath: string) => {
+ipcMain.on(ADD_RECENT_FILE, (event, filePath: string) => {
   RecentFilesManager.addFileToRecentFiles(filePath);
 });

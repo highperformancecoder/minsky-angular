@@ -9,7 +9,5 @@ import { ElectronService } from '@minsky/core';
 export class LogSimulationComponent {
   constructor(private eleService: ElectronService) {}
 
-  onClickOk() {
-    this.eleService.ipcRenderer.send('global-menu-popup:cancel');
-  }
+  onClickOk() {}
 }

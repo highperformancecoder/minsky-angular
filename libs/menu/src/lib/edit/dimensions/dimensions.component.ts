@@ -9,10 +9,5 @@ import { ElectronService } from '@minsky/core';
 export class DimensionsComponent {
   constructor(private electronService: ElectronService) {}
 
-  submitBtn() {
-    this.electronService.ipcRenderer.send('global-menu-popup:cancel');
-  }
-  cancelBtn() {
-    this.electronService.ipcRenderer.send('global-menu-popup:cancel');
-  }
+  submitBtn() {}
 }

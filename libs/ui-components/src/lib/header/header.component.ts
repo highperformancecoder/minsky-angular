@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { HeaderEvent, minskyProcessReplyIndicators } from '@minsky/shared';
+import {
+  events,
+  HeaderEvent,
+  minskyProcessReplyIndicators,
+} from '@minsky/shared';
 import * as debug from 'debug';
 
 const logInfo = debug('minsky:web:info');
@@ -27,7 +31,7 @@ export class HeaderComponent implements OnInit {
   handleTime() {
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.on(
-        'minsky-process-reply',
+        events.ipc.MINSKY_PROCESS_REPLY,
         (event, stdout: string) => {
           if (stdout.includes(minskyProcessReplyIndicators.T)) {
             this.t = Number(stdout.split('=>').pop()).toFixed(2);

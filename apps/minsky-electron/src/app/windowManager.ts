@@ -1,6 +1,6 @@
 import { ActiveWindow, AppLayoutPayload } from '@minsky/shared';
 import * as debug from 'debug';
-import { BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow } from 'electron';
 import * as os from 'os';
 import { rendererAppURL } from './constants';
 import { StoreManager } from './storeManager';
@@ -84,13 +84,6 @@ export class WindowManager {
 
     menuWindow.on('closed', () => {
       menuWindow = null;
-    });
-
-    // Closing global popup event_______
-    ipcMain.on('global-menu-popup:cancel', () => {
-      if (menuWindow) {
-        menuWindow.close();
-      }
     });
   }
 

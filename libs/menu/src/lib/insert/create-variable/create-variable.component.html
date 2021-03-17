@@ -40,7 +40,11 @@
 
       <div class="form-control">
         <label for="detailedDescription">Detailed Description</label>
-        <input type="text" class="detailedDescription" id="detailedDescription" />
+        <input
+          type="text"
+          class="detailedDescription"
+          id="detailedDescription"
+        />
       </div>
 
       <div class="form-control">
@@ -59,12 +63,7 @@
       </div>
 
       <div class="form-buttons">
-        <button class="btn ok-btn" (click)="(createVariableOk)">
-          OK
-        </button>
-        <button class="btn cancel-btn" (click)="createVariableCancel()">
-          Cancel
-        </button>
+        <button class="btn ok-btn" (click)="(createVariableOk)">OK</button>
       </div>
     </form>
   </div>
