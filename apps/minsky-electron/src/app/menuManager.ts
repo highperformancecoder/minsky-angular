@@ -850,16 +850,16 @@ export class MenuManager {
         ],
       },
       {
-        label: 'Runge Kutta',
+        label: 'Simulation',
         submenu: [
           {
-            label: 'Runge Kutta',
+            label: 'Simulation',
             click() {
               WindowManager.createMenuPopUpWithRouting({
                 width: 550,
                 height: 550,
-                title: 'Runge Kutta',
-                url: `${rendererAppURL}/#/menu/runge-kutta/runge-kutta-parameters`,
+                title: 'Simulation',
+                url: `${rendererAppURL}/#/menu/simulation/simulation-parameters`,
               });
             },
           },

@@ -21,11 +21,9 @@ const menuRoutes: Route[] = [
       import('./options/options.module').then((m) => m.OptionsModule),
   },
   {
-    path: 'runge-kutta',
+    path: 'simulation',
     loadChildren: () =>
-      import('./runge-kutta/runge-kutta.module').then(
-        (m) => m.RungeKuttaModule
-      ),
+      import('./simulation/simulation.module').then((m) => m.SimulationModule),
   },
 ];
 

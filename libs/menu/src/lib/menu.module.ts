@@ -5,7 +5,7 @@ import { FileModule } from './file/file.module';
 import { InsertModule } from './insert/insert.module';
 import { MenuRoutingModule } from './menu-routing.module';
 import { OptionsModule } from './options/options.module';
-import { RungeKuttaModule } from './runge-kutta/runge-kutta.module';
+import { SimulationModule } from './simulation/simulation.module';
 
 @NgModule({
   imports: [
@@ -15,7 +15,7 @@ import { RungeKuttaModule } from './runge-kutta/runge-kutta.module';
     EditModule,
     InsertModule,
     OptionsModule,
-    RungeKuttaModule,
+    SimulationModule,
   ],
   declarations: [],
   exports: [],
