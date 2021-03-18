@@ -1,14 +1,22 @@
-<div class="background-wrapper">
-  <div>{{ colorCtr.value }}</div>
-  <input type="color" [formControl]="colorCtr" />
+<div class="grid">
+  <span class="title">Background Color</span>
+
+  <div class="background-wrapper">
+    <div class="selection-wrapper">
+      <span class="selection">Selection: </span>
+      <span class="selection">{{ colorCtr.value }}</span>
+    </div>
+    <input type="color" [formControl]="colorCtr" />
+  </div>
+
   <div class="background-buttons">
     <button
-      mat-stroked-button
+      mat-raised-button
       class="btn ok-btn"
       id="backgroundOk"
       (click)="onClickOk()"
     >
-      OK
+      Apply
     </button>
   </div>
 </div>
