@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { events, MinskyProcessPayload } from '@minsky/shared';
+import { events, MinskyProcessPayload, rendererAppURL } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
@@ -133,7 +133,7 @@ export class AppComponent implements AfterViewInit {
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.send(events.ipc.CREATE_MENU_POPUP, {
         title: 'x-term',
-        url: 'http://localhost:4200/#/experiment/xterm',
+        url: `${rendererAppURL}/#/experiment/xterm`,
         modal: false,
         width: 900,
         height: 768,

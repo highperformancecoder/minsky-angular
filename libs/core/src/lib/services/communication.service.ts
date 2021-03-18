@@ -278,4 +278,12 @@ export class CommunicationService {
       });
     }
   }
+
+  insertElement(command) {
+    if (this.electronService.isElectron) {
+      this.sendMinskyCommand({
+        command: commandsMapping[command],
+      });
+    }
+  }
 }

@@ -54,14 +54,6 @@ export class WiringComponent implements OnInit, OnDestroy {
     this.cmService.dispatchEvents('canvasEvent');
   }
 
-  insertElement(command) {
-    if (this.electronService.isElectron) {
-      this.cmService.sendMinskyCommand({
-        command: commandsMapping[command],
-      });
-    }
-  }
-
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   ngOnDestroy(): void {}
 }

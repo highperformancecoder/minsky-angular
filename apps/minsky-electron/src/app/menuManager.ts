@@ -2,11 +2,11 @@ import {
   availableOperations,
   commandsMapping,
   MinskyProcessPayload,
+  rendererAppURL,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { dialog, Menu, shell } from 'electron';
 import { readFileSync, writeFile } from 'fs';
-import { rendererAppURL } from './constants';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
@@ -343,7 +343,7 @@ export class MenuManager {
                     width: 500,
                     height: 550,
                     title: 'Specify variable name',
-                    url: `${rendererAppURL}/#/menu/insert/create-variable`,
+                    url: `${rendererAppURL}/#/menu/insert/create-variable/flow`,
                   });
                 },
               },
@@ -354,7 +354,7 @@ export class MenuManager {
                     width: 500,
                     height: 550,
                     title: 'Specify variable name',
-                    url: `${rendererAppURL}/#/menu/insert/create-variable`,
+                    url: `${rendererAppURL}/#/menu/insert/create-variable/constant`,
                   });
                 },
               },
@@ -365,7 +365,7 @@ export class MenuManager {
                     width: 500,
                     height: 550,
                     title: 'Specify variable name',
-                    url: `${rendererAppURL}/#/menu/insert/create-variable`,
+                    url: `${rendererAppURL}/#/menu/insert/create-variable/parameter`,
                   });
                 },
               },

@@ -1,11 +1,10 @@
 import { startServer } from '@minsky/minsky-server';
-import { ActiveWindow } from '@minsky/shared';
+import { ActiveWindow, rendererAppName, rendererAppURL } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
-import { rendererAppName, rendererAppURL } from './constants';
 import { MenuManager } from './menuManager';
 import { RecentFilesManager } from './recentFilesManager';
 import { StoreManager } from './storeManager';

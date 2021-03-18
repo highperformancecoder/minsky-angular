@@ -1,6 +1,6 @@
 <div class="wrapper">
   <div class="wiring-tabs">
-    <button class="tab" (click)="insertElement('ADD_GODLEY')">
+    <button class="tab" (click)="cmService.insertElement('ADD_GODLEY')">
       <img
         src="assets/images/icons/bank.gif"
         alt="Godley table"
@@ -8,10 +8,7 @@
       />
     </button>
 
-    <!-- TODO: ADD_VARIABLE-->
-    <button class="tab" (click)="insertElement('ADD_VARIABLE')">
-      <img src="assets/images/icons/var.gif" alt="Variable" title="Variable" />
-    </button>
+    <minsky-variable></minsky-variable>
 
     <button class="tab" (click)="cmService.addOperation('integrate')">
       <img
@@ -49,11 +46,11 @@
       <img src="assets/images/icons/data.gif" alt="Data" title="Data" />
     </button>
 
-    <button class="tab" (click)="insertElement('ADD_SWITCH')">
+    <button class="tab" (click)="cmService.insertElement('ADD_SWITCH')">
       <img src="assets/images/icons/switch.gif" alt="Switch" title="Switch" />
     </button>
 
-    <button class="tab" (click)="insertElement('ADD_PLOT')">
+    <button class="tab" (click)="cmService.insertElement('ADD_PLOT')">
       <img
         src="assets/images/icons/plot.gif"
         alt="PlotWidget"
@@ -61,7 +58,7 @@
       />
     </button>
 
-    <button class="tab" (click)="insertElement('ADD_SHEET')">
+    <button class="tab" (click)="cmService.insertElement('ADD_SHEET')">
       <img src="assets/images/icons/sheet.gif" alt="Sheet" title="Sheet" />
     </button>
 
@@ -69,7 +66,7 @@
       <img src="assets/images/icons/note.gif" alt="Note" title="Note" />
     </button>
 
-    <button class="tab" (click)="insertElement('ADD_RAVEL')">
+    <button class="tab" (click)="cmService.insertElement('ADD_RAVEL')">
       <img src="assets/images/icons/ravel.gif" alt="Ravel" title="Ravel" />
     </button>
   </div>

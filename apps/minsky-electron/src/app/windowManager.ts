@@ -1,8 +1,7 @@
-import { ActiveWindow, AppLayoutPayload } from '@minsky/shared';
+import { ActiveWindow, AppLayoutPayload, rendererAppURL } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow } from 'electron';
 import * as os from 'os';
-import { rendererAppURL } from './constants';
 import { StoreManager } from './storeManager';
 
 const logWindows = debug('minsky:electron_windows');
