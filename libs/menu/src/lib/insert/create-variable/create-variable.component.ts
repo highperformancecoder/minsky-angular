@@ -52,7 +52,7 @@ export class CreateVariableComponent implements OnDestroy {
     this.communicationService.sendMinskyCommand({
       command: `${commandsMapping.ADD_VARIABLE} ["${this.variableName.value}","${this.type}"]`,
     });
-    this.closeWindow;
+    this.closeWindow();
   }
 
   closeWindow() {
