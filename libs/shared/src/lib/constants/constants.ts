@@ -8,9 +8,9 @@ export const updateServerUrl = 'https://deployment-server-url.com'; // TODO: ins
 export const defaultBackgroundColor = '#ffffff';
 export const newLineCharacter = '\n';
 
-export const ZOOM_IN_FACTOR = 1.5;
-export const ZOOM_OUT_FACTOR = 0.66;
-export const RESET_ZOOM_FACTOR = 0;
+export const ZOOM_IN_FACTOR = 1.1;
+export const ZOOM_OUT_FACTOR = 0.9;
+export const RESET_ZOOM_FACTOR = 1;
 export const ZOOM_TO_FIT_FACTOR = 1;
 
 export const commandsMapping = {
