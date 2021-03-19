@@ -19,8 +19,11 @@ export class RestServiceManager {
   static minskyRESTServicePath: string;
 
   static handleMinskyProcess(event, payload: MinskyProcessPayload) {
-    if (this.minskyProcess) {
-      this.executeCommandOnMinskyServer(this.minskyProcess, payload);
+    if (this.minskyProcess && payload.command === 'startMinskyProcess') {
+      this.minskyProcess.stdout.emit('close');
+      this.minskyProcess = null;
+
+      this.handleMinskyProcess(null, payload);
     } else if (
       !this.minskyProcess &&
       payload.command === 'startMinskyProcess'
@@ -80,6 +83,8 @@ export class RestServiceManager {
         dialog.showErrorBox('Execution error', 'Could not execute chosen file');
         this.minskyProcess = null;
       }
+    } else if (this.minskyProcess) {
+      this.executeCommandOnMinskyServer(this.minskyProcess, payload);
     } else {
       logError('Please select the minsky executable first...');
     }
