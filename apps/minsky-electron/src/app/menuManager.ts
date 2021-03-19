@@ -293,12 +293,11 @@ export class MenuManager {
           {
             label: 'Bookmark this position',
             click() {
-              RestServiceManager.handleMinskyProcess(null, {
-                command: `${commandsMapping.ADD_BOOKMARK} "${Date.now()}"`,
-              });
-
-              RestServiceManager.handleMinskyProcess(null, {
-                command: commandsMapping.BOOKMARK_LIST,
+              WindowManager.createMenuPopUpWithRouting({
+                width: 420,
+                height: 250,
+                title: 'Bookmarks',
+                url: `${rendererAppURL}/#/menu/bookmarks/add-bookmark`,
               });
             },
           },

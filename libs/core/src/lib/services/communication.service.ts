@@ -123,13 +123,13 @@ export class CommunicationService {
           },${ZOOM_IN_FACTOR}]`;
           break;
         case 'RESET_ZOOM':
-          // TODO:
+          // TODO: calculate zoom factor using c bounds OR there should be a command for this "/minsky/resetZoom"
           command = `${command} [${canvasWidth / 2},${
             canvasHeight / 2
           },${RESET_ZOOM_FACTOR}]`;
           break;
         case 'ZOOM_TO_FIT':
-          // TODO:
+          // TODO: calculate zoom factor using c bounds OR there should be a command for this "/minsky/zoomToFit"
           command = `${command} [${canvasWidth / 2},${
             canvasHeight / 2
           },${ZOOM_TO_FIT_FACTOR}]`;

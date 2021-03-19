@@ -11,6 +11,11 @@ const menuRoutes: Route[] = [
     loadChildren: () => import('./edit/edit.module').then((m) => m.EditModule),
   },
   {
+    path: 'bookmarks',
+    loadChildren: () =>
+      import('./bookmarks/bookmarks.module').then((m) => m.BookmarksModule),
+  },
+  {
     path: 'insert',
     loadChildren: () =>
       import('./insert/insert.module').then((m) => m.InsertModule),
