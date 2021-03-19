@@ -23,7 +23,7 @@ export class RestServiceManager {
       this.minskyProcess.stdout.emit('close');
       this.minskyProcess = null;
 
-      this.handleMinskyProcess(null, payload);
+      this.handleMinskyProcessAndRender(payload);
     } else if (
       !this.minskyProcess &&
       payload.command === 'startMinskyProcess'
