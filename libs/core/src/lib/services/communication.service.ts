@@ -159,8 +159,15 @@ export class CommunicationService {
           break;
 
         case 'RESET':
+          autoHandleMinskyProcess = false;
+
           this.showPlayButton$.next(true);
           this.clearStepInterval();
+
+          this.sendMinskyCommandAndRender({ command });
+          this.sendMinskyCommandAndRender({
+            command: commandsMapping.T,
+          });
           break;
 
         case 'STEP':
