@@ -17,6 +17,7 @@ const logError = debug('minsky:electron_error');
 export class RestServiceManager {
   static minskyProcess: ChildProcess;
   static minskyRESTServicePath: string;
+  static currentMinskyModelFilePath: string;
 
   static handleMinskyProcess(event, payload: MinskyProcessPayload) {
     if (this.minskyProcess && payload.command === 'startMinskyProcess') {
@@ -110,6 +111,17 @@ export class RestServiceManager {
     switch (payload.command) {
       case commandsMapping.LOAD:
         stdinCommand = `${payload.command} "${payload.filePath}"`;
+
+        this.currentMinskyModelFilePath = payload.filePath;
+
+        ipcMain.emit(events.ipc.ADD_RECENT_FILE, null, payload.filePath);
+        break;
+
+      case commandsMapping.SAVE:
+        stdinCommand = `${payload.command} "${payload.filePath}"`;
+
+        this.currentMinskyModelFilePath = payload.filePath;
+
         ipcMain.emit(events.ipc.ADD_RECENT_FILE, null, payload.filePath);
         break;
 

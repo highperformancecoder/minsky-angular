@@ -6,7 +6,7 @@ import {
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { dialog, Menu, shell } from 'electron';
-import { readFileSync, writeFile } from 'fs';
+import { readFileSync } from 'fs';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
@@ -103,29 +103,35 @@ export class MenuManager {
             label: 'Save',
             accelerator: 'CmdOrCtrl + S',
             async click() {
-              try {
-                const content = 'This is the content of new file';
+              if (RestServiceManager.minskyProcess) {
+                if (RestServiceManager.currentMinskyModelFilePath) {
+                  RestServiceManager.handleMinskyProcess(null, {
+                    command: `${commandsMapping.SAVE}`,
+                    filePath: RestServiceManager.currentMinskyModelFilePath,
+                  });
+                } else {
+                  const saveDialog = await dialog.showSaveDialog({});
 
-                const result = await dialog.showSaveDialog({
-                  filters: [{ name: 'text', extensions: ['txt'] }],
-                });
-
-                logMenuEvent(result);
-
-                this.saveFunc(result);
-
-                writeFile(result.filePath, content, (err) => {
-                  if (err) logError(err);
-                });
-              } catch (err) {
-                this.saveFunc('data error');
-                logError('file is not saved', err);
+                  RestServiceManager.handleMinskyProcess(null, {
+                    command: commandsMapping.SAVE,
+                    filePath: saveDialog.filePath,
+                  });
+                }
               }
             },
           },
           {
             label: 'SaveAs',
-            accelerator: 'CmdOrCtrl + A',
+            accelerator: 'CmdOrCtrl + Shift + S',
+            async click() {
+              const saveDialog = await dialog.showSaveDialog({});
+              RestServiceManager.handleMinskyProcess(null, {
+                command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
+              });
+
+              RestServiceManager.currentMinskyModelFilePath =
+                saveDialog.filePath;
+            },
           },
           {
             label: 'Insert File as Group',
