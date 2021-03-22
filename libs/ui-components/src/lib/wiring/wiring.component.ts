@@ -30,6 +30,10 @@ export class WiringComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.minskyCanvas = document.getElementById('canvas');
 
+    if (this.electronService.isElectron) {
+      this.minskyCanvas.onwheel = this.cmService.onMouseWheelZoom;
+    }
+
     this.mouseMove$ = fromEvent<MouseEvent>(
       this.minskyCanvas,
       'mousemove'

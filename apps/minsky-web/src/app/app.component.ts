@@ -106,7 +106,7 @@ export class AppComponent implements AfterViewInit {
 
   async toggleMinskyService() {
     if (this.electronService.isElectron) {
-      this.isTerminalDisabled = this.electronService.ipcRenderer.sendSync(
+      this.isTerminalDisabled = !this.electronService.ipcRenderer.sendSync(
         events.ipc.TOGGLE_MINSKY_SERVICE
       );
     }

@@ -269,4 +269,21 @@ export class CommunicationService {
       });
     }
   }
+
+  onMouseWheelZoom = (event: WheelEvent) => {
+    event.preventDefault();
+
+    const { deltaY } = event;
+    const zoomIn = deltaY < 0 ? true : false;
+
+    let command = '';
+
+    if (zoomIn) {
+      command = `${commandsMapping.ZOOM_IN} [${event.clientX},${event.clientY},${ZOOM_IN_FACTOR}]`;
+    } else {
+      command = `${commandsMapping.ZOOM_OUT} [${event.clientX},${event.clientY},${ZOOM_OUT_FACTOR}]`;
+    }
+
+    this.sendMinskyCommandAndRender({ command });
+  };
 }
