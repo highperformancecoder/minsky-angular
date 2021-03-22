@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   commandsMapping,
+  events,
   HeaderEvent,
   MinskyProcessPayload,
   RESET_ZOOM_FACTOR,
@@ -54,33 +55,9 @@ export class CommunicationService {
 
   setBackgroundColor(color = null) {
     if (this.electronService.isElectron)
-      this.electronService.ipcRenderer.send('set-background-color', {
+      this.electronService.ipcRenderer.send(events.ipc.SET_BACKGROUND_COLOR, {
         color: color,
       });
-  }
-
-  initMinskyResources() {
-    if (this.electronService.isElectron) {
-      this.setGodleyIconResource();
-
-      this.setGroupIconResource();
-    }
-  }
-
-  private setGroupIconResource() {
-    const groupIconResourcePayload: MinskyProcessPayload = {
-      command: commandsMapping.SET_GROUP_ICON_RESOURCE,
-    };
-
-    this.sendMinskyCommand(groupIconResourcePayload);
-  }
-
-  private setGodleyIconResource() {
-    const godleyIconPayload: MinskyProcessPayload = {
-      command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
-    };
-
-    this.sendMinskyCommand(godleyIconPayload);
   }
 
   sendMinskyCommandAndRender(minskyProcessPayload: MinskyProcessPayload) {
@@ -93,7 +70,7 @@ export class CommunicationService {
 
   sendMinskyCommand(payload: MinskyProcessPayload) {
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send('minsky-process', {
+      this.electronService.ipcRenderer.send(events.ipc.MINSKY_PROCESS, {
         ...payload,
         command: payload.command.trim(),
       });
@@ -122,13 +99,13 @@ export class CommunicationService {
           },${ZOOM_IN_FACTOR}]`;
           break;
         case 'RESET_ZOOM':
-          // TODO:
+          // TODO: calculate zoom factor using c bounds OR there should be a command for this "/minsky/resetZoom"
           command = `${command} [${canvasWidth / 2},${
             canvasHeight / 2
           },${RESET_ZOOM_FACTOR}]`;
           break;
         case 'ZOOM_TO_FIT':
-          // TODO:
+          // TODO: calculate zoom factor using c bounds OR there should be a command for this "/minsky/zoomToFit"
           command = `${command} [${canvasWidth / 2},${
             canvasHeight / 2
           },${ZOOM_TO_FIT_FACTOR}]`;
@@ -158,8 +135,15 @@ export class CommunicationService {
           break;
 
         case 'RESET':
+          autoHandleMinskyProcess = false;
+
           this.showPlayButton$.next(true);
           this.clearStepInterval();
+
+          this.sendMinskyCommandAndRender({ command });
+          this.sendMinskyCommandAndRender({
+            command: commandsMapping.T,
+          });
           break;
 
         case 'STEP':
@@ -256,7 +240,10 @@ export class CommunicationService {
           value: { top: this.topOffset, left: this.leftOffset },
         };
 
-        this.electronService.ipcRenderer.send('app-layout-changed', payload);
+        this.electronService.ipcRenderer.send(
+          events.ipc.APP_LAYOUT_CHANGED,
+          payload
+        );
       } else {
         this.emitValues('Values', offSetValue);
       }
@@ -274,4 +261,29 @@ export class CommunicationService {
       });
     }
   }
+
+  insertElement(command) {
+    if (this.electronService.isElectron) {
+      this.sendMinskyCommand({
+        command: commandsMapping[command],
+      });
+    }
+  }
+
+  onMouseWheelZoom = (event: WheelEvent) => {
+    event.preventDefault();
+
+    const { deltaY } = event;
+    const zoomIn = deltaY < 0 ? true : false;
+
+    let command = '';
+
+    if (zoomIn) {
+      command = `${commandsMapping.ZOOM_IN} [${event.clientX},${event.clientY},${ZOOM_IN_FACTOR}]`;
+    } else {
+      command = `${commandsMapping.ZOOM_OUT} [${event.clientX},${event.clientY},${ZOOM_OUT_FACTOR}]`;
+    }
+
+    this.sendMinskyCommandAndRender({ command });
+  };
 }

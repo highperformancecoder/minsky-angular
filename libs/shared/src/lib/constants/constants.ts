@@ -1,9 +1,16 @@
+export const rendererAppPort = 4200;
+export const rendererAppURL = `http://localhost:${rendererAppPort}`;
+export const rendererAppName = 'minsky-web';
+export const electronAppName = 'minsky-electron';
+export const backgroundColor = '#c1c1c1';
+export const updateServerUrl = 'https://deployment-server-url.com'; // TODO: insert your update server url here
+
 export const defaultBackgroundColor = '#ffffff';
 export const newLineCharacter = '\n';
 
-export const ZOOM_IN_FACTOR = 1.5;
-export const ZOOM_OUT_FACTOR = 0.66;
-export const RESET_ZOOM_FACTOR = 0;
+export const ZOOM_IN_FACTOR = 1.1;
+export const ZOOM_OUT_FACTOR = 0.9;
+export const RESET_ZOOM_FACTOR = 1;
 export const ZOOM_TO_FIT_FACTOR = 1;
 
 export const commandsMapping = {
@@ -40,17 +47,17 @@ export const commandsMapping = {
   GROUP_SELECTION: `/minsky/canvas/groupSelection`,
   REVERSE_CHECKBOX: `/minsky/reverse`,
   T: `/minsky/t`,
-  ADD_BOOKMARK: '/minsky/canvas/selection/addBookmark',
-  BOOKMARK_LIST: '/minsky/canvas/selection/bookmarkList',
-  DELETE_BOOKMARK: '/minsky/canvas/selection/deleteBookmark',
-  GOTO_BOOKMARK: '/minsky/canvas/selection/gotoBookmark',
+  ADD_BOOKMARK: '/minsky/model/addBookmark',
+  BOOKMARK_LIST: '/minsky/model/bookmarkList',
+  DELETE_BOOKMARK: '/minsky/model/deleteBookmark',
+  GOTO_BOOKMARK: '/minsky/model/gotoBookmark',
   DIMENSIONAL_ANALYSIS: '/minsky/dimensionalAnalysis',
 };
 
 export const minskyProcessReplyIndicators = {
   T: '/minsky/t=>',
-  DELTA_T: '/minsky/t0=>', //TODO:
-  BOOKMARK_LIST: '/minsky/canvas/selection/bookmarkList=>',
+  DELTA_T: '/minsky/t0=>', //TODO: implement the calculation required for deltaT
+  BOOKMARK_LIST: '/minsky/model/bookmarkList=>',
 };
 
 export const availableOperations = {
@@ -116,4 +123,19 @@ export const availableOperations = {
   USER_FUNCTION: 'userFunction',
   COPY: 'copy',
   NUM_OPS: 'numOps',
+};
+
+export const events = {
+  ipc: {
+    SET_BACKGROUND_COLOR: 'set-background-color',
+    CREATE_MENU_POPUP: 'create-menu-popup',
+    MINSKY_PROCESS: 'minsky-process',
+    GET_MINSKY_COMMANDS: 'get-minsky-commands',
+    APP_LAYOUT_CHANGED: 'app-layout-changed',
+    POPULATE_BOOKMARKS: 'populate-bookmarks',
+    ADD_RECENT_FILE: 'add-recent-file',
+    GET_APP_VERSION: 'get-app-version',
+    MINSKY_PROCESS_REPLY: 'minsky-process-reply',
+    TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
+  },
 };

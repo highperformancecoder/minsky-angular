@@ -11,6 +11,11 @@ const menuRoutes: Route[] = [
     loadChildren: () => import('./edit/edit.module').then((m) => m.EditModule),
   },
   {
+    path: 'bookmarks',
+    loadChildren: () =>
+      import('./bookmarks/bookmarks.module').then((m) => m.BookmarksModule),
+  },
+  {
     path: 'insert',
     loadChildren: () =>
       import('./insert/insert.module').then((m) => m.InsertModule),
@@ -21,11 +26,9 @@ const menuRoutes: Route[] = [
       import('./options/options.module').then((m) => m.OptionsModule),
   },
   {
-    path: 'runge-kutta',
+    path: 'simulation',
     loadChildren: () =>
-      import('./runge-kutta/runge-kutta.module').then(
-        (m) => m.RungeKuttaModule
-      ),
+      import('./simulation/simulation.module').then((m) => m.SimulationModule),
   },
 ];
 

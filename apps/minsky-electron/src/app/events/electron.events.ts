@@ -3,25 +3,16 @@
  * between the frontend to the electron backend.
  */
 
-import {
-  AppLayoutPayload,
-  commandsMapping,
-  MinskyProcessPayload,
-  newLineCharacter,
-} from '@minsky/shared';
-import { spawn } from 'child_process';
+import { AppLayoutPayload, events, MinskyProcessPayload } from '@minsky/shared';
 import * as debug from 'debug';
-import { app, ipcMain } from 'electron';
-import * as log from 'electron-log';
+import { ipcMain } from 'electron';
 import { environment } from '../../environments/environment';
-import App from '../app';
-import {
-  checkBackgroundAndApplyTextColor,
-  createMenuPopUpWithRouting,
-  handleMinskyProcess,
-} from './../helper';
+import { BookmarkManager } from '../bookmarkManager';
+import { RecentFilesManager } from '../recentFilesManager';
+import { RestServiceManager } from '../restServiceManager';
+import { StoreManager } from '../storeManager';
+import { WindowManager } from '../windowManager';
 
-const logError = debug('minsky:electron_error');
 const logUpdateEvent = debug('minsky:electron_update_event');
 
 export default class ElectronEvents {
@@ -30,72 +21,60 @@ export default class ElectronEvents {
   }
 }
 
+const {
+  ipc: {
+    ADD_RECENT_FILE,
+    APP_LAYOUT_CHANGED,
+    CREATE_MENU_POPUP,
+    GET_MINSKY_COMMANDS,
+    MINSKY_PROCESS,
+    POPULATE_BOOKMARKS,
+    SET_BACKGROUND_COLOR,
+    GET_APP_VERSION,
+    TOGGLE_MINSKY_SERVICE,
+  },
+} = events;
+
 // Retrieve app version
-ipcMain.handle('get-app-version', (event) => {
+ipcMain.handle(GET_APP_VERSION, () => {
   logUpdateEvent(`Fetching application version... [v${environment.version}]`);
 
   return environment.version;
 });
 
-// Handle App termination
-ipcMain.on('quit', (event, code) => {
-  app.exit(code);
-});
-
-ipcMain.on('set-background-color', (event, { color }) => {
+ipcMain.on(SET_BACKGROUND_COLOR, (event, { color }) => {
   if (color) {
-    App.store.set('backgroundColor', color);
+    StoreManager.store.set('backgroundColor', color);
   }
-  checkBackgroundAndApplyTextColor(App.store.get('backgroundColor'));
+  WindowManager.checkBackgroundAndApplyTextColor(
+    StoreManager.store.get('backgroundColor')
+  );
 });
 
-ipcMain.on('create-menu-popup', (event, data) => {
-  createMenuPopUpWithRouting(data);
+ipcMain.on(CREATE_MENU_POPUP, (event, data) => {
+  WindowManager.createMenuPopUpWithRouting(data);
 });
 
-ipcMain.on('minsky-process', (event, payload: MinskyProcessPayload) => {
-  handleMinskyProcess(event, payload);
+ipcMain.on(MINSKY_PROCESS, (event, payload: MinskyProcessPayload) => {
+  RestServiceManager.handleMinskyProcess(event, payload);
 });
 
-ipcMain.on('get-minsky-commands', (event) => {
-  let listOfCommands = [];
-
-  const getMinskyCommandsProcess = spawn(App.minskyRESTServicePath);
-  getMinskyCommandsProcess.stdin.write(commandsMapping.LIST + newLineCharacter);
-
-  setTimeout(() => {
-    getMinskyCommandsProcess.stdout.emit('close');
-  }, 1000);
-
-  getMinskyCommandsProcess.stdout
-    .on('data', (data) => {
-      listOfCommands = [
-        ...listOfCommands,
-        ...data.toString().trim().split(newLineCharacter),
-      ];
-    })
-    .on('error', (error) => {
-      log.error(`error: ${error.message}`);
-    })
-    .on('close', (code) => {
-      log.info(`"get-minsky-commands" child process exited with code ${code}`);
-      event.returnValue = listOfCommands;
-    });
+ipcMain.on(GET_MINSKY_COMMANDS, (event) => {
+  RestServiceManager.onGetMinskyCommands(event);
 });
 
-ipcMain.on('app-layout-changed', (event, { type, value }: AppLayoutPayload) => {
-  switch (type) {
-    case 'RESIZE':
-      App.mainWindowHeight = value.height;
-      App.mainWindowWidth = value.width;
-      break;
+ipcMain.on(APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {
+  WindowManager.onAppLayoutChanged(payload);
+});
 
-    case 'OFFSET':
-      App.topOffset = value.top;
-      App.leftOffset = value.left;
-      break;
+ipcMain.on(POPULATE_BOOKMARKS, (event, bookmarkString: string) => {
+  BookmarkManager.populateBookmarks(bookmarkString);
+});
 
-    default:
-      break;
-  }
+ipcMain.on(ADD_RECENT_FILE, (event, filePath: string) => {
+  RecentFilesManager.addFileToRecentFiles(filePath);
+});
+
+ipcMain.on(TOGGLE_MINSKY_SERVICE, async (event) => {
+  await RestServiceManager.toggleMinskyService(event);
 });

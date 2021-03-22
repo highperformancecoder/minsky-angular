@@ -30,6 +30,10 @@ export class WiringComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.minskyCanvas = document.getElementById('canvas');
 
+    if (this.electronService.isElectron) {
+      this.minskyCanvas.onwheel = this.cmService.onMouseWheelZoom;
+    }
+
     this.mouseMove$ = fromEvent<MouseEvent>(
       this.minskyCanvas,
       'mousemove'
@@ -52,14 +56,6 @@ export class WiringComponent implements OnInit, OnDestroy {
     });
 
     this.cmService.dispatchEvents('canvasEvent');
-  }
-
-  insertElement(command) {
-    if (this.electronService.isElectron) {
-      this.cmService.sendMinskyCommand({
-        command: commandsMapping[command],
-      });
-    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

@@ -18,6 +18,7 @@ import { FunctionsComponent } from './wiring/functions/functions.component';
 import { ReductionsComponent } from './wiring/reductions/reductions.component';
 import { ScansComponent } from './wiring/scans/scans.component';
 import { TensorOperationsComponent } from './wiring/tensor-operations/tensor-operations.component';
+import { VariableComponent } from './wiring/variable/variable.component';
 @NgModule({
   declarations: [
     HeaderComponent,
@@ -35,6 +36,7 @@ import { TensorOperationsComponent } from './wiring/tensor-operations/tensor-ope
     ReductionsComponent,
     ScansComponent,
     TensorOperationsComponent,
+    VariableComponent,
   ],
   imports: [
     CommonModule,

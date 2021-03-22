@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CreateVariableComponent } from './create-variable/create-variable.component';
+import { SimulationParametersComponent } from './simulation/simulation-parameters.component';
 
 const routes: Routes = [
-  { path: 'create-variable/:type', component: CreateVariableComponent },
+  { path: 'simulation-parameters', component: SimulationParametersComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class InsertRoutingModule {}
+export class SimulationRoutingModule {}

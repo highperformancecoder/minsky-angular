@@ -2,54 +2,102 @@
   <div class="popup-title">Preferences</div>
 
   <div class="form-wrapper">
-    <form action="">
+    <form [formGroup]="form">
       <div class="form-control">
         <label for="godleyTableShowValues">Godley Table Show Values</label>
-        <input type="checkbox" class="godley-table-show-values-checkbox" id="godleyTableShowValues" />
+        <input
+          formControlName="godleyTableShowValues"
+          type="checkbox"
+          class="godley-table-show-values-checkbox"
+          id="godleyTableShowValues"
+        />
       </div>
 
       <div class="form-control">
         <label>Godley Table Output Style</label>
         <span class="radio-wrapper">
-          <input type="radio" class="dr-cr-radio" id="drCrRadio" name="godleyStyleRadioGroup" />
+          <input
+            formControlName="godleyStyleRadioGroup"
+            type="radio"
+            class="dr-cr-radio"
+            id="drCrRadio"
+            name="godleyStyleRadioGroup"
+          />
           <label for="drCrRadio">DR/CR</label>
         </span>
 
         <span class="radio-wrapper">
-          <input type="radio" class="plus-minus-radio" id="plusMinusRadio" name="godleyStyleRadioGroup" />
+          <input
+            formControlName="godleyStyleRadioGroup"
+            type="radio"
+            class="plus-minus-radio"
+            id="plusMinusRadio"
+            name="godleyStyleRadioGroup"
+          />
           <label for="plusMinusRadio">+/-</label>
         </span>
       </div>
 
       <div class="form-control">
-        <label for="enableMultipleEquityColumns">Enable multiple equity columns</label>
-        <input type="checkbox" class="enable-multiple-equity-columns-checkbox" id="enableMultipleEquityColumns" />
+        <label for="enableMultipleEquityColumns"
+          >Enable multiple equity columns</label
+        >
+        <input
+          formControlName="enableMultipleEquityColumns"
+          type="checkbox"
+          class="enable-multiple-equity-columns-checkbox"
+          id="enableMultipleEquityColumns"
+        />
       </div>
 
       <div class="form-control">
-        <label for="numberOfRecentFilesToDisplay">Number of recent files to display</label>
-        <input type="text" class="numberOfRecentFilesToDisplay" id="numberOfRecentFilesToDisplay" value="10" />
+        <label for="numberOfRecentFilesToDisplay"
+          >Number of recent files to display</label
+        >
+        <input
+          formControlName="numberOfRecentFilesToDisplay"
+          type="text"
+          class="numberOfRecentFilesToDisplay"
+          id="numberOfRecentFilesToDisplay"
+          value="10"
+        />
       </div>
 
       <div class="form-control">
-        <label for="wrapLongEquationsInLatexExport">Wrap long equations in LaTeX export</label>
-        <input type="checkbox" class="wrap-long-equations-in-latex-export-checkbox"
-          id="wrapLongEquationsInLatexExport" />
+        <label for="wrapLongEquationsInLatexExport"
+          >Wrap long equations in LaTeX export</label
+        >
+        <input
+          formControlName="wrapLongEquationsInLatexExport"
+          type="checkbox"
+          class="wrap-long-equations-in-latex-export-checkbox"
+          id="wrapLongEquationsInLatexExport"
+        />
       </div>
 
       <div class="form-control">
         <label for="enablePanopticon">Enable panopticon</label>
-        <input type="checkbox" class="enable-panopticon-checkbox" id="enablePanopticon" />
+        <input
+          formControlName="enablePanopticon"
+          type="checkbox"
+          class="enable-panopticon-checkbox"
+          id="enablePanopticon"
+        />
       </div>
 
       <div class="form-control">
         <label for="focusFollowsMouse">Focus follows mouse</label>
-        <input type="checkbox" class="focus-follows-mouse-checkbox" id="focusFollowsMouse" />
+        <input
+          formControlName="focusFollowsMouse"
+          type="checkbox"
+          class="focus-follows-mouse-checkbox"
+          id="focusFollowsMouse"
+        />
       </div>
 
       <div class="form-control">
         <label for="font">Font</label>
-        <select name="" id="font">
+        <select formControlName="font" name="font" id="font">
           <option value="arial">Arial</option>
           <option value="arialUnicode">Arial Unicode</option>
           <option value="timesNewRoman">Times New Roman</option>
@@ -57,9 +105,11 @@
       </div>
 
       <div class="form-control form-buttons">
-        <button class="btn ok-btn">OK</button>
-        <button (click)="onCancel()" class="btn cancel-btn">
+        <button type="button" mat-raised-button (click)="closeWindow()">
           Cancel
+        </button>
+        <button type="submit" mat-raised-button (click)="handleSubmit()">
+          OK
         </button>
       </div>
     </form>

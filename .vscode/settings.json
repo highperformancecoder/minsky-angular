@@ -1,27 +1,26 @@
 {
-    "search.exclude": {
-        ".cache-loader/**": true,
-        ".git/**": true
-    },
-    "files.exclude": {
-        "**/.git": true,
-        "**/.DS_Store": true,
-        "**/node_modules": true,
-        "**/.cache-loader": true
-    },
-    "files.watcherExclude": {
-        "**/.git/objects/**": true,
-        "**/.git/subtree-cache/**": true,
-        "**/node_modules/**": true
-    },
-    "cSpell.words": [
-        "Codegen",
-        "Godley",
-        "Kutta",
-        "Runge",
-        "infimum",
-        "minimizable",
-        "submenu",
-        "supremum"
-    ]
+  "search.exclude": {
+    ".cache-loader/**": true,
+    ".git/**": true
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/.cache-loader": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true
+  },
+  "cSpell.words": [
+    "Codegen",
+    "Godley",
+    "Panopticon",
+    "infimum",
+    "minimizable",
+    "submenu",
+    "supremum"
+  ]
 }

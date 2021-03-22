@@ -9,7 +9,5 @@ import { ElectronService } from '@minsky/core';
 export class SelectItemsComponent {
   constructor(private electronService: ElectronService) {}
 
-  onClickOk() {
-    this.electronService.ipcRenderer.send('global-menu-popup:cancel');
-  }
+  onClickOk() {}
 }
