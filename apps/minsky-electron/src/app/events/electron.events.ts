@@ -31,6 +31,7 @@ const {
     POPULATE_BOOKMARKS,
     SET_BACKGROUND_COLOR,
     GET_APP_VERSION,
+    TOGGLE_MINSKY_SERVICE,
   },
 } = events;
 
@@ -72,4 +73,8 @@ ipcMain.on(POPULATE_BOOKMARKS, (event, bookmarkString: string) => {
 
 ipcMain.on(ADD_RECENT_FILE, (event, filePath: string) => {
   RecentFilesManager.addFileToRecentFiles(filePath);
+});
+
+ipcMain.on(TOGGLE_MINSKY_SERVICE, async (event) => {
+  await RestServiceManager.toggleMinskyService(event);
 });

@@ -1,14 +1,13 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { events, MinskyProcessPayload, rendererAppURL } from '@minsky/shared';
+import { events, rendererAppURL } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
 import { AppConfig } from '../environments/environment';
 
 const logInfo = debug('minsky:web:info');
-const logError = debug('minsky:web:error');
 
 @Component({
   selector: 'app-root',
@@ -107,25 +106,9 @@ export class AppComponent implements AfterViewInit {
 
   async toggleMinskyService() {
     if (this.electronService.isElectron) {
-      try {
-        const _dialog = await this.electronService.dialog.showOpenDialog({
-          properties: ['openFile'],
-          filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
-        });
-
-        const initPayload: MinskyProcessPayload = {
-          command: 'startMinskyProcess',
-          filePath: _dialog.filePaths[0].toString(),
-        };
-
-        this.cmService.sendMinskyCommand(initPayload);
-
-        this.cmService.initMinskyResources();
-
-        this.isTerminalDisabled = false;
-      } catch (error) {
-        logError(error);
-      }
+      this.isTerminalDisabled = this.electronService.ipcRenderer.sendSync(
+        events.ipc.TOGGLE_MINSKY_SERVICE
+      );
     }
   }
 

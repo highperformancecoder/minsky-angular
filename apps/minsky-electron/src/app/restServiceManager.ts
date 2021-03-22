@@ -102,11 +102,10 @@ export class RestServiceManager {
 
     this.handleMinskyProcess(null, renderPayload);
   }
-  static executeCommandOnMinskyServer(
+  private static executeCommandOnMinskyServer(
     minskyProcess: ChildProcess,
     payload: MinskyProcessPayload
   ) {
-    const newLine = '\n';
     let stdinCommand = null;
     switch (payload.command) {
       case commandsMapping.LOAD:
@@ -158,7 +157,7 @@ export class RestServiceManager {
     }
     if (stdinCommand) {
       log.silly(stdinCommand);
-      minskyProcess.stdin.write(stdinCommand + newLine);
+      minskyProcess.stdin.write(stdinCommand + newLineCharacter);
     }
   }
 
@@ -190,5 +189,45 @@ export class RestServiceManager {
         );
         event.returnValue = listOfCommands;
       });
+  }
+
+  static async toggleMinskyService(event: Electron.IpcMainEvent) {
+    try {
+      const _dialog = await dialog.showOpenDialog({
+        properties: ['openFile'],
+        filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
+      });
+
+      const initPayload: MinskyProcessPayload = {
+        command: 'startMinskyProcess',
+        filePath: _dialog.filePaths[0].toString(),
+      };
+
+      this.handleMinskyProcess(null, initPayload);
+
+      const setGroupIconResource = () => {
+        const groupIconResourcePayload: MinskyProcessPayload = {
+          command: commandsMapping.SET_GROUP_ICON_RESOURCE,
+        };
+
+        this.handleMinskyProcess(null, groupIconResourcePayload);
+      };
+
+      const setGodleyIconResource = () => {
+        const godleyIconPayload: MinskyProcessPayload = {
+          command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
+        };
+
+        this.handleMinskyProcess(null, godleyIconPayload);
+      };
+
+      setGodleyIconResource();
+      setGroupIconResource();
+
+      event.returnValue = true;
+    } catch (error) {
+      logError(error);
+      event.returnValue = false;
+    }
   }
 }

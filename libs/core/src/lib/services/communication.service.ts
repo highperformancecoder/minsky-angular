@@ -60,30 +60,6 @@ export class CommunicationService {
       });
   }
 
-  initMinskyResources() {
-    if (this.electronService.isElectron) {
-      this.setGodleyIconResource();
-
-      this.setGroupIconResource();
-    }
-  }
-
-  private setGroupIconResource() {
-    const groupIconResourcePayload: MinskyProcessPayload = {
-      command: commandsMapping.SET_GROUP_ICON_RESOURCE,
-    };
-
-    this.sendMinskyCommand(groupIconResourcePayload);
-  }
-
-  private setGodleyIconResource() {
-    const godleyIconPayload: MinskyProcessPayload = {
-      command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
-    };
-
-    this.sendMinskyCommand(godleyIconPayload);
-  }
-
   sendMinskyCommandAndRender(minskyProcessPayload: MinskyProcessPayload) {
     if (this.electronService.isElectron) {
       this.sendMinskyCommand(minskyProcessPayload);
