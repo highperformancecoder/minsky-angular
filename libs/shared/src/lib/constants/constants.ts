@@ -54,6 +54,7 @@ export const commandsMapping = {
   ZOOM_OUT: `/minsky/canvas/model/zoom`,
   SAVE: '/minsky/save',
   REDRAW: '/minsky/canvas/redraw',
+  REMOVE_UNITS: '/minsky/deleteAllUnits',
 };
 
 export const minskyProcessReplyIndicators = {

@@ -299,6 +299,14 @@ export class MenuManager {
               });
             },
           },
+          {
+            label: 'Remove Units',
+            click() {
+              RestServiceManager.handleMinskyProcessAndRender({
+                command: `${commandsMapping.REMOVE_UNITS}`,
+              });
+            },
+          },
         ],
       },
       {
