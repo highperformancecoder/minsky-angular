@@ -41,10 +41,9 @@ export class MenuManager {
           },
           {
             label: 'New System',
-            accelerator: 'CmdOrCtrl + N',
+            accelerator: 'CmdOrCtrl + Shift + N',
             click() {
               logMenuEvent('TODO -> topMenu -> New System');
-              // win.hide();
               // createWindow();
             },
           },
@@ -204,6 +203,11 @@ export class MenuManager {
           },
           {
             label: 'Redraw',
+            click() {
+              RestServiceManager.handleMinskyProcessAndRender({
+                command: commandsMapping.REDRAW,
+              });
+            },
           },
           {
             label: 'Object Browser',

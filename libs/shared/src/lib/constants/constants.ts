@@ -53,6 +53,7 @@ export const commandsMapping = {
   ZOOM_IN: `/minsky/canvas/model/zoom`,
   ZOOM_OUT: `/minsky/canvas/model/zoom`,
   SAVE: '/minsky/save',
+  REDRAW: '/minsky/canvas/redraw',
 };
 
 export const minskyProcessReplyIndicators = {
