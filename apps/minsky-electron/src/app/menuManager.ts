@@ -282,6 +282,11 @@ export class MenuManager {
           },
           {
             label: 'Group selection',
+            click() {
+              RestServiceManager.handleMinskyProcessAndRender({
+                command: `${commandsMapping.GROUP_SELECTION}`,
+              });
+            },
           },
           {
             label: 'Dimensions',
