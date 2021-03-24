@@ -123,7 +123,7 @@ export class CommunicationService {
 
             this.sendMinskyCommandAndRender(payload);
             this.sendMinskyCommandAndRender({ command: commandsMapping.T });
-          }, 1000);
+          }, 100); // TODO:: -> Make this delay configurable
           break;
 
         case 'PAUSE':
