@@ -19,7 +19,11 @@ export class RestServiceManager {
   static minskyProcess: ChildProcess;
   static minskyRESTServicePath: string;
   static currentMinskyModelFilePath: string;
-  private static queue = new PQueue({ concurrency: 1 });
+  private static queue = new PQueue({
+    concurrency: 1,
+    interval: 300,
+    intervalCap: 1,
+  });
 
   static handleMinskyProcess(payload: MinskyProcessPayload) {
     if (this.minskyProcess && payload.command === 'startMinskyProcess') {
@@ -50,6 +54,8 @@ export class RestServiceManager {
               const _event = null;
               ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
             }
+
+            this.queue.start();
           });
 
           this.minskyProcess.stderr.on('data', (data) => {
