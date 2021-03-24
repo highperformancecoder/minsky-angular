@@ -35,13 +35,9 @@ export class RecentFilesManager {
           new MenuItem({
             label: filePath,
             click: () => {
-              RestServiceManager.handleMinskyProcessAndRender({
+              RestServiceManager.handleMinskyProcess({
                 command: commandsMapping.LOAD,
                 filePath,
-              });
-
-              RestServiceManager.handleMinskyProcessAndRender({
-                command: commandsMapping.RENDER_FRAME,
               });
             },
           })

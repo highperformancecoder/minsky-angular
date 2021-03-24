@@ -9,6 +9,7 @@ import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
+import { default as PQueue } from 'p-queue';
 import { join } from 'path';
 import { WindowManager } from './windowManager';
 
@@ -18,13 +19,14 @@ export class RestServiceManager {
   static minskyProcess: ChildProcess;
   static minskyRESTServicePath: string;
   static currentMinskyModelFilePath: string;
+  private static queue = new PQueue({ concurrency: 1 });
 
-  static handleMinskyProcess(event, payload: MinskyProcessPayload) {
+  static handleMinskyProcess(payload: MinskyProcessPayload) {
     if (this.minskyProcess && payload.command === 'startMinskyProcess') {
       this.minskyProcess.stdout.emit('close');
       this.minskyProcess = null;
 
-      this.handleMinskyProcessAndRender(payload);
+      this.handleMinskyProcess(payload);
     } else if (
       !this.minskyProcess &&
       payload.command === 'startMinskyProcess'
@@ -91,18 +93,6 @@ export class RestServiceManager {
     }
   }
 
-  static handleMinskyProcessAndRender(payload: MinskyProcessPayload) {
-    this.handleMinskyProcess(null, payload);
-    this.render();
-  }
-
-  static render() {
-    const renderPayload: MinskyProcessPayload = {
-      command: commandsMapping.RENDER_FRAME,
-    };
-
-    this.handleMinskyProcess(null, renderPayload);
-  }
   private static executeCommandOnMinskyServer(
     minskyProcess: ChildProcess,
     payload: MinskyProcessPayload
@@ -123,12 +113,6 @@ export class RestServiceManager {
         this.currentMinskyModelFilePath = payload.filePath;
 
         ipcMain.emit(events.ipc.ADD_RECENT_FILE, null, payload.filePath);
-        break;
-
-      case commandsMapping.RENDER_FRAME:
-        stdinCommand = `${payload.command} [${
-          WindowManager.activeWindows.get(1).windowId
-        }, ${WindowManager.leftOffset}, ${WindowManager.topOffset}]`;
         break;
 
       case commandsMapping.mousemove:
@@ -169,7 +153,21 @@ export class RestServiceManager {
     }
     if (stdinCommand) {
       log.silly(stdinCommand);
-      minskyProcess.stdin.write(stdinCommand + newLineCharacter);
+
+      this.queue.add(() => {
+        minskyProcess.stdin.write(stdinCommand + newLineCharacter);
+      });
+
+      // render
+      this.queue.add(() => {
+        const render =
+          `${commandsMapping.RENDER_FRAME} [${
+            WindowManager.activeWindows.get(1).windowId
+          }, ${WindowManager.leftOffset}, ${WindowManager.topOffset}]` +
+          newLineCharacter;
+
+        minskyProcess.stdin.write(render);
+      });
     }
   }
 
@@ -215,14 +213,14 @@ export class RestServiceManager {
         filePath: _dialog.filePaths[0].toString(),
       };
 
-      this.handleMinskyProcess(null, initPayload);
+      this.handleMinskyProcess(initPayload);
 
       const setGroupIconResource = () => {
         const groupIconResourcePayload: MinskyProcessPayload = {
           command: commandsMapping.SET_GROUP_ICON_RESOURCE,
         };
 
-        this.handleMinskyProcess(null, groupIconResourcePayload);
+        this.handleMinskyProcess(groupIconResourcePayload);
       };
 
       const setGodleyIconResource = () => {
@@ -230,7 +228,7 @@ export class RestServiceManager {
           command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
         };
 
-        this.handleMinskyProcess(null, godleyIconPayload);
+        this.handleMinskyProcess(godleyIconPayload);
       };
 
       setGodleyIconResource();

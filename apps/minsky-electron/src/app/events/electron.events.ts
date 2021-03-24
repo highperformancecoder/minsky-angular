@@ -56,7 +56,7 @@ ipcMain.on(CREATE_MENU_POPUP, (event, data) => {
 });
 
 ipcMain.on(MINSKY_PROCESS, (event, payload: MinskyProcessPayload) => {
-  RestServiceManager.handleMinskyProcess(event, payload);
+  RestServiceManager.handleMinskyProcess(payload);
 });
 
 ipcMain.on(GET_MINSKY_COMMANDS, (event) => {
