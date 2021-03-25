@@ -34,7 +34,7 @@ export class BookmarkManager {
             id: 'minsky-bookmark',
             label: bookmark,
             click: () => {
-              RestServiceManager.handleMinskyProcessAndRender({
+              RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.GOTO_BOOKMARK} ${index}`,
               });
             },
@@ -46,11 +46,11 @@ export class BookmarkManager {
             id: 'minsky-bookmark',
             label: bookmark,
             click: () => {
-              RestServiceManager.handleMinskyProcess(null, {
+              RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.DELETE_BOOKMARK} ${index}`,
               });
 
-              RestServiceManager.handleMinskyProcess(null, {
+              RestServiceManager.handleMinskyProcess({
                 command: commandsMapping.BOOKMARK_LIST,
               });
             },

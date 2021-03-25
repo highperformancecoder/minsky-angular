@@ -9,6 +9,7 @@ import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
+import { default as PQueue } from 'p-queue';
 import { join } from 'path';
 import { WindowManager } from './windowManager';
 
@@ -17,21 +18,51 @@ const logError = debug('minsky:electron_error');
 export class RestServiceManager {
   static minskyProcess: ChildProcess;
   static minskyRESTServicePath: string;
+  static currentMinskyModelFilePath: string;
+  static isFirstStart = true;
+  private static queue = new PQueue({
+    concurrency: 1,
+    autoStart: false,
+    interval: 15,
+    intervalCap: 1,
+  });
 
-  static handleMinskyProcess(event, payload: MinskyProcessPayload) {
+  static handleMinskyProcess(payload: MinskyProcessPayload) {
     if (this.minskyProcess && payload.command === 'startMinskyProcess') {
       this.minskyProcess.stdout.emit('close');
       this.minskyProcess = null;
+      this.queue.clear();
+      this.queue.removeAllListeners();
 
-      this.handleMinskyProcessAndRender(payload);
+      this.handleMinskyProcess(payload);
     } else if (
       !this.minskyProcess &&
       payload.command === 'startMinskyProcess'
     ) {
       try {
+        if (this.isFirstStart) {
+          this.isFirstStart = false;
+          // log.info(`first start`);
+          this.queue.start();
+        }
+
         this.minskyRESTServicePath = payload.filePath;
         this.minskyProcess = spawn(this.minskyRESTServicePath);
         if (this.minskyProcess) {
+          this.minskyProcess.stdout.once('data', () => {
+            this.queue.on('next', () => {
+              // log.info(`pause`);
+              this.queue.pause();
+            });
+            this.queue.on('idle', () => {
+              // log.info(`idle`);
+            });
+
+            // this.queue.on('active', () => {
+            //   this.queue.pause();
+            // });
+          });
+
           this.minskyProcess.stdout.on('data', (data) => {
             const stdout = data.toString();
             log.info(`stdout: ${stdout}`);
@@ -43,6 +74,11 @@ export class RestServiceManager {
               );
             });
 
+            if (stdout.includes('=>')) {
+              // log.info(`start`);
+              this.queue.start();
+            }
+
             if (stdout.includes(minskyProcessReplyIndicators.BOOKMARK_LIST)) {
               const _event = null;
               ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
@@ -51,6 +87,10 @@ export class RestServiceManager {
 
           this.minskyProcess.stderr.on('data', (data) => {
             log.info(`stderr: ${data}`);
+            // log.info(`Err start`);
+
+            this.queue.start();
+
             WindowManager.activeWindows.forEach((aw) => {
               aw.context.webContents.send(
                 events.ipc.MINSKY_PROCESS_REPLY,
@@ -90,18 +130,6 @@ export class RestServiceManager {
     }
   }
 
-  static handleMinskyProcessAndRender(payload: MinskyProcessPayload) {
-    this.handleMinskyProcess(null, payload);
-    this.render();
-  }
-
-  static render() {
-    const renderPayload: MinskyProcessPayload = {
-      command: commandsMapping.RENDER_FRAME,
-    };
-
-    this.handleMinskyProcess(null, renderPayload);
-  }
   private static executeCommandOnMinskyServer(
     minskyProcess: ChildProcess,
     payload: MinskyProcessPayload
@@ -110,13 +138,18 @@ export class RestServiceManager {
     switch (payload.command) {
       case commandsMapping.LOAD:
         stdinCommand = `${payload.command} "${payload.filePath}"`;
+
+        this.currentMinskyModelFilePath = payload.filePath;
+
         ipcMain.emit(events.ipc.ADD_RECENT_FILE, null, payload.filePath);
         break;
 
-      case commandsMapping.RENDER_FRAME:
-        stdinCommand = `${payload.command} [${
-          WindowManager.activeWindows.get(1).windowId
-        }, ${WindowManager.leftOffset}, ${WindowManager.topOffset}]`;
+      case commandsMapping.SAVE:
+        stdinCommand = `${payload.command} "${payload.filePath}"`;
+
+        this.currentMinskyModelFilePath = payload.filePath;
+
+        ipcMain.emit(events.ipc.ADD_RECENT_FILE, null, payload.filePath);
         break;
 
       case commandsMapping.mousemove:
@@ -156,8 +189,30 @@ export class RestServiceManager {
         break;
     }
     if (stdinCommand) {
-      log.silly(stdinCommand);
-      minskyProcess.stdin.write(stdinCommand + newLineCharacter);
+      // log.silly(stdinCommand);
+
+      // log.info(`add`);
+
+      (async () => {
+        await this.queue.add(() => {
+          minskyProcess.stdin.write(stdinCommand + newLineCharacter);
+        });
+      })();
+
+      (async () => {
+        this.queue.add(() => {
+          const render =
+            `${commandsMapping.RENDER_FRAME} [${
+              WindowManager.activeWindows.get(1).windowId
+            }, ${WindowManager.leftOffset}, ${WindowManager.topOffset}]` +
+            newLineCharacter;
+
+          minskyProcess.stdin.write(render);
+        });
+      })();
+
+      // render
+      // log.info(`add`);
     }
   }
 
@@ -203,14 +258,14 @@ export class RestServiceManager {
         filePath: _dialog.filePaths[0].toString(),
       };
 
-      this.handleMinskyProcess(null, initPayload);
+      this.handleMinskyProcess(initPayload);
 
       const setGroupIconResource = () => {
         const groupIconResourcePayload: MinskyProcessPayload = {
           command: commandsMapping.SET_GROUP_ICON_RESOURCE,
         };
 
-        this.handleMinskyProcess(null, groupIconResourcePayload);
+        this.handleMinskyProcess(groupIconResourcePayload);
       };
 
       const setGodleyIconResource = () => {
@@ -218,7 +273,7 @@ export class RestServiceManager {
           command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
         };
 
-        this.handleMinskyProcess(null, godleyIconPayload);
+        this.handleMinskyProcess(godleyIconPayload);
       };
 
       setGodleyIconResource();

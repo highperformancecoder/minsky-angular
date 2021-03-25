@@ -65,9 +65,6 @@ export class CliInputComponent implements OnInit, OnDestroy {
   isSubmitDisabled() {
     return !this.form.get('command').value;
   }
-  render() {
-    this.communicationService.sendMinskyRenderCommand();
-  }
 
   handleSubmit() {
     if (this.command) {

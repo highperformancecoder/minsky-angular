@@ -63,8 +63,6 @@ export class CommunicationService {
   sendMinskyCommandAndRender(minskyProcessPayload: MinskyProcessPayload) {
     if (this.electronService.isElectron) {
       this.sendMinskyCommand(minskyProcessPayload);
-
-      this.sendMinskyRenderCommand();
     }
   }
 
@@ -125,7 +123,7 @@ export class CommunicationService {
 
             this.sendMinskyCommandAndRender(payload);
             this.sendMinskyCommandAndRender({ command: commandsMapping.T });
-          }, 1000);
+          }, 100); // TODO:: -> Make this delay configurable
           break;
 
         case 'PAUSE':
@@ -200,15 +198,6 @@ export class CommunicationService {
       }
     } else {
       this.socket.emit(event, clickData);
-    }
-  }
-
-  sendMinskyRenderCommand() {
-    if (this.electronService.isElectron) {
-      const payload: MinskyProcessPayload = {
-        command: commandsMapping.RENDER_FRAME,
-      };
-      this.sendMinskyCommand(payload);
     }
   }
 
