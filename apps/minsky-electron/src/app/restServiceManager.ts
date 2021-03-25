@@ -21,7 +21,7 @@ export class RestServiceManager {
   static currentMinskyModelFilePath: string;
   private static queue = new PQueue({
     concurrency: 1,
-    interval: 300,
+    interval: 15,
     intervalCap: 1,
   });
 
