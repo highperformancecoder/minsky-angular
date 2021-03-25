@@ -19,8 +19,10 @@ export class RestServiceManager {
   static minskyProcess: ChildProcess;
   static minskyRESTServicePath: string;
   static currentMinskyModelFilePath: string;
+  static isFirstStart = true;
   private static queue = new PQueue({
     concurrency: 1,
+    autoStart: false,
     interval: 15,
     intervalCap: 1,
   });
@@ -29,6 +31,8 @@ export class RestServiceManager {
     if (this.minskyProcess && payload.command === 'startMinskyProcess') {
       this.minskyProcess.stdout.emit('close');
       this.minskyProcess = null;
+      this.queue.clear();
+      this.queue.removeAllListeners();
 
       this.handleMinskyProcess(payload);
     } else if (
@@ -36,9 +40,29 @@ export class RestServiceManager {
       payload.command === 'startMinskyProcess'
     ) {
       try {
+        if (this.isFirstStart) {
+          this.isFirstStart = false;
+          // log.info(`first start`);
+          this.queue.start();
+        }
+
         this.minskyRESTServicePath = payload.filePath;
         this.minskyProcess = spawn(this.minskyRESTServicePath);
         if (this.minskyProcess) {
+          this.minskyProcess.stdout.once('data', () => {
+            this.queue.on('next', () => {
+              // log.info(`pause`);
+              this.queue.pause();
+            });
+            this.queue.on('idle', () => {
+              // log.info(`idle`);
+            });
+
+            // this.queue.on('active', () => {
+            //   this.queue.pause();
+            // });
+          });
+
           this.minskyProcess.stdout.on('data', (data) => {
             const stdout = data.toString();
             log.info(`stdout: ${stdout}`);
@@ -50,16 +74,23 @@ export class RestServiceManager {
               );
             });
 
+            if (stdout.includes('=>')) {
+              // log.info(`start`);
+              this.queue.start();
+            }
+
             if (stdout.includes(minskyProcessReplyIndicators.BOOKMARK_LIST)) {
               const _event = null;
               ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
             }
-
-            this.queue.start();
           });
 
           this.minskyProcess.stderr.on('data', (data) => {
             log.info(`stderr: ${data}`);
+            // log.info(`Err start`);
+
+            this.queue.start();
+
             WindowManager.activeWindows.forEach((aw) => {
               aw.context.webContents.send(
                 events.ipc.MINSKY_PROCESS_REPLY,
@@ -158,22 +189,30 @@ export class RestServiceManager {
         break;
     }
     if (stdinCommand) {
-      log.silly(stdinCommand);
+      // log.silly(stdinCommand);
 
-      this.queue.add(() => {
-        minskyProcess.stdin.write(stdinCommand + newLineCharacter);
-      });
+      // log.info(`add`);
+
+      (async () => {
+        await this.queue.add(() => {
+          minskyProcess.stdin.write(stdinCommand + newLineCharacter);
+        });
+      })();
+
+      (async () => {
+        this.queue.add(() => {
+          const render =
+            `${commandsMapping.RENDER_FRAME} [${
+              WindowManager.activeWindows.get(1).windowId
+            }, ${WindowManager.leftOffset}, ${WindowManager.topOffset}]` +
+            newLineCharacter;
+
+          minskyProcess.stdin.write(render);
+        });
+      })();
 
       // render
-      this.queue.add(() => {
-        const render =
-          `${commandsMapping.RENDER_FRAME} [${
-            WindowManager.activeWindows.get(1).windowId
-          }, ${WindowManager.leftOffset}, ${WindowManager.topOffset}]` +
-          newLineCharacter;
-
-        minskyProcess.stdin.write(render);
-      });
+      // log.info(`add`);
     }
   }
 
