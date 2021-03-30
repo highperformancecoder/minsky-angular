@@ -50,6 +50,7 @@ export const commandsMapping = {
   STEP: '/minsky/step',
   T: `/minsky/t`,
   UNDO: `/minsky/undo`,
+  REDO: `/minsky/undo`,
   ZOOM_IN: `/minsky/canvas/model/zoom`,
   ZOOM_OUT: `/minsky/canvas/model/zoom`,
   SAVE: '/minsky/save',

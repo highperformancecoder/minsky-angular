@@ -243,7 +243,7 @@ export class MenuManager {
             label: 'Undo',
             accelerator: 'CmdOrCtrl + Z',
             click() {
-              const numberOfTimes = 1;
+              const numberOfTimes = -1;
               RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.UNDO} ${numberOfTimes}`,
               });
@@ -252,6 +252,12 @@ export class MenuManager {
           {
             label: 'Redo',
             accelerator: 'CmdOrCtrl + Y',
+            click() {
+              const numberOfTimes = 1;
+              RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.REDO} ${numberOfTimes}`,
+              });
+            },
           },
           {
             label: 'Cut',
