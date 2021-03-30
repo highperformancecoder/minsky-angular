@@ -49,7 +49,7 @@ export class CreateVariableComponent implements OnDestroy {
   }
 
   createVariable() {
-    this.communicationService.sendMinskyCommand({
+    this.communicationService.sendMinskyCommandAndRender({
       command: `${commandsMapping.ADD_VARIABLE} ["${this.variableName.value}","${this.type}"]`,
     });
     this.closeWindow();

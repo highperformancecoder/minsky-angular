@@ -204,8 +204,9 @@ export class RestServiceManager {
           const render =
             `${commandsMapping.RENDER_FRAME} [${
               WindowManager.activeWindows.get(1).windowId
-            }, ${WindowManager.leftOffset}, ${WindowManager.topOffset}]` +
-            newLineCharacter;
+            }, ${WindowManager.leftOffset}, ${WindowManager.topOffset}, ${
+              WindowManager.canvasWidth
+            }, ${WindowManager.canvasHeight}]` + newLineCharacter;
 
           minskyProcess.stdin.write(render);
         });

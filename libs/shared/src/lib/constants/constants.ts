@@ -55,6 +55,8 @@ export const commandsMapping = {
   SAVE: '/minsky/save',
   REDRAW: '/minsky/canvas/redraw',
   REMOVE_UNITS: '/minsky/deleteAllUnits',
+  X: '/minsky/model/x',
+  Y: '/minsky/model/y',
 };
 
 export const minskyProcessReplyIndicators = {

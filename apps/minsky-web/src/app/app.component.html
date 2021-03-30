@@ -49,6 +49,7 @@
           <label> Variables </label>
         </a>
 
+        <span class="spacer"></span>
         <button
           class="variables minsky-service"
           mat-raised-button
@@ -56,10 +57,9 @@
         >
           {{ toggleButtonText }}
         </button>
-
         <button
           disabled="{{ isTerminalDisabled }}"
-          class="variables"
+          class="variables minsky-service"
           mat-raised-button
           (click)="startTerminal()"
         >

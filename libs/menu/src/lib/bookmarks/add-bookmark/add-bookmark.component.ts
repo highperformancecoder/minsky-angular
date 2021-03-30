@@ -19,11 +19,11 @@ export class AddBookmarkComponent {
   }
 
   handleSubmit() {
-    this.communicationService.sendMinskyCommand({
+    this.communicationService.sendMinskyCommandAndRender({
       command: `${commandsMapping.ADD_BOOKMARK} "${this.bookmarkName.value}"`,
     });
 
-    this.communicationService.sendMinskyCommand({
+    this.communicationService.sendMinskyCommandAndRender({
       command: commandsMapping.BOOKMARK_LIST,
     });
 

@@ -70,7 +70,11 @@
       <img src="assets/images/icons/ravel.gif" alt="Ravel" title="Ravel" />
     </button>
   </div>
-  <div id="canvas" class="minsky-canvas">
+  <div
+    [ngStyle]="{ height: offsetTop ? offsetTop : 'auto' }"
+    id="canvas"
+    class="minsky-canvas"
+  >
     <canvas></canvas>
   </div>
 </div>
