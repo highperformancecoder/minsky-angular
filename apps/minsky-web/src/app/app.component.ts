@@ -115,8 +115,8 @@ export class AppComponent implements AfterViewInit {
   async startTerminal() {
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.send(events.ipc.CREATE_MENU_POPUP, {
-        title: 'x-term',
-        url: `${rendererAppURL}/#/experiment/xterm`,
+        title: 'Terminal',
+        url: `${rendererAppURL}/#/experiment/terminal`,
         modal: false,
         width: 900,
         height: 768,

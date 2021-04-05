@@ -7,4 +7,3 @@ export * from './lib/toolbar/toolbar.component';
 export * from './lib/ui-components.module';
 export * from './lib/variables/variables.component';
 export * from './lib/wiring/wiring.component';
-export * from './lib/x-term/x-term.component';
