@@ -1,58 +1,19 @@
-<!-- reductions start-->
-
 <button class="tab" [matMenuTriggerFor]="reductions" aria-label="Reductions">
   <img src="assets/images/icons/sum.gif" alt="Reductions" title="Reductions" />
 </button>
 
 <mat-menu yPosition="above" #reductions="matMenu">
-  <button mat-menu-item class="tab" (click)="cmService.addOperation('sum')">
-    <img src="assets/images/icons/sum.gif" alt="sum" title="Sum" />
-  </button>
-  <button mat-menu-item class="tab" (click)="cmService.addOperation('product')">
-    <img src="assets/images/icons/product.gif" alt="product" title="Product" />
-  </button>
-  <button mat-menu-item class="tab" (click)="cmService.addOperation('infimum')">
-    <img src="assets/images/icons/infimum.gif" alt="infimum" title="Infimum" />
-  </button>
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="cmService.addOperation('supremum')"
-  >
-    <img
-      src="assets/images/icons/supremum.gif"
-      alt="supremum"
-      title="Supremum"
-    />
-  </button>
-  <button mat-menu-item class="tab" (click)="cmService.addOperation('any')">
-    <img src="assets/images/icons/any.gif" alt="any" title="Any" />
-  </button>
-  <button mat-menu-item class="tab" (click)="cmService.addOperation('all')">
-    <img src="assets/images/icons/all.gif" alt="all" title="All" />
-  </button>
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="cmService.addOperation('infIndex')"
-  >
-    <img
-      src="assets/images/icons/infIndex.gif"
-      alt="infIndex"
-      title="InfIndex"
-    />
-  </button>
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="cmService.addOperation('supIndex')"
-  >
-    <img
-      src="assets/images/icons/supIndex.gif"
-      alt="supIndex"
-      title="SupIndex"
-    />
-  </button>
+  <ng-container *ngFor="let operation of operations">
+    <button
+      mat-menu-item
+      class="tab"
+      (click)="cmService.addOperation(operation)"
+    >
+      <img
+        src="assets/images/icons/{{ operation }}.gif"
+        alt="{{ operation }}"
+        title="{{ operation }}"
+      />
+    </button>
+  </ng-container>
 </mat-menu>
-
-<!-- reductions end-->

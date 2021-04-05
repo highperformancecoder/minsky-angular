@@ -11,46 +11,17 @@
 </button>
 
 <mat-menu yPosition="above" #euler="matMenu" class="horizontal">
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="communicationService.addOperation('euler')"
-  >
-    <img src="assets/images/icons/euler.gif" alt="Euler" title="Euler" />
-  </button>
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="communicationService.addOperation('pi')"
-  >
-    <img src="assets/images/icons/pi.gif" alt="Pi" title="Pi" />
-  </button>
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="communicationService.addOperation('zero')"
-  >
-    <img src="assets/images/icons/zero.gif" alt="Zero" title="Zero" />
-  </button>
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="communicationService.addOperation('one')"
-  >
-    <img src="assets/images/icons/one.gif" alt="One" title="One" />
-  </button>
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="communicationService.addOperation('inf')"
-  >
-    <img src="assets/images/icons/inf.gif" alt="Inf" title="Inf" />
-  </button>
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="communicationService.addOperation('percent')"
-  >
-    <img src="assets/images/icons/percent.gif" alt="Percent" title="Percent" />
-  </button>
+  <ng-container *ngFor="let operation of operations">
+    <button
+      mat-menu-item
+      class="tab"
+      (click)="communicationService.addOperation(operation)"
+    >
+      <img
+        src="assets/images/icons/{{ operation }}.gif"
+        alt="{{ operation }}"
+        title="{{ operation }}"
+      />
+    </button>
+  </ng-container>
 </mat-menu>
