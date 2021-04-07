@@ -6,6 +6,8 @@
 import { AppLayoutPayload, events, MinskyProcessPayload } from '@minsky/shared';
 import * as debug from 'debug';
 import { ipcMain } from 'electron';
+import * as keysym from 'keysym';
+import * as utf8 from 'utf8';
 import { environment } from '../../environments/environment';
 import { BookmarkManager } from '../bookmarkManager';
 import { RecentFilesManager } from '../recentFilesManager';
@@ -77,4 +79,13 @@ ipcMain.on(ADD_RECENT_FILE, (event, filePath: string) => {
 
 ipcMain.on(TOGGLE_MINSKY_SERVICE, async (event) => {
   await RestServiceManager.toggleMinskyService(event);
+});
+
+ipcMain.on('onKeyPress', (event, key: string) => {
+  console.log(
+    '🚀 ~ file: electron.events.ts ~ line 83 ~ ipcMain.on ~ key',
+    key,
+    keysym.fromName(key).keysym,
+    utf8.encode(key)
+  );
 });

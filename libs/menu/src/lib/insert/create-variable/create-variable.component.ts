@@ -61,6 +61,6 @@ export class CreateVariableComponent implements OnDestroy {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
   ngOnDestroy() {}
 }

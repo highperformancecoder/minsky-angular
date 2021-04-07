@@ -2,6 +2,7 @@ import { startServer } from '@minsky/minsky-server';
 import { ActiveWindow, rendererAppName, rendererAppURL } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
+import * as contextMenu from 'electron-context-menu';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
@@ -175,6 +176,47 @@ export default class App {
     WindowManager.activeWindows.set(App.mainWindow.id, mainWindowDetails);
 
     logWindows(WindowManager.activeWindows);
+
+    contextMenu({
+      prepend: (defaultActions, parameters, browserWindow) => [
+        {
+          label: 'Help',
+        },
+        {
+          label: 'Cut',
+        },
+        {
+          label: 'Copy selection',
+        },
+        {
+          label: 'Save selection as',
+        },
+        {
+          label: 'Paste selection',
+        },
+        {
+          label: 'Bookmark here',
+        },
+        {
+          label: 'Bookmark here',
+        },
+        {
+          label: 'Group',
+        },
+        {
+          label: 'Lock Selected Ravels',
+        },
+        {
+          label: 'Lock Selected Ravels',
+        },
+        {
+          label: 'Unlock Selected Ravels',
+        },
+        {
+          label: 'Open master Group',
+        },
+      ],
+    });
 
     App.mainWindow.on('close', () => {
       WindowManager.activeWindows.delete(App.mainWindow.id);

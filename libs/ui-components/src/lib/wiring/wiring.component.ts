@@ -8,7 +8,7 @@ import { sampleTime } from 'rxjs/operators';
 
 @AutoUnsubscribe()
 @Component({
-  selector: 'app-wiring',
+  selector: 'minsky-wiring',
   templateUrl: './wiring.component.html',
   styleUrls: ['./wiring.component.scss'],
 })
@@ -83,20 +83,14 @@ export class WiringComponent implements OnInit, OnDestroy {
 
       this.minskyCanvas.onwheel = this.cmService.onMouseWheelZoom;
     }
-    // this.minskyCanvas.onkeydown((e) => {
-    //   console.log(
-    //     '🚀 ~ file: wiring.component.ts ~ line 86 ~ WiringComponent ~ this.minskyCanvas.addEventListener ~ e',
-    //     e
-    //   );
-    // });
 
     Mousetrap.bind(['command+k', 'ctrl+k'], (e) => {
       console.log(
         '🚀 ~ file: wiring.component.ts ~ line 94 ~ WiringComponent ~ e',
-        e
+        e.key
       );
-      console.log('command k or control k');
 
+      this.electronService.ipcRenderer.send('onKeyPress', e.key);
       // return false to prevent default browser behavior
       // and stop event from bubbling
       return false;
@@ -125,6 +119,6 @@ export class WiringComponent implements OnInit, OnDestroy {
     this.cmService.dispatchEvents('canvasEvent');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
   ngOnDestroy(): void {}
 }
