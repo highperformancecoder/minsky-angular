@@ -10,7 +10,7 @@ import * as debug from 'debug';
 const logInfo = debug('minsky:web:info');
 
 @Component({
-  selector: 'app-header',
+  selector: 'minsky-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })

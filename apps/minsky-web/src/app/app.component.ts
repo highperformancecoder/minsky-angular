@@ -10,7 +10,7 @@ import { AppConfig } from '../environments/environment';
 const logInfo = debug('minsky:web:info');
 
 @Component({
-  selector: 'app-root',
+  selector: 'minsky-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
