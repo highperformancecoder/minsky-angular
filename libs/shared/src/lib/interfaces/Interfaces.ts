@@ -4,6 +4,7 @@ export interface MinskyProcessPayload {
   filePath?: string;
   command?: string;
   windowId?: number;
+  showServiceStartedDialog?: boolean;
 }
 
 export interface AppLayoutPayload {

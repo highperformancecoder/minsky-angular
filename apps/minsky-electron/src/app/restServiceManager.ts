@@ -9,6 +9,7 @@ import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
+import { MessageBoxSyncOptions } from 'electron/main';
 import {
   createReadStream,
   createWriteStream,
@@ -16,13 +17,11 @@ import {
   ReadStream,
   WriteStream,
 } from 'fs';
+import * as JSONStream from 'JSONStream';
 import { default as PQueue } from 'p-queue';
 import { join } from 'path';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const JSONStream = require('JSONStream');
-
 const logError = debug('minsky:electron_error');
 
 export class RestServiceManager {
@@ -53,12 +52,12 @@ export class RestServiceManager {
           break;
 
         case commandsMapping.RECORD:
-          RestServiceManager.handleRecord();
+          this.handleRecord();
 
           break;
 
         case commandsMapping.RECORDING_REPLAY:
-          RestServiceManager.handleRecordingReplay();
+          this.handleRecordingReplay();
           break;
 
         default:
@@ -73,9 +72,10 @@ export class RestServiceManager {
             this.queue.start();
           }
 
-          StoreManager.store.set('minskyRESTServicePath', payload.filePath);
+          const { filePath, showServiceStartedDialog = true } = payload;
+          StoreManager.store.set('minskyRESTServicePath', filePath);
 
-          this.minskyProcess = spawn(payload.filePath);
+          this.minskyProcess = spawn(filePath);
           if (this.minskyProcess) {
             this.minskyProcess.stdout.once('data', () => {
               this.queue.on('next', () => {
@@ -130,6 +130,10 @@ export class RestServiceManager {
               log.info(`child process exited with code ${code}`);
             });
 
+            if (!showServiceStartedDialog) {
+              return;
+            }
+
             dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
               type: 'info',
               title: 'Minsky Service Started',
@@ -150,25 +154,9 @@ export class RestServiceManager {
   }
 
   private static handleRecordingReplay() {
-    /*
-      save existing model? yes ? no ?
-      replay recording in a new canvas
-    */
-
     this.stopRecording();
 
     (async () => {
-      // const saveDialog = await dialog.showSaveDialog({});
-      // RestServiceManager.handleMinskyProcess({
-      //   command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
-      // });
-      // TODO: handle save dialog and cancel
-
-      RestServiceManager.handleMinskyProcess({
-        command: commandsMapping.START_MINSKY_PROCESS,
-        filePath: StoreManager.store.get('minskyRESTServicePath'),
-      });
-
       const replayRecordingDialog = await dialog.showOpenDialog({
         filters: [
           { extensions: ['json'], name: 'JSON' },
@@ -176,23 +164,71 @@ export class RestServiceManager {
         ],
       });
 
-      this.recordingReadStream = createReadStream(
-        replayRecordingDialog.filePaths[0]
-      );
-      const replayFile = readFileSync(replayRecordingDialog.filePaths[0], {
-        encoding: 'utf8',
-        flag: 'r',
-      });
+      if (replayRecordingDialog.canceled) {
+        return;
+      }
 
-      JSON.parse(replayFile).forEach((line) => {
-        RestServiceManager.executeCommandOnMinskyServer(this.minskyProcess, {
-          command: line.command,
+      const positiveResponseText = 'Yes';
+      const negativeResponseText = 'No';
+      const cancelResponseText = 'Cancel';
+
+      const options: MessageBoxSyncOptions = {
+        buttons: [
+          positiveResponseText,
+          negativeResponseText,
+          cancelResponseText,
+        ],
+        message: 'Do you want to save the current model?',
+        title: 'Save ?',
+      };
+
+      const index = dialog.showMessageBoxSync(options);
+
+      if (options.buttons[index] === positiveResponseText) {
+        const saveDialog = await dialog.showSaveDialog({});
+
+        if (saveDialog.canceled) {
+          return;
+        }
+
+        this.handleMinskyProcess({
+          command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
         });
-      });
 
-      this.recordingReadStream.close();
-      this.recordingReadStream = null;
+        this.replay(replayRecordingDialog);
+      }
+
+      if (options.buttons[index] === negativeResponseText) {
+        this.replay(replayRecordingDialog);
+      }
+
+      return;
     })();
+  }
+
+  private static replay(replayRecordingDialog: Electron.OpenDialogReturnValue) {
+    this.handleMinskyProcess({
+      command: commandsMapping.START_MINSKY_PROCESS,
+      filePath: StoreManager.store.get('minskyRESTServicePath'),
+      showServiceStartedDialog: false,
+    });
+
+    this.recordingReadStream = createReadStream(
+      replayRecordingDialog.filePaths[0]
+    );
+    const replayFile = readFileSync(replayRecordingDialog.filePaths[0], {
+      encoding: 'utf8',
+      flag: 'r',
+    });
+
+    JSON.parse(replayFile).forEach((line) => {
+      this.executeCommandOnMinskyServer(this.minskyProcess, {
+        command: line.command,
+      });
+    });
+
+    this.recordingReadStream.close();
+    this.recordingReadStream = null;
   }
 
   private static record(command: string) {
@@ -204,17 +240,17 @@ export class RestServiceManager {
       this.JSONStreamWriter.pipe(this.recordingWriteStream);
     }
 
-    if (
-      !command.includes(
-        // 'mouseMove' ||
-        'getItemAt' ||
-          'getItemAtFocus' ||
-          'getWireAt' ||
-          commandsMapping.START_MINSKY_PROCESS ||
-          commandsMapping.RECORD ||
-          commandsMapping.RECORDING_REPLAY
-      )
-    )
+    const recordIgnoreCommands = [
+      // 'mouseMove' ||
+      'getItemAt' ||
+        'getItemAtFocus' ||
+        'getWireAt' ||
+        commandsMapping.START_MINSKY_PROCESS ||
+        commandsMapping.RECORD ||
+        commandsMapping.RECORDING_REPLAY,
+    ];
+
+    if (!recordIgnoreCommands.find((cmd) => command.includes(cmd)))
       this.JSONStreamWriter.write(payload);
   }
 
@@ -391,7 +427,7 @@ export class RestServiceManager {
         filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
       });
 
-      RestServiceManager.startMinskyService(_dialog.filePaths[0]);
+      this.startMinskyService(_dialog.filePaths[0]);
 
       event.returnValue = true;
     } catch (error) {
