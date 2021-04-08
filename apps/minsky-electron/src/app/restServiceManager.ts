@@ -102,6 +102,20 @@ export class RestServiceManager {
                 const _event = null;
                 ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
               }
+
+              if (stdout.includes(commandsMapping.DIMENSIONAL_ANALYSIS)) {
+                if (minskyProcessReplyIndicators.DIMENSIONAL_ANALYSIS) {
+                  //show success
+
+                  dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+                    type: 'info',
+                    title: 'Dimensional Analysis',
+                    message: 'Dimensional Analysis Passed',
+                  });
+                } else {
+                  dialog.showErrorBox('Dimensional Analysis Failed', stdout);
+                }
+              }
             });
 
             this.minskyProcess.stderr.on('data', (data) => {

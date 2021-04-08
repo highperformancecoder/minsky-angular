@@ -65,6 +65,7 @@ export const minskyProcessReplyIndicators = {
   T: '/minsky/t=>',
   DELTA_T: '/minsky/t0=>', //TODO: implement the calculation required for deltaT
   BOOKMARK_LIST: '/minsky/model/bookmarkList=>',
+  DIMENSIONAL_ANALYSIS: '/minsky/dimensionalAnalysis=>{}',
 };
 
 export const availableOperations = {
