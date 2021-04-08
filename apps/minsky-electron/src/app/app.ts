@@ -2,10 +2,10 @@ import { startServer } from '@minsky/minsky-server';
 import { ActiveWindow, rendererAppName, rendererAppURL } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
-import * as contextMenu from 'electron-context-menu';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
+import { ContextMenuManager } from './contextMenuManager';
 import { MenuManager } from './menuManager';
 import { RecentFilesManager } from './recentFilesManager';
 import { RestServiceManager } from './restServiceManager';
@@ -177,47 +177,7 @@ export default class App {
 
     logWindows(WindowManager.activeWindows);
 
-    contextMenu({
-      prepend: (defaultActions, parameters, browserWindow) => [
-        {
-          label: 'Help',
-        },
-        {
-          label: 'Cut',
-        },
-        {
-          label: 'Copy selection',
-        },
-        {
-          label: 'Save selection as',
-        },
-        {
-          label: 'Paste selection',
-        },
-        {
-          label: 'Bookmark here',
-        },
-        {
-          label: 'Bookmark here',
-        },
-        {
-          label: 'Group',
-        },
-        {
-          label: 'Lock Selected Ravels',
-        },
-        {
-          label: 'Lock Selected Ravels',
-        },
-        {
-          label: 'Unlock Selected Ravels',
-        },
-        {
-          label: 'Open master Group',
-        },
-      ],
-    });
-
+    ContextMenuManager.buildContextMenu();
     App.mainWindow.on('close', () => {
       WindowManager.activeWindows.delete(App.mainWindow.id);
     });
