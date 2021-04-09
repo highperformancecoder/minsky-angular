@@ -113,6 +113,9 @@ export class CommunicationService {
           this.stepIntervalId = setInterval(() => {
             this.sendMinskyCommandAndRender({ command });
             this.sendMinskyCommandAndRender({ command: commandsMapping.T });
+            this.sendMinskyCommandAndRender({
+              command: commandsMapping.DELTA_T,
+            });
           }, 100); // TODO:: -> Make this delay configurable
           break;
 
@@ -130,12 +133,14 @@ export class CommunicationService {
 
           this.sendMinskyCommandAndRender({ command });
           this.sendMinskyCommandAndRender({ command: commandsMapping.T });
+          this.sendMinskyCommandAndRender({ command: commandsMapping.DELTA_T });
           break;
 
         case 'STEP':
           autoHandleMinskyProcess = false;
           this.sendMinskyCommandAndRender({ command });
           this.sendMinskyCommandAndRender({ command: commandsMapping.T });
+          this.sendMinskyCommandAndRender({ command: commandsMapping.DELTA_T });
           break;
 
         case 'REVERSE_CHECKBOX':

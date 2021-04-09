@@ -39,6 +39,7 @@ export class RestServiceManager {
   private static recordingReadStream: ReadStream;
   private static recordingFilePath: string;
   private static JSONStreamWriter;
+
   static handleMinskyProcess(payload: MinskyProcessPayload) {
     if (this.minskyProcess) {
       switch (payload.command) {

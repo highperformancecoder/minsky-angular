@@ -50,6 +50,7 @@ export const commandsMapping = {
   SIMULATION_SPEED: '/minsky/nSteps',
   STEP: '/minsky/step',
   T: `/minsky/t`,
+  DELTA_T: `/minsky/deltaT`,
   UNDO: `/minsky/undo`,
   REDO: `/minsky/undo`,
   ZOOM_IN: `/minsky/canvas/model/zoom`,
@@ -63,7 +64,7 @@ export const commandsMapping = {
 
 export const minskyProcessReplyIndicators = {
   T: '/minsky/t=>',
-  DELTA_T: '/minsky/t0=>', //TODO: implement the calculation required for deltaT
+  DELTA_T: '/minsky/deltaT=>',
   BOOKMARK_LIST: '/minsky/model/bookmarkList=>',
   DIMENSIONAL_ANALYSIS: '/minsky/dimensionalAnalysis=>{}',
 };
