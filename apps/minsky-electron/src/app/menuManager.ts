@@ -161,6 +161,62 @@ export class MenuManager {
           },
           {
             label: 'Export Canvas',
+            async click() {
+              const exportCanvasDialog = await dialog.showSaveDialog({
+                title: 'Export canvas as...',
+                defaultPath: 'export.svg',
+                properties: ['showOverwriteConfirmation', 'createDirectory'],
+                filters: [
+                  { extensions: ['svg'], name: 'SVG' },
+                  { extensions: ['pdf'], name: 'PDF' },
+                  { extensions: ['eps'], name: 'PostScript' },
+                  { extensions: ['tex'], name: 'LaTeX' },
+                  { extensions: ['m'], name: 'Matlab' },
+                ],
+              });
+
+              const { canceled, filePath } = exportCanvasDialog;
+              if (canceled || !filePath) {
+                return;
+              }
+
+              const extension = filePath.split('.').pop();
+
+              switch (extension) {
+                case 'svg':
+                  RestServiceManager.handleMinskyProcess({
+                    command: `${commandsMapping.RENDER_CANVAS_TO_SVG} "${filePath}"`,
+                  });
+                  break;
+
+                case 'pdf':
+                  RestServiceManager.handleMinskyProcess({
+                    command: `${commandsMapping.RENDER_CANVAS_TO_PDF} "${filePath}"`,
+                  });
+                  break;
+
+                case 'eps':
+                  RestServiceManager.handleMinskyProcess({
+                    command: `${commandsMapping.RENDER_CANVAS_TO_PS} "${filePath}"`,
+                  });
+                  break;
+
+                case 'tex':
+                  RestServiceManager.handleMinskyProcess({
+                    command: `${commandsMapping.RENDER_CANVAS_TO_PNG} "${filePath}"`,
+                  });
+                  break;
+
+                case 'm':
+                  RestServiceManager.handleMinskyProcess({
+                    command: `${commandsMapping.RENDER_CANVAS_TO_EMF} "${filePath}"`,
+                  });
+                  break;
+
+                default:
+                  break;
+              }
+            },
           },
           {
             label: 'Export Plots',
