@@ -366,6 +366,44 @@ export class RestServiceManager {
       const miscCommand = stdinCommand + newLineCharacter;
       const renderCommand = this.getRenderCommand();
 
+      /*
+if save && save as -> markEdited false
+
+find the list of commands where we should set markEdited as true
+*/
+
+      /*
+ if (!t || (!t->is_const && (!t->is_setterGetter || argc>1)))
+          {
+            bool modelChanged=m.pushHistory();
+            if (modelChanged && argv0!="minsky.load" && argv0!="minsky.reverse") m.markEdited();
+            if (m.eventRecord.get() && argv0!="minsky.startRecording" &&
+                (modelChanged ||
+                 argv0.find("minsky.canvas.mouse")!=string::npos ||
+                 argv0=="minsky.getItemAt" ||
+                 argv0=="minsky.getItemAtFocus" ||
+                 argv0=="minsky.getWireAt"))
+              {
+                for (int i=0; i<argc; ++i)
+                  (*m.eventRecord) << "{"<<to_string(argv[i]) <<"} ";
+                (*m.eventRecord)<<endl;
+              }
+            if (modelChanged && m.autoSaveFile.get())
+              try
+                {
+                  m.save(*m.autoSaveFile);
+                  m.markEdited(); // undo edited flag reset
+                }
+              catch(...)
+                { // unable to autosave
+                  m.autoSaveFile.reset();
+                  throw std::runtime_error("Unable to autosave to this location");
+                }
+          }
+      }
+
+*/
+
       if (this.isRecording) {
         this.record(stdinCommand);
       }
