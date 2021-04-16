@@ -76,6 +76,7 @@ export const commandsMapping = {
   Y: '/minsky/model/y',
   ZOOM_IN: `/minsky/canvas/model/zoom`,
   ZOOM_OUT: `/minsky/canvas/model/zoom`,
+  INSERT_GROUP_FROM_FILE: '/minsky/insertGroupFromFile',
 };
 
 export const minskyProcessReplyIndicators = {

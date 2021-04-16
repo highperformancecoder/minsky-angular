@@ -6,7 +6,6 @@ import {
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { dialog, Menu, shell } from 'electron';
-import { readFileSync } from 'fs';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
@@ -176,16 +175,15 @@ export class MenuManager {
             label: 'Insert File as Group',
             async click() {
               try {
-                const files = await dialog.showOpenDialog({
-                  properties: ['openFile', 'multiSelections'],
-                  filters: [{ name: 'text', extensions: ['txt'] }],
+                const insertGroupDialog = await dialog.showOpenDialog({
+                  properties: ['openFile'],
                 });
 
-                logMenuEvent(files);
-
-                for (const file of files.filePaths) {
-                  logMenuEvent(readFileSync(file).toString());
-                }
+                RestServiceManager.handleMinskyProcess({
+                  command: `${
+                    commandsMapping.INSERT_GROUP_FROM_FILE
+                  } "${insertGroupDialog.filePaths[0].toString()}"}`,
+                });
               } catch (err) {
                 logError('file is not selected', err);
               }
