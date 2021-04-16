@@ -1,6 +1,6 @@
 {
   "name": "minsky",
-  "version": "0.0.0",
+  "version": "7.2.1",
   "license": "MIT",
   "scripts": {
     "ng": "nx",
@@ -32,7 +32,12 @@
     "update": "nx migrate latest",
     "dep-graph": "nx dep-graph",
     "help": "nx help",
-    "workspace-generator": "nx workspace-generator"
+    "workspace-generator": "nx workspace-generator",
+    "bump:major": "nx run workspace:version --version=major",
+    "bump:minor": "nx run workspace:version --version=minor",
+    "bump:patch": "nx run workspace:version --version=patch",
+    "bump:alpha": "nx run workspace:version --version=prerelease --preid=alpha",
+    "bump:beta": "nx run workspace:version --version=prerelease --preid=beta"
   },
   "private": true,
   "dependencies": {
@@ -76,6 +81,8 @@
     "@angular/cli": "11.2.7",
     "@angular/compiler-cli": "11.2.8",
     "@angular/language-service": "11.2.8",
+    "@compodoc/compodoc": "^1.1.11",
+    "@jscutlery/semver": "^2.1.0",
     "@ngx-translate/core": "12.1.2",
     "@ngx-translate/http-loader": "5.0.0",
     "@nrwl/cli": "12.0.4",
@@ -85,6 +92,7 @@
     "@nrwl/jest": "12.0.4",
     "@nrwl/node": "12.0.4",
     "@nrwl/workspace": "12.0.4",
+    "@twittwer/compodoc": "1.5.1",
     "@types/express": "4.17.0",
     "@types/jest": "26.0.8",
     "@types/keysym": "0.0.1",
@@ -94,7 +102,6 @@
     "@types/utf8": "^2.1.6",
     "@typescript-eslint/eslint-plugin": "4.3.0",
     "@typescript-eslint/parser": "4.3.0",
-    "conventional-changelog-cli": "2.0.34",
     "cypress": "^6.0.1",
     "dotenv": "8.2.0",
     "electron": "^11.4.2",
