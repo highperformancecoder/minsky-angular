@@ -86,6 +86,8 @@ export const commandsMapping = {
   POP_FLAGS: '/minsky/popFlags',
   EDITED: '/minsky/edited',
   MARK_EDITED: '/minsky/markEdited',
+  AUTO_LAYOUT: '/minsky/canvas/selection/autoLayout',
+  RANDOM_LAYOUT: '/minsky/canvas/selection/randomLayout',
 };
 
 export const minskyProcessReplyIndicators = {

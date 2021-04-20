@@ -10,7 +10,6 @@ import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
 
-const logMenuEvent = debug('minsky:electron_menu_logs');
 const logError = debug('minsky:electron_error');
 
 export class MenuManager {
@@ -447,6 +446,22 @@ export class MenuManager {
             click() {
               RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.REMOVE_UNITS}`,
+              });
+            },
+          },
+          {
+            label: 'Auto Layout',
+            click() {
+              RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.AUTO_LAYOUT}`,
+              });
+            },
+          },
+          {
+            label: 'Random Layout',
+            click() {
+              RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.RANDOM_LAYOUT}`,
               });
             },
           },
