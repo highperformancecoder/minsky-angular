@@ -42,20 +42,21 @@ export class MenuManager {
             label: 'New System',
             accelerator: 'CmdOrCtrl + Shift + N',
             async click() {
-              // if mark edited -> show save as with yes no cancel
-              const saveModelDialog = await dialog.showSaveDialog({
-                title: 'Save??',
-                properties: ['showOverwriteConfirmation', 'createDirectory'],
-              });
+              if (RestServiceManager.isCanvasEdited) {
+                const saveModelDialog = await dialog.showSaveDialog({
+                  title: 'Save??',
+                  properties: ['showOverwriteConfirmation', 'createDirectory'],
+                });
 
-              const { canceled, filePath } = saveModelDialog;
-              if (canceled || !filePath) {
-                return;
+                const { canceled, filePath } = saveModelDialog;
+                if (canceled || !filePath) {
+                  return;
+                }
+
+                RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.SAVE} "${filePath}"`,
+                });
               }
-
-              RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.SAVE} "${filePath}"`,
-              });
 
               // ??? deleteSubsidiaryTopLevels -> close all the windows
               WindowManager.activeWindows.forEach((window) => {
@@ -71,14 +72,14 @@ export class MenuManager {
               WindowManager.getMainWindow().setTitle('New System');
 
               const newSystemCommands = [
-                // ??? /minsky/pushHistory || /minsky/checkPushHistory -> doPushHistory 0
-                '/minsky/clearAllMaps',
-                '/minsky/pushFlags',
-                '/minsky/clearHistory',
-                '/minsky/model/setZoom 1',
-                '/minsky/canvas/recenter',
-                '/minsky/popFlags',
-                // ??? /minsky/pushHistory || /minsky/checkPushHistory ->doPushHistory 1
+                `${commandsMapping.PUSH_HISTORY} 0`,
+                commandsMapping.CLEAR_ALL_MAPS,
+                commandsMapping.PUSH_FLAGS,
+                commandsMapping.CLEAR_HISTORY,
+                `${commandsMapping.SET_ZOOM} 1`,
+                commandsMapping.RECENTER,
+                commandsMapping.POP_FLAGS,
+                `${commandsMapping.PUSH_HISTORY} 1`,
               ];
 
               newSystemCommands.forEach((command) =>

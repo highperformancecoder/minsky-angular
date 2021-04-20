@@ -77,6 +77,15 @@ export const commandsMapping = {
   ZOOM_IN: `/minsky/canvas/model/zoom`,
   ZOOM_OUT: `/minsky/canvas/model/zoom`,
   INSERT_GROUP_FROM_FILE: '/minsky/insertGroupFromFile',
+  PUSH_HISTORY: '/minsky/doPushHistory',
+  CLEAR_ALL_MAPS: '/minsky/clearAllMaps',
+  PUSH_FLAGS: '/minsky/pushFlags',
+  CLEAR_HISTORY: '/minsky/clearHistory',
+  SET_ZOOM: '/minsky/model/setZoom',
+  RECENTER: '/minsky/canvas/recenter',
+  POP_FLAGS: '/minsky/popFlags',
+  EDITED: '/minsky/edited',
+  MARK_EDITED: '/minsky/markEdited',
 };
 
 export const minskyProcessReplyIndicators = {
@@ -94,6 +103,7 @@ export const minskyProcessReplyIndicators = {
   ORDER: '/minsky/order=>',
   IMPLICIT: '/minsky/implicit=>',
   SIMULATION_SPEED: '/minsky/nSteps=>',
+  EDITED: '/minsky/edited=>',
 };
 
 export const availableOperations = {

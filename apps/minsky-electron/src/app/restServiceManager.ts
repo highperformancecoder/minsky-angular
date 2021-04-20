@@ -39,6 +39,7 @@ export class RestServiceManager {
   private static recordingReadStream: ReadStream;
   private static recordingFilePath: string;
   private static JSONStreamWriter;
+  static isCanvasEdited = false;
 
   static handleMinskyProcess(payload: MinskyProcessPayload) {
     if (this.minskyProcess) {
@@ -99,24 +100,7 @@ export class RestServiceManager {
                 this.queue.start();
               }
 
-              if (stdout.includes(minskyProcessReplyIndicators.BOOKMARK_LIST)) {
-                const _event = null;
-                ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
-              }
-
-              if (stdout.includes(commandsMapping.DIMENSIONAL_ANALYSIS)) {
-                if (minskyProcessReplyIndicators.DIMENSIONAL_ANALYSIS) {
-                  //show success
-
-                  dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
-                    type: 'info',
-                    title: 'Dimensional Analysis',
-                    message: 'Dimensional Analysis Passed',
-                  });
-                } else {
-                  dialog.showErrorBox('Dimensional Analysis Failed', stdout);
-                }
-              }
+              RestServiceManager.handleStdout(stdout);
             });
 
             this.minskyProcess.stderr.on('data', (data) => {
@@ -165,6 +149,29 @@ export class RestServiceManager {
       } else {
         logError('Please select the minsky executable first...');
       }
+    }
+  }
+
+  private static handleStdout(stdout: string) {
+    if (stdout.includes(minskyProcessReplyIndicators.BOOKMARK_LIST)) {
+      const _event = null;
+      ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
+    } else if (stdout.includes(commandsMapping.DIMENSIONAL_ANALYSIS)) {
+      if (minskyProcessReplyIndicators.DIMENSIONAL_ANALYSIS) {
+        dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+          type: 'info',
+          title: 'Dimensional Analysis',
+          message: 'Dimensional Analysis Passed',
+        });
+      } else {
+        dialog.showErrorBox('Dimensional Analysis Failed', stdout);
+      }
+    } else if (stdout.includes(minskyProcessReplyIndicators.EDITED)) {
+      this.isCanvasEdited = stdout.split('=>').pop().trim() == 'true';
+      console.log(
+        '🚀 ~ file: restServiceManager.ts ~ line 171 ~ RestServiceManager ~ handleStdout ~ this.isCanvasEdited',
+        this.isCanvasEdited
+      );
     }
   }
 
@@ -366,47 +373,11 @@ export class RestServiceManager {
       const miscCommand = stdinCommand + newLineCharacter;
       const renderCommand = this.getRenderCommand();
 
-      /*
-if save && save as -> markEdited false
-
-find the list of commands where we should set markEdited as true
-*/
-
-      /*
- if (!t || (!t->is_const && (!t->is_setterGetter || argc>1)))
-          {
-            bool modelChanged=m.pushHistory();
-            if (modelChanged && argv0!="minsky.load" && argv0!="minsky.reverse") m.markEdited();
-            if (m.eventRecord.get() && argv0!="minsky.startRecording" &&
-                (modelChanged ||
-                 argv0.find("minsky.canvas.mouse")!=string::npos ||
-                 argv0=="minsky.getItemAt" ||
-                 argv0=="minsky.getItemAtFocus" ||
-                 argv0=="minsky.getWireAt"))
-              {
-                for (int i=0; i<argc; ++i)
-                  (*m.eventRecord) << "{"<<to_string(argv[i]) <<"} ";
-                (*m.eventRecord)<<endl;
-              }
-            if (modelChanged && m.autoSaveFile.get())
-              try
-                {
-                  m.save(*m.autoSaveFile);
-                  m.markEdited(); // undo edited flag reset
-                }
-              catch(...)
-                { // unable to autosave
-                  m.autoSaveFile.reset();
-                  throw std::runtime_error("Unable to autosave to this location");
-                }
-          }
-      }
-
-*/
-
       if (this.isRecording) {
         this.record(stdinCommand);
       }
+
+      RestServiceManager.handleMarkEdited(stdinCommand);
 
       (async () => {
         await this.queue.add(() => {
@@ -419,6 +390,29 @@ find the list of commands where we should set markEdited as true
           minskyProcess.stdin.write(renderCommand);
         });
       })();
+    }
+  }
+
+  private static handleMarkEdited(command: string) {
+    const markEditIgnore = [
+      // 'mouseMove' ||
+      'getItemAt' ||
+        'getItemAtFocus' ||
+        'getWireAt' ||
+        commandsMapping.START_MINSKY_PROCESS ||
+        commandsMapping.RECORD ||
+        commandsMapping.RECORDING_REPLAY,
+      commandsMapping.MARK_EDITED,
+      commandsMapping.EDITED,
+      commandsMapping.RENDER_FRAME,
+    ];
+
+    if (
+      !this.isCanvasEdited &&
+      !markEditIgnore.find((c) => command.includes(c))
+    ) {
+      this.handleMinskyProcess({ command: commandsMapping.MARK_EDITED });
+      this.handleMinskyProcess({ command: commandsMapping.EDITED });
     }
   }
 
