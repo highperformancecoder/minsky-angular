@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { availableOperations, commandsMapping } from '@minsky/shared';
-import * as Mousetrap from 'mousetrap';
+import { availableOperations, commandsMapping, events } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
@@ -24,6 +23,7 @@ export class WiringComponent implements OnInit, OnDestroy {
   deltaT = 0;
 
   offsetTop: string;
+
   constructor(
     public cmService: CommunicationService,
     private electronService: ElectronService
@@ -84,17 +84,18 @@ export class WiringComponent implements OnInit, OnDestroy {
       this.minskyCanvas.onwheel = this.cmService.onMouseWheelZoom;
     }
 
-    Mousetrap.bind(['command+k', 'ctrl+k'], (e) => {
-      console.log(
-        '🚀 ~ file: wiring.component.ts ~ line 94 ~ WiringComponent ~ e',
-        e.key
-      );
-
-      this.electronService.ipcRenderer.send('onKeyPress', e.key);
-      // return false to prevent default browser behavior
-      // and stop event from bubbling
-      return false;
+    this.minskyCanvas.addEventListener('keydown', (event) => {
+      this.electronService.ipcRenderer.send(events.ipc.KEY_PRESS, {
+        key: event.key,
+        shift: event.shiftKey,
+        capsLock: event.getModifierState('CapsLock'),
+        ctrl: event.ctrlKey,
+        alt: event.altKey,
+        mouseX: this.cmService.mouseX,
+        mouseY: this.cmService.mouseY,
+      });
     });
+
     this.mouseMove$ = fromEvent<MouseEvent>(
       this.minskyCanvas,
       'mousemove'

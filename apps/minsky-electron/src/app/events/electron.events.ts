@@ -34,6 +34,7 @@ const {
     SET_BACKGROUND_COLOR,
     GET_APP_VERSION,
     TOGGLE_MINSKY_SERVICE,
+    KEY_PRESS,
   },
 } = events;
 
@@ -81,11 +82,24 @@ ipcMain.on(TOGGLE_MINSKY_SERVICE, async (event) => {
   await RestServiceManager.toggleMinskyService(event);
 });
 
-ipcMain.on('onKeyPress', (event, key: string) => {
+ipcMain.on(KEY_PRESS, (event, payload) => {
+  console.log('🚀 ~ file: electron.events.ts ~ line 88 ~ payload', payload);
+  const { key, shift, capsLock, ctrl, alt, mouseX, mouseY } = payload;
+
   console.log(
     '🚀 ~ file: electron.events.ts ~ line 83 ~ ipcMain.on ~ key',
     key,
     keysym.fromName(key).keysym,
     utf8.encode(key)
   );
+
+  // TODO:
+  // RestServiceManager.handleMinskyProcess({command:`${commandsMapping.KEY_PRESS} [${}]`})
+
+  /*
+    stdout: /minsky/canvas/keyPress/@signature=>{"args":["int","const std::string&","int","float","float"],"ret":"bool"}
+    args:[keySym,utf8,"1-shift 2-capslock,3-ctrl,4-alt",mouseX,mouseY]
+
+    if pressed all keys at once (shift+capslock+ctrl+alt) the 3rd arg will be 1248
+    */
 });

@@ -33,6 +33,8 @@ export class CommunicationService {
 
   stepIntervalId;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
+  mouseX: number;
+  mouseY: number;
 
   constructor(
     private socket: Socket,
@@ -167,6 +169,9 @@ export class CommunicationService {
 
   public mouseEvents(event, message) {
     const { type, clientX, clientY } = message;
+
+    this.mouseX = clientX;
+    this.mouseY = clientY;
 
     const clickData = {
       type,

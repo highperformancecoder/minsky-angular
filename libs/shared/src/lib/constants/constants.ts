@@ -88,6 +88,7 @@ export const commandsMapping = {
   MARK_EDITED: '/minsky/markEdited',
   AUTO_LAYOUT: '/minsky/canvas/selection/autoLayout',
   RANDOM_LAYOUT: '/minsky/canvas/selection/randomLayout',
+  KEY_PRESS: '/minsky/canvas/keyPress',
 };
 
 export const minskyProcessReplyIndicators = {
@@ -185,5 +186,6 @@ export const events = {
     GET_APP_VERSION: 'get-app-version',
     MINSKY_PROCESS_REPLY: 'minsky-process-reply',
     TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
+    KEY_PRESS: 'key-press',
   },
 };
