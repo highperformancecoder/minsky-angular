@@ -13,6 +13,7 @@ import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
 import { ElectronService } from './electron.service';
+import { WindowUtilitiesGlobal } from '@minsky/shared';
 
 const logInfo = debug('minsky:web:info');
 export class Message {
@@ -262,18 +263,17 @@ export class CommunicationService {
 
   onMouseWheelZoom = (event: WheelEvent) => {
     event.preventDefault();
-
     const { deltaY } = event;
-    const zoomIn = deltaY < 0 ? true : false;
+    const zoomIn = (deltaY < 0);
+   const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
 
-    let command = '';
-
+    let command = null;
     if (zoomIn) {
-      command = `${commandsMapping.ZOOM_IN} [${event.clientX},${event.clientY},${ZOOM_IN_FACTOR}]`;
+      command = `${commandsMapping.ZOOM_IN} [${event.clientX - offset.left },${event.clientY - offset.top}, ${ZOOM_IN_FACTOR}]`;
     } else {
-      command = `${commandsMapping.ZOOM_OUT} [${event.clientX},${event.clientY},${ZOOM_OUT_FACTOR}]`;
+      command = `${commandsMapping.ZOOM_OUT} [${event.clientX - offset.left},${event.clientY - offset.top}, ${ZOOM_OUT_FACTOR}]`;
     }
-
+    console.log("CX : ", event.clientX, " CY: ", event.clientY, " PX: ", event.pageX, " PY=", event.pageY);
     this.sendMinskyCommandAndRender({ command });
   };
 }

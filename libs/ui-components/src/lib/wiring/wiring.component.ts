@@ -5,6 +5,7 @@ import * as Mousetrap from 'mousetrap';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
+import { WindowUtilitiesGlobal } from '@minsky/shared';
 
 @AutoUnsubscribe()
 @Component({
@@ -14,8 +15,8 @@ import { sampleTime } from 'rxjs/operators';
 })
 export class WiringComponent implements OnInit, OnDestroy {
   minskyCanvas: HTMLElement;
-
   mouseMove$: Observable<MouseEvent>;
+  offsetTop : string;
 
   _availableOperations = availableOperations;
   _commandsMapping = commandsMapping;
@@ -23,18 +24,16 @@ export class WiringComponent implements OnInit, OnDestroy {
   t = 0;
   deltaT = 0;
 
-  offsetTop: string;
   constructor(
     public cmService: CommunicationService,
     private electronService: ElectronService
   ) {}
 
   ngOnInit() {
-    this.minskyCanvas = document.getElementById('canvas');
-
+    this.minskyCanvas = WindowUtilitiesGlobal.getMinskyCanvasElement();
     this.offsetTop = `calc(100vh - ${this.minskyCanvas.offsetTop}px)`;
+    
     if (this.electronService.isElectron) {
-      //
 
       // TODO: fix the scroll implementation once 'minsky/model/x' and '/minsky/model/y' commands are fixed
 
@@ -42,27 +41,14 @@ export class WiringComponent implements OnInit, OnDestroy {
       let ticking = false;
 
       const handleScroll = (scrollPos) => {
-        const left =
-          (window.pageXOffset || this.minskyCanvas.scrollLeft) -
-          (this.minskyCanvas.clientLeft || 0);
-        /* console.log(
-          '🚀 ~ file: wiring.component.ts ~ line 50 ~ WiringComponent ~ this.minskyCanvas.addEventListener ~ left',
-          left
-        ); */
-        const top =
-          (window.pageYOffset || this.minskyCanvas.scrollTop) -
-          (this.minskyCanvas.clientTop || 0);
-        /* console.log(
-          '🚀 ~ file: wiring.component.ts ~ line 53 ~ WiringComponent ~ this.minskyCanvas.addEventListener ~ top',
-          top
-        ); */
+        const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
 
         this.cmService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.X} ${left}`,
+          command: `${commandsMapping.X} ${offset.left}`,
         });
 
         this.cmService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.Y} ${top}`,
+          command: `${commandsMapping.Y} ${offset.top}`,
         });
       };
 
@@ -78,9 +64,6 @@ export class WiringComponent implements OnInit, OnDestroy {
           ticking = true;
         }
       });
-
-      //
-
       this.minskyCanvas.onwheel = this.cmService.onMouseWheelZoom;
     }
 
