@@ -18,8 +18,12 @@
     "Codegen",
     "Godley",
     "Panopticon",
+    "devkit",
+    "exitzero",
     "infimum",
     "minimizable",
+    "ngcc",
+    "nrwl",
     "submenu",
     "supremum"
   ]

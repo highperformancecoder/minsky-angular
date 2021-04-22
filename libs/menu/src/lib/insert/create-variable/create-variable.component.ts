@@ -49,7 +49,7 @@ export class CreateVariableComponent implements OnDestroy {
   }
 
   createVariable() {
-    this.communicationService.sendMinskyCommand({
+    this.communicationService.sendMinskyCommandAndRender({
       command: `${commandsMapping.ADD_VARIABLE} ["${this.variableName.value}","${this.type}"]`,
     });
     this.closeWindow();
@@ -61,6 +61,6 @@ export class CreateVariableComponent implements OnDestroy {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
   ngOnDestroy() {}
 }

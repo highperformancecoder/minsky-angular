@@ -7,5 +7,23 @@ import { CommunicationService } from '@minsky/core';
   styleUrls: ['./binary-operations.component.scss'],
 })
 export class BinaryOperationsComponent {
-  constructor(public cmService: CommunicationService) {}
+  operations: string[];
+  constructor(public cmService: CommunicationService) {
+    this.operations = [
+      'add',
+      'subtract',
+      'multiply',
+      'divide',
+      'min',
+      'max',
+      'and_',
+      'or_',
+      'log',
+      'pow',
+      'polygamma',
+      'lt',
+      'le',
+      'eq',
+    ];
+  }
 }

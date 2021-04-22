@@ -7,5 +7,9 @@ import { CommunicationService } from '@minsky/core';
   styleUrls: ['./euler.component.scss'],
 })
 export class EulerComponent {
-  constructor(public communicationService: CommunicationService) {}
+  operations: string[];
+
+  constructor(public communicationService: CommunicationService) {
+    this.operations = ['euler', 'pi', 'zero', 'one', 'inf', 'percent'];
+  }
 }

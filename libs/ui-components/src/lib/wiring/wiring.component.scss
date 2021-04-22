@@ -4,9 +4,11 @@
   height: -webkit-fill-available;
   width: -webkit-fill-available;
 
-  overflow: auto;
+  overflow: scroll;
   border: 1px solid $toolbar-box;
   canvas {
-    width: -webkit-fill-available;
+    width: 10000px;
+    height: 10000px;
+    overflow: scroll;
   }
 }

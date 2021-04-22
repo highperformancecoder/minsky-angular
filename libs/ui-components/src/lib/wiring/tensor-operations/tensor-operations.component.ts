@@ -7,5 +7,9 @@ import { CommunicationService } from '@minsky/core';
   styleUrls: ['./tensor-operations.component.scss'],
 })
 export class TensorOperationsComponent {
-  constructor(public cmService: CommunicationService) {}
+  operations: string[];
+
+  constructor(public cmService: CommunicationService) {
+    this.operations = ['innerProduct', 'outerProduct', 'index', 'gather'];
+  }
 }

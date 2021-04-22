@@ -9,6 +9,8 @@ const logWindows = debug('minsky:electron_windows');
 export class WindowManager {
   static topOffset: number;
   static leftOffset: number;
+  static canvasHeight: number;
+  static canvasWidth: number;
 
   static mainWindowHeight: number;
   static mainWindowWidth: number;
@@ -142,6 +144,11 @@ export class WindowManager {
       case 'OFFSET':
         WindowManager.topOffset = value.top;
         WindowManager.leftOffset = value.left;
+        break;
+
+      case 'CANVAS':
+        WindowManager.canvasHeight = value.height;
+        WindowManager.canvasWidth = value.width;
         break;
 
       default:

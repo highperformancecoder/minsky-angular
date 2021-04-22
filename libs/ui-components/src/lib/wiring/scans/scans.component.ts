@@ -7,5 +7,9 @@ import { CommunicationService } from '@minsky/core';
   styleUrls: ['./scans.component.scss'],
 })
 export class ScansComponent {
-  constructor(public cmService: CommunicationService) {}
+  operations: string[];
+
+  constructor(public cmService: CommunicationService) {
+    this.operations = ['runningSum', 'runningProduct', 'difference'];
+  }
 }

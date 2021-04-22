@@ -7,5 +7,17 @@ import { CommunicationService } from '@minsky/core';
   styleUrls: ['./reductions.component.scss'],
 })
 export class ReductionsComponent {
-  constructor(public cmService: CommunicationService) {}
+  operations: string[];
+  constructor(public cmService: CommunicationService) {
+    this.operations = [
+      'sum',
+      'product',
+      'infimum',
+      'supremum',
+      'any',
+      'all',
+      'infIndex',
+      'supIndex',
+    ];
+  }
 }

@@ -44,7 +44,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
@@ -62,7 +61,8 @@
                 }
               ]
             }
-          }
+          },
+          "outputs": ["{options.outputPath}"]
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -84,7 +84,10 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/minsky-web/src/**/*.ts"]
+            "lintFilePatterns": [
+              "apps/minsky-web/src/**/*.ts",
+              "apps/minsky-web/src/**/*.html"
+            ]
           }
         },
         "test": {
@@ -92,7 +95,8 @@
           "options": {
             "jestConfig": "apps/minsky-web/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": ["coverage/apps/minsky-web"]
         }
       }
     },
@@ -185,7 +189,8 @@
           "options": {
             "jestConfig": "apps/minsky-electron/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": ["coverage/apps/minsky-electron"]
         }
       }
     },
@@ -198,7 +203,10 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/menu/src/**/*.ts"]
+            "lintFilePatterns": [
+              "libs/menu/src/**/*.ts",
+              "libs/menu/src/**/*.html"
+            ]
           }
         },
         "test": {
@@ -206,7 +214,8 @@
           "options": {
             "jestConfig": "libs/menu/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": ["coverage/libs/menu"]
         }
       },
       "schematics": {
@@ -224,7 +233,10 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/core/src/**/*.ts"]
+            "lintFilePatterns": [
+              "libs/core/src/**/*.ts",
+              "libs/core/src/**/*.html"
+            ]
           }
         },
         "test": {
@@ -232,7 +244,8 @@
           "options": {
             "jestConfig": "libs/core/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": ["coverage/libs/core"]
         }
       },
       "schematics": {
@@ -250,7 +263,10 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/shared/src/**/*.ts"]
+            "lintFilePatterns": [
+              "libs/shared/src/**/*.ts",
+              "libs/shared/src/**/*.html"
+            ]
           }
         },
         "test": {
@@ -258,7 +274,8 @@
           "options": {
             "jestConfig": "libs/shared/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": ["coverage/libs/shared"]
         }
       },
       "schematics": {
@@ -284,7 +301,8 @@
           "options": {
             "jestConfig": "libs/minsky-server/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": ["coverage/libs/minsky-server"]
         }
       }
     },
@@ -297,7 +315,10 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/ui-components/src/**/*.ts"]
+            "lintFilePatterns": [
+              "libs/ui-components/src/**/*.ts",
+              "libs/ui-components/src/**/*.html"
+            ]
           }
         },
         "test": {
@@ -305,7 +326,8 @@
           "options": {
             "jestConfig": "libs/ui-components/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": ["coverage/libs/ui-components"]
         }
       },
       "schematics": {

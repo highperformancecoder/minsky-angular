@@ -1,41 +1,19 @@
-<!-- scans start-->
 <button class="tab" [matMenuTriggerFor]="scans" aria-label="Scans">
   <img src="assets/images/icons/runningSum.gif" alt="Scans" title="Scans" />
 </button>
 
 <mat-menu yPosition="above" #scans="matMenu">
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="cmService.addOperation('runningSum')"
-  >
-    <img
-      src="assets/images/icons/runningSum.gif"
-      alt="runningSum"
-      title="Running Sum"
-    />
-  </button>
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="cmService.addOperation('runningProduct')"
-  >
-    <img
-      src="assets/images/icons/runningProduct.gif"
-      alt="runningProduct"
-      title="Running Product"
-    />
-  </button>
-  <button
-    mat-menu-item
-    class="tab"
-    (click)="cmService.addOperation('difference')"
-  >
-    <img
-      src="assets/images/icons/difference.gif"
-      alt="difference"
-      title="Difference"
-    />
-  </button>
+  <ng-container *ngFor="let operation of operations">
+    <button
+      mat-menu-item
+      class="tab"
+      (click)="cmService.addOperation(operation)"
+    >
+      <img
+        src="assets/images/icons/{{ operation }}.gif"
+        alt="{{ operation }}"
+        title="{{ operation }}"
+      />
+    </button>
+  </ng-container>
 </mat-menu>
-<!-- scans end-->

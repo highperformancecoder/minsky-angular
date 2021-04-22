@@ -29,7 +29,7 @@ export class PreferencesComponent {
   }
 
   handleSubmit() {
-    // this.communicationService.sendMinskyCommand({
+    // this.communicationService.sendMinskyCommandAndRender({
     //   command
     // })
 

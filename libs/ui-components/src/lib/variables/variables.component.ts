@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-variables',
+  selector: 'minsky-variables',
   templateUrl: './variables.component.html',
   styleUrls: ['./variables.component.scss'],
 })

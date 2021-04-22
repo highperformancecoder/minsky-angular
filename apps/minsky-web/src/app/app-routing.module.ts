@@ -36,7 +36,7 @@ const routes: Routes = [
     loadChildren: () => import('@minsky/menu').then((m) => m.MenuModule),
   },
   {
-    path: 'experiment/xterm',
+    path: 'experiment/terminal',
     component: CliInputComponent,
   },
   {
@@ -46,7 +46,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true })],
+  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

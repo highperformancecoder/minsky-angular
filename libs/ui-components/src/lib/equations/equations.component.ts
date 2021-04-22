@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-equations',
+  selector: 'minsky-equations',
   templateUrl: './equations.component.html',
   styleUrls: ['./equations.component.scss'],
 })

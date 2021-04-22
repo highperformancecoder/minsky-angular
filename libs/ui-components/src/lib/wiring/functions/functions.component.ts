@@ -7,5 +7,28 @@ import { CommunicationService } from '@minsky/core';
   styleUrls: ['./functions.component.scss'],
 })
 export class FunctionsComponent {
-  constructor(public cmService: CommunicationService) {}
+  operations: string[];
+
+  constructor(public cmService: CommunicationService) {
+    this.operations = [
+      'sqrt',
+      'exp',
+      'ln',
+      'sin',
+      'cos',
+      'tan',
+      'asin',
+      'acos',
+      'atan',
+      'sinh',
+      'cosh',
+      'tanh',
+      'abs',
+      'floor',
+      'frac',
+      'not_',
+      'gamma',
+      'fact',
+    ];
+  }
 }

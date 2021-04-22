@@ -60,13 +60,7 @@ export class CommunicationService {
       });
   }
 
-  sendMinskyCommandAndRender(minskyProcessPayload: MinskyProcessPayload) {
-    if (this.electronService.isElectron) {
-      this.sendMinskyCommand(minskyProcessPayload);
-    }
-  }
-
-  sendMinskyCommand(payload: MinskyProcessPayload) {
+  sendMinskyCommandAndRender(payload: MinskyProcessPayload) {
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.send(events.ipc.MINSKY_PROCESS, {
         ...payload,
@@ -117,12 +111,11 @@ export class CommunicationService {
           autoHandleMinskyProcess = false;
 
           this.stepIntervalId = setInterval(() => {
-            const payload: MinskyProcessPayload = {
-              command,
-            };
-
-            this.sendMinskyCommandAndRender(payload);
+            this.sendMinskyCommandAndRender({ command });
             this.sendMinskyCommandAndRender({ command: commandsMapping.T });
+            this.sendMinskyCommandAndRender({
+              command: commandsMapping.DELTA_T,
+            });
           }, 100); // TODO:: -> Make this delay configurable
           break;
 
@@ -139,15 +132,15 @@ export class CommunicationService {
           this.clearStepInterval();
 
           this.sendMinskyCommandAndRender({ command });
-          this.sendMinskyCommandAndRender({
-            command: commandsMapping.T,
-          });
+          this.sendMinskyCommandAndRender({ command: commandsMapping.T });
+          this.sendMinskyCommandAndRender({ command: commandsMapping.DELTA_T });
           break;
 
         case 'STEP':
           autoHandleMinskyProcess = false;
           this.sendMinskyCommandAndRender({ command });
           this.sendMinskyCommandAndRender({ command: commandsMapping.T });
+          this.sendMinskyCommandAndRender({ command: commandsMapping.DELTA_T });
           break;
 
         case 'REVERSE_CHECKBOX':
@@ -159,11 +152,7 @@ export class CommunicationService {
       }
 
       if (command && autoHandleMinskyProcess) {
-        const payload: MinskyProcessPayload = {
-          command,
-        };
-
-        this.sendMinskyCommandAndRender(payload);
+        this.sendMinskyCommandAndRender({ command });
       }
     } else {
       this.socket.emit(event, message);
@@ -189,12 +178,11 @@ export class CommunicationService {
       const command = commandsMapping[type];
 
       if (command) {
-        const payload: MinskyProcessPayload = {
+        this.sendMinskyCommandAndRender({
           command: command,
           mouseX: clientX,
           mouseY: clientY,
-        };
-        this.sendMinskyCommandAndRender(payload);
+        });
       }
     } else {
       this.socket.emit(event, clickData);
@@ -233,6 +221,19 @@ export class CommunicationService {
           events.ipc.APP_LAYOUT_CHANGED,
           payload
         );
+
+        const canvasPayload = {
+          type: 'CANVAS',
+          value: {
+            height: this.canvasDetail.clientHeight,
+            width: this.canvasDetail.clientWidth,
+          },
+        };
+
+        this.electronService.ipcRenderer.send(
+          events.ipc.APP_LAYOUT_CHANGED,
+          canvasPayload
+        );
       } else {
         this.emitValues('Values', offSetValue);
       }
@@ -245,7 +246,7 @@ export class CommunicationService {
 
   addOperation(arg) {
     if (this.electronService.isElectron) {
-      this.sendMinskyCommand({
+      this.sendMinskyCommandAndRender({
         command: `${commandsMapping.ADD_OPERATION} "${arg}"`,
       });
     }
@@ -253,7 +254,7 @@ export class CommunicationService {
 
   insertElement(command) {
     if (this.electronService.isElectron) {
-      this.sendMinskyCommand({
+      this.sendMinskyCommandAndRender({
         command: commandsMapping[command],
       });
     }

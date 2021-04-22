@@ -5,8 +5,10 @@ import { BrowserWindow, dialog, screen, shell } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
+import { ContextMenuManager } from './contextMenuManager';
 import { MenuManager } from './menuManager';
 import { RecentFilesManager } from './recentFilesManager';
+import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
 
@@ -72,6 +74,24 @@ export default class App {
     App.loadMainWindow();
 
     App.initMenu();
+
+    App.initMinskyService();
+  }
+
+  private static initMinskyService() {
+    const minskyRestServiceFilePath = StoreManager.store.get(
+      'minskyRESTServicePath'
+    );
+
+    try {
+      if (minskyRestServiceFilePath) {
+        setTimeout(() => {
+          RestServiceManager.startMinskyService(minskyRestServiceFilePath);
+        }, 3000);
+      }
+    } catch (error) {
+      console.warn(error);
+    }
   }
 
   private static initMenu() {
@@ -157,6 +177,7 @@ export default class App {
 
     logWindows(WindowManager.activeWindows);
 
+    ContextMenuManager.buildContextMenu();
     App.mainWindow.on('close', () => {
       WindowManager.activeWindows.delete(App.mainWindow.id);
     });

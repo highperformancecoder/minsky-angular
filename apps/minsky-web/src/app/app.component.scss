@@ -47,6 +47,9 @@
       outline: none;
     }
   }
+  .spacer {
+    flex-grow: 1;
+  }
 }
 
 .spinner {
@@ -65,5 +68,5 @@
 }
 
 .minsky-service {
-  margin-left: 600px !important;
+  margin-right: 10px !important;
 }
