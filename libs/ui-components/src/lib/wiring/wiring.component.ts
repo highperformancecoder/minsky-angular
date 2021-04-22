@@ -41,7 +41,7 @@ export class WiringComponent implements OnInit, OnDestroy {
       let lastKnownScrollPosition = 0;
       let ticking = false;
 
-      const doSomething = (scrollPos) => {
+      const handleScroll = (scrollPos) => {
         const left =
           (window.pageXOffset || this.minskyCanvas.scrollLeft) -
           (this.minskyCanvas.clientLeft || 0);
@@ -71,7 +71,7 @@ export class WiringComponent implements OnInit, OnDestroy {
 
         if (!ticking) {
           window.requestAnimationFrame(function () {
-            doSomething(lastKnownScrollPosition);
+            handleScroll(lastKnownScrollPosition);
             ticking = false;
           });
 
