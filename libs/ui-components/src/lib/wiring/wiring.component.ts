@@ -81,7 +81,7 @@ export class WiringComponent implements OnInit, OnDestroy {
     this.mouseMove$ = fromEvent<MouseEvent>(
       this.minskyCanvas,
       'mousemove'
-    ).pipe(sampleTime(15)); // Ensure 60 FPS is possible
+    ).pipe(sampleTime(60)); // This is approx 15 fps (having high fps doesn't seem feasible [minsky performance limit] and lower fps will not be smooth)
 
     this.mouseMove$.subscribe((event: MouseEvent) => {
       this.cmService.mouseEvents('CANVAS_EVENT', event);
