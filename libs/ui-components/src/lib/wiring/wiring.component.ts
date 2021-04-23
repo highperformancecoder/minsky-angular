@@ -46,11 +46,7 @@ export class WiringComponent implements OnInit, OnDestroy {
         const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
 
         this.cmService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.X} ${offset.left}`,
-        });
-
-        this.cmService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.Y} ${offset.top}`,
+          command: `${commandsMapping.MOVE_TO} [${offset.left},${offset.top}]`,
         });
       };
 
