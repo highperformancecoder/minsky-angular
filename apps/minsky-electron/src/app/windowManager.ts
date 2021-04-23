@@ -142,7 +142,12 @@ export class WindowManager {
         break;
 
       case 'OFFSET':
-        WindowManager.topOffset = value.top;
+        // top + menubar height
+        WindowManager.topOffset =
+          value.top +
+          (this.getMainWindow().getSize()[1] -
+            this.getMainWindow().getContentSize()[1]);
+
         WindowManager.leftOffset = value.left;
         break;
 

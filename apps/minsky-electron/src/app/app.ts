@@ -214,6 +214,8 @@ export default class App {
     App.BrowserWindow = browserWindow;
     App.application = app;
 
+    App.application.commandLine.appendSwitch('high-dpi-support', '1');
+    App.application.commandLine.appendSwitch('force-device-scale-factor', '1');
     App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
     App.application.on('ready', App.onReady); // App is ready to load data
     App.application.on('activate', App.onActivate); // App is activated
