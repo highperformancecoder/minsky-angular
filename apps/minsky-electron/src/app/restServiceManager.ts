@@ -42,6 +42,10 @@ export class RestServiceManager {
   static isCanvasEdited = false;
 
   static handleMinskyProcess(payload: MinskyProcessPayload) {
+    // TODO:: Add Logic to merge consecutive mouse move evets
+    // If queue already has a move move event, just change the coordinates and do not add new event to the queue
+    // Store index of / pointer to mouse move event in the queue
+    // we can do this only with consecutive mouse move events
     if (this.minskyProcess) {
       switch (payload.command) {
         case commandsMapping.START_MINSKY_PROCESS:
