@@ -5,6 +5,7 @@ import {
   HeaderEvent,
   MinskyProcessPayload,
   RESET_ZOOM_FACTOR,
+  WindowUtilitiesGlobal,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
   ZOOM_TO_FIT_FACTOR,
@@ -13,7 +14,6 @@ import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
 import { ElectronService } from './electron.service';
-import { WindowUtilitiesGlobal } from '@minsky/shared';
 
 const logInfo = debug('minsky:web:info');
 export class Message {
@@ -95,9 +95,16 @@ export class CommunicationService {
           break;
         case 'RESET_ZOOM':
           // TODO: calculate zoom factor using c bounds OR there should be a command for this "/minsky/resetZoom"
-          command = `${command} [${canvasWidth / 2},${
-            canvasHeight / 2
-          },${RESET_ZOOM_FACTOR}]`;
+          autoHandleMinskyProcess = false;
+
+          this.sendMinskyCommandAndRender({
+            command: `${commandsMapping.MOVE_TO} [0,0]`,
+          });
+
+          this.sendMinskyCommandAndRender({
+            command: `${command} ${RESET_ZOOM_FACTOR}`,
+          });
+
           break;
         case 'ZOOM_TO_FIT':
           // TODO: calculate zoom factor using c bounds OR there should be a command for this "/minsky/zoomToFit"
@@ -269,16 +276,20 @@ export class CommunicationService {
   onMouseWheelZoom = (event: WheelEvent) => {
     event.preventDefault();
     const { deltaY } = event;
-    const zoomIn = (deltaY < 0);
-   const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
+    const zoomIn = deltaY < 0;
+    const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
 
     let command = null;
     if (zoomIn) {
-      command = `${commandsMapping.ZOOM_IN} [${event.clientX - offset.left },${event.clientY - offset.top}, ${ZOOM_IN_FACTOR}]`;
+      command = `${commandsMapping.ZOOM_IN} [${event.clientX - offset.left},${
+        event.clientY - offset.top
+      }, ${ZOOM_IN_FACTOR}]`;
     } else {
-      command = `${commandsMapping.ZOOM_OUT} [${event.clientX - offset.left},${event.clientY - offset.top}, ${ZOOM_OUT_FACTOR}]`;
+      command = `${commandsMapping.ZOOM_OUT} [${event.clientX - offset.left},${
+        event.clientY - offset.top
+      }, ${ZOOM_OUT_FACTOR}]`;
     }
-    console.log("CX : ", event.clientX, " CY: ", event.clientY, " PX: ", event.pageX, " PY=", event.pageY);
+
     this.sendMinskyCommandAndRender({ command });
   };
 }

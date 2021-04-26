@@ -56,7 +56,7 @@ export const commandsMapping = {
   RENDER_CANVAS_TO_PS: '/minsky/renderCanvasToPS',
   RENDER_CANVAS_TO_SVG: '/minsky/renderCanvasToSVG',
   RENDER_FRAME: '/minsky/canvas/renderFrame',
-  RESET_ZOOM: `/minsky/canvas/model/zoom`,
+  RESET_ZOOM: `/minsky/model/setZoom`,
   RESET: '/minsky/reset',
   REVERSE_CHECKBOX: `/minsky/reverse`,
   SAVE: '/minsky/save',
