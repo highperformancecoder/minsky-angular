@@ -8,7 +8,6 @@ import {
   WindowUtilitiesGlobal,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
-  ZOOM_TO_FIT_FACTOR,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
@@ -107,10 +106,9 @@ export class CommunicationService {
 
           break;
         case 'ZOOM_TO_FIT':
-          // TODO: calculate zoom factor using c bounds OR there should be a command for this "/minsky/zoomToFit"
           command = `${command} [${canvasWidth / 2},${
             canvasHeight / 2
-          },${ZOOM_TO_FIT_FACTOR}]`;
+          },${this.getZoomFactor(canvasWidth, canvasHeight)}]`;
           break;
 
         case 'SIMULATION_SPEED':
@@ -167,6 +165,23 @@ export class CommunicationService {
     } else {
       this.socket.emit(event, message);
     }
+  }
+
+  private getZoomFactor(canvasWidth: number, canvasHeight: number) {
+    const cBoundsString = this.electronService.ipcRenderer.sendSync(
+      events.ipc.GET_COMMAND_OUTPUT,
+      { command: commandsMapping.C_BOUNDS }
+    );
+
+    const cBounds = JSON.parse(cBoundsString);
+
+    const modelWidth = cBounds[2] - cBounds[0];
+    const modelHeight = cBounds[3] - cBounds[1];
+
+    const zoomFactorX = modelWidth / canvasWidth;
+    const zoomFactorY = modelHeight / canvasHeight;
+
+    return Math.min(zoomFactorX, zoomFactorY);
   }
 
   private clearStepInterval() {

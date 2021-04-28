@@ -136,7 +136,6 @@ export class RestServiceManager {
             if (!showServiceStartedDialog) {
               return;
             }
-
             dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
               type: 'info',
               title: 'Minsky Service Started',
@@ -158,9 +157,11 @@ export class RestServiceManager {
 
   private static handleStdout(stdout: string) {
     if (stdout.includes(minskyProcessReplyIndicators.BOOKMARK_LIST)) {
+      // handle bookmarks
       const _event = null;
       ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
     } else if (stdout.includes(commandsMapping.DIMENSIONAL_ANALYSIS)) {
+      // handle dimensional analysis
       if (minskyProcessReplyIndicators.DIMENSIONAL_ANALYSIS) {
         dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
           type: 'info',
@@ -171,11 +172,8 @@ export class RestServiceManager {
         dialog.showErrorBox('Dimensional Analysis Failed', stdout);
       }
     } else if (stdout.includes(minskyProcessReplyIndicators.EDITED)) {
+      // handle edited
       this.isCanvasEdited = stdout.split('=>').pop().trim() == 'true';
-      console.log(
-        '🚀 ~ file: restServiceManager.ts ~ line 171 ~ RestServiceManager ~ handleStdout ~ this.isCanvasEdited',
-        this.isCanvasEdited
-      );
     }
   }
 
@@ -438,8 +436,37 @@ export class RestServiceManager {
     return renderCommand;
   }
 
+  static returnCommandOutput(event: Electron.IpcMainEvent, command: string) {
+    let output: string = null;
+
+    const minskyProcess = spawn(
+      StoreManager.store.get('minskyRESTServicePath')
+    );
+
+    minskyProcess.stdin.write(command + newLineCharacter);
+
+    setTimeout(() => {
+      minskyProcess.stdout.emit('close');
+    }, 1000);
+
+    minskyProcess.stdout
+      .on('data', (data: Buffer) => {
+        output = data.toString().trim().split('=>').pop();
+      })
+      .on('error', (error) => {
+        log.error(`error: ${error.message}`);
+      })
+      .on('close', (code) => {
+        log.info(
+          `"get-minsky-commands" child process exited with code ${code}`
+        );
+        event.returnValue = output;
+      });
+  }
+
   static onGetMinskyCommands(event: Electron.IpcMainEvent) {
-    let listOfCommands = [];
+    // add non exposed commands here to get intellisense on the terminal popup
+    let listOfCommands = ['/minsky/model/cBounds'];
 
     const getMinskyCommandsProcess = spawn(
       StoreManager.store.get('minskyRESTServicePath')

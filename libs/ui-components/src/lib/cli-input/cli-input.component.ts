@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { events, MinskyProcessPayload } from '@minsky/shared';
+import { commandsMapping, events, MinskyProcessPayload } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -57,7 +57,8 @@ export class CliInputComponent implements OnInit, OnDestroy {
       );
 
       this.commands = this.electronService.ipcRenderer.sendSync(
-        events.ipc.GET_MINSKY_COMMANDS
+        events.ipc.GET_COMMAND_OUTPUT,
+        { command: commandsMapping.LIST }
       );
     }
   }

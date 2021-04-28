@@ -118,8 +118,8 @@ export class AppComponent implements AfterViewInit {
         title: 'Terminal',
         url: `${rendererAppURL}/#/experiment/terminal`,
         modal: false,
-        width: 900,
-        height: 768,
+        width: 800,
+        height: 668,
       });
     }
   }

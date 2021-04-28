@@ -11,7 +11,6 @@ export const newLineCharacter = '\n';
 export const ZOOM_IN_FACTOR = 1.1;
 export const ZOOM_OUT_FACTOR = 0.9;
 export const RESET_ZOOM_FACTOR = 1;
-export const ZOOM_TO_FIT_FACTOR = 1;
 
 export const commandsMapping = {
   ADD_BOOKMARK: '/minsky/model/addBookmark',
@@ -75,6 +74,7 @@ export const commandsMapping = {
   MOVE_TO: `/minsky/model/moveTo`,
   ZOOM_IN: `/minsky/canvas/model/zoom`,
   ZOOM_OUT: `/minsky/canvas/model/zoom`,
+  ZOOM_TO_FIT: `/minsky/canvas/model/zoom`,
   INSERT_GROUP_FROM_FILE: '/minsky/insertGroupFromFile',
   PUSH_HISTORY: '/minsky/doPushHistory',
   CLEAR_ALL_MAPS: '/minsky/clearAllMaps',
@@ -88,6 +88,7 @@ export const commandsMapping = {
   AUTO_LAYOUT: '/minsky/canvas/selection/autoLayout',
   RANDOM_LAYOUT: '/minsky/canvas/selection/randomLayout',
   KEY_PRESS: '/minsky/canvas/keyPress',
+  C_BOUNDS: '/minsky/model/cBounds',
 };
 
 export const minskyProcessReplyIndicators = {
@@ -106,6 +107,7 @@ export const minskyProcessReplyIndicators = {
   IMPLICIT: '/minsky/implicit=>',
   SIMULATION_SPEED: '/minsky/nSteps=>',
   EDITED: '/minsky/edited=>',
+  C_BOUNDS: '/minsky/model/cBounds=>',
 };
 
 export const availableOperations = {
@@ -178,7 +180,7 @@ export const events = {
     SET_BACKGROUND_COLOR: 'set-background-color',
     CREATE_MENU_POPUP: 'create-menu-popup',
     MINSKY_PROCESS: 'minsky-process',
-    GET_MINSKY_COMMANDS: 'get-minsky-commands',
+    GET_COMMAND_OUTPUT: 'get-command-output',
     APP_LAYOUT_CHANGED: 'app-layout-changed',
     POPULATE_BOOKMARKS: 'populate-bookmarks',
     ADD_RECENT_FILE: 'add-recent-file',
