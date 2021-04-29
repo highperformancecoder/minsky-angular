@@ -96,23 +96,32 @@ ipcMain.on(TOGGLE_MINSKY_SERVICE, async (event) => {
 });
 
 ipcMain.on(KEY_PRESS, (event, payload) => {
-  console.log('🚀 ~ file: electron.events.ts ~ line 88 ~ payload', payload);
   const { key, shift, capsLock, ctrl, alt, mouseX, mouseY } = payload;
 
-  console.log(
-    '🚀 ~ file: electron.events.ts ~ line 83 ~ ipcMain.on ~ key',
-    key,
-    keysym.fromName(key).keysym,
-    utf8.encode(key)
-  );
+  const _keysym = keysym.fromName(key)?.keysym;
 
-  // TODO:
-  // RestServiceManager.handleMinskyProcess({command:`${commandsMapping.KEY_PRESS} [${}]`})
+  const _utf8 = utf8.encode(key);
 
-  /*
-    stdout: /minsky/canvas/keyPress/@signature=>{"args":["int","const std::string&","int","float","float"],"ret":"bool"}
-    args:[keySym,utf8,"1-shift 2-capslock,3-ctrl,4-alt",mouseX,mouseY]
+  // const _payload = { ...payload, keySym: _keysym, utf8: _utf8 };
+  // console.table(_payload);
 
-    if pressed all keys at once (shift+capslock+ctrl+alt) the 3rd arg will be 1248
-    */
+  let modifierKeyCode = 0;
+  if (shift) {
+    modifierKeyCode += 1;
+  }
+  if (capsLock) {
+    modifierKeyCode += 2;
+  }
+  if (ctrl) {
+    modifierKeyCode += 4;
+  }
+  if (alt) {
+    modifierKeyCode += 8;
+  }
+
+  if (_keysym) {
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.KEY_PRESS} [${_keysym},${_utf8},${modifierKeyCode},${mouseX},${mouseY}]`,
+    });
+  }
 });
