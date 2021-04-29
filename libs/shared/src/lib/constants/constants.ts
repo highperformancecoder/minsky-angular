@@ -9,7 +9,7 @@ export const defaultBackgroundColor = '#ffffff';
 export const newLineCharacter = '\n';
 
 export const ZOOM_IN_FACTOR = 1.1;
-export const ZOOM_OUT_FACTOR = 0.9;
+export const ZOOM_OUT_FACTOR = 0.91;
 export const RESET_ZOOM_FACTOR = 1;
 
 export const commandsMapping = {
@@ -89,6 +89,8 @@ export const commandsMapping = {
   RANDOM_LAYOUT: '/minsky/canvas/selection/randomLayout',
   KEY_PRESS: '/minsky/canvas/keyPress',
   C_BOUNDS: '/minsky/model/cBounds',
+  X: '/minsky/model/x',
+  Y: '/minsky/model/y',
 };
 
 export const minskyProcessReplyIndicators = {

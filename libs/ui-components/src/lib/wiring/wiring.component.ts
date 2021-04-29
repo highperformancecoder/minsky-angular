@@ -27,6 +27,9 @@ export class WiringComponent implements OnInit, OnDestroy {
   t = 0;
   deltaT = 0;
 
+  modelX: number;
+  modelY: number;
+
   constructor(
     public cmService: CommunicationService,
     private electronService: ElectronService
@@ -37,16 +40,30 @@ export class WiringComponent implements OnInit, OnDestroy {
     this.offsetTop = `calc(100vh - ${this.minskyCanvas.offsetTop}px)`;
 
     if (this.electronService.isElectron) {
-      // TODO: fix the scroll implementation once 'minsky/model/x' and '/minsky/model/y' commands are fixed
-
       let lastKnownScrollPosition = 0;
       let ticking = false;
+
+      this.modelX = Number(
+        this.electronService.ipcRenderer.sendSync(
+          events.ipc.GET_COMMAND_OUTPUT,
+          { command: commandsMapping.X }
+        )
+      );
+
+      this.modelY = Number(
+        this.electronService.ipcRenderer.sendSync(
+          events.ipc.GET_COMMAND_OUTPUT,
+          { command: commandsMapping.Y }
+        )
+      );
 
       const handleScroll = (scrollPos) => {
         const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
 
         this.cmService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.MOVE_TO} [${offset.left},${offset.top}]`,
+          command: `${commandsMapping.MOVE_TO} [${this.modelX - offset.left},${
+            this.modelY - offset.top
+          }]`,
         });
       };
 
