@@ -5,8 +5,17 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CommunicationService, ElectronService } from '@minsky/core';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import {
+  CommunicationService,
+  ElectronService,
+  StateManagementService,
+} from '@minsky/core';
 import { commandsMapping, events, MinskyProcessPayload } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
@@ -21,14 +30,22 @@ import { map, startWith } from 'rxjs/operators';
 })
 export class CliInputComponent implements OnInit, OnDestroy {
   commands: Array<string>;
-  filteredOptions: Observable<string[]>;
+  filteredOptions$: Observable<string[]>;
   command: string;
-  minskyProcessReply: Array<string> = [];
   form: FormGroup;
 
+  public get commandControl(): AbstractControl {
+    return this.form.get('command');
+  }
+
+  public get argsControl(): AbstractControl {
+    return this.form.get('args');
+  }
+
   constructor(
-    public communicationService: CommunicationService,
+    private communicationService: CommunicationService,
     private electronService: ElectronService,
+    public stateManagementService: StateManagementService,
     private changeDetectionRef: ChangeDetectorRef
   ) {}
 
@@ -38,7 +55,7 @@ export class CliInputComponent implements OnInit, OnDestroy {
       args: new FormControl(),
     });
 
-    this.filteredOptions = this.form.get('command').valueChanges.pipe(
+    this.filteredOptions$ = this.commandControl.valueChanges.pipe(
       startWith(''),
       map((value) => this._filter(value))
     );
@@ -48,23 +65,15 @@ export class CliInputComponent implements OnInit, OnDestroy {
     });
 
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.on(
-        events.ipc.MINSKY_PROCESS_REPLY,
-        (event, stdout) => {
-          this.minskyProcessReply.push(stdout);
-          this.changeDetectionRef.detectChanges();
-        }
-      );
-
       this.commands = this.electronService.ipcRenderer.sendSync(
         events.ipc.GET_COMMAND_OUTPUT,
         { command: commandsMapping.LIST }
       );
-    }
-  }
 
-  isSubmitDisabled() {
-    return !this.form.get('command').value;
+      this.stateManagementService.minskyProcessReply$.subscribe((v) => {
+        this.changeDetectionRef.detectChanges();
+      });
+    }
   }
 
   handleSubmit() {
@@ -77,8 +86,8 @@ export class CliInputComponent implements OnInit, OnDestroy {
   }
 
   private makeCommand() {
-    return `${this.form.get('command').value} ${
-      this.form.get('args').value || ''
+    return `${this.commandControl.value} ${
+      this.argsControl.value || ''
     }`.trim();
   }
 

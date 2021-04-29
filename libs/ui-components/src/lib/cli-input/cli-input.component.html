@@ -16,7 +16,7 @@
     />
     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
       <mat-option
-        *ngFor="let option of filteredOptions | async"
+        *ngFor="let option of filteredOptions$ | async"
         [value]="option"
       >
         {{ option }}
@@ -40,7 +40,7 @@
 <div class="center">
   <button
     mat-raised-button
-    [disabled]="isSubmitDisabled()"
+    [disabled]="!this.commandControl.value"
     (click)="handleSubmit()"
   >
     Submit
@@ -56,7 +56,7 @@
   </b>
 </h3>
 <div class="output">
-  <ul *ngFor="let output of this.minskyProcessReply.slice().reverse()">
+  <ul *ngFor="let output of stateManagementService.minskyProcessReply$ | async">
     <li>
       {{ output }}
     </li>

@@ -13,6 +13,7 @@ import { ElectronService } from './../electron/electron.service';
 })
 export class StateManagementService {
   isTerminalDisabled$ = new BehaviorSubject<boolean>(true);
+  minskyProcessReply$ = new BehaviorSubject<Array<string>>([]);
 
   t = '0';
   deltaT = '0';
@@ -80,6 +81,11 @@ export class StateManagementService {
     this.electronService.ipcRenderer.on(
       events.ipc.MINSKY_PROCESS_REPLY,
       (event, stdout: string) => {
+        this.minskyProcessReply$.next([
+          stdout,
+          ...this.minskyProcessReply$.value,
+        ]);
+
         if (stdout.includes(T)) {
           this.t = Number(stdout.split('=>').pop()).toFixed(2);
         } else if (stdout.includes(DELTA_T)) {
