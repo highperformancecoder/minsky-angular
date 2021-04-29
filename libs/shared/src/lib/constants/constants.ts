@@ -80,8 +80,10 @@ export const commandsMapping = {
   CLEAR_ALL_MAPS: '/minsky/clearAllMaps',
   PUSH_FLAGS: '/minsky/pushFlags',
   CLEAR_HISTORY: '/minsky/clearHistory',
+  ZOOM_FACTOR: '/minsky/model/zoomFactor',
+  REL_ZOOM: '/minsky/model/relZoom',
   SET_ZOOM: '/minsky/model/setZoom',
-  RECENTER: '/minsky/canvas/recenter',
+  RECENTER: '/minsky/canvas/recentre',
   POP_FLAGS: '/minsky/popFlags',
   EDITED: '/minsky/edited',
   MARK_EDITED: '/minsky/markEdited',
@@ -110,6 +112,7 @@ export const minskyProcessReplyIndicators = {
   SIMULATION_SPEED: '/minsky/nSteps=>',
   EDITED: '/minsky/edited=>',
   C_BOUNDS: '/minsky/model/cBounds=>',
+  MINSKY_PROCESS_START: '/minsky/setGodleyIconResource',
 };
 
 export const availableOperations = {

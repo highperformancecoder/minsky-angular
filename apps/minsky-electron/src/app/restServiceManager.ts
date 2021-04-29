@@ -458,7 +458,7 @@ export class RestServiceManager {
       })
       .on('close', (code) => {
         log.info(
-          `"get-minsky-commands" child process exited with code ${code}`
+          `"returnCommandOutput" child process exited with code ${code}`
         );
         event.returnValue = output;
       });
@@ -466,7 +466,12 @@ export class RestServiceManager {
 
   static onGetMinskyCommands(event: Electron.IpcMainEvent) {
     // add non exposed commands here to get intellisense on the terminal popup
-    let listOfCommands = ['/minsky/model/cBounds'];
+    let listOfCommands = [
+      '/minsky/model/cBounds',
+      '/minsky/model/zoomFactor',
+      '/minsky/model/relZoom',
+      '/minsky/model/setZoom',
+    ];
 
     const getMinskyCommandsProcess = spawn(
       StoreManager.store.get('minskyRESTServicePath')
@@ -504,6 +509,11 @@ export class RestServiceManager {
         properties: ['openFile'],
         filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
       });
+
+      if (_dialog.canceled) {
+        event.returnValue = false;
+        return;
+      }
 
       this.startMinskyService(_dialog.filePaths[0]);
 

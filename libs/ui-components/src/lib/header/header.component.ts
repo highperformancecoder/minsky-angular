@@ -1,10 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CommunicationService, ElectronService } from '@minsky/core';
-import {
-  events,
-  HeaderEvent,
-  minskyProcessReplyIndicators,
-} from '@minsky/shared';
+import { Component } from '@angular/core';
+import { CommunicationService, StateManagementService } from '@minsky/core';
+import { HeaderEvent } from '@minsky/shared';
 import * as debug from 'debug';
 
 const logInfo = debug('minsky:web:info');
@@ -14,34 +10,12 @@ const logInfo = debug('minsky:web:info');
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   headerEvent = 'HEADER_EVENT';
   constructor(
     private commService: CommunicationService,
-    private electronService: ElectronService
+    public stateManagementService: StateManagementService
   ) {}
-
-  t = '0';
-  deltaT = '0';
-
-  ngOnInit(): void {
-    this.handleTime();
-  }
-
-  handleTime() {
-    if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.on(
-        events.ipc.MINSKY_PROCESS_REPLY,
-        (event, stdout: string) => {
-          if (stdout.includes(minskyProcessReplyIndicators.T)) {
-            this.t = Number(stdout.split('=>').pop()).toFixed(2);
-          } else if (stdout.includes(minskyProcessReplyIndicators.DELTA_T)) {
-            this.deltaT = Number(stdout.split('=>').pop()).toFixed(2);
-          }
-        }
-      );
-    }
-  }
 
   handleToolbarEvent(event: HeaderEvent) {
     this.commService.sendEvent(this.headerEvent, event);

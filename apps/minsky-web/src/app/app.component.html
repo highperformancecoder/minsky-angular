@@ -58,7 +58,7 @@
           {{ toggleButtonText }}
         </button>
         <button
-          disabled="{{ isTerminalDisabled }}"
+          [disabled]="stateManagementService.isTerminalDisabled$ | async"
           class="variables minsky-service"
           mat-raised-button
           (click)="startTerminal()"

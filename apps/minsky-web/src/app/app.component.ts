@@ -1,6 +1,10 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommunicationService, ElectronService } from '@minsky/core';
+import {
+  CommunicationService,
+  ElectronService,
+  StateManagementService,
+} from '@minsky/core';
 import { events, rendererAppURL } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { ResizedEvent } from 'angular-resize-event';
@@ -18,11 +22,11 @@ export class AppComponent implements AfterViewInit {
   loader = false;
   directory: string[];
   toggleButtonText = 'Start Minsky Service';
-  isTerminalDisabled = true;
 
   constructor(
     private electronService: ElectronService,
     private cmService: CommunicationService,
+    public stateManagementService: StateManagementService,
     private translate: TranslateService,
     public router: Router
   ) {
@@ -31,6 +35,7 @@ export class AppComponent implements AfterViewInit {
 
     if (electronService.isElectron) {
       logInfo('Run in electron');
+      this.stateManagementService.init();
     } else {
       logInfo('Run in browser');
     }
@@ -106,9 +111,11 @@ export class AppComponent implements AfterViewInit {
 
   async toggleMinskyService() {
     if (this.electronService.isElectron) {
-      this.isTerminalDisabled = !this.electronService.ipcRenderer.sendSync(
+      const isTerminalDisabled = !this.electronService.ipcRenderer.sendSync(
         events.ipc.TOGGLE_MINSKY_SERVICE
       );
+
+      this.stateManagementService.isTerminalDisabled$.next(isTerminalDisabled);
     }
   }
 
