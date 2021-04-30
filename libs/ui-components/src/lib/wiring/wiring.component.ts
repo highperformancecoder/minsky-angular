@@ -36,22 +36,23 @@ export class WiringComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.minskyCanvas = WindowUtilitiesGlobal.getMinskyCanvasElement();
-    this.offsetTop = `calc(100vh - ${this.minskyCanvas.offsetTop}px)`;
+    const scope = this;
+    scope.minskyCanvas = WindowUtilitiesGlobal.getMinskyCanvasElement();
+    scope.offsetTop = `calc(100vh - ${scope.minskyCanvas.offsetTop}px)`;
 
-    if (this.electronService.isElectron) {
+    if (scope.electronService.isElectron) {
       let lastKnownScrollPosition = 0;
       let ticking = false;
 
-      this.modelX = Number(
-        this.electronService.ipcRenderer.sendSync(
+      scope.modelX = Number(
+        scope.electronService.ipcRenderer.sendSync(
           events.ipc.GET_COMMAND_OUTPUT,
           { command: commandsMapping.X }
         )
       );
 
-      this.modelY = Number(
-        this.electronService.ipcRenderer.sendSync(
+      scope.modelY = Number(
+        scope.electronService.ipcRenderer.sendSync(
           events.ipc.GET_COMMAND_OUTPUT,
           { command: commandsMapping.Y }
         )
@@ -59,11 +60,14 @@ export class WiringComponent implements OnInit, OnDestroy {
 
       const handleScroll = (scrollPos) => {
         const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
+        let newX = scope.modelX - offset.left;
+        let newY = scope.modelY - offset.top;
+        
+        scope.modelX = newX;
+        scope.modelY = newY;
 
-        this.cmService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.MOVE_TO} [${this.modelX - offset.left},${
-            this.modelY - offset.top
-          }]`,
+        scope.cmService.sendMinskyCommandAndRender({
+          command: `${commandsMapping.MOVE_TO} [${newX},${newY}]`,
         });
       };
 
