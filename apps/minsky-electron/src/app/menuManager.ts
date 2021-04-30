@@ -6,12 +6,10 @@ import {
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { dialog, Menu, shell } from 'electron';
-import { readFileSync } from 'fs';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
 
-const logMenuEvent = debug('minsky:electron_menu_logs');
 const logError = debug('minsky:electron_error');
 
 export class MenuManager {
@@ -42,9 +40,50 @@ export class MenuManager {
           {
             label: 'New System',
             accelerator: 'CmdOrCtrl + Shift + N',
-            click() {
-              logMenuEvent('TODO -> topMenu -> New System');
-              // createWindow();
+            async click() {
+              if (RestServiceManager.isCanvasEdited) {
+                const saveModelDialog = await dialog.showSaveDialog({
+                  title: 'Save??',
+                  properties: ['showOverwriteConfirmation', 'createDirectory'],
+                });
+
+                const { canceled, filePath } = saveModelDialog;
+                if (canceled || !filePath) {
+                  return;
+                }
+
+                RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.SAVE} "${filePath}"`,
+                });
+              }
+
+              // ??? deleteSubsidiaryTopLevels -> close all the windows
+              WindowManager.activeWindows.forEach((window) => {
+                if (!window.isMainWindow) {
+                  window.context.close();
+                }
+              });
+
+              // {window management -> set window title to new system}
+              // global fname progName
+              // set fname ""
+              // wm title . "$progName: New System"
+              WindowManager.getMainWindow().setTitle('New System');
+
+              const newSystemCommands = [
+                `${commandsMapping.PUSH_HISTORY} 0`,
+                commandsMapping.CLEAR_ALL_MAPS,
+                commandsMapping.PUSH_FLAGS,
+                commandsMapping.CLEAR_HISTORY,
+                `${commandsMapping.SET_ZOOM} 1`,
+                commandsMapping.RECENTER,
+                commandsMapping.POP_FLAGS,
+                `${commandsMapping.PUSH_HISTORY} 1`,
+              ];
+
+              newSystemCommands.forEach((command) =>
+                RestServiceManager.handleMinskyProcess({ command })
+              );
             },
           },
           {
@@ -136,16 +175,15 @@ export class MenuManager {
             label: 'Insert File as Group',
             async click() {
               try {
-                const files = await dialog.showOpenDialog({
-                  properties: ['openFile', 'multiSelections'],
-                  filters: [{ name: 'text', extensions: ['txt'] }],
+                const insertGroupDialog = await dialog.showOpenDialog({
+                  properties: ['openFile'],
                 });
 
-                logMenuEvent(files);
-
-                for (const file of files.filePaths) {
-                  logMenuEvent(readFileSync(file).toString());
-                }
+                RestServiceManager.handleMinskyProcess({
+                  command: `${
+                    commandsMapping.INSERT_GROUP_FROM_FILE
+                  } "${insertGroupDialog.filePaths[0].toString()}"}`,
+                });
               } catch (err) {
                 logError('file is not selected', err);
               }
@@ -223,9 +261,51 @@ export class MenuManager {
             submenu: [
               {
                 label: 'as SVG',
+                async click() {
+                  const exportPlotDialog = await dialog.showSaveDialog({
+                    title: 'Export plot as svg',
+                    defaultPath: 'plot.svg',
+                    properties: [
+                      'showOverwriteConfirmation',
+                      'createDirectory',
+                    ],
+                    filters: [{ extensions: ['svg'], name: 'SVG' }],
+                  });
+
+                  const { canceled, filePath } = exportPlotDialog;
+
+                  if (canceled || !filePath) {
+                    return;
+                  }
+
+                  RestServiceManager.handleMinskyProcess({
+                    command: `${commandsMapping.RENDER_ALL_PLOTS_AS_SVG} "${filePath}"`,
+                  });
+                },
               },
               {
                 label: 'as CSV',
+                async click() {
+                  const exportPlotDialog = await dialog.showSaveDialog({
+                    title: 'Export plot as csv',
+                    defaultPath: 'plot.csv',
+                    properties: [
+                      'showOverwriteConfirmation',
+                      'createDirectory',
+                    ],
+                    filters: [{ extensions: ['csv'], name: 'CSV' }],
+                  });
+
+                  const { canceled, filePath } = exportPlotDialog;
+
+                  if (canceled || !filePath) {
+                    return;
+                  }
+
+                  RestServiceManager.handleMinskyProcess({
+                    command: `${commandsMapping.EXPORT_ALL_PLOTS_AS_CSV} "${filePath}"`,
+                  });
+                },
               },
             ],
           },
@@ -366,6 +446,22 @@ export class MenuManager {
             click() {
               RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.REMOVE_UNITS}`,
+              });
+            },
+          },
+          {
+            label: 'Auto Layout',
+            click() {
+              RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.AUTO_LAYOUT}`,
+              });
+            },
+          },
+          {
+            label: 'Random Layout',
+            click() {
+              RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.RANDOM_LAYOUT}`,
               });
             },
           },

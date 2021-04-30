@@ -3,7 +3,12 @@
  * between the frontend to the electron backend.
  */
 
-import { AppLayoutPayload, events, MinskyProcessPayload } from '@minsky/shared';
+import {
+  AppLayoutPayload,
+  commandsMapping,
+  events,
+  MinskyProcessPayload,
+} from '@minsky/shared';
 import * as debug from 'debug';
 import { ipcMain } from 'electron';
 import * as keysym from 'keysym';
@@ -28,12 +33,13 @@ const {
     ADD_RECENT_FILE,
     APP_LAYOUT_CHANGED,
     CREATE_MENU_POPUP,
-    GET_MINSKY_COMMANDS,
+    GET_COMMAND_OUTPUT,
     MINSKY_PROCESS,
     POPULATE_BOOKMARKS,
     SET_BACKGROUND_COLOR,
     GET_APP_VERSION,
     TOGGLE_MINSKY_SERVICE,
+    KEY_PRESS,
   },
 } = events;
 
@@ -61,8 +67,16 @@ ipcMain.on(MINSKY_PROCESS, (event, payload: MinskyProcessPayload) => {
   RestServiceManager.handleMinskyProcess(payload);
 });
 
-ipcMain.on(GET_MINSKY_COMMANDS, (event) => {
-  RestServiceManager.onGetMinskyCommands(event);
+ipcMain.on(GET_COMMAND_OUTPUT, (event, { command }) => {
+  switch (command) {
+    case commandsMapping.LIST:
+      RestServiceManager.onGetMinskyCommands(event);
+      break;
+
+    default:
+      RestServiceManager.returnCommandOutput(event, command);
+      break;
+  }
 });
 
 ipcMain.on(APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {
@@ -81,11 +95,33 @@ ipcMain.on(TOGGLE_MINSKY_SERVICE, async (event) => {
   await RestServiceManager.toggleMinskyService(event);
 });
 
-ipcMain.on('onKeyPress', (event, key: string) => {
-  console.log(
-    '🚀 ~ file: electron.events.ts ~ line 83 ~ ipcMain.on ~ key',
-    key,
-    keysym.fromName(key).keysym,
-    utf8.encode(key)
-  );
+ipcMain.on(KEY_PRESS, (event, payload) => {
+  const { key, shift, capsLock, ctrl, alt, mouseX, mouseY } = payload;
+
+  const _keysym = keysym.fromName(key)?.keysym;
+
+  const _utf8 = utf8.encode(key);
+
+  // const _payload = { ...payload, keySym: _keysym, utf8: _utf8 };
+  // console.table(_payload);
+
+  let modifierKeyCode = 0;
+  if (shift) {
+    modifierKeyCode += 1;
+  }
+  if (capsLock) {
+    modifierKeyCode += 2;
+  }
+  if (ctrl) {
+    modifierKeyCode += 4;
+  }
+  if (alt) {
+    modifierKeyCode += 8;
+  }
+
+  if (_keysym) {
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.KEY_PRESS} [${_keysym},${_utf8},${modifierKeyCode},${mouseX},${mouseY}]`,
+    });
+  }
 });

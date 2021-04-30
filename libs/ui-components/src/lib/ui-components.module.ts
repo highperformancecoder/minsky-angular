@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MaterialModule } from '@minsky/shared';
+import { SharedModule } from '@minsky/shared';
 import { CliInputComponent } from './cli-input/cli-input.component';
 import { EquationsComponent } from './equations/equations.component';
 import { HeaderComponent } from './header/header.component';
@@ -35,7 +34,7 @@ import { WiringComponent } from './wiring/wiring.component';
     TensorOperationsComponent,
     VariableComponent,
   ],
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MaterialModule],
+  imports: [CommonModule, SharedModule],
   exports: [
     PageNotFoundComponent,
     HeaderComponent,

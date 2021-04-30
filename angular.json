@@ -97,6 +97,19 @@
             "passWithNoTests": true
           },
           "outputs": ["coverage/apps/minsky-web"]
+        },
+        "compodoc": {
+          "builder": "@twittwer/compodoc:compodoc",
+          "options": {
+            "tsConfig": "apps/minsky-web/tsconfig.compodoc.json",
+            "outputPath": "dist/compodoc/minsky-web",
+            "workspaceDocs": true
+          },
+          "configurations": {
+            "json": {
+              "exportFormat": "json"
+            }
+          }
         }
       }
     },
@@ -191,6 +204,19 @@
             "passWithNoTests": true
           },
           "outputs": ["coverage/apps/minsky-electron"]
+        },
+        "compodoc": {
+          "builder": "@twittwer/compodoc:compodoc",
+          "options": {
+            "tsConfig": "apps/minsky-electron/tsconfig.compodoc.json",
+            "outputPath": "dist/compodoc/minsky-electron",
+            "workspaceDocs": true
+          },
+          "configurations": {
+            "json": {
+              "exportFormat": "json"
+            }
+          }
         }
       }
     },
@@ -335,6 +361,17 @@
           "style": "scss"
         }
       }
+    },
+    "workspace": {
+      "architect": {
+        "version": {
+          "builder": "@jscutlery/semver:version",
+          "options": {
+            "syncVersions": true
+          }
+        }
+      },
+      "root": "."
     }
   },
   "cli": {

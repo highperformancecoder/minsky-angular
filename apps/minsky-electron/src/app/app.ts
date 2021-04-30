@@ -87,7 +87,7 @@ export default class App {
       if (minskyRestServiceFilePath) {
         setTimeout(() => {
           RestServiceManager.startMinskyService(minskyRestServiceFilePath);
-        }, 3000);
+        }, 4000);
       }
     } catch (error) {
       console.warn(error);
@@ -115,8 +115,8 @@ export default class App {
   private static initMainWindow() {
     const display = screen.getPrimaryDisplay();
     const workAreaSize = display.workAreaSize;
-    const width = Math.min(workAreaSize.width, 1280);
-    const height = Math.min(workAreaSize.height, 801);
+    const width = Math.min(workAreaSize.width - 100, 1366);
+    const height = Math.min(workAreaSize.height - 100, 768);
 
     // Create the browser window.
     App.mainWindow = new BrowserWindow({
@@ -135,7 +135,7 @@ export default class App {
         nodeIntegration: true,
         backgroundThrottling: false,
         affinity: 'window',
-        allowRunningInsecureContent: this.isDevelopmentMode ? true : false,
+        // allowRunningInsecureContent: this.isDevelopmentMode ? true : false,
       },
       x: 0,
       y: 0,
@@ -214,6 +214,8 @@ export default class App {
     App.BrowserWindow = browserWindow;
     App.application = app;
 
+    App.application.commandLine.appendSwitch('high-dpi-support', '1');
+    App.application.commandLine.appendSwitch('force-device-scale-factor', '1');
     App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
     App.application.on('ready', App.onReady); // App is ready to load data
     App.application.on('activate', App.onActivate); // App is activated

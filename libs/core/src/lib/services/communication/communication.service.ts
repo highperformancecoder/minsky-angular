@@ -4,15 +4,14 @@ import {
   events,
   HeaderEvent,
   MinskyProcessPayload,
-  RESET_ZOOM_FACTOR,
+  WindowUtilitiesGlobal,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
-  ZOOM_TO_FIT_FACTOR,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
-import { ElectronService } from './electron.service';
+import { ElectronService } from './../electron/electron.service';
 
 const logInfo = debug('minsky:web:info');
 export class Message {
@@ -33,6 +32,8 @@ export class CommunicationService {
 
   stepIntervalId;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
+  mouseX: number;
+  mouseY: number;
 
   constructor(
     private socket: Socket,
@@ -91,16 +92,36 @@ export class CommunicationService {
           },${ZOOM_IN_FACTOR}]`;
           break;
         case 'RESET_ZOOM':
-          // TODO: calculate zoom factor using c bounds OR there should be a command for this "/minsky/resetZoom"
-          command = `${command} [${canvasWidth / 2},${
-            canvasHeight / 2
-          },${RESET_ZOOM_FACTOR}]`;
+          autoHandleMinskyProcess = false;
+          /* this.sendMinskyCommandAndRender({
+            command: `${commandsMapping.MOVE_TO} [0,0]`,
+          });
+
+          this.sendMinskyCommandAndRender({
+            command: `${command} ${RESET_ZOOM_FACTOR}`,
+          });
+           */
+
+          this.sendMinskyCommandAndRender({
+            command: this.getRestZoomCommand(),
+          });
+
+          this.sendMinskyCommandAndRender({
+            command: commandsMapping.RECENTER,
+          });
           break;
         case 'ZOOM_TO_FIT':
-          // TODO: calculate zoom factor using c bounds OR there should be a command for this "/minsky/zoomToFit"
-          command = `${command} [${canvasWidth / 2},${
-            canvasHeight / 2
-          },${ZOOM_TO_FIT_FACTOR}]`;
+          autoHandleMinskyProcess = false;
+
+          command = `${command} [${this.getZoomToFitArgs(
+            canvasWidth,
+            canvasHeight
+          )}]`;
+
+          this.sendMinskyCommandAndRender({
+            command: commandsMapping.RECENTER,
+          });
+
           break;
 
         case 'SIMULATION_SPEED':
@@ -159,6 +180,67 @@ export class CommunicationService {
     }
   }
 
+  private getRestZoomCommand(): string {
+    /*
+     if {[minsky.model.zoomFactor]>0} {
+            zoom [expr 1/[minsky.model.relZoom]]
+        } else {
+            minsky.model.setZoom 1
+        }
+        recentreCanvas
+
+    */
+
+    const zoomFactor = Number(
+      this.electronService.ipcRenderer.sendSync(events.ipc.GET_COMMAND_OUTPUT, {
+        command: commandsMapping.ZOOM_FACTOR,
+      })
+    );
+
+    if (zoomFactor > 0) {
+      const relZoom = Number(
+        this.electronService.ipcRenderer.sendSync(
+          events.ipc.GET_COMMAND_OUTPUT,
+          { command: commandsMapping.REL_ZOOM }
+        )
+      );
+
+      return `${commandsMapping.ZOOM_IN} ${1 / relZoom}`;
+    } else {
+      return `${commandsMapping.SET_ZOOM} 1`;
+    }
+  }
+
+  private getZoomToFitArgs(canvasWidth: number, canvasHeight: number) {
+    /*
+      set cb [minsky.canvas.model.cBounds]
+        set z1 [expr double([winfo width .wiring.canvas])/([lindex $cb 2]-[lindex $cb 0])]
+        set z2 [expr double([winfo height .wiring.canvas])/([lindex $cb 3]-[lindex $cb 1])]
+        if {$z2<$z1} {set z1 $z2}
+        set x [expr -0.5*([lindex $cb 2]+[lindex $cb 0])]
+        set y [expr -0.5*([lindex $cb 3]+[lindex $cb 1])]
+        zoomAt $x $y $z1
+        recentreCanvas
+
+
+    */
+    const cBoundsString = this.electronService.ipcRenderer.sendSync(
+      events.ipc.GET_COMMAND_OUTPUT,
+      { command: commandsMapping.C_BOUNDS }
+    );
+
+    const cBounds = JSON.parse(cBoundsString);
+
+    const zoomFactorX = canvasWidth / (cBounds[2] - cBounds[0]);
+    const zoomFactorY = canvasHeight / (cBounds[3] - cBounds[1]);
+
+    const zoomFactor = Math.min(zoomFactorX, zoomFactorY);
+    const x = 0.5 * (cBounds[2] + cBounds[0]);
+    const y = 0.5 * (cBounds[3] + cBounds[1]);
+
+    return [x, y, zoomFactor].toString();
+  }
+
   private clearStepInterval() {
     if (this.stepIntervalId) {
       clearInterval(this.stepIntervalId);
@@ -167,6 +249,9 @@ export class CommunicationService {
 
   public mouseEvents(event, message) {
     const { type, clientX, clientY } = message;
+
+    this.mouseX = clientX;
+    this.mouseY = clientY;
 
     const clickData = {
       type,
@@ -262,16 +347,19 @@ export class CommunicationService {
 
   onMouseWheelZoom = (event: WheelEvent) => {
     event.preventDefault();
-
     const { deltaY } = event;
-    const zoomIn = deltaY < 0 ? true : false;
+    const zoomIn = deltaY < 0;
+    const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
 
-    let command = '';
-
+    let command = null;
     if (zoomIn) {
-      command = `${commandsMapping.ZOOM_IN} [${event.clientX},${event.clientY},${ZOOM_IN_FACTOR}]`;
+      command = `${commandsMapping.ZOOM_IN} [${event.clientX - offset.left},${
+        event.clientY - offset.top
+      }, ${ZOOM_IN_FACTOR}]`;
     } else {
-      command = `${commandsMapping.ZOOM_OUT} [${event.clientX},${event.clientY},${ZOOM_OUT_FACTOR}]`;
+      command = `${commandsMapping.ZOOM_OUT} [${event.clientX - offset.left},${
+        event.clientY - offset.top
+      }, ${ZOOM_OUT_FACTOR}]`;
     }
 
     this.sendMinskyCommandAndRender({ command });
