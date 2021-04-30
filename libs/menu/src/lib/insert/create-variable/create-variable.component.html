@@ -1,6 +1,9 @@
 <div class="popup-wrapper">
   <div class="popup-title">
-    Create {{ type === 'flow' || type === 'integral' ? 'Variable' : type }}
+    Create
+    {{
+      variableType === 'flow' || variableType === 'integral' ? 'Variable' : type
+    }}
   </div>
 
   <div class="form-wrapper">
@@ -19,22 +22,25 @@
         <label for="type">Type</label>
         <select name="type" id="type" formControlName="type">
           <option
-            [selected]="type === 'constant' ? true : null"
+            [selected]="variableType === 'constant' ? true : null"
             value="constant"
           >
             Constant
           </option>
           <option
-            [selected]="type === 'parameter' ? true : null"
+            [selected]="variableType === 'parameter' ? true : null"
             value="parameter"
           >
             Parameter
           </option>
-          <option [selected]="type === 'flow' ? true : null" value="flow">
+          <option
+            [selected]="variableType === 'flow' ? true : null"
+            value="flow"
+          >
             Flow
           </option>
           <option
-            [selected]="type === 'integral' ? true : null"
+            [selected]="variableType === 'integral' ? true : null"
             value="integral"
           >
             Integral
@@ -44,7 +50,7 @@
 
       <div class="form-control">
         <label for="value">Initial Value</label>
-        <input type="text" class="value" id="value" formControlName="value" />
+        <input type="number" class="value" id="value" formControlName="value" />
       </div>
 
       <div class="form-control">
@@ -55,7 +61,7 @@
       <div class="form-control">
         <label for="rotation">Rotation</label>
         <input
-          type="text"
+          type="number"
           class="rotation"
           id="rotation"
           formControlName="rotation"
@@ -85,7 +91,7 @@
       <div class="form-control">
         <label for="sliderBoundsMax">Slider Bounds: Max</label>
         <input
-          type="text"
+          type="number"
           class="sliderBoundsMax"
           id="sliderBoundsMax"
           formControlName="sliderBoundsMax"
@@ -95,7 +101,7 @@
       <div class="form-control">
         <label for="sliderBoundsMin">Slider Bounds: Min</label>
         <input
-          type="text"
+          type="number"
           class="sliderBoundsMin"
           id="sliderBoundsMin"
           formControlName="sliderBoundsMin"
@@ -105,12 +111,22 @@
       <div class="form-control">
         <label for="sliderStepSize">Slider Step Size</label>
         <input
-          type="text"
+          type="number"
           class="sliderStepSize"
           id="sliderStepSize"
           formControlName="sliderStepSize"
         />
       </div>
+
+      <!-- <div class="form-control">
+        <label for="sliderStepSizeRel">Relative</label>
+        <input
+          type="checkbox"
+          class="sliderStepRel"
+          id="sliderStepRel"
+          formControlName="sliderStepRel"
+        />
+      </div> -->
 
       <div class="form-buttons">
         <button
