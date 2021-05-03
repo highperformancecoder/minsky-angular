@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { CommunicationService, ElectronService } from '@minsky/core';
+import { ElectronService } from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 
 @Component({
@@ -11,19 +11,16 @@ import { commandsMapping } from '@minsky/shared';
 export class AddBookmarkComponent {
   bookmarkName: FormControl;
 
-  constructor(
-    private communicationService: CommunicationService,
-    private electronService: ElectronService
-  ) {
+  constructor(private electronService: ElectronService) {
     this.bookmarkName = new FormControl('', Validators.required);
   }
 
   handleSubmit() {
-    this.communicationService.sendMinskyCommandAndRender({
+    this.electronService.sendMinskyCommandAndRender({
       command: `${commandsMapping.ADD_BOOKMARK} "${this.bookmarkName.value}"`,
     });
 
-    this.communicationService.sendMinskyCommandAndRender({
+    this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.BOOKMARK_LIST,
     });
 

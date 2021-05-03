@@ -122,6 +122,10 @@ export const minskyProcessReplyIndicators = {
   EDITED: '/minsky/edited=>',
   C_BOUNDS: '/minsky/model/cBounds=>',
   MINSKY_PROCESS_START: '/minsky/setGodleyIconResource',
+  X: '/minsky/model/x=>',
+  Y: '/minsky/model/y=>',
+  ZOOM_FACTOR: '/minsky/model/zoomFactor',
+  REL_ZOOM: '/minsky/model/relZoom=>',
 };
 
 export const availableOperations = {

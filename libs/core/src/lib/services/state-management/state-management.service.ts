@@ -5,7 +5,6 @@ import {
   minskyProcessReplyIndicators,
 } from '@minsky/shared';
 import { BehaviorSubject } from 'rxjs';
-import { CommunicationService } from '../communication/communication.service';
 import { ElectronService } from './../electron/electron.service';
 
 @Injectable({
@@ -29,10 +28,7 @@ export class StateManagementService {
   implicitSolver: boolean;
   noOfStepsPerIteration: number;
 
-  constructor(
-    private electronService: ElectronService,
-    private communicationService: CommunicationService
-  ) {}
+  constructor(private electronService: ElectronService) {}
 
   init() {
     if (this.electronService.isElectron) {
@@ -57,8 +53,44 @@ export class StateManagementService {
     ];
 
     simulationCommands.forEach((command) => {
-      this.communicationService.sendMinskyCommandAndRender({ command });
+      this.electronService.sendMinskyCommandAndRender({ command });
     });
+  }
+
+  async getCommandValue(command: string, minskyProcessReplyIndicator: string) {
+    try {
+      this.electronService.sendMinskyCommandAndRender({ command });
+
+      const res = await Promise.race([
+        new Promise((resolve, reject) => {
+          this.electronService.ipcRenderer.on(
+            events.ipc.MINSKY_PROCESS_REPLY,
+            (event, stdout: string) => {
+              if (stdout.includes(minskyProcessReplyIndicator)) {
+                resolve(stdout.split('=>').pop());
+              }
+            }
+          );
+        }),
+        new Promise((resolve, reject) => {
+          setTimeout(function () {
+            reject(
+              `command: "${command}" with minskyProcessReplyIndicator "${minskyProcessReplyIndicator}" Timed out`
+            );
+          }, 4000);
+        }),
+      ]);
+
+      console.log(`command: ${command}, value:${res}`);
+      return res;
+    } catch (error) {
+      console.error(
+        '🚀 ~ file: state-management.service.ts ~ line 118 ~ StateManagementService ~ getCommandValue ~ error',
+        error
+      );
+
+      throw error;
+    }
   }
 
   private initListeners() {

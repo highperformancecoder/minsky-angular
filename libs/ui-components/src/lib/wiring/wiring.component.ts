@@ -1,9 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommunicationService, ElectronService } from '@minsky/core';
+import {
+  CommunicationService,
+  ElectronService,
+  StateManagementService,
+} from '@minsky/core';
 import {
   availableOperations,
   commandsMapping,
   events,
+  minskyProcessReplyIndicators,
   WindowUtilitiesGlobal,
 } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
@@ -32,7 +37,8 @@ export class WiringComponent implements OnInit, OnDestroy {
 
   constructor(
     public cmService: CommunicationService,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private stateManagementService: StateManagementService
   ) {}
 
   ngOnInit() {
@@ -43,24 +49,26 @@ export class WiringComponent implements OnInit, OnDestroy {
       let lastKnownScrollPosition = 0;
       let ticking = false;
 
-      this.modelX = Number(
-        this.electronService.ipcRenderer.sendSync(
-          events.ipc.GET_COMMAND_OUTPUT,
-          { command: commandsMapping.X }
-        )
-      );
+      (async () => {
+        this.modelX = Number(
+          await this.stateManagementService.getCommandValue(
+            commandsMapping.X,
+            minskyProcessReplyIndicators.X
+          )
+        );
 
-      this.modelY = Number(
-        this.electronService.ipcRenderer.sendSync(
-          events.ipc.GET_COMMAND_OUTPUT,
-          { command: commandsMapping.Y }
-        )
-      );
+        this.modelY = Number(
+          await this.stateManagementService.getCommandValue(
+            commandsMapping.Y,
+            minskyProcessReplyIndicators.Y
+          )
+        );
+      })();
 
       const handleScroll = (scrollPos) => {
         const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
 
-        this.cmService.sendMinskyCommandAndRender({
+        this.electronService.sendMinskyCommandAndRender({
           command: `${commandsMapping.MOVE_TO} [${this.modelX - offset.left},${
             this.modelY - offset.top
           }]`,
