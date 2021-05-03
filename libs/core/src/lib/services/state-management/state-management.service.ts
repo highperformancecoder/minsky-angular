@@ -28,6 +28,9 @@ export class StateManagementService {
   implicitSolver: boolean;
   noOfStepsPerIteration: number;
 
+  modelX: number;
+  modelY: number;
+
   constructor(private electronService: ElectronService) {}
 
   init() {
@@ -50,6 +53,8 @@ export class StateManagementService {
       commandsMapping.ORDER,
       commandsMapping.IMPLICIT,
       commandsMapping.SIMULATION_SPEED,
+      commandsMapping.X,
+      commandsMapping.Y,
     ];
 
     simulationCommands.forEach((command) => {
@@ -108,6 +113,8 @@ export class StateManagementService {
       T,
       DELTA_T,
       MINSKY_PROCESS_START,
+      X,
+      Y,
     } = minskyProcessReplyIndicators;
 
     this.electronService.ipcRenderer.on(
@@ -125,35 +132,30 @@ export class StateManagementService {
         } else if (stdout.includes(MINSKY_PROCESS_START)) {
           this.isTerminalDisabled$.next(false);
         } else if (stdout.includes(TIME_UNIT)) {
-          const _timeUnit = stdout.split('=>').pop().trim().split('"').join('');
-          this.timeUnit = _timeUnit;
+          this.timeUnit = stdout.split('=>').pop().trim().split('"').join('');
         } else if (stdout.includes(STEP_MIN)) {
-          const _stepMin = Number(stdout.split('=>').pop().trim());
-          this.minStepSize = _stepMin;
+          this.minStepSize = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(STEP_MAX)) {
-          const _stepMax = Number(stdout.split('=>').pop().trim());
-          this.maxStepSize = _stepMax;
+          this.maxStepSize = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(T_ZERO)) {
-          const _tZero = Number(stdout.split('=>').pop().trim());
-          this.startTime = _tZero;
+          this.startTime = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(T_MAX)) {
-          const tMax = stdout.split('=>').pop().trim();
-          this.runUntilTime = tMax;
+          this.runUntilTime = stdout.split('=>').pop().trim();
         } else if (stdout.includes(EPS_ABS)) {
-          const _epsAbs = Number(stdout.split('=>').pop().trim());
-          this.absoluteError = _epsAbs;
+          this.absoluteError = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(EPS_REL)) {
-          const _epsRel = Number(stdout.split('=>').pop().trim());
-          this.relativeError = _epsRel;
+          this.relativeError = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(ORDER)) {
-          const _order = Number(stdout.split('=>').pop().trim());
-          this.solverOrder = _order;
+          this.solverOrder = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(IMPLICIT)) {
           const _implicit = stdout.split('=>').pop().trim();
           this.implicitSolver = _implicit === 'false' ? false : true;
         } else if (stdout.includes(SIMULATION_SPEED)) {
-          const _nSteps = Number(stdout.split('=>').pop().trim());
-          this.noOfStepsPerIteration = _nSteps;
+          this.noOfStepsPerIteration = Number(stdout.split('=>').pop().trim());
+        } else if (stdout.includes(X)) {
+          this.modelX = Number(stdout.split('=>').pop().trim());
+        } else if (stdout.includes(Y)) {
+          this.modelY = Number(stdout.split('=>').pop().trim());
         }
       }
     );

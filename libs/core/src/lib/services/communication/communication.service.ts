@@ -63,7 +63,7 @@ export class CommunicationService {
       });
   }
 
-  public sendEvent(event: string, message: HeaderEvent): void {
+  public async sendEvent(event: string, message: HeaderEvent) {
     const { target } = message;
     if (this.electronService.isElectron) {
       let command = commandsMapping[target];
@@ -96,7 +96,7 @@ export class CommunicationService {
            */
 
           this.electronService.sendMinskyCommandAndRender({
-            command: `${this.getRestZoomCommand()}`,
+            command: `${await this.getResetZoomCommand()}`,
           });
 
           this.electronService.sendMinskyCommandAndRender({
@@ -106,7 +106,7 @@ export class CommunicationService {
         case 'ZOOM_TO_FIT':
           autoHandleMinskyProcess = false;
 
-          command = `${command} [${this.getZoomToFitArgs(
+          command = `${command} [${await this.getZoomToFitArgs(
             canvasWidth,
             canvasHeight
           )}]`;
@@ -183,7 +183,7 @@ export class CommunicationService {
     }
   }
 
-  private getRestZoomCommand() {
+  private async getResetZoomCommand() {
     /*
      if {[minsky.model.zoomFactor]>0} {
             zoom [expr 1/[minsky.model.relZoom]]
@@ -194,30 +194,28 @@ export class CommunicationService {
 
     */
 
-    (async () => {
-      const zoomFactor = Number(
+    const zoomFactor = Number(
+      await this.stateManagementService.getCommandValue(
+        commandsMapping.ZOOM_FACTOR,
+        minskyProcessReplyIndicators.ZOOM_FACTOR
+      )
+    );
+
+    if (zoomFactor > 0) {
+      const relZoom = Number(
         await this.stateManagementService.getCommandValue(
-          commandsMapping.ZOOM_FACTOR,
-          minskyProcessReplyIndicators.ZOOM_FACTOR
+          commandsMapping.REL_ZOOM,
+          minskyProcessReplyIndicators.REL_ZOOM
         )
       );
-
-      if (zoomFactor > 0) {
-        const relZoom = Number(
-          await this.stateManagementService.getCommandValue(
-            commandsMapping.REL_ZOOM,
-            minskyProcessReplyIndicators.REL_ZOOM
-          )
-        );
-
-        return `${commandsMapping.ZOOM_IN} ${1 / relZoom}`;
-      } else {
-        return `${commandsMapping.SET_ZOOM} 1`;
-      }
-    })();
+      //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
+      return `${commandsMapping.ZOOM_IN} ${1 / (relZoom || 1)}`;
+    } else {
+      return `${commandsMapping.SET_ZOOM} 1`;
+    }
   }
 
-  private getZoomToFitArgs(canvasWidth: number, canvasHeight: number) {
+  private async getZoomToFitArgs(canvasWidth: number, canvasHeight: number) {
     /*
       set cb [minsky.canvas.model.cBounds]
         set z1 [expr double([winfo width .wiring.canvas])/([lindex $cb 2]-[lindex $cb 0])]
@@ -227,26 +225,23 @@ export class CommunicationService {
         set y [expr -0.5*([lindex $cb 3]+[lindex $cb 1])]
         zoomAt $x $y $z1
         recentreCanvas
-
-
     */
-    (async () => {
-      const cBoundsString = await this.stateManagementService.getCommandValue(
-        commandsMapping.C_BOUNDS,
-        minskyProcessReplyIndicators.C_BOUNDS
-      );
 
-      const cBounds = JSON.parse(cBoundsString as string);
+    const cBoundsString = await this.stateManagementService.getCommandValue(
+      commandsMapping.C_BOUNDS,
+      minskyProcessReplyIndicators.C_BOUNDS
+    );
 
-      const zoomFactorX = canvasWidth / (cBounds[2] - cBounds[0]);
-      const zoomFactorY = canvasHeight / (cBounds[3] - cBounds[1]);
+    const cBounds = JSON.parse(cBoundsString as string);
 
-      const zoomFactor = Math.min(zoomFactorX, zoomFactorY);
-      const x = 0.5 * (cBounds[2] + cBounds[0]);
-      const y = 0.5 * (cBounds[3] + cBounds[1]);
+    const zoomFactorX = canvasWidth / (cBounds[2] - cBounds[0]);
+    const zoomFactorY = canvasHeight / (cBounds[3] - cBounds[1]);
 
-      return [x, y, zoomFactor].toString();
-    })();
+    const zoomFactor = Math.min(zoomFactorX, zoomFactorY);
+    const x = 0.5 * (cBounds[2] + cBounds[0]);
+    const y = 0.5 * (cBounds[3] + cBounds[1]);
+
+    return [x, y, zoomFactor].toString();
   }
 
   private clearStepInterval() {

@@ -17,8 +17,8 @@ export class HeaderComponent {
     public stateManagementService: StateManagementService
   ) {}
 
-  handleToolbarEvent(event: HeaderEvent) {
-    this.commService.sendEvent(this.headerEvent, event);
+  async handleToolbarEvent(event: HeaderEvent) {
+    await this.commService.sendEvent(this.headerEvent, event);
   }
 
   recordButton() {

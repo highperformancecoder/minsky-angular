@@ -8,7 +8,6 @@ import {
   availableOperations,
   commandsMapping,
   events,
-  minskyProcessReplyIndicators,
   WindowUtilitiesGlobal,
 } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
@@ -32,9 +31,6 @@ export class WiringComponent implements OnInit, OnDestroy {
   t = 0;
   deltaT = 0;
 
-  modelX: number;
-  modelY: number;
-
   constructor(
     public cmService: CommunicationService,
     private electronService: ElectronService,
@@ -49,29 +45,13 @@ export class WiringComponent implements OnInit, OnDestroy {
       let lastKnownScrollPosition = 0;
       let ticking = false;
 
-      (async () => {
-        this.modelX = Number(
-          await this.stateManagementService.getCommandValue(
-            commandsMapping.X,
-            minskyProcessReplyIndicators.X
-          )
-        );
-
-        this.modelY = Number(
-          await this.stateManagementService.getCommandValue(
-            commandsMapping.Y,
-            minskyProcessReplyIndicators.Y
-          )
-        );
-      })();
-
       const handleScroll = (scrollPos) => {
         const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
 
         this.electronService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.MOVE_TO} [${this.modelX - offset.left},${
-            this.modelY - offset.top
-          }]`,
+          command: `${commandsMapping.MOVE_TO} [${
+            this.stateManagementService.modelX - offset.left
+          },${this.stateManagementService.modelY - offset.top}]`,
         });
       };
 
