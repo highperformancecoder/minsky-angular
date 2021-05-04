@@ -152,6 +152,7 @@ export class WindowManager {
         break;
 
       case 'CANVAS':
+        
         WindowManager.canvasHeight = value.height;
         WindowManager.canvasWidth = value.width;
         break;
