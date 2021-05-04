@@ -24,7 +24,7 @@ export class Message {
   providedIn: 'root',
 })
 export class CommunicationService {
-  canvasDetail: HTMLElement;
+  canvasElement: HTMLElement;
   sticky: number;
   leftOffset: number;
   topOffset: number;
@@ -68,8 +68,8 @@ export class CommunicationService {
     if (this.electronService.isElectron) {
       let command = commandsMapping[target];
 
-      const canvasWidth = this.canvasDetail.offsetWidth;
-      const canvasHeight = this.canvasDetail.offsetHeight;
+      const canvasWidth = this.canvasElement.offsetWidth;
+      const canvasHeight = this.canvasElement.offsetHeight;
 
       let autoHandleMinskyProcess = true;
 
@@ -290,11 +290,11 @@ export class CommunicationService {
     document.addEventListener('DOMContentLoaded', () => {
       // When the event DOMContentLoaded occurs, it is safe to access the DOM
 
-      this.canvasDetail = document.getElementById('canvas');
+      this.canvasElement = WindowUtilitiesGlobal.getMinskyCanvasElement();
 
       // Get the offset position of the canvas
-      this.topOffset = this.canvasDetail.offsetTop;
-      this.leftOffset = this.canvasDetail.offsetLeft;
+      this.topOffset = this.canvasElement.offsetTop;
+      this.leftOffset = this.canvasElement.offsetLeft;
 
       const offSetValue =
         'top:' + this.topOffset + ' ' + 'left:' + this.leftOffset;
@@ -313,8 +313,8 @@ export class CommunicationService {
         const canvasPayload = {
           type: 'CANVAS',
           value: {
-            height: this.canvasDetail.clientHeight,
-            width: this.canvasDetail.clientWidth,
+            height: this.canvasElement.clientHeight,
+            width: this.canvasElement.clientWidth,
           },
         };
 

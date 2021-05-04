@@ -10,28 +10,31 @@ abstract class WindowUtilitiesGlobal {
 
   private static initializeIfNeeded() {
     if (!this.minskyCanvasElement) {
-      this.minskyCanvasElement = document.getElementById('canvas'); // TODO:: Use longer unique id
+      this.minskyCanvasElement = document.getElementById('minsky-canvas-container');
     }
   }
 
   public static getMinskyCanvasOffset(): Offset {
     this.initializeIfNeeded();
     if (this.minskyCanvasElement) {
-      // if (this.leftOffset === null) {
-      // this.minskyCanvasElement.offsetLeft;
-      this.leftOffset =
-        (window.pageXOffset || this.minskyCanvasElement.scrollLeft) -
-        (this.minskyCanvasElement.clientLeft || 0);
-      // }
+      const clientRect = this.minskyCanvasElement.getBoundingClientRect();
+      this.leftOffset = clientRect.left;
+      this.topOffset = clientRect.top;
+      // // if (this.leftOffset === null) {
+      // // this.minskyCanvasElement.offsetLeft;
+      // this.leftOffset =
+      //  (window.pageXOffset || this.minskyCanvasElement.scrollLeft) - 
+      //   (this.minskyCanvasElement.clientLeft || 0);
+      // // }
 
-      // if (this.topOffset === null) {
-      // this.minskyCanvasElement.offsetTop
-      this.topOffset =
-        (window.pageYOffset || this.minskyCanvasElement.scrollTop) -
-        (this.minskyCanvasElement.clientTop || 0);
-      // }
+      // // if (this.topOffset === null) {
+      // // this.minskyCanvasElement.offsetTop
+      // this.topOffset =
+      //   (window.pageYOffset || this.minskyCanvasElement.scrollTop) -
+      //   (this.minskyCanvasElement.clientTop || 0);
+      // // }
     }
-
+    console.log(this.topOffset, this.leftOffset);
     return {
       left: this.leftOffset,
       top: this.topOffset,
