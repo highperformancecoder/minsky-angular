@@ -1,14 +1,12 @@
 @import '../../../../shared/src/lib/theme/variables.scss';
 
-.minsky-canvas {
-  height: -webkit-fill-available;
-  width: -webkit-fill-available;
-
+.minsky-canvas-container {
+  height: calc(100vh - 140px);
+  width: 100%;
   overflow: scroll;
   border: 1px solid $toolbar-box;
+
   canvas {
-    width: 10000px;
-    height: 10000px;
-    overflow: scroll;
+   
   }
 }
