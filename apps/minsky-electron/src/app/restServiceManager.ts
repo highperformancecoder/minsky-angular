@@ -91,14 +91,11 @@ export class RestServiceManager {
 
             this.minskyProcess.stdout.on('data', (data) => {
               const stdout = data.toString();
-              log.info(`stdout: ${stdout}`);
 
-              WindowManager.activeWindows.forEach((aw) => {
-                aw.context.webContents.send(
-                  events.ipc.MINSKY_PROCESS_REPLY,
-                  `stdout: ${stdout}`
-                );
-              });
+              const message = `stdout: ${stdout}`;
+              log.info(message);
+
+              this.emitReplyEvent(message);
 
               if (stdout.includes('=>')) {
                 this.queue.start();
@@ -108,25 +105,19 @@ export class RestServiceManager {
             });
 
             this.minskyProcess.stderr.on('data', (data) => {
-              log.info(`stderr: ${data}`);
+              const message = `stderr: ${data}`;
+              log.info(message);
+
               this.queue.start();
 
-              WindowManager.activeWindows.forEach((aw) => {
-                aw.context.webContents.send(
-                  events.ipc.MINSKY_PROCESS_REPLY,
-                  `stderr: ${data}`
-                );
-              });
+              this.emitReplyEvent(message);
             });
 
             this.minskyProcess.on('error', (error) => {
-              log.info(`error: ${error.message}`);
-              WindowManager.activeWindows.forEach((aw) => {
-                aw.context.webContents.send(
-                  events.ipc.MINSKY_PROCESS_REPLY,
-                  `error: ${error.message}`
-                );
-              });
+              const message = `error: ${error.message}`;
+              log.info(message);
+
+              this.emitReplyEvent(message);
             });
 
             this.minskyProcess.on('close', (code) => {
@@ -153,6 +144,12 @@ export class RestServiceManager {
         logError('Please select the minsky executable first...');
       }
     }
+  }
+
+  private static emitReplyEvent(message: string) {
+    WindowManager.activeWindows.forEach((aw) => {
+      aw.context.webContents.send(events.ipc.MINSKY_PROCESS_REPLY, message);
+    });
   }
 
   private static handleStdout(stdout: string) {

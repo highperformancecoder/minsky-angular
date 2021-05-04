@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { CommunicationService, ElectronService } from '@minsky/core';
+import { ElectronService } from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
@@ -67,7 +67,6 @@ export class CreateVariableComponent implements OnDestroy {
 
   constructor(
     private electronService: ElectronService,
-    private communicationService: CommunicationService,
     private route: ActivatedRoute
   ) {
     this.route.params.subscribe((params) => {

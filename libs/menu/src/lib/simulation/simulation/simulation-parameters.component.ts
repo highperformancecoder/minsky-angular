@@ -1,10 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import {
-  CommunicationService,
-  ElectronService,
-  StateManagementService,
-} from '@minsky/core';
+import { ElectronService, StateManagementService } from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 
 @Component({
@@ -17,7 +13,6 @@ export class SimulationParametersComponent implements OnInit {
 
   constructor(
     private electronService: ElectronService,
-    private communicationService: CommunicationService,
     private stateManagementService: StateManagementService
   ) {}
 

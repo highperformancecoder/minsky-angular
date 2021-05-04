@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { CommunicationService, ElectronService } from '@minsky/core';
+import { ElectronService } from '@minsky/core';
 
 @Component({
   selector: 'minsky-preferences',
@@ -10,10 +10,7 @@ import { CommunicationService, ElectronService } from '@minsky/core';
 export class PreferencesComponent {
   form: FormGroup;
 
-  constructor(
-    private electronService: ElectronService,
-    private communicationService: CommunicationService
-  ) {
+  constructor(private electronService: ElectronService) {
     this.form = new FormGroup({
       godleyTableShowValues: new FormControl(null),
       godleyStyleRadioGroup: new FormControl(null),
