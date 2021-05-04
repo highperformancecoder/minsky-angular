@@ -5,7 +5,6 @@ import {
   minskyProcessReplyIndicators,
 } from '@minsky/shared';
 import { BehaviorSubject } from 'rxjs';
-import { CommunicationService } from '../communication/communication.service';
 import { ElectronService } from './../electron/electron.service';
 
 @Injectable({
@@ -29,10 +28,10 @@ export class StateManagementService {
   implicitSolver: boolean;
   noOfStepsPerIteration: number;
 
-  constructor(
-    private electronService: ElectronService,
-    private communicationService: CommunicationService
-  ) {}
+  modelX = 0;
+  modelY = 0;
+
+  constructor(private electronService: ElectronService) {}
 
   init() {
     if (this.electronService.isElectron) {
@@ -54,11 +53,49 @@ export class StateManagementService {
       commandsMapping.ORDER,
       commandsMapping.IMPLICIT,
       commandsMapping.SIMULATION_SPEED,
+      commandsMapping.X,
+      commandsMapping.Y,
     ];
 
     simulationCommands.forEach((command) => {
-      this.communicationService.sendMinskyCommandAndRender({ command });
+      this.electronService.sendMinskyCommandAndRender({ command });
     });
+  }
+
+  async getCommandValue(command: string, minskyProcessReplyIndicator: string) {
+    try {
+      this.electronService.sendMinskyCommandAndRender({ command });
+
+      const res = await Promise.race([
+        new Promise((resolve, reject) => {
+          this.electronService.ipcRenderer.on(
+            events.ipc.MINSKY_PROCESS_REPLY,
+            (event, stdout: string) => {
+              if (stdout.includes(minskyProcessReplyIndicator)) {
+                resolve(stdout.split('=>').pop());
+              }
+            }
+          );
+        }),
+        new Promise((resolve, reject) => {
+          setTimeout(function () {
+            reject(
+              `command: "${command}" with minskyProcessReplyIndicator "${minskyProcessReplyIndicator}" Timed out`
+            );
+          }, 4000);
+        }),
+      ]);
+
+      console.log(`command: ${command}, value:${res}`);
+      return res;
+    } catch (error) {
+      console.error(
+        '🚀 ~ file: state-management.service.ts ~ line 118 ~ StateManagementService ~ getCommandValue ~ error',
+        error
+      );
+
+      throw error;
+    }
   }
 
   private initListeners() {
@@ -76,6 +113,8 @@ export class StateManagementService {
       T,
       DELTA_T,
       MINSKY_PROCESS_START,
+      X,
+      Y,
     } = minskyProcessReplyIndicators;
 
     this.electronService.ipcRenderer.on(
@@ -93,35 +132,30 @@ export class StateManagementService {
         } else if (stdout.includes(MINSKY_PROCESS_START)) {
           this.isTerminalDisabled$.next(false);
         } else if (stdout.includes(TIME_UNIT)) {
-          const _timeUnit = stdout.split('=>').pop().trim().split('"').join('');
-          this.timeUnit = _timeUnit;
+          this.timeUnit = stdout.split('=>').pop().trim().split('"').join('');
         } else if (stdout.includes(STEP_MIN)) {
-          const _stepMin = Number(stdout.split('=>').pop().trim());
-          this.minStepSize = _stepMin;
+          this.minStepSize = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(STEP_MAX)) {
-          const _stepMax = Number(stdout.split('=>').pop().trim());
-          this.maxStepSize = _stepMax;
+          this.maxStepSize = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(T_ZERO)) {
-          const _tZero = Number(stdout.split('=>').pop().trim());
-          this.startTime = _tZero;
+          this.startTime = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(T_MAX)) {
-          const tMax = stdout.split('=>').pop().trim();
-          this.runUntilTime = tMax;
+          this.runUntilTime = stdout.split('=>').pop().trim();
         } else if (stdout.includes(EPS_ABS)) {
-          const _epsAbs = Number(stdout.split('=>').pop().trim());
-          this.absoluteError = _epsAbs;
+          this.absoluteError = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(EPS_REL)) {
-          const _epsRel = Number(stdout.split('=>').pop().trim());
-          this.relativeError = _epsRel;
+          this.relativeError = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(ORDER)) {
-          const _order = Number(stdout.split('=>').pop().trim());
-          this.solverOrder = _order;
+          this.solverOrder = Number(stdout.split('=>').pop().trim());
         } else if (stdout.includes(IMPLICIT)) {
           const _implicit = stdout.split('=>').pop().trim();
           this.implicitSolver = _implicit === 'false' ? false : true;
         } else if (stdout.includes(SIMULATION_SPEED)) {
-          const _nSteps = Number(stdout.split('=>').pop().trim());
-          this.noOfStepsPerIteration = _nSteps;
+          this.noOfStepsPerIteration = Number(stdout.split('=>').pop().trim());
+        } else if (stdout.includes(X)) {
+          this.modelX = Number(stdout.split('=>').pop().trim());
+        } else if (stdout.includes(Y)) {
+          this.modelY = Number(stdout.split('=>').pop().trim());
         }
       }
     );

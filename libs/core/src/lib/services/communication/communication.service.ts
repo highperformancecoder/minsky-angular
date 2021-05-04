@@ -3,7 +3,7 @@ import {
   commandsMapping,
   events,
   HeaderEvent,
-  MinskyProcessPayload,
+  minskyProcessReplyIndicators,
   WindowUtilitiesGlobal,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
@@ -11,6 +11,7 @@ import {
 import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
+import { StateManagementService } from '../state-management/state-management.service';
 import { ElectronService } from './../electron/electron.service';
 
 const logInfo = debug('minsky:web:info');
@@ -37,7 +38,8 @@ export class CommunicationService {
 
   constructor(
     private socket: Socket,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private stateManagementService: StateManagementService
   ) {
     if (electronService.isElectron) {
       this.electronService.ipcRenderer.on('Save_file', (event, result) => {
@@ -61,16 +63,7 @@ export class CommunicationService {
       });
   }
 
-  sendMinskyCommandAndRender(payload: MinskyProcessPayload) {
-    if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send(events.ipc.MINSKY_PROCESS, {
-        ...payload,
-        command: payload.command.trim(),
-      });
-    }
-  }
-
-  public sendEvent(event: string, message: HeaderEvent): void {
+  public async sendEvent(event: string, message: HeaderEvent) {
     const { target } = message;
     if (this.electronService.isElectron) {
       let command = commandsMapping[target];
@@ -93,32 +86,32 @@ export class CommunicationService {
           break;
         case 'RESET_ZOOM':
           autoHandleMinskyProcess = false;
-          /* this.sendMinskyCommandAndRender({
+          /* this.electronService.sendMinskyCommandAndRender({
             command: `${commandsMapping.MOVE_TO} [0,0]`,
           });
 
-          this.sendMinskyCommandAndRender({
+          this.electronService.sendMinskyCommandAndRender({
             command: `${command} ${RESET_ZOOM_FACTOR}`,
           });
            */
 
-          this.sendMinskyCommandAndRender({
-            command: this.getRestZoomCommand(),
+          this.electronService.sendMinskyCommandAndRender({
+            command: `${await this.getResetZoomCommand()}`,
           });
 
-          this.sendMinskyCommandAndRender({
+          this.electronService.sendMinskyCommandAndRender({
             command: commandsMapping.RECENTER,
           });
           break;
         case 'ZOOM_TO_FIT':
           autoHandleMinskyProcess = false;
 
-          command = `${command} [${this.getZoomToFitArgs(
+          command = `${command} [${await this.getZoomToFitArgs(
             canvasWidth,
             canvasHeight
           )}]`;
 
-          this.sendMinskyCommandAndRender({
+          this.electronService.sendMinskyCommandAndRender({
             command: commandsMapping.RECENTER,
           });
 
@@ -132,9 +125,11 @@ export class CommunicationService {
           autoHandleMinskyProcess = false;
 
           this.stepIntervalId = setInterval(() => {
-            this.sendMinskyCommandAndRender({ command });
-            this.sendMinskyCommandAndRender({ command: commandsMapping.T });
-            this.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({ command });
+            this.electronService.sendMinskyCommandAndRender({
+              command: commandsMapping.T,
+            });
+            this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.DELTA_T,
             });
           }, 100); // TODO:: -> Make this delay configurable
@@ -152,16 +147,24 @@ export class CommunicationService {
           this.showPlayButton$.next(true);
           this.clearStepInterval();
 
-          this.sendMinskyCommandAndRender({ command });
-          this.sendMinskyCommandAndRender({ command: commandsMapping.T });
-          this.sendMinskyCommandAndRender({ command: commandsMapping.DELTA_T });
+          this.electronService.sendMinskyCommandAndRender({ command });
+          this.electronService.sendMinskyCommandAndRender({
+            command: commandsMapping.T,
+          });
+          this.electronService.sendMinskyCommandAndRender({
+            command: commandsMapping.DELTA_T,
+          });
           break;
 
         case 'STEP':
           autoHandleMinskyProcess = false;
-          this.sendMinskyCommandAndRender({ command });
-          this.sendMinskyCommandAndRender({ command: commandsMapping.T });
-          this.sendMinskyCommandAndRender({ command: commandsMapping.DELTA_T });
+          this.electronService.sendMinskyCommandAndRender({ command });
+          this.electronService.sendMinskyCommandAndRender({
+            command: commandsMapping.T,
+          });
+          this.electronService.sendMinskyCommandAndRender({
+            command: commandsMapping.DELTA_T,
+          });
           break;
 
         case 'REVERSE_CHECKBOX':
@@ -173,14 +176,14 @@ export class CommunicationService {
       }
 
       if (command && autoHandleMinskyProcess) {
-        this.sendMinskyCommandAndRender({ command });
+        this.electronService.sendMinskyCommandAndRender({ command });
       }
     } else {
       this.socket.emit(event, message);
     }
   }
 
-  private getRestZoomCommand(): string {
+  private async getResetZoomCommand() {
     /*
      if {[minsky.model.zoomFactor]>0} {
             zoom [expr 1/[minsky.model.relZoom]]
@@ -192,26 +195,27 @@ export class CommunicationService {
     */
 
     const zoomFactor = Number(
-      this.electronService.ipcRenderer.sendSync(events.ipc.GET_COMMAND_OUTPUT, {
-        command: commandsMapping.ZOOM_FACTOR,
-      })
+      await this.stateManagementService.getCommandValue(
+        commandsMapping.ZOOM_FACTOR,
+        minskyProcessReplyIndicators.ZOOM_FACTOR
+      )
     );
 
     if (zoomFactor > 0) {
       const relZoom = Number(
-        this.electronService.ipcRenderer.sendSync(
-          events.ipc.GET_COMMAND_OUTPUT,
-          { command: commandsMapping.REL_ZOOM }
+        await this.stateManagementService.getCommandValue(
+          commandsMapping.REL_ZOOM,
+          minskyProcessReplyIndicators.REL_ZOOM
         )
       );
-
-      return `${commandsMapping.ZOOM_IN} ${1 / relZoom}`;
+      //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
+      return `${commandsMapping.ZOOM_IN} ${1 / (relZoom || 1)}`;
     } else {
       return `${commandsMapping.SET_ZOOM} 1`;
     }
   }
 
-  private getZoomToFitArgs(canvasWidth: number, canvasHeight: number) {
+  private async getZoomToFitArgs(canvasWidth: number, canvasHeight: number) {
     /*
       set cb [minsky.canvas.model.cBounds]
         set z1 [expr double([winfo width .wiring.canvas])/([lindex $cb 2]-[lindex $cb 0])]
@@ -221,15 +225,14 @@ export class CommunicationService {
         set y [expr -0.5*([lindex $cb 3]+[lindex $cb 1])]
         zoomAt $x $y $z1
         recentreCanvas
-
-
     */
-    const cBoundsString = this.electronService.ipcRenderer.sendSync(
-      events.ipc.GET_COMMAND_OUTPUT,
-      { command: commandsMapping.C_BOUNDS }
+
+    const cBoundsString = await this.stateManagementService.getCommandValue(
+      commandsMapping.C_BOUNDS,
+      minskyProcessReplyIndicators.C_BOUNDS
     );
 
-    const cBounds = JSON.parse(cBoundsString);
+    const cBounds = JSON.parse(cBoundsString as string);
 
     const zoomFactorX = canvasWidth / (cBounds[2] - cBounds[0]);
     const zoomFactorY = canvasHeight / (cBounds[3] - cBounds[1]);
@@ -263,7 +266,7 @@ export class CommunicationService {
       const command = commandsMapping[type];
 
       if (command) {
-        this.sendMinskyCommandAndRender({
+        this.electronService.sendMinskyCommandAndRender({
           command: command,
           mouseX: clientX,
           mouseY: clientY,
@@ -331,7 +334,7 @@ export class CommunicationService {
 
   addOperation(arg) {
     if (this.electronService.isElectron) {
-      this.sendMinskyCommandAndRender({
+      this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ADD_OPERATION} "${arg}"`,
       });
     }
@@ -339,7 +342,7 @@ export class CommunicationService {
 
   insertElement(command) {
     if (this.electronService.isElectron) {
-      this.sendMinskyCommandAndRender({
+      this.electronService.sendMinskyCommandAndRender({
         command: commandsMapping[command],
       });
     }
@@ -362,6 +365,6 @@ export class CommunicationService {
       }, ${ZOOM_OUT_FACTOR}]`;
     }
 
-    this.sendMinskyCommandAndRender({ command });
+    this.electronService.sendMinskyCommandAndRender({ command });
   };
 }

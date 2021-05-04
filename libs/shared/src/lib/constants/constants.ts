@@ -93,6 +93,15 @@ export const commandsMapping = {
   C_BOUNDS: '/minsky/model/cBounds',
   X: '/minsky/model/x',
   Y: '/minsky/model/y',
+  ITEM_FOCUS_INIT_VALUE: '/minsky/canvas/itemFocus/initValue',
+  ITEM_FOCUS_TOOLTIP: '/minsky/canvas/itemFocus/tooltip',
+  ITEM_FOCUS_DETAILED_TEXT: '/minsky/canvas/itemFocus/detailedText',
+  ITEM_FOCUS_SLIDER_MAX: '/minsky/canvas/itemFocus/sliderMax',
+  ITEM_FOCUS_SLIDER_MIN: '/minsky/canvas/itemFocus/sliderMin',
+  ITEM_FOCUS_SLIDER_STEP: '/minsky/canvas/itemFocus/sliderStep',
+  ITEM_FOCUS_SLIDER_STEP_REL: '/minsky/canvas/itemFocus/sliderStepRel',
+  ITEM_FOCUS_ROTATION: '/minsky/canvas/itemFocus/rotation',
+  ITEM_FOCUS_SET_UNITS: '/minsky/canvas/itemFocus/setUnits',
 };
 
 export const minskyProcessReplyIndicators = {
@@ -113,6 +122,10 @@ export const minskyProcessReplyIndicators = {
   EDITED: '/minsky/edited=>',
   C_BOUNDS: '/minsky/model/cBounds=>',
   MINSKY_PROCESS_START: '/minsky/setGodleyIconResource',
+  X: '/minsky/model/x=>',
+  Y: '/minsky/model/y=>',
+  ZOOM_FACTOR: '/minsky/model/zoomFactor',
+  REL_ZOOM: '/minsky/model/relZoom=>',
 };
 
 export const availableOperations = {

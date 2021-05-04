@@ -471,6 +471,15 @@ export class RestServiceManager {
       '/minsky/model/zoomFactor',
       '/minsky/model/relZoom',
       '/minsky/model/setZoom',
+      '/minsky/canvas/itemFocus/initValue',
+      '/minsky/canvas/itemFocus/tooltip',
+      '/minsky/canvas/itemFocus/detailedText',
+      '/minsky/canvas/itemFocus/sliderMax',
+      '/minsky/canvas/itemFocus/sliderMin',
+      '/minsky/canvas/itemFocus/sliderStep',
+      '/minsky/canvas/itemFocus/sliderStepRel',
+      '/minsky/canvas/itemFocus/rotation',
+      '/minsky/canvas/itemFocus/setUnits',
     ];
 
     const getMinskyCommandsProcess = spawn(

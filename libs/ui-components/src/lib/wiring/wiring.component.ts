@@ -1,5 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommunicationService, ElectronService } from '@minsky/core';
+import {
+  CommunicationService,
+  ElectronService,
+  StateManagementService,
+} from '@minsky/core';
 import {
   availableOperations,
   commandsMapping,
@@ -27,46 +31,30 @@ export class WiringComponent implements OnInit, OnDestroy {
   t = 0;
   deltaT = 0;
 
-  modelX: number;
-  modelY: number;
-
   constructor(
     public cmService: CommunicationService,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private stateManagementService: StateManagementService
   ) {}
 
   ngOnInit() {
-    const scope = this;
-    scope.minskyCanvas = WindowUtilitiesGlobal.getMinskyCanvasElement();
-    scope.offsetTop = `calc(100vh - ${scope.minskyCanvas.offsetTop}px)`;
+    this.minskyCanvas = WindowUtilitiesGlobal.getMinskyCanvasElement();
+    this.offsetTop = `calc(100vh - ${this.minskyCanvas.offsetTop}px)`;
 
-    if (scope.electronService.isElectron) {
+    if (this.electronService.isElectron) {
       let lastKnownScrollPosition = 0;
       let ticking = false;
 
-      scope.modelX = Number(
-        scope.electronService.ipcRenderer.sendSync(
-          events.ipc.GET_COMMAND_OUTPUT,
-          { command: commandsMapping.X }
-        )
-      );
-
-      scope.modelY = Number(
-        scope.electronService.ipcRenderer.sendSync(
-          events.ipc.GET_COMMAND_OUTPUT,
-          { command: commandsMapping.Y }
-        )
-      );
-
       const handleScroll = (scrollPos) => {
         const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
-        let newX = scope.modelX - offset.left;
-        let newY = scope.modelY - offset.top;
-        
-        scope.modelX = newX;
-        scope.modelY = newY;
 
-        scope.cmService.sendMinskyCommandAndRender({
+        const newX = this.stateManagementService.modelX - offset.left;
+        const newY = this.stateManagementService.modelY - offset.top;
+
+        // this.stateManagementService.modelX = newX;
+        // this.stateManagementService.modelY = newY;
+
+        this.electronService.sendMinskyCommandAndRender({
           command: `${commandsMapping.MOVE_TO} [${newX},${newY}]`,
         });
       };

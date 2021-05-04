@@ -81,7 +81,7 @@ export class CliInputComponent implements OnInit, OnDestroy {
       const payload: MinskyProcessPayload = {
         command: this.command,
       };
-      this.communicationService.sendMinskyCommandAndRender(payload);
+      this.electronService.sendMinskyCommandAndRender(payload);
     }
   }
 

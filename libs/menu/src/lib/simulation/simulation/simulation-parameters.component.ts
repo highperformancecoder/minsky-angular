@@ -49,61 +49,61 @@ export class SimulationParametersComponent implements OnInit {
 
         switch (key) {
           case 'timeUnit':
-            this.communicationService.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.TIME_UNIT} "${arg}"`,
             });
             break;
 
           case 'minStepSize':
-            this.communicationService.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.STEP_MIN} ${arg}`,
             });
             break;
 
           case 'maxStepSize':
-            this.communicationService.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.STEP_MAX} ${arg}`,
             });
             break;
 
           case 'noOfStepsPerIteration':
-            this.communicationService.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.SIMULATION_SPEED} ${arg}`,
             });
             break;
 
           case 'startTime':
-            this.communicationService.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.T_ZERO} ${arg}`,
             });
             break;
 
           case 'runUntilTime':
-            this.communicationService.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.T_MAX} ${arg}`,
             });
             break;
 
           case 'absoluteError':
-            this.communicationService.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.EPS_ABS} ${arg}`,
             });
             break;
 
           case 'relativeError':
-            this.communicationService.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.EPS_REL} ${arg}`,
             });
             break;
 
           case 'solverOrder':
-            this.communicationService.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.ORDER} ${arg}`,
             });
             break;
 
           case 'implicitSolver':
-            this.communicationService.sendMinskyCommandAndRender({
+            this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.IMPLICIT} ${arg}`,
             });
             break;
