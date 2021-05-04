@@ -65,10 +65,10 @@ export class CommunicationService {
     const { target } = message;
     if (this.electronService.isElectron) {
       let command = commandsMapping[target];
-
-      const canvasWidth = this.canvasElement.offsetWidth;
-      const canvasHeight = this.canvasElement.offsetHeight;
-
+      const dimensions = WindowUtilitiesGlobal.getDrawableArea();
+      const canvasWidth = dimensions.width;
+      const canvasHeight = dimensions.height;
+      
       let autoHandleMinskyProcess = true;
 
       switch (target) {

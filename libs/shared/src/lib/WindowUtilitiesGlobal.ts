@@ -51,9 +51,16 @@ abstract class WindowUtilitiesGlobal {
     }
   }
 
+
+
   public static getMinskyCanvasElement(): HTMLElement {
     this.initializeIfNeeded();
     return this.minskyCanvasElement;
+  }
+
+  public static getMinskyContainerElement(): HTMLElement {
+    this.initializeIfNeeded();
+    return this.minskyCanvasContainer;
   }
 }
 
