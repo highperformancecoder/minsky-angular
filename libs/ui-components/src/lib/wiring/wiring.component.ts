@@ -51,8 +51,8 @@ export class WiringComponent implements OnInit, OnDestroy {
         const newX = this.stateManagementService.modelX - offset.left;
         const newY = this.stateManagementService.modelY - offset.top;
 
-        this.stateManagementService.modelX = newX;
-        this.stateManagementService.modelY = newY;
+        // this.stateManagementService.modelX = newX;
+        // this.stateManagementService.modelY = newY;
 
         this.electronService.sendMinskyCommandAndRender({
           command: `${commandsMapping.MOVE_TO} [${newX},${newY}]`,

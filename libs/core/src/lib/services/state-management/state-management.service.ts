@@ -28,8 +28,8 @@ export class StateManagementService {
   implicitSolver: boolean;
   noOfStepsPerIteration: number;
 
-  modelX: number;
-  modelY: number;
+  modelX = 0;
+  modelY = 0;
 
   constructor(private electronService: ElectronService) {}
 
