@@ -48,10 +48,14 @@ export class WiringComponent implements OnInit, OnDestroy {
       const handleScroll = (scrollPos) => {
         const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
 
+        const newX = this.stateManagementService.modelX - offset.left;
+        const newY = this.stateManagementService.modelY - offset.top;
+
+        this.stateManagementService.modelX = newX;
+        this.stateManagementService.modelY = newY;
+
         this.electronService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.MOVE_TO} [${
-            this.stateManagementService.modelX - offset.left
-          },${this.stateManagementService.modelY - offset.top}]`,
+          command: `${commandsMapping.MOVE_TO} [${newX},${newY}]`,
         });
       };
 
