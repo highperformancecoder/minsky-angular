@@ -1,3 +1,5 @@
+require('v8-compile-cache');
+
 import { startServer } from '@minsky/minsky-server';
 import { ActiveWindow, rendererAppName, rendererAppURL } from '@minsky/shared';
 import * as debug from 'debug';
