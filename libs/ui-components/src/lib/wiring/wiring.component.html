@@ -1,17 +1,29 @@
 <div class="wrapper">
   <div class="wiring-tabs">
     <button class="tab" (click)="cmService.insertElement('ADD_GODLEY')">
-      <img src="assets/images/icons/bank.gif" alt="Godley table" title="Godley table" />
+      <img
+        src="assets/images/icons/bank.gif"
+        alt="Godley table"
+        title="Godley table"
+      />
     </button>
 
     <minsky-variable></minsky-variable>
 
     <button class="tab" (click)="cmService.addOperation('integrate')">
-      <img src="assets/images/icons/integrate.gif" alt="Integrate" title="Integrate" />
+      <img
+        src="assets/images/icons/integrate.gif"
+        alt="Integrate"
+        title="Integrate"
+      />
     </button>
 
     <button class="tab" (click)="cmService.addOperation('differentiate')">
-      <img src="assets/images/icons/differentiate.gif" alt="Differentiate" title="Differentiate" />
+      <img
+        src="assets/images/icons/differentiate.gif"
+        alt="Differentiate"
+        title="Differentiate"
+      />
     </button>
 
     <button class="tab" (click)="cmService.addOperation('time')">
@@ -39,7 +51,11 @@
     </button>
 
     <button class="tab" (click)="cmService.insertElement('ADD_PLOT')">
-      <img src="assets/images/icons/plot.gif" alt="PlotWidget" title="PlotWidget" />
+      <img
+        src="assets/images/icons/plot.gif"
+        alt="PlotWidget"
+        title="PlotWidget"
+      />
     </button>
 
     <button class="tab" (click)="cmService.insertElement('ADD_SHEET')">
@@ -54,7 +70,12 @@
       <img src="assets/images/icons/ravel.gif" alt="Ravel" title="Ravel" />
     </button>
   </div>
-  <div [ngStyle]="{ height: offsetTop ? offsetTop : 'auto' }" id="minsky-canvas-container" class="minsky-canvas" tabindex="0">
-    <canvas class='this-is-an-unused-element'></canvas>
+  <div
+    [ngStyle]="{ height: offsetTop ? offsetTop : 'auto' }"
+    id="minsky-canvas-container"
+    class="minsky-canvas"
+    tabindex="0"
+  >
+    <canvas class="this-is-an-unused-element"></canvas>
   </div>
 </div>
