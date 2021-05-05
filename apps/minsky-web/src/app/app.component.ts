@@ -106,7 +106,7 @@ export class AppComponent implements AfterViewInit {
 
   emitData(data) {
     this.cmService.emitValues('Values', data);
-    this.cmService.dispatchEvents('Values');
+    // this.cmService.dispatchEvents('Values');
   }
 
   async toggleMinskyService() {

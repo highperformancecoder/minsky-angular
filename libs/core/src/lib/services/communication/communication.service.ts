@@ -277,13 +277,13 @@ export class CommunicationService {
     }
   }
 
-  public dispatchEvents(eventName) {
+  /*   public dispatchEvents(eventName) {
     this.socket.on(eventName, (data) => {
       // common code for dispatch events
       logInfo('Event received', data);
       document.querySelector(data.id).dispatchEvent(data.event);
     });
-  }
+  } */
 
   canvasOffsetValues() {
     // code for canvas offset values
@@ -327,9 +327,9 @@ export class CommunicationService {
       }
     });
 
-    if (!this.electronService.isElectron) {
+    /*  if (!this.electronService.isElectron) {
       this.dispatchEvents('Values');
-    }
+    } */
   }
 
   addOperation(arg) {

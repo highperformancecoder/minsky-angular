@@ -109,7 +109,7 @@ export class WiringComponent implements OnInit, OnDestroy {
         this.cmService.mouseEvents('CANVAS_EVENT', event);
       });
 
-      this.cmService.dispatchEvents('canvasEvent');
+      // this.cmService.dispatchEvents('canvasEvent');
     });
   }
 
