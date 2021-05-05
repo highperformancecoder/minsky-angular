@@ -424,6 +424,7 @@ export class RestServiceManager {
       activeWindows,
     } = WindowManager;
 
+    
     const mainWindowId = activeWindows.get(1).windowId;
 
     const renderCommand =

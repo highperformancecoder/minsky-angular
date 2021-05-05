@@ -70,9 +70,7 @@ export class AppComponent implements AfterViewInit {
       resizeHeight: event.newHeight,
     };
 
-    logInfo(
-      'resizeWidth:' + event.newWidth + ' ' + 'resizeHeight:' + event.newWidth
-    );
+    logInfo(JSON.stringify(windowResizeDetail));
 
     if (this.electronService.isElectron) {
       const payload = {

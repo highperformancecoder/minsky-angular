@@ -26,8 +26,6 @@ export class Message {
 export class CommunicationService {
   canvasElement: HTMLElement;
   sticky: number;
-  leftOffset: number;
-  topOffset: number;
   directory = new BehaviorSubject<string[]>([]);
   openDirectory = new BehaviorSubject<string[]>([]);
 
@@ -67,10 +65,10 @@ export class CommunicationService {
     const { target } = message;
     if (this.electronService.isElectron) {
       let command = commandsMapping[target];
-
-      const canvasWidth = this.canvasElement.offsetWidth;
-      const canvasHeight = this.canvasElement.offsetHeight;
-
+      const dimensions = WindowUtilitiesGlobal.getDrawableArea();
+      const canvasWidth = dimensions.width;
+      const canvasHeight = dimensions.height;
+      
       let autoHandleMinskyProcess = true;
 
       switch (target) {
@@ -290,37 +288,21 @@ export class CommunicationService {
     document.addEventListener('DOMContentLoaded', () => {
       // When the event DOMContentLoaded occurs, it is safe to access the DOM
 
-      this.canvasElement = WindowUtilitiesGlobal.getMinskyCanvasElement();
-
-      // Get the offset position of the canvas
-      this.topOffset = this.canvasElement.offsetTop;
-      this.leftOffset = this.canvasElement.offsetLeft;
-
-      const offSetValue =
-        'top:' + this.topOffset + ' ' + 'left:' + this.leftOffset;
+      const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
+      const offSetValue = 'top:' + offset.top + ' ' + 'left:' + offset.left;
 
       if (this.electronService.isElectron) {
-        const payload = {
-          type: 'OFFSET',
-          value: { top: this.topOffset, left: this.leftOffset },
-        };
-
         this.electronService.ipcRenderer.send(
           events.ipc.APP_LAYOUT_CHANGED,
-          payload
+          { type: 'OFFSET', value: offset }
         );
 
-        const canvasPayload = {
-          type: 'CANVAS',
-          value: {
-            height: this.canvasElement.clientHeight,
-            width: this.canvasElement.clientWidth,
-          },
-        };
-
         this.electronService.ipcRenderer.send(
           events.ipc.APP_LAYOUT_CHANGED,
-          canvasPayload
+          {
+            type: 'CANVAS',
+            value: WindowUtilitiesGlobal.getDrawableArea(),
+          }
         );
       } else {
         this.emitValues('Values', offSetValue);
