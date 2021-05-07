@@ -12,7 +12,7 @@ import {
 } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
-import { sampleTime } from 'rxjs/operators';
+import { filter, map, pairwise, sampleTime } from 'rxjs/operators';
 
 @AutoUnsubscribe()
 @Component({
@@ -21,7 +21,7 @@ import { sampleTime } from 'rxjs/operators';
   styleUrls: ['./wiring.component.scss'],
 })
 export class WiringComponent implements OnInit, OnDestroy {
-  mouseMove$: Observable<MouseEvent>;
+  mouseMove$: Observable<any>;
   offsetTop: string;
   previousScrollTop: number;
   previousScrollLeft: number;
@@ -65,26 +65,34 @@ export class WiringComponent implements OnInit, OnDestroy {
           );
         });
         minskyCanvasContainer.onwheel = this.cmService.onMouseWheelZoom;
-      }
 
-      minskyCanvasContainer.addEventListener('keydown', (event) => {
-        this.electronService.ipcRenderer.send(events.ipc.KEY_PRESS, {
-          key: event.key,
-          shift: event.shiftKey,
-          capsLock: event.getModifierState('CapsLock'),
-          ctrl: event.ctrlKey,
-          alt: event.altKey,
-          mouseX: this.cmService.mouseX,
-          mouseY: this.cmService.mouseY,
+        minskyCanvasContainer.addEventListener('keydown', (event) => {
+          this.electronService.ipcRenderer.send(events.ipc.KEY_PRESS, {
+            key: event.key,
+            shift: event.shiftKey,
+            capsLock: event.getModifierState('CapsLock'),
+            ctrl: event.ctrlKey,
+            alt: event.altKey,
+            mouseX: this.cmService.mouseX,
+            mouseY: this.cmService.mouseY,
+          });
         });
 
         this.mouseMove$ = fromEvent<MouseEvent>(
           minskyCanvasElement,
           'mousemove'
-        ).pipe(sampleTime(60)); // This is approx 15 fps (having high fps doesn't seem feasible [minsky performance limit] and lower fps will not be smooth)
+        ).pipe(
+          sampleTime(70),
+          pairwise(),
+          map(([a, b]) => ({
+            event: b,
+            ignore: a.x == b.x && a.y == b.y,
+          })),
+          filter((e) => e.ignore)
+        ); // This is approx 15 fps (having high fps doesn't seem feasible [minsky performance limit] and lower fps will not be smooth)
 
-        this.mouseMove$.subscribe((event: MouseEvent) => {
-          this.cmService.mouseEvents('CANVAS_EVENT', event);
+        this.mouseMove$.subscribe((e) => {
+          this.cmService.mouseEvents('CANVAS_EVENT', e.event as MouseEvent);
         });
 
         // this.minskyCanvas.addEventListener('click', (event: MouseEvent) => {
@@ -101,9 +109,8 @@ export class WiringComponent implements OnInit, OnDestroy {
         minskyCanvasElement.addEventListener('mouseup', (event: MouseEvent) => {
           this.cmService.mouseEvents('CANVAS_EVENT', event);
         });
-
-        // this.cmService.dispatchEvents('canvasEvent');
-      });
+      }
+      // this.cmService.dispatchEvents('canvasEvent');
     });
   }
 
