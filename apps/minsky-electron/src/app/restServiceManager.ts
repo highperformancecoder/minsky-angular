@@ -31,7 +31,7 @@ export class RestServiceManager {
   private static queue = new PQueue({
     concurrency: 1,
     autoStart: false,
-    interval: 15,
+    interval: 10,
     intervalCap: 1,
   });
   private static isRecording = false;
@@ -334,21 +334,15 @@ export class RestServiceManager {
         break;
 
       case commandsMapping.mousemove:
-        stdinCommand = `${payload.command} [${
-          payload.mouseX - WindowManager.leftOffset
-        }, ${payload.mouseY - WindowManager.topOffset}]`;
+        stdinCommand = `${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
 
       case commandsMapping.mousedown:
-        stdinCommand = `${payload.command} [${
-          payload.mouseX - WindowManager.leftOffset
-        }, ${payload.mouseY - WindowManager.topOffset}]`;
+        stdinCommand = `${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
 
       case commandsMapping.mouseup:
-        stdinCommand = `${payload.command} [${
-          payload.mouseX - WindowManager.leftOffset
-        }, ${payload.mouseY - WindowManager.topOffset}]`;
+        stdinCommand = `${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
 
       case commandsMapping.SET_GODLEY_ICON_RESOURCE:
@@ -427,13 +421,16 @@ export class RestServiceManager {
       activeWindows,
     } = WindowManager;
 
-    
     const mainWindowId = activeWindows.get(1).windowId;
 
     const renderCommand =
       `${commandsMapping.RENDER_FRAME} [${mainWindowId}, ${leftOffset}, ${topOffset}, ${canvasWidth}, ${canvasHeight}]` +
       newLineCharacter;
 
+    console.log(
+      '🚀 ~ file: restServiceManager.ts ~ line 427 ~ RestServiceManager ~ getRenderCommand ~ renderCommand',
+      renderCommand
+    );
     return renderCommand;
   }
 

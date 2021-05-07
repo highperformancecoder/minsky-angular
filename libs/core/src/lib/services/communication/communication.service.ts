@@ -4,7 +4,6 @@ import {
   events,
   HeaderEvent,
   minskyProcessReplyIndicators,
-  WindowUtilitiesGlobal,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
@@ -12,6 +11,7 @@ import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
 import { StateManagementService } from '../state-management/state-management.service';
+import { WindowUtilityService } from '../WindowUtility/window-utility.service';
 import { ElectronService } from './../electron/electron.service';
 
 const logInfo = debug('minsky:web:info');
@@ -37,7 +37,8 @@ export class CommunicationService {
   constructor(
     private socket: Socket,
     private electronService: ElectronService,
-    private stateManagementService: StateManagementService
+    private stateManagementService: StateManagementService,
+    private windowUtilityService: WindowUtilityService
   ) {
     if (electronService.isElectron) {
       this.electronService.ipcRenderer.on('Save_file', (event, result) => {
@@ -65,10 +66,10 @@ export class CommunicationService {
     const { target } = message;
     if (this.electronService.isElectron) {
       let command = commandsMapping[target];
-      const dimensions = WindowUtilitiesGlobal.getDrawableArea();
+      const dimensions = this.windowUtilityService.getDrawableArea();
       const canvasWidth = dimensions.width;
       const canvasHeight = dimensions.height;
-      
+
       let autoHandleMinskyProcess = true;
 
       switch (target) {
@@ -252,7 +253,16 @@ export class CommunicationService {
     const { type, clientX, clientY } = message;
 
     this.mouseX = clientX;
-    this.mouseY = clientY;
+    this.mouseY =
+      clientY - this.windowUtilityService.getMinskyCanvasOffset().top;
+    console.log(
+      '🚀 ~ file: communication.service.ts ~ line 257 ~ CommunicationService ~ mouseEvents ~ this.mouseY',
+      this.mouseY
+    );
+    console.log(
+      '🚀 ~ file: communication.service.ts ~ line 256 ~ CommunicationService ~ mouseEvents ~ this.mouseY',
+      this.windowUtilityService.getMinskyCanvasOffset()
+    );
 
     const clickData = {
       type,
@@ -267,7 +277,7 @@ export class CommunicationService {
         this.electronService.sendMinskyCommandAndRender({
           command: command,
           mouseX: clientX,
-          mouseY: clientY,
+          mouseY: this.mouseY,
         });
       }
     } else {
@@ -288,22 +298,23 @@ export class CommunicationService {
     document.addEventListener('DOMContentLoaded', () => {
       // When the event DOMContentLoaded occurs, it is safe to access the DOM
 
-      const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
+      const offset = this.windowUtilityService.getMinskyCanvasOffset();
+      console.log(
+        '🚀 ~ file: communication.service.ts ~ line 298 ~ CommunicationService ~ document.addEventListener ~ offset',
+        offset
+      );
       const offSetValue = 'top:' + offset.top + ' ' + 'left:' + offset.left;
 
       if (this.electronService.isElectron) {
-        this.electronService.ipcRenderer.send(
-          events.ipc.APP_LAYOUT_CHANGED,
-          { type: 'OFFSET', value: offset }
-        );
+        this.electronService.ipcRenderer.send(events.ipc.APP_LAYOUT_CHANGED, {
+          type: 'OFFSET',
+          value: offset,
+        });
 
-        this.electronService.ipcRenderer.send(
-          events.ipc.APP_LAYOUT_CHANGED,
-          {
-            type: 'CANVAS',
-            value: WindowUtilitiesGlobal.getDrawableArea(),
-          }
-        );
+        this.electronService.ipcRenderer.send(events.ipc.APP_LAYOUT_CHANGED, {
+          type: 'CANVAS',
+          value: this.windowUtilityService.getDrawableArea(),
+        });
       } else {
         this.emitValues('Values', offSetValue);
       }
@@ -334,7 +345,7 @@ export class CommunicationService {
     event.preventDefault();
     const { deltaY } = event;
     const zoomIn = deltaY < 0;
-    const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
+    const offset = this.windowUtilityService.getMinskyCanvasOffset();
 
     let command = null;
     if (zoomIn) {

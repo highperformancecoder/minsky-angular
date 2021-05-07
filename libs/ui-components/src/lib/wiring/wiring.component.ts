@@ -3,13 +3,9 @@ import {
   CommunicationService,
   ElectronService,
   StateManagementService,
+  WindowUtilityService,
 } from '@minsky/core';
-import {
-  availableOperations,
-  commandsMapping,
-  events,
-  WindowUtilitiesGlobal,
-} from '@minsky/shared';
+import { availableOperations, commandsMapping, events } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
@@ -23,31 +19,33 @@ import { sampleTime } from 'rxjs/operators';
 export class WiringComponent implements OnInit, OnDestroy {
   mouseMove$: Observable<MouseEvent>;
   offsetTop: string;
-  previousScrollTop : number;
-  previousScrollLeft : number;
-  
+  previousScrollTop: number;
+  previousScrollLeft: number;
+
   _availableOperations = availableOperations;
   _commandsMapping = commandsMapping;
 
   constructor(
     public cmService: CommunicationService,
     private electronService: ElectronService,
-    private stateManagementService: StateManagementService
-  ) { 
+    private stateManagementService: StateManagementService,
+    private windowUtilityService: WindowUtilityService
+  ) {
     this.previousScrollLeft = 0;
     this.previousScrollTop = 0; // TODO:: Reinitialize them whenever new model is loaded
   }
 
   ngOnInit() {
-    const minskyCanvasContainer = WindowUtilitiesGlobal.getMinskyContainerElement();
-    const minskyCanvasElement = WindowUtilitiesGlobal.getMinskyCanvasElement();
-    this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
+    const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
+    const minskyCanvasElement = this.windowUtilityService.getMinskyCanvasElement();
+    const { top } = this.windowUtilityService.getMinskyCanvasOffset();
+    this.offsetTop = `calc(100vh - ${top}px)`;
 
     if (this.electronService.isElectron) {
-      const handleScroll = (scrollTop : number, scrollLeft : number) => {
+      const handleScroll = (scrollTop: number, scrollLeft: number) => {
         const diffX = scrollLeft - this.previousScrollLeft;
         const diffY = scrollTop - this.previousScrollTop;
-      
+
         const newX = this.stateManagementService.modelX - diffX;
         const newY = this.stateManagementService.modelY - diffY;
 
@@ -57,7 +55,10 @@ export class WiringComponent implements OnInit, OnDestroy {
       };
 
       minskyCanvasContainer.addEventListener('scroll', (e) => {
-        handleScroll(minskyCanvasContainer.scrollTop, minskyCanvasContainer.scrollLeft);
+        handleScroll(
+          minskyCanvasContainer.scrollTop,
+          minskyCanvasContainer.scrollLeft
+        );
       });
       minskyCanvasContainer.onwheel = this.cmService.onMouseWheelZoom;
     }
@@ -99,5 +100,5 @@ export class WiringComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void {}
 }
