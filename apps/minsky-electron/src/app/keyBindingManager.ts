@@ -3,6 +3,8 @@ import {
   isEmptyObject,
   MinskyProcessPayload,
   toBoolean,
+  ZOOM_IN_FACTOR,
+  ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
 import * as keysym from 'keysym';
 import * as utf8 from 'utf8';
@@ -47,17 +49,59 @@ export class KeyBindingManager {
         await this.handleOnKeyPressFallback(payload);
       }
     }
+
+    await this.handleOnKeyPressFallback(payload);
   }
 
   private static async handleOnKeyPressFallback(payload: MinskyProcessPayload) {
     switch (payload.key) {
+      case 'Backspace':
       case 'Delete':
         await this.deleteKey(payload);
+        break;
+
+      case '+':
+        await this.zoom(ZOOM_IN_FACTOR);
+        break;
+
+      case '-':
+        await this.zoom(ZOOM_OUT_FACTOR);
         break;
 
       default:
         break;
     }
+  }
+
+  private static async zoom(factor: number) {
+    const cBounds = JSON.parse(
+      await RestServiceManager.getCommandValue({
+        command: commandsMapping.C_BOUNDS,
+      })
+    );
+
+    const x = 0.5 * (cBounds[2] + cBounds[0]);
+    const y = 0.5 * (cBounds[3] + cBounds[1]);
+
+    console.log(
+      '🚀 ~ file: keyBindingManager.ts ~ line 111 ~ KeyBindingManager ~ zoomIn ~ x, y, zoomFactor',
+      x,
+      y,
+      factor
+    );
+    this.zoomAt(x, y, factor);
+    return;
+  }
+
+  private static zoomAt(x: number, y: number, zoomFactor: number) {
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.ZOOM_IN} [${x},${y},${zoomFactor}]`,
+    });
+
+    RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.CANVAS_REQUEST_REDRAW,
+    });
+    return;
   }
 
   private static async deleteKey(payload: MinskyProcessPayload) {

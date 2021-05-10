@@ -71,7 +71,7 @@ export class StateManagementService {
       this.electronService.sendMinskyCommandAndRender(payload);
 
       const res = await Promise.race([
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
           this.electronService.ipcRenderer.on(
             events.ipc.MINSKY_PROCESS_REPLY,
             (event, stdout: string) => {

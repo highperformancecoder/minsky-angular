@@ -109,6 +109,7 @@ export const commandsMapping = {
   CANVAS_GET_WIRE_AT: '/minsky/canvas/getWireAt',
   CANVAS_ITEM: '/minsky/canvas/item',
   CANVAS_WIRE: '/minsky/canvas/wire',
+  CANVAS_REQUEST_REDRAW: '/minsky/canvas/requestRedraw',
 };
 
 export const minskyProcessReplyIndicators = {
