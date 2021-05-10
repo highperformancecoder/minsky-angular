@@ -4,6 +4,7 @@ import {
   MinskyProcessPayload,
   minskyProcessReplyIndicators,
   newLineCharacter,
+  unExposedTerminalCommands,
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
@@ -22,6 +23,7 @@ import { default as PQueue } from 'p-queue';
 import { join } from 'path';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
+
 const logError = debug('minsky:electron_error');
 
 export class RestServiceManager {
@@ -427,58 +429,11 @@ export class RestServiceManager {
       `${commandsMapping.RENDER_FRAME} [${mainWindowId}, ${leftOffset}, ${topOffset}, ${canvasWidth}, ${canvasHeight}]` +
       newLineCharacter;
 
-    console.log(
-      '🚀 ~ file: restServiceManager.ts ~ line 427 ~ RestServiceManager ~ getRenderCommand ~ renderCommand',
-      renderCommand
-    );
     return renderCommand;
   }
 
-  static returnCommandOutput(event: Electron.IpcMainEvent, command: string) {
-    let output: string = null;
-
-    const minskyProcess = spawn(
-      StoreManager.store.get('minskyRESTServicePath')
-    );
-
-    minskyProcess.stdin.write(command + newLineCharacter);
-
-    setTimeout(() => {
-      minskyProcess.stdout.emit('close');
-    }, 1000);
-
-    minskyProcess.stdout
-      .on('data', (data: Buffer) => {
-        output = data.toString().trim().split('=>').pop();
-      })
-      .on('error', (error) => {
-        log.error(`error: ${error.message}`);
-      })
-      .on('close', (code) => {
-        log.info(
-          `"returnCommandOutput" child process exited with code ${code}`
-        );
-        event.returnValue = output;
-      });
-  }
-
   static onGetMinskyCommands(event: Electron.IpcMainEvent) {
-    // add non exposed commands here to get intellisense on the terminal popup
-    let listOfCommands = [
-      '/minsky/model/cBounds',
-      '/minsky/model/zoomFactor',
-      '/minsky/model/relZoom',
-      '/minsky/model/setZoom',
-      '/minsky/canvas/itemFocus/initValue',
-      '/minsky/canvas/itemFocus/tooltip',
-      '/minsky/canvas/itemFocus/detailedText',
-      '/minsky/canvas/itemFocus/sliderMax',
-      '/minsky/canvas/itemFocus/sliderMin',
-      '/minsky/canvas/itemFocus/sliderStep',
-      '/minsky/canvas/itemFocus/sliderStepRel',
-      '/minsky/canvas/itemFocus/rotation',
-      '/minsky/canvas/itemFocus/setUnits',
-    ];
+    let listOfCommands = [...unExposedTerminalCommands];
 
     const getMinskyCommandsProcess = spawn(
       StoreManager.store.get('minskyRESTServicePath')
@@ -506,7 +461,7 @@ export class RestServiceManager {
         log.info(
           `"get-minsky-commands" child process exited with code ${code}`
         );
-        event.returnValue = listOfCommands;
+        event.returnValue = listOfCommands.sort();
       });
   }
 
@@ -557,5 +512,42 @@ export class RestServiceManager {
 
     setGodleyIconResource();
     setGroupIconResource();
+  }
+
+  static async getCommandValue(payload: MinskyProcessPayload): Promise<string> {
+    try {
+      this.handleMinskyProcess(payload);
+
+      if (!this.minskyProcess) {
+        throw new Error('Minsky Process is not initialized');
+      }
+
+      const res = await Promise.race([
+        new Promise((resolve) => {
+          this.minskyProcess.stdout.on('data', (data: Buffer) => {
+            const stdout = data.toString();
+
+            if (stdout.includes(payload.command.split(' ')[0])) {
+              return resolve(stdout.split('=>').pop().trim());
+            }
+          });
+        }),
+        new Promise((resolve, reject) => {
+          setTimeout(function () {
+            return reject(`command: "${payload.command}" Timed out`);
+          }, 4000);
+        }),
+      ]);
+
+      console.log(`command: ${payload.command}, value:${res}`);
+      return res as string;
+    } catch (error) {
+      console.error(
+        '🚀 ~ file: state-management.service.ts ~ line 118 ~ StateManagementService ~ getCommandValue ~ error',
+        error
+      );
+
+      throw error;
+    }
   }
 }

@@ -20,8 +20,19 @@ export class ElectronService {
     }
   }
 
-  sendMinskyCommandAndRender(payload: MinskyProcessPayload) {
+  sendMinskyCommandAndRender(
+    payload: MinskyProcessPayload,
+    customEvent: string = null
+  ) {
     if (this.isElectron) {
+      if (customEvent) {
+        this.ipcRenderer.send(customEvent, {
+          ...payload,
+          command: payload.command.trim(),
+        });
+        return;
+      }
+
       this.ipcRenderer.send(events.ipc.MINSKY_PROCESS, {
         ...payload,
         command: payload.command.trim(),

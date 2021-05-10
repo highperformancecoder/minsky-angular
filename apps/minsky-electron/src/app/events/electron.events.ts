@@ -11,10 +11,9 @@ import {
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { ipcMain } from 'electron';
-import * as keysym from 'keysym';
-import * as utf8 from 'utf8';
 import { environment } from '../../environments/environment';
 import { BookmarkManager } from '../bookmarkManager';
+import { KeyBindingManager } from '../keyBindingManager';
 import { RecentFilesManager } from '../recentFilesManager';
 import { RestServiceManager } from '../restServiceManager';
 import { StoreManager } from '../storeManager';
@@ -74,7 +73,6 @@ ipcMain.on(GET_COMMAND_OUTPUT, (event, { command }) => {
       break;
 
     default:
-      RestServiceManager.returnCommandOutput(event, command);
       break;
   }
 });
@@ -95,33 +93,6 @@ ipcMain.on(TOGGLE_MINSKY_SERVICE, async (event) => {
   await RestServiceManager.toggleMinskyService(event);
 });
 
-ipcMain.on(KEY_PRESS, (event, payload) => {
-  const { key, shift, capsLock, ctrl, alt, mouseX, mouseY } = payload;
-
-  const _keysym = keysym.fromName(key)?.keysym;
-
-  const _utf8 = utf8.encode(key);
-
-  // const _payload = { ...payload, keySym: _keysym, utf8: _utf8 };
-  // console.table(_payload);
-
-  let modifierKeyCode = 0;
-  if (shift) {
-    modifierKeyCode += 1;
-  }
-  if (capsLock) {
-    modifierKeyCode += 2;
-  }
-  if (ctrl) {
-    modifierKeyCode += 4;
-  }
-  if (alt) {
-    modifierKeyCode += 8;
-  }
-
-  if (_keysym) {
-    RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.KEY_PRESS} [${_keysym},${_utf8},${modifierKeyCode},${mouseX},${mouseY}]`,
-    });
-  }
+ipcMain.on(KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
+  await KeyBindingManager.handleOnKeyPress(payload);
 });

@@ -184,7 +184,7 @@ export class CommunicationService {
 
   private async getResetZoomCommand() {
     /*
-     if {[minsky.model.zoomFactor]>0} {
+    if {[minsky.model.zoomFactor]>0} {
             zoom [expr 1/[minsky.model.relZoom]]
         } else {
             minsky.model.setZoom 1
@@ -195,7 +195,7 @@ export class CommunicationService {
 
     const zoomFactor = Number(
       await this.stateManagementService.getCommandValue(
-        commandsMapping.ZOOM_FACTOR,
+        { command: commandsMapping.ZOOM_FACTOR },
         minskyProcessReplyIndicators.ZOOM_FACTOR
       )
     );
@@ -203,7 +203,7 @@ export class CommunicationService {
     if (zoomFactor > 0) {
       const relZoom = Number(
         await this.stateManagementService.getCommandValue(
-          commandsMapping.REL_ZOOM,
+          { command: commandsMapping.REL_ZOOM },
           minskyProcessReplyIndicators.REL_ZOOM
         )
       );
@@ -227,7 +227,7 @@ export class CommunicationService {
     */
 
     const cBoundsString = await this.stateManagementService.getCommandValue(
-      commandsMapping.C_BOUNDS,
+      { command: commandsMapping.C_BOUNDS },
       minskyProcessReplyIndicators.C_BOUNDS
     );
 
@@ -255,14 +255,15 @@ export class CommunicationService {
     this.mouseX = clientX;
     this.mouseY =
       clientY - this.windowUtilityService.getMinskyCanvasOffset().top;
-    console.log(
-      '🚀 ~ file: communication.service.ts ~ line 257 ~ CommunicationService ~ mouseEvents ~ this.mouseY',
-      this.mouseY
-    );
-    console.log(
-      '🚀 ~ file: communication.service.ts ~ line 256 ~ CommunicationService ~ mouseEvents ~ this.mouseY',
-      this.windowUtilityService.getMinskyCanvasOffset()
-    );
+    // console.log(
+    //   '🚀 ~ file: communication.service.ts ~ line 257 ~ CommunicationService ~ mouseEvents ~ this.mouseY',
+    //   this.mouseX,
+    //   this.mouseY
+    // );
+    // console.log(
+    //   '🚀 ~ file: communication.service.ts ~ line 256 ~ CommunicationService ~ mouseEvents ~ this.mouseY',
+    //   this.windowUtilityService.getMinskyCanvasOffset()
+    // );
 
     const clickData = {
       type,
@@ -299,10 +300,10 @@ export class CommunicationService {
       // When the event DOMContentLoaded occurs, it is safe to access the DOM
 
       const offset = this.windowUtilityService.getMinskyCanvasOffset();
-      console.log(
-        '🚀 ~ file: communication.service.ts ~ line 298 ~ CommunicationService ~ document.addEventListener ~ offset',
-        offset
-      );
+      // console.log(
+      //   '🚀 ~ file: communication.service.ts ~ line 298 ~ CommunicationService ~ document.addEventListener ~ offset',
+      //   offset
+      // );
       const offSetValue = 'top:' + offset.top + ' ' + 'left:' + offset.left;
 
       if (this.electronService.isElectron) {

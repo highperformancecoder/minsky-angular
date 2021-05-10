@@ -102,6 +102,13 @@ export const commandsMapping = {
   ITEM_FOCUS_SLIDER_STEP_REL: '/minsky/canvas/itemFocus/sliderStepRel',
   ITEM_FOCUS_ROTATION: '/minsky/canvas/itemFocus/rotation',
   ITEM_FOCUS_SET_UNITS: '/minsky/canvas/itemFocus/setUnits',
+  CANVAS_SELECTION_EMPTY: '/minsky/canvas/selection/empty',
+  CANVAS_DELETE_ITEM: '/minsky/canvas/deleteItem',
+  CANVAS_DELETE_WIRE: '/minsky/canvas/deleteWire',
+  CANVAS_GET_ITEM_AT: '/minsky/canvas/getItemAt',
+  CANVAS_GET_WIRE_AT: '/minsky/canvas/getWireAt',
+  CANVAS_ITEM: '/minsky/canvas/item',
+  CANVAS_WIRE: '/minsky/canvas/wire',
 };
 
 export const minskyProcessReplyIndicators = {
@@ -126,6 +133,7 @@ export const minskyProcessReplyIndicators = {
   Y: '/minsky/model/y=>',
   ZOOM_FACTOR: '/minsky/model/zoomFactor',
   REL_ZOOM: '/minsky/model/relZoom=>',
+  KEY_PRESS: '/minsky/canvas/keyPress=>',
 };
 
 export const availableOperations = {
@@ -208,3 +216,20 @@ export const events = {
     KEY_PRESS: 'key-press',
   },
 };
+
+// add non exposed commands here to get intellisense on the terminal popup
+export const unExposedTerminalCommands = [
+  '/minsky/model/cBounds',
+  '/minsky/model/zoomFactor',
+  '/minsky/model/relZoom',
+  '/minsky/model/setZoom',
+  '/minsky/canvas/itemFocus/initValue',
+  '/minsky/canvas/itemFocus/tooltip',
+  '/minsky/canvas/itemFocus/detailedText',
+  '/minsky/canvas/itemFocus/sliderMax',
+  '/minsky/canvas/itemFocus/sliderMin',
+  '/minsky/canvas/itemFocus/sliderStep',
+  '/minsky/canvas/itemFocus/sliderStepRel',
+  '/minsky/canvas/itemFocus/rotation',
+  '/minsky/canvas/itemFocus/setUnits',
+];
