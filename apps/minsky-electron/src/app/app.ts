@@ -75,6 +75,8 @@ export default class App {
 
     App.initMenu();
 
+    ContextMenuManager.initContextMenu();
+
     App.initMinskyService();
   }
 
@@ -177,7 +179,7 @@ export default class App {
 
     logWindows(WindowManager.activeWindows);
 
-    ContextMenuManager.buildContextMenu();
+    // ContextMenuManager.buildContextMenu();
     App.mainWindow.on('close', () => {
       WindowManager.activeWindows.delete(App.mainWindow.id);
     });

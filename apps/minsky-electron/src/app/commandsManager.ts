@@ -19,6 +19,18 @@ export class CommandsManager {
     return item;
   }
 
+  static async getItemClassType(x: number, y: number): Promise<string> {
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
+    });
+
+    const classType = await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_ITEM_CLASS_TYPE,
+    });
+
+    return classType;
+  }
+
   static async getWireAt(
     x: number,
     y: number

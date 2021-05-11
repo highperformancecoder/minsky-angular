@@ -110,6 +110,7 @@ export const commandsMapping = {
   CANVAS_ITEM: '/minsky/canvas/item',
   CANVAS_WIRE: '/minsky/canvas/wire',
   CANVAS_REQUEST_REDRAW: '/minsky/canvas/requestRedraw',
+  CANVAS_ITEM_CLASS_TYPE: '/minsky/canvas/item/classType',
 };
 
 export const minskyProcessReplyIndicators = {
