@@ -35,4 +35,28 @@ export class CommandsManager {
 
     return wire;
   }
+
+  static addOperation(operation: string): void {
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.ADD_OPERATION} "${operation}"`,
+    });
+
+    return;
+  }
+
+  static addPlot(): void {
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.ADD_PLOT}`,
+    });
+
+    return;
+  }
+
+  static addGodley(): void {
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.ADD_GODLEY}`,
+    });
+
+    return;
+  }
 }

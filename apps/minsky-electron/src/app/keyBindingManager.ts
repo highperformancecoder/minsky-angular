@@ -1,4 +1,5 @@
 import {
+  availableOperations,
   commandsMapping,
   isEmptyObject,
   MinskyProcessPayload,
@@ -61,16 +62,64 @@ export class KeyBindingManager {
         break;
 
       case '+':
-        await this.zoom(ZOOM_IN_FACTOR);
+        await this.handlePlusKey(payload);
         break;
 
       case '-':
-        await this.zoom(ZOOM_OUT_FACTOR);
+        await this.handleMinusKey(payload);
+        break;
+
+      case '*':
+        CommandsManager.addOperation(availableOperations.MULTIPLY);
+        break;
+
+      case '/':
+        CommandsManager.addOperation(availableOperations.DIVIDE);
+        break;
+
+      case '^':
+        CommandsManager.addOperation(availableOperations.POW);
+        break;
+
+      case '&':
+        CommandsManager.addOperation(availableOperations.INTEGRATE);
+        break;
+
+      case '=':
+        CommandsManager.addGodley();
+        break;
+
+      case '@':
+        CommandsManager.addPlot();
         break;
 
       default:
         break;
     }
+  }
+
+  private static async handlePlusKey(payload: MinskyProcessPayload) {
+    if (payload.shift) {
+      // <Key-plus>
+      CommandsManager.addOperation(availableOperations.ADD);
+      return;
+    }
+
+    // <Key-KP_Add>
+    await this.zoom(ZOOM_IN_FACTOR);
+    return;
+  }
+
+  private static async handleMinusKey(payload: MinskyProcessPayload) {
+    if (payload.shift) {
+      // <Key-minus>
+      // TODO: ask @janak
+      return;
+    }
+
+    // <Key-KP_Subtract>
+    await this.zoom(ZOOM_OUT_FACTOR);
+    return;
   }
 
   private static async zoom(factor: number) {
@@ -83,12 +132,6 @@ export class KeyBindingManager {
     const x = 0.5 * (cBounds[2] + cBounds[0]);
     const y = 0.5 * (cBounds[3] + cBounds[1]);
 
-    console.log(
-      '🚀 ~ file: keyBindingManager.ts ~ line 111 ~ KeyBindingManager ~ zoomIn ~ x, y, zoomFactor',
-      x,
-      y,
-      factor
-    );
     this.zoomAt(x, y, factor);
     return;
   }
