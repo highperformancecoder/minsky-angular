@@ -112,6 +112,19 @@ export const commandsMapping = {
   CANVAS_REQUEST_REDRAW: '/minsky/canvas/requestRedraw',
   CANVAS_ITEM_CLASS_TYPE: '/minsky/canvas/item/classType',
   CANVAS_SELECT_VAR: '/minsky/canvas/selectVar',
+  CANVAS_PUSH_DEFINING_VARS_TO_TAB: '/minsky/canvas/pushDefiningVarsToTab',
+  CANVAS_SHOW_DEFINING_VARS_ON_CANVAS:
+    '/minsky/canvas/showDefiningVarsOnCanvas',
+  CANVAS_SHOW_ALL_PLOTS_ON_TAB: '/minsky/canvas/showPlotsOnTab',
+  CANVAS_LOCK_RAVELS_IN_SELECTION: '/minsky/canvas/lockRavelsInSelection',
+  CANVAS_UNLOCK_RAVELS_IN_SELECTION: '/minsky/canvas/unlockRavelsInSelection',
+  CANVAS_WIRE_STRAIGHTEN: '/minsky/canvas/wire/straighten',
+  CANVAS_COPY_ITEM: '/minsky/canvas/copyItem',
+  CANVAS_SELECT_ALL_VARIABLES: '/minsky/canvas/selectAllVariables',
+  CANVAS_COPY_ALL_FLOW_VARS: '/minsky/canvas/copyAllFlowVars',
+  CANVAS_COPY_ALL_STOCK_VARS: '/minsky/canvas/copyAllStockVars',
+  CANVAS_ZOOM_TO_DISPLAY: '/minsky/canvas/zoomToDisplay',
+  CANVAS_UNGROUP_ITEM: '/minsky/canvas/ungroupItem',
 };
 
 export const minskyProcessReplyIndicators = {

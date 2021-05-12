@@ -1,25 +1,9 @@
-/* eslint-disable no-case-declarations */
-import { ClassType, isEmptyObject } from '@minsky/shared';
+import { ClassType, commandsMapping, isEmptyObject } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
 import { CommandsManager } from './commandsManager';
+import { RestServiceManager } from './restServiceManager';
 import { WindowManager } from './windowManager';
 
-/*
-bind .wiring.canvas <<contextMenu>> {
-    if {[getWireAt %x %y] && [minsky.canvas.wire.visible]} {    # prevents wire context menu from being accessed when group contents are not transparent. for ticket 1225.
-		wireContextMenu %X %Y
-    } elseif [getItemAt %x %y] {
-        switch [minsky.canvas.item.classType] {
-            GodleyIcon {rightMouseGodley %x %y %X %Y}
-            Group {rightMouseGroup %x %y %X %Y}
-            default {contextMenu %x %y %X %Y}
-		}
-    } else {
-        canvasContext %x %y %X %Y
-    }
-}
-
-*/
 export class ContextMenuManager {
   public static initContextMenu() {
     const mainWindow = WindowManager.getMainWindow();
@@ -105,22 +89,16 @@ export class ContextMenuManager {
     x: number,
     y: number
   ): Promise<MenuItem[]> {
-    /*
-    proc rightMouseGodley {x y X Y} {
-    if [selectVar $x $y] {
-        .wiring.context delete 0 end
-        .wiring.context add command -label "Copy" -command canvas.copyItem
-        .wiring.context add command -label "Rename all instances" -command renameVariableInstances
-        .wiring.context post $X $Y
-    } else {
-        contextMenu $x $y $X $Y
-    }
-}
-    */
-
     if (await CommandsManager.selectVar(x, y)) {
       const menuItems: MenuItem[] = [
-        new MenuItem({ label: 'Copy' }),
+        new MenuItem({
+          label: 'Copy',
+          click: () => {
+            RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.CANVAS_COPY_ITEM,
+            });
+          },
+        }),
         new MenuItem({ label: 'Rename all instances' }),
       ];
 
@@ -135,70 +113,101 @@ export class ContextMenuManager {
   // }
 
   private static wireContextMenu(): MenuItem[] {
-    /*
-    proc wireContextMenu {x y} {
-    .wiring.context delete 0 end
-    .wiring.context add command -label Help -command {help Wires}
-    .wiring.context add command -label Description -command "postNote wire"
-    .wiring.context add command -label "Straighten" -command "minsky.canvas.wire.straighten"
-#    .wiring.context add command -label "Raise" -command "raiseItem wire$id"
-#    .wiring.context add command -label "Lower" -command "lowerItem wire$id"
-    .wiring.context add command -label "Browse object" -command "obj_browser minsky.canvas.wire.*"
-    .wiring.context add command -label "Delete wire" -command "canvas.deleteWire"
-    tk_popup .wiring.context $x $y
-}
-    */
-
     const menuItems = [
       new MenuItem({ label: 'Help' }),
       new MenuItem({ label: 'Description' }),
-      new MenuItem({ label: 'Straighten' }),
-      new MenuItem({ label: 'Raise' }),
-      new MenuItem({ label: 'Lower' }),
+      new MenuItem({
+        label: 'Straighten',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_WIRE_STRAIGHTEN,
+          });
+        },
+      }),
       new MenuItem({ label: 'Browse object' }),
-      new MenuItem({ label: 'Delete wire' }),
+      new MenuItem({
+        label: 'Delete wire',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_DELETE_WIRE,
+          });
+        },
+      }),
     ];
 
     return menuItems;
   }
 
   private static canvasContext(): MenuItem[] {
-    /*
-    proc canvasContext {x y X Y} {
-    .wiring.context delete 0 end
-    .wiring.context add command -label Help -command {help DesignCanvas}
-    .wiring.context add command -label "Cut" -command cut
-    .wiring.context add command -label "Copy selection" -command "minsky.copy"
-    .wiring.context add command -label "Save selection as" -command saveSelection
-    .wiring.context add command -label "Paste selection" -command pasteAt
-    if {[getClipboard]==""} {
-        .wiring.context entryconfigure end -state disabled
-    }
-    .wiring.context add command -label "Hide defining groups of selected variables" -command "minsky.canvas.pushDefiningVarsToTab"
-    .wiring.context add command -label "Show all defining groups on canvas" -command "minsky.canvas.showDefiningVarsOnCanvas"
-    .wiring.context add command -label "Show all plots on tab" -command "minsky.canvas.showPlotsOnTab"
-    .wiring.context add command -label "Bookmark here" -command "bookmarkAt $x $y $X $Y"
-    .wiring.context add command -label "Group" -command "minsky.createGroup"
-    .wiring.context add command -label "Lock selected Ravels" -command "minsky.canvas.lockRavelsInSelection"
-    .wiring.context add command -label "Unlock selected Ravels" -command "minsky.canvas.unlockRavelsInSelection"
-    .wiring.context add command -label "Open master group" -command "openModelInCanvas"
-    tk_popup .wiring.context $X $Y
-}
-    */
-
     const menuItems = [
       new MenuItem({ label: 'Help' }),
-      new MenuItem({ label: 'Cut' }),
-      new MenuItem({ label: 'Copy selection' }),
+      new MenuItem({
+        label: 'Cut',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CUT,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Copy selection',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.COPY,
+          });
+        },
+      }),
       new MenuItem({ label: 'Save selection as' }),
       new MenuItem({ label: 'Paste selection' }),
-      new MenuItem({ label: 'Hide defining groups' }),
-      new MenuItem({ label: 'Show all defining' }),
-      new MenuItem({ label: 'Show all plots' }),
+      new MenuItem({
+        label: 'Hide defining groups of selected variables',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_PUSH_DEFINING_VARS_TO_TAB,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Show all defining groups on canvas',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_SHOW_DEFINING_VARS_ON_CANVAS,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Show all plots on tab',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_SHOW_ALL_PLOTS_ON_TAB,
+          });
+        },
+      }),
       new MenuItem({ label: 'Bookmark here' }),
-      new MenuItem({ label: 'Group' }),
-      new MenuItem({ label: 'Lock selected Ravels' }),
-      new MenuItem({ label: 'Unlock selected Ravels' }),
+      new MenuItem({
+        label: 'Group',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.ADD_GROUP,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Lock selected Ravels',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_LOCK_RAVELS_IN_SELECTION,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Unlock selected Ravels',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_UNLOCK_RAVELS_IN_SELECTION,
+          });
+        },
+      }),
       new MenuItem({ label: 'Open master group' }),
     ];
 
@@ -219,158 +228,6 @@ export class ContextMenuManager {
   }
 
   private static contextMenu(classType: string) {
-    /*
-#
-# context menu
-proc contextMenu {x y X Y} {
-    set item minsky.canvas.item
-    .wiring.context delete 0 end
-    .wiring.context add command -label Help -command "help [$item.classType]"
-    .wiring.context add command -label Description -command "postNote item"
-    # find out what type of item we're referring to
-    switch -regex [$item.classType] {
-        "Variable*|VarConstant" {
-            catch {
-                if {[llength [minsky.canvas.item.dims]]==0} {
-                    .wiring.context add command -label "Value [minsky.canvas.item.value]"
-                } else {
-                    .wiring.context add command -label "Dims [minsky.canvas.item.dims]"
-                }
-            }
-            .wiring.context add command -label "Find definition" -command "findDefinition"
-            .wiring.context add command -label "Select all instances" -command {
-                canvas.selectAllVariables
-            }
-            .wiring.context add command -label "Find all instances" -command {
-                findAllInstances
-            }
-            .wiring.context add command -label "Rename all instances" -command {
-                renameVariableInstances
-            }
-            .wiring.context add command -label "Edit" -command "editItem"
-            .wiring.context add command -label "Copy item" -command "canvas.copyItem"
-            if {![inputWired [$item.valueId]]} {
-                .wiring.context add command -label "Add integral" -command "addIntegral"
-            }
-            if {[$item.defined]} {
-                 global varTabDisplay
-                 set varTabDisplay [$item.varTabDisplay]
-                .wiring.context add checkbutton -label "Display variable on tab" -command "$item.toggleVarTabDisplay" -variable varTabDisplay
-            }
-            .wiring.context add command -label "Flip" -command "$item.flip; flip_default"
-            if {[$item.type]=="parameter"} {
-                .wiring.context add command -label "Import CSV" -command {CSVImportDialog}
-                .wiring.context add command -label "Display CSV values on tab" -command {setupPickDimMenu}
-            }
-            .wiring.context add command -label "Export as CSV" -command exportItemAsCSV
-        }
-        "Operation*|IntOp|DataOp" {
-            set portValues "unknown"
-            catch {set portValues [$item.portValues]}
-            .wiring.context add command -label "Port values $portValues"
-            .wiring.context add command -label "Edit" -command "editItem"
-            if {[$item.type]=="data"} {
-               .wiring.context add command -label "Import Data" \
-                    -command "importData"
-               .wiring.context add command -label "Initialise Random" \
-                    -command "initRandom"
-            }
-            .wiring.context add command -label "Copy item" -command "canvas.copyItem"
-            .wiring.context add command -label "Flip" -command "$item.flip; flip_default"
-            if {[$item.type]=="integrate"} {
-               .wiring.context add command -label "Toggle var binding" -command "minsky.canvas.item.toggleCoupled; canvas.requestRedraw"
-            .wiring.context add command -label "Select all instances" -command {
-                canvas.selectAllVariables
-            }
-            .wiring.context add command -label "Rename all instances" -command {
-				renameIntegralInstances
-			}
-            }
-        }
-        "PlotWidget" {
-            .wiring.context add command -label "Expand" -command "plotDoubleClick [TCLItem]"
-            .wiring.context add command -label "Make Group Plot" -command "$item.makeDisplayPlot"
-            .wiring.context add command -label "Options" -command "doPlotOptions $item"
-            .wiring.context add command -label "Pen Styles" -command "penStyles $item"
-             global plotTabDisplay
-             set plotTabDisplay [$item.plotTabDisplay]
-            .wiring.context add checkbutton -label "Display plot on tab" -command "$item.togglePlotTabDisplay" -variable plotTabDisplay
-            .wiring.context add command -label "Export as CSV" -command exportItemAsCSV
-            .wiring.context add command -label "Export as Image" -command exportItemAsImg
-        }
-        "GodleyIcon" {
-            .wiring.context add command -label "Open Godley Table" -command "openGodley [minsky.openGodley]"
-            .wiring.context add command -label "Title" -command {
-                textEntryPopup .editGodleyTitle [minsky.canvas.item.table.title] {minsky.canvas.item.table.title [.editGodleyTitle.entry get]; canvas.requestRedraw}
-            }
-            .wiring.context add command -label "Set currency" -command {
-                textEntryPopup .godleyCurrency {} {minsky.canvas.item.setCurrency [.godleyCurrency.entry get]}
-            }
-            global editorMode buttonDisplay variableDisplay
-            set editorMode [$item.editorMode]
-            set buttonDisplay [$item.buttonDisplay]
-            set variableDisplay [$item.variableDisplay]
-            .wiring.context add checkbutton -label "Editor mode" -command "$item.toggleEditorMode" -variable editorMode
-            .wiring.context add checkbutton -label "Row/Col buttons" -command "$item.toggleButtons" -variable buttonDisplay
-            .wiring.context add checkbutton -label "Display variables" -command "$item.toggleVariableDisplay" -variable variableDisplay
-            .wiring.context add command -label "Copy flow variables" -command "canvas.copyAllFlowVars"
-            .wiring.context add command -label "Copy stock variables" -command "canvas.copyAllStockVars"
-            .wiring.context add command -label "Export to file" -command "godley::export"
-        }
-        "Group" {
-            .wiring.context add command -label "Edit" -command "groupEdit"
-            .wiring.context add command -label "Open in canvas" -command "openGroupInCanvas"
-            .wiring.context add command -label "Zoom to display" -command "canvas.zoomToDisplay"
-            .wiring.context add command -label "Remove plot icon" -command "$item.removeDisplayPlot"
-            .wiring.context add command -label "Copy" -command "canvas.copyItem"
-            .wiring.context add command -label "Save group as" -command "group::save"
-            .wiring.context add command -label "Flip" -command "$item.flip; flip_default"
-            .wiring.context add command -label "Flip Contents" -command "$item.flipContents; canvas.requestRedraw"
-            .wiring.context add command -label "Ungroup" -command "canvas.ungroupItem; canvas.requestRedraw"
-        }
-        "Item" {
-            .wiring.context delete 0 end
-            .wiring.context add command -label "Copy item" -command "canvas.copyItem"
-        }
-        SwitchIcon {
-            .wiring.context add command -label "Add case" -command "incrCase 1"
-            .wiring.context add command -label "Delete case" -command "incrCase -1"
-            .wiring.context add command -label "Flip" -command "$item.flipped [expr ![minsky.canvas.item.flipped]]; canvas.requestRedraw"
-        }
-        Ravel {
-            .wiring.context add command -label "Export as CSV" -command exportItemAsCSV
-            global sortOrder
-            if {[minsky.canvas.item.handleSortableByValue] && [minsky.canvas.item.sortByValue]!="none"} {
-                set sortOrder [minsky.canvas.item.sortByValue]
-            } else {
-                set sortOrder [minsky.canvas.item.sortOrder]
-            }
-            .wiring.context add cascade -label "Axis properties" -menu .wiring.context.axisMenu
-            if [llength [info commands minsky.canvas.item.lockGroup]] {
-                .wiring.context add command -label "Lock specific handles" -command lockSpecificHandles
-                .wiring.context add command -label "Unlock" -command {
-                    minsky.canvas.item.leaveLockGroup; canvas.requestRedraw
-                }
-            }
-        }
-        Lock {
-            if [$item.locked] {
-                .wiring.context add command -label "Unlock" -command $item.toggleLocked
-            } else {
-                .wiring.context add command -label "Lock" -command $item.toggleLocked
-            }
-        }
-    }
-
-    # common trailer
-#            .wiring.context add command -label "Raise" -command "raiseItem $tag"
-#            .wiring.context add command -label "Lower" -command "lowerItem $tag"
-    .wiring.context add command -label "Browse object" -command "obj_browser minsky.canvas.item.*"
-    .wiring.context add command -label "Delete [minsky.canvas.item.classType]" -command "canvas.deleteItem"
-    tk_popup .wiring.context $X $Y
-}
-*/
-
     let menuItems: MenuItem[] = [
       new MenuItem({ label: 'Help' }),
       new MenuItem({ label: 'Description' }),
@@ -381,7 +238,34 @@ proc contextMenu {x y X Y} {
       case ClassType.VarConstant:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: 'Variable*|VarConstant' }),
+          new MenuItem({ label: 'Value' }),
+          new MenuItem({ label: 'Dims' }),
+          new MenuItem({ label: 'Find definition' }),
+          new MenuItem({
+            label: 'Select all instances',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_SELECT_ALL_VARIABLES,
+              });
+            },
+          }),
+          new MenuItem({ label: 'Find all instances' }),
+          new MenuItem({ label: 'Rename all instances' }),
+          new MenuItem({ label: 'Edit' }),
+          new MenuItem({
+            label: 'Copy item',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_COPY_ITEM,
+              });
+            },
+          }),
+          new MenuItem({ label: 'Add integral' }),
+          new MenuItem({ label: 'Display variable on tab' }),
+          new MenuItem({ label: 'Flip' }),
+          new MenuItem({ label: 'Import CSV' }),
+          new MenuItem({ label: 'Display CSV values on tab' }),
+          new MenuItem({ label: 'Export as CSV' }),
         ];
         break;
 
@@ -390,79 +274,156 @@ proc contextMenu {x y X Y} {
       case ClassType.DataOp:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: 'Operation*|IntOp|DataOp' }),
+          new MenuItem({ label: 'Port values' }),
+          new MenuItem({ label: 'Edit' }),
+          new MenuItem({ label: 'Import Data' }),
+          new MenuItem({ label: 'Initialize Random' }),
+          new MenuItem({
+            label: 'Copy item',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_COPY_ITEM,
+              });
+            },
+          }),
+          new MenuItem({ label: 'Flip' }),
+          new MenuItem({ label: 'Toggle var binding' }),
+          new MenuItem({
+            label: 'Select all instances',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_SELECT_ALL_VARIABLES,
+              });
+            },
+          }),
+          new MenuItem({ label: 'Rename all instances' }),
         ];
         break;
 
       case ClassType.PlotWidget:
-        menuItems = [...menuItems, new MenuItem({ label: 'PlotWidget' })];
+        menuItems = [
+          ...menuItems,
+          new MenuItem({ label: 'Expand' }),
+          new MenuItem({ label: 'Make Group Plot' }),
+          new MenuItem({ label: 'Options' }),
+          new MenuItem({ label: 'Pen Styles' }),
+          new MenuItem({ label: 'Display plot on tab' }),
+          new MenuItem({ label: 'Export as CSV' }),
+          new MenuItem({ label: 'Export as Image' }),
+        ];
         break;
 
       case ClassType.GodleyIcon:
-        const godleyMenuItems = [
-          new MenuItem({
-            label: 'Open Godley Table',
-            click: () => console.log('Open Godley Table'),
-          }),
-          new MenuItem({
-            label: 'Title',
-            click: () => console.log('Title'),
-          }),
-          new MenuItem({
-            label: 'Set currency',
-            click: () => console.log('Set currency'),
-          }),
-          new MenuItem({
-            label: 'Editor mode',
-            click: () => console.log('Editor mode'),
-          }),
-          new MenuItem({
-            label: 'Row/Col buttons',
-            click: () => console.log('Row/Col buttons'),
-          }),
-          new MenuItem({
-            label: 'Display variables',
-            click: () => console.log('Display variables'),
-          }),
+        menuItems = [
+          ...menuItems,
+          new MenuItem({ label: 'Open Godley Table' }),
+          new MenuItem({ label: 'Title' }),
+          new MenuItem({ label: 'Set currency' }),
+          new MenuItem({ label: 'Editor mode' }),
+          new MenuItem({ label: 'Row/Col buttons' }),
+          new MenuItem({ label: 'Display variables' }),
           new MenuItem({
             label: 'Copy flow variables',
-            click: () => console.log('Copy flow variables'),
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_COPY_ALL_FLOW_VARS,
+              });
+            },
           }),
           new MenuItem({
             label: 'Copy stock variables',
-            click: () => console.log('Copy stock variables'),
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_COPY_ALL_STOCK_VARS,
+              });
+            },
           }),
-          new MenuItem({
-            label: 'Export to file',
-            click: () => console.log('Export to file'),
-          }),
+          new MenuItem({ label: 'Export to file' }),
         ];
-
-        menuItems = [...menuItems, ...godleyMenuItems];
 
         break;
 
       case ClassType.Group:
-        menuItems = [...menuItems, new MenuItem({ label: 'Group' })];
+        menuItems = [
+          ...menuItems,
+          new MenuItem({ label: 'Edit' }),
+          new MenuItem({ label: 'Open in canvas' }),
+          new MenuItem({
+            label: 'Zoom to display',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_ZOOM_TO_DISPLAY,
+              });
+            },
+          }),
+          new MenuItem({ label: 'Remove plot icon' }),
+          new MenuItem({
+            label: 'Copy',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_COPY_ITEM,
+              });
+            },
+          }),
+          new MenuItem({ label: 'Save group as' }),
+          new MenuItem({ label: 'Flip' }),
+          new MenuItem({ label: 'Flip Contents' }),
+          new MenuItem({
+            label: 'Ungroup',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_UNGROUP_ITEM,
+              });
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_REQUEST_REDRAW,
+              });
+            },
+          }),
+        ];
         break;
 
       case ClassType.Item:
-        menuItems = [...menuItems, new MenuItem({ label: 'Item' })];
+        menuItems = [
+          ...menuItems,
+          new MenuItem({
+            label: 'Copy item',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_COPY_ITEM,
+              });
+            },
+          }),
+        ];
 
         break;
 
       case ClassType.SwitchIcon:
-        menuItems = [...menuItems, new MenuItem({ label: 'SwitchIcon' })];
+        menuItems = [
+          ...menuItems,
+          new MenuItem({ label: 'Add case' }),
+          new MenuItem({ label: 'Delete case' }),
+          new MenuItem({ label: 'Flip' }),
+        ];
 
         break;
 
       case ClassType.Ravel:
-        menuItems = [...menuItems, new MenuItem({ label: 'Ravel' })];
+        menuItems = [
+          ...menuItems,
+          new MenuItem({ label: 'Export as CSV' }),
+          new MenuItem({ label: 'Axis properties' }),
+          new MenuItem({ label: 'Lock specific handles' }),
+          new MenuItem({ label: 'Unlock' }),
+        ];
 
         break;
 
       case ClassType.Lock:
-        menuItems = [...menuItems, new MenuItem({ label: 'Lock' })];
+        menuItems = [
+          ...menuItems,
+          new MenuItem({ label: 'Unlock' }),
+          new MenuItem({ label: 'Lock' }),
+        ];
 
         break;
 
@@ -473,7 +434,14 @@ proc contextMenu {x y X Y} {
     menuItems = [
       ...menuItems,
       new MenuItem({ label: 'Browse Object' }),
-      new MenuItem({ label: `Delete ${classType}` }),
+      new MenuItem({
+        label: `Delete ${classType}`,
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_DELETE_ITEM,
+          });
+        },
+      }),
     ];
 
     return menuItems;
