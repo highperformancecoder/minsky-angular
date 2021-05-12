@@ -1,4 +1,4 @@
-import { commandsMapping } from '@minsky/shared';
+import { commandsMapping, toBoolean } from '@minsky/shared';
 import { RestServiceManager } from './restServiceManager';
 
 export class CommandsManager {
@@ -70,5 +70,15 @@ export class CommandsManager {
     });
 
     return;
+  }
+
+  static async selectVar(x: number, y: number): Promise<boolean> {
+    const selectVar = toBoolean(
+      await RestServiceManager.getCommandValue({
+        command: `${commandsMapping.CANVAS_SELECT_VAR} [${x},${y}]`,
+      })
+    );
+
+    return selectVar;
   }
 }

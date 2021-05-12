@@ -111,6 +111,7 @@ export const commandsMapping = {
   CANVAS_WIRE: '/minsky/canvas/wire',
   CANVAS_REQUEST_REDRAW: '/minsky/canvas/requestRedraw',
   CANVAS_ITEM_CLASS_TYPE: '/minsky/canvas/item/classType',
+  CANVAS_SELECT_VAR: '/minsky/canvas/selectVar',
 };
 
 export const minskyProcessReplyIndicators = {
@@ -235,3 +236,18 @@ export const unExposedTerminalCommands = [
   '/minsky/canvas/itemFocus/rotation',
   '/minsky/canvas/itemFocus/setUnits',
 ];
+
+export enum ClassType {
+  Variable = 'Variable',
+  VarConstant = 'VarConstant',
+  Operation = 'Operation',
+  IntOp = 'IntOp',
+  DataOp = 'DataOp',
+  PlotWidget = 'PlotWidget',
+  GodleyIcon = 'GodleyIcon',
+  Group = 'Group',
+  Item = 'Item',
+  SwitchIcon = 'SwitchIcon',
+  Ravel = 'Ravel',
+  Lock = 'Lock',
+}

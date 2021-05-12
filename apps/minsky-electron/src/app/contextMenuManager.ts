@@ -1,9 +1,225 @@
 /* eslint-disable no-case-declarations */
+import { ClassType, isEmptyObject } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
 import { CommandsManager } from './commandsManager';
 import { WindowManager } from './windowManager';
 
 /*
+bind .wiring.canvas <<contextMenu>> {
+    if {[getWireAt %x %y] && [minsky.canvas.wire.visible]} {    # prevents wire context menu from being accessed when group contents are not transparent. for ticket 1225.
+		wireContextMenu %X %Y
+    } elseif [getItemAt %x %y] {
+        switch [minsky.canvas.item.classType] {
+            GodleyIcon {rightMouseGodley %x %y %X %Y}
+            Group {rightMouseGroup %x %y %X %Y}
+            default {contextMenu %x %y %X %Y}
+		}
+    } else {
+        canvasContext %x %y %X %Y
+    }
+}
+
+*/
+export class ContextMenuManager {
+  public static initContextMenu() {
+    const mainWindow = WindowManager.getMainWindow();
+
+    mainWindow.webContents.on('context-menu', async (event, params) => {
+      const { x, y } = params;
+
+      const cairoTopOffset = y - WindowManager.topOffset;
+
+      const wire = await CommandsManager.getWireAt(x, cairoTopOffset);
+
+      const isWirePresent = !isEmptyObject(wire);
+
+      if (isWirePresent /* TODO: && isWireVisible */) {
+        ContextMenuManager.buildAndDisplayContextMenu(
+          ContextMenuManager.wireContextMenu(),
+          mainWindow,
+          x,
+          y
+        );
+        return;
+      }
+
+      const classTypeRes = (
+        await CommandsManager.getItemClassType(x, cairoTopOffset)
+      ).slice(1, -1);
+
+      const classType = classTypeRes.includes(':')
+        ? classTypeRes.split(':')[0]
+        : classTypeRes;
+
+      console.log(
+        '🚀 ~ file: contextMenuManager.ts ~ line 168 ~ ContextMenuManager ~ mainWindow.webContents.on ~ classType',
+        classType
+      );
+
+      if (classType) {
+        switch (classType) {
+          case ClassType.GodleyIcon:
+            ContextMenuManager.buildAndDisplayContextMenu(
+              await ContextMenuManager.rightMouseGodley(x, cairoTopOffset),
+              mainWindow,
+              x,
+              y
+            );
+            break;
+
+          // case ClassType.Group:
+          //   ContextMenuManager.buildAndDisplayContextMenu(
+          //     ContextMenuManager.rightMouseGroup(),
+          //     mainWindow,
+          //     x,
+          //     y
+          //   );
+          //   break;
+
+          default:
+            ContextMenuManager.buildAndDisplayContextMenu(
+              ContextMenuManager.contextMenu(classType),
+              mainWindow,
+              x,
+              y
+            );
+
+            break;
+        }
+
+        return;
+      }
+
+      ContextMenuManager.buildAndDisplayContextMenu(
+        ContextMenuManager.canvasContext(),
+        mainWindow,
+        x,
+        y
+      );
+
+      return;
+    });
+  }
+
+  private static async rightMouseGodley(
+    x: number,
+    y: number
+  ): Promise<MenuItem[]> {
+    /*
+    proc rightMouseGodley {x y X Y} {
+    if [selectVar $x $y] {
+        .wiring.context delete 0 end
+        .wiring.context add command -label "Copy" -command canvas.copyItem
+        .wiring.context add command -label "Rename all instances" -command renameVariableInstances
+        .wiring.context post $X $Y
+    } else {
+        contextMenu $x $y $X $Y
+    }
+}
+    */
+
+    if (await CommandsManager.selectVar(x, y)) {
+      const menuItems: MenuItem[] = [
+        new MenuItem({ label: 'Copy' }),
+        new MenuItem({ label: 'Rename all instances' }),
+      ];
+
+      return menuItems;
+    } else {
+      return ContextMenuManager.contextMenu(ClassType.GodleyIcon);
+    }
+  }
+
+  // private static rightMouseGroup(): MenuItem[] {
+  //   return [];
+  // }
+
+  private static wireContextMenu(): MenuItem[] {
+    /*
+    proc wireContextMenu {x y} {
+    .wiring.context delete 0 end
+    .wiring.context add command -label Help -command {help Wires}
+    .wiring.context add command -label Description -command "postNote wire"
+    .wiring.context add command -label "Straighten" -command "minsky.canvas.wire.straighten"
+#    .wiring.context add command -label "Raise" -command "raiseItem wire$id"
+#    .wiring.context add command -label "Lower" -command "lowerItem wire$id"
+    .wiring.context add command -label "Browse object" -command "obj_browser minsky.canvas.wire.*"
+    .wiring.context add command -label "Delete wire" -command "canvas.deleteWire"
+    tk_popup .wiring.context $x $y
+}
+    */
+
+    const menuItems = [
+      new MenuItem({ label: 'Help' }),
+      new MenuItem({ label: 'Description' }),
+      new MenuItem({ label: 'Straighten' }),
+      new MenuItem({ label: 'Raise' }),
+      new MenuItem({ label: 'Lower' }),
+      new MenuItem({ label: 'Browse object' }),
+      new MenuItem({ label: 'Delete wire' }),
+    ];
+
+    return menuItems;
+  }
+
+  private static canvasContext(): MenuItem[] {
+    /*
+    proc canvasContext {x y X Y} {
+    .wiring.context delete 0 end
+    .wiring.context add command -label Help -command {help DesignCanvas}
+    .wiring.context add command -label "Cut" -command cut
+    .wiring.context add command -label "Copy selection" -command "minsky.copy"
+    .wiring.context add command -label "Save selection as" -command saveSelection
+    .wiring.context add command -label "Paste selection" -command pasteAt
+    if {[getClipboard]==""} {
+        .wiring.context entryconfigure end -state disabled
+    }
+    .wiring.context add command -label "Hide defining groups of selected variables" -command "minsky.canvas.pushDefiningVarsToTab"
+    .wiring.context add command -label "Show all defining groups on canvas" -command "minsky.canvas.showDefiningVarsOnCanvas"
+    .wiring.context add command -label "Show all plots on tab" -command "minsky.canvas.showPlotsOnTab"
+    .wiring.context add command -label "Bookmark here" -command "bookmarkAt $x $y $X $Y"
+    .wiring.context add command -label "Group" -command "minsky.createGroup"
+    .wiring.context add command -label "Lock selected Ravels" -command "minsky.canvas.lockRavelsInSelection"
+    .wiring.context add command -label "Unlock selected Ravels" -command "minsky.canvas.unlockRavelsInSelection"
+    .wiring.context add command -label "Open master group" -command "openModelInCanvas"
+    tk_popup .wiring.context $X $Y
+}
+    */
+
+    const menuItems = [
+      new MenuItem({ label: 'Help' }),
+      new MenuItem({ label: 'Cut' }),
+      new MenuItem({ label: 'Copy selection' }),
+      new MenuItem({ label: 'Save selection as' }),
+      new MenuItem({ label: 'Paste selection' }),
+      new MenuItem({ label: 'Hide defining groups' }),
+      new MenuItem({ label: 'Show all defining' }),
+      new MenuItem({ label: 'Show all plots' }),
+      new MenuItem({ label: 'Bookmark here' }),
+      new MenuItem({ label: 'Group' }),
+      new MenuItem({ label: 'Lock selected Ravels' }),
+      new MenuItem({ label: 'Unlock selected Ravels' }),
+      new MenuItem({ label: 'Open master group' }),
+    ];
+
+    return menuItems;
+  }
+
+  private static buildAndDisplayContextMenu(
+    menuItems: MenuItem[],
+    mainWindow: Electron.BrowserWindow,
+    x: number,
+    y: number
+  ) {
+    if (menuItems.length) {
+      const menu = Menu.buildFromTemplate(menuItems);
+
+      menu.popup({ window: mainWindow, x, y });
+    }
+  }
+
+  private static contextMenu(classType: string) {
+    /*
 #
 # context menu
 proc contextMenu {x y X Y} {
@@ -154,138 +370,112 @@ proc contextMenu {x y X Y} {
     tk_popup .wiring.context $X $Y
 }
 */
-export class ContextMenuManager {
-  public static initContextMenu() {
-    const mainWindow = WindowManager.getMainWindow();
 
-    mainWindow.webContents.on('context-menu', async (event, params) => {
-      const { x, y } = params;
+    let menuItems: MenuItem[] = [
+      new MenuItem({ label: 'Help' }),
+      new MenuItem({ label: 'Description' }),
+    ];
 
-      let menuItems: MenuItem[] = [new MenuItem({ label: 'Help' })];
-
-      const classTypeRes = (
-        await CommandsManager.getItemClassType(x, y - WindowManager.topOffset)
-      ).slice(1, -1);
-
-      const classType = classTypeRes.includes(':')
-        ? classTypeRes.split(':')[0]
-        : classTypeRes;
-
-      console.log(
-        '🚀 ~ file: contextMenuManager.ts ~ line 168 ~ ContextMenuManager ~ mainWindow.webContents.on ~ classType',
-        classType
-      );
-
-      if (classType) {
-        const essentials = [new MenuItem({ label: 'Description' })];
-        menuItems = [...menuItems, ...essentials];
-      }
-
-      switch (classType) {
-        case 'Variable':
-        case 'VarConstant':
-          menuItems = [
-            ...menuItems,
-            new MenuItem({ label: 'Variable*|VarConstant' }),
-          ];
-          break;
-
-        case 'Operation':
-        case 'IntOp':
-        case 'DataOp':
-          menuItems = [
-            ...menuItems,
-            new MenuItem({ label: 'Operation*|IntOp|DataOp' }),
-          ];
-          break;
-
-        case 'PlotWidget':
-          menuItems = [...menuItems, new MenuItem({ label: 'PlotWidget' })];
-          break;
-
-        case 'GodleyIcon':
-          const godleyMenuItems = [
-            new MenuItem({
-              label: 'Open Godley Table',
-              click: () => console.log('Open Godley Table'),
-            }),
-            new MenuItem({
-              label: 'Title',
-              click: () => console.log('Title'),
-            }),
-            new MenuItem({
-              label: 'Set currency',
-              click: () => console.log('Set currency'),
-            }),
-            new MenuItem({
-              label: 'Editor mode',
-              click: () => console.log('Editor mode'),
-            }),
-            new MenuItem({
-              label: 'Row/Col buttons',
-              click: () => console.log('Row/Col buttons'),
-            }),
-            new MenuItem({
-              label: 'Display variables',
-              click: () => console.log('Display variables'),
-            }),
-            new MenuItem({
-              label: 'Copy flow variables',
-              click: () => console.log('Copy flow variables'),
-            }),
-            new MenuItem({
-              label: 'Copy stock variables',
-              click: () => console.log('Copy stock variables'),
-            }),
-            new MenuItem({
-              label: 'Export to file',
-              click: () => console.log('Export to file'),
-            }),
-          ];
-
-          menuItems = [...menuItems, ...godleyMenuItems];
-
-          break;
-
-        case 'Group':
-          menuItems = [...menuItems, new MenuItem({ label: 'Group' })];
-          break;
-
-        case 'Item':
-          menuItems = [...menuItems, new MenuItem({ label: 'Item' })];
-
-          break;
-
-        case 'SwitchIcon':
-          menuItems = [...menuItems, new MenuItem({ label: 'SwitchIcon' })];
-
-          break;
-
-        case 'Ravel':
-          menuItems = [...menuItems, new MenuItem({ label: 'Ravel' })];
-
-          break;
-
-        case 'Lock':
-          menuItems = [...menuItems, new MenuItem({ label: 'Lock' })];
-
-          break;
-
-        default:
-          break;
-      }
-
-      if (classType) {
-        const essentials = [
-          new MenuItem({ label: 'Browse Object' }),
-          new MenuItem({ label: `Delete ${classType}` }),
+    switch (classType) {
+      case ClassType.Variable:
+      case ClassType.VarConstant:
+        menuItems = [
+          ...menuItems,
+          new MenuItem({ label: 'Variable*|VarConstant' }),
         ];
-        menuItems = [...menuItems, ...essentials];
-      }
+        break;
 
-      const menu = Menu.buildFromTemplate(menuItems);
+      case ClassType.Operation:
+      case ClassType.IntOp:
+      case ClassType.DataOp:
+        menuItems = [
+          ...menuItems,
+          new MenuItem({ label: 'Operation*|IntOp|DataOp' }),
+        ];
+        break;
 
-      menu.popup({ window: mainWindow, x, y });
-    });
+      case ClassType.PlotWidget:
+        menuItems = [...menuItems, new MenuItem({ label: 'PlotWidget' })];
+        break;
+
+      case ClassType.GodleyIcon:
+        const godleyMenuItems = [
+          new MenuItem({
+            label: 'Open Godley Table',
+            click: () => console.log('Open Godley Table'),
+          }),
+          new MenuItem({
+            label: 'Title',
+            click: () => console.log('Title'),
+          }),
+          new MenuItem({
+            label: 'Set currency',
+            click: () => console.log('Set currency'),
+          }),
+          new MenuItem({
+            label: 'Editor mode',
+            click: () => console.log('Editor mode'),
+          }),
+          new MenuItem({
+            label: 'Row/Col buttons',
+            click: () => console.log('Row/Col buttons'),
+          }),
+          new MenuItem({
+            label: 'Display variables',
+            click: () => console.log('Display variables'),
+          }),
+          new MenuItem({
+            label: 'Copy flow variables',
+            click: () => console.log('Copy flow variables'),
+          }),
+          new MenuItem({
+            label: 'Copy stock variables',
+            click: () => console.log('Copy stock variables'),
+          }),
+          new MenuItem({
+            label: 'Export to file',
+            click: () => console.log('Export to file'),
+          }),
+        ];
+
+        menuItems = [...menuItems, ...godleyMenuItems];
+
+        break;
+
+      case ClassType.Group:
+        menuItems = [...menuItems, new MenuItem({ label: 'Group' })];
+        break;
+
+      case ClassType.Item:
+        menuItems = [...menuItems, new MenuItem({ label: 'Item' })];
+
+        break;
+
+      case ClassType.SwitchIcon:
+        menuItems = [...menuItems, new MenuItem({ label: 'SwitchIcon' })];
+
+        break;
+
+      case ClassType.Ravel:
+        menuItems = [...menuItems, new MenuItem({ label: 'Ravel' })];
+
+        break;
+
+      case ClassType.Lock:
+        menuItems = [...menuItems, new MenuItem({ label: 'Lock' })];
+
+        break;
+
+      default:
+        break;
+    }
+
+    menuItems = [
+      ...menuItems,
+      new MenuItem({ label: 'Browse Object' }),
+      new MenuItem({ label: `Delete ${classType}` }),
+    ];
+
+    return menuItems;
   }
 }
