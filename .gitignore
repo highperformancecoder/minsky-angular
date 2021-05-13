@@ -33,7 +33,7 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-minsky-RESTService
+minsky-RESTService*
 
 # System Files
 .DS_Store

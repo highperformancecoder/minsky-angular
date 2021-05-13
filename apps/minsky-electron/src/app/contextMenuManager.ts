@@ -1,4 +1,9 @@
-import { ClassType, commandsMapping, isEmptyObject } from '@minsky/shared';
+import {
+  CanvasItem,
+  ClassType,
+  commandsMapping,
+  isEmptyObject,
+} from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
 import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
@@ -11,13 +16,25 @@ export class ContextMenuManager {
     mainWindow.webContents.on('context-menu', async (event, params) => {
       const { x, y } = params;
 
+      if (y < WindowManager.topOffset) {
+        return;
+      }
+
       const cairoTopOffset = y - WindowManager.topOffset;
 
       const wire = await CommandsManager.getWireAt(x, cairoTopOffset);
 
       const isWirePresent = !isEmptyObject(wire);
 
-      if (isWirePresent /* TODO: && isWireVisible */) {
+      /*
+      TODO: CANVAS_WIRE_VISIBLE does not return a boolean string.
+      const isWireVisible = toBoolean(
+        await RestServiceManager.getCommandValue({
+          command: commandsMapping.CANVAS_WIRE_VISIBLE,
+        })
+      ); */
+
+      if (isWirePresent /* && isWireVisible */) {
         ContextMenuManager.buildAndDisplayContextMenu(
           ContextMenuManager.wireContextMenu(),
           mainWindow,
@@ -27,42 +44,44 @@ export class ContextMenuManager {
         return;
       }
 
-      const classTypeRes = (
-        await CommandsManager.getItemClassType(x, cairoTopOffset)
-      ).slice(1, -1);
-
-      const classType = classTypeRes.includes(':')
-        ? classTypeRes.split(':')[0]
-        : classTypeRes;
+      const itemInfo = await CommandsManager.getItemInfo(x, cairoTopOffset);
 
       console.log(
-        '🚀 ~ file: contextMenuManager.ts ~ line 168 ~ ContextMenuManager ~ mainWindow.webContents.on ~ classType',
-        classType
+        '🚀 ~ file: contextMenuManager.ts ~ line 41 ~ ContextMenuManager ~ mainWindow.webContents.on ~ itemInfo',
+        itemInfo
       );
 
-      if (classType) {
-        switch (classType) {
+      if (itemInfo?.classType) {
+        switch (itemInfo?.classType) {
           case ClassType.GodleyIcon:
             ContextMenuManager.buildAndDisplayContextMenu(
-              await ContextMenuManager.rightMouseGodley(x, cairoTopOffset),
+              await ContextMenuManager.rightMouseGodley(
+                x,
+                cairoTopOffset,
+                itemInfo
+              ),
               mainWindow,
               x,
               y
             );
             break;
 
-          // case ClassType.Group:
-          //   ContextMenuManager.buildAndDisplayContextMenu(
-          //     ContextMenuManager.rightMouseGroup(),
-          //     mainWindow,
-          //     x,
-          //     y
-          //   );
-          //   break;
+          case ClassType.Group:
+            ContextMenuManager.buildAndDisplayContextMenu(
+              await ContextMenuManager.rightMouseGroup(
+                x,
+                cairoTopOffset,
+                itemInfo
+              ),
+              mainWindow,
+              x,
+              y
+            );
+            break;
 
           default:
             ContextMenuManager.buildAndDisplayContextMenu(
-              ContextMenuManager.contextMenu(classType),
+              ContextMenuManager.contextMenu(itemInfo),
               mainWindow,
               x,
               y
@@ -87,7 +106,8 @@ export class ContextMenuManager {
 
   private static async rightMouseGodley(
     x: number,
-    y: number
+    y: number,
+    itemInfo: CanvasItem
   ): Promise<MenuItem[]> {
     if (await CommandsManager.selectVar(x, y)) {
       const menuItems: MenuItem[] = [
@@ -99,18 +119,47 @@ export class ContextMenuManager {
             });
           },
         }),
+        // TODO: use Rename all instances in original minsky app and code a similar functionality here
         new MenuItem({ label: 'Rename all instances' }),
       ];
 
       return menuItems;
     } else {
-      return ContextMenuManager.contextMenu(ClassType.GodleyIcon);
+      return ContextMenuManager.contextMenu(itemInfo);
     }
   }
 
-  // private static rightMouseGroup(): MenuItem[] {
-  //   return [];
-  // }
+  private static async rightMouseGroup(
+    x: number,
+    y: number,
+    itemInfo: CanvasItem
+  ): Promise<MenuItem[]> {
+    if (await CommandsManager.selectVar(x, y)) {
+      const menuItems = [
+        new MenuItem({ label: 'Edit' }),
+        new MenuItem({
+          label: 'Copy',
+          click: () => {
+            RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.CANVAS_COPY_ITEM,
+            });
+          },
+        }),
+        new MenuItem({
+          label: 'Remove',
+          click: () => {
+            RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.CANVAS_REMOVE_ITEM_FROM_ITS_GROUP,
+            });
+          },
+        }),
+      ];
+
+      return menuItems;
+    } else {
+      return ContextMenuManager.contextMenu(itemInfo);
+    }
+  }
 
   private static wireContextMenu(): MenuItem[] {
     const menuItems = [
@@ -227,18 +276,18 @@ export class ContextMenuManager {
     }
   }
 
-  private static contextMenu(classType: string) {
+  private static contextMenu(itemInfo: CanvasItem) {
     let menuItems: MenuItem[] = [
       new MenuItem({ label: 'Help' }),
       new MenuItem({ label: 'Description' }),
     ];
 
-    switch (classType) {
+    switch (itemInfo?.classType) {
       case ClassType.Variable:
       case ClassType.VarConstant:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: 'Value' }),
+          new MenuItem({ label: `Value ${itemInfo?.value || ''}}` }),
           new MenuItem({ label: 'Dims' }),
           new MenuItem({ label: 'Find definition' }),
           new MenuItem({
@@ -262,7 +311,12 @@ export class ContextMenuManager {
           }),
           new MenuItem({ label: 'Add integral' }),
           new MenuItem({ label: 'Display variable on tab' }),
-          new MenuItem({ label: 'Flip' }),
+          new MenuItem({
+            label: 'Flip',
+            click: async () => {
+              await CommandsManager.flip();
+            },
+          }),
           new MenuItem({ label: 'Import CSV' }),
           new MenuItem({ label: 'Display CSV values on tab' }),
           new MenuItem({ label: 'Export as CSV' }),
@@ -286,7 +340,12 @@ export class ContextMenuManager {
               });
             },
           }),
-          new MenuItem({ label: 'Flip' }),
+          new MenuItem({
+            label: 'Flip',
+            click: async () => {
+              await CommandsManager.flip();
+            },
+          }),
           new MenuItem({ label: 'Toggle var binding' }),
           new MenuItem({
             label: 'Select all instances',
@@ -366,7 +425,12 @@ export class ContextMenuManager {
             },
           }),
           new MenuItem({ label: 'Save group as' }),
-          new MenuItem({ label: 'Flip' }),
+          new MenuItem({
+            label: 'Flip',
+            click: async () => {
+              await CommandsManager.flip();
+            },
+          }),
           new MenuItem({ label: 'Flip Contents' }),
           new MenuItem({
             label: 'Ungroup',
@@ -402,7 +466,12 @@ export class ContextMenuManager {
           ...menuItems,
           new MenuItem({ label: 'Add case' }),
           new MenuItem({ label: 'Delete case' }),
-          new MenuItem({ label: 'Flip' }),
+          new MenuItem({
+            label: 'Flip',
+            click: async () => {
+              await CommandsManager.flip();
+            },
+          }),
         ];
 
         break;
@@ -435,7 +504,7 @@ export class ContextMenuManager {
       ...menuItems,
       new MenuItem({ label: 'Browse Object' }),
       new MenuItem({
-        label: `Delete ${classType}`,
+        label: `Delete ${itemInfo.classType}`,
         click: () => {
           RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_DELETE_ITEM,

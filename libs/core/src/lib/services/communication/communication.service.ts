@@ -252,18 +252,11 @@ export class CommunicationService {
   public mouseEvents(event, message) {
     const { type, clientX, clientY } = message;
 
+    const offset = this.windowUtilityService.getMinskyCanvasOffset();
+
     this.mouseX = clientX;
-    this.mouseY =
-      clientY - this.windowUtilityService.getMinskyCanvasOffset().top;
-    // console.log(
-    //   '🚀 ~ file: communication.service.ts ~ line 257 ~ CommunicationService ~ mouseEvents ~ this.mouseY',
-    //   this.mouseX,
-    //   this.mouseY
-    // );
-    // console.log(
-    //   '🚀 ~ file: communication.service.ts ~ line 256 ~ CommunicationService ~ mouseEvents ~ this.mouseY',
-    //   this.windowUtilityService.getMinskyCanvasOffset()
-    // );
+    // this.mouseY = clientY - offset.electronTop + 68;
+    this.mouseY = clientY - offset.electronTop;
 
     const clickData = {
       type,

@@ -22,3 +22,23 @@ export interface HeaderEvent {
   target: string;
   value?: unknown;
 }
+
+export enum ClassType {
+  Variable = 'Variable',
+  VarConstant = 'VarConstant',
+  Operation = 'Operation',
+  IntOp = 'IntOp',
+  DataOp = 'DataOp',
+  PlotWidget = 'PlotWidget',
+  GodleyIcon = 'GodleyIcon',
+  Group = 'Group',
+  Item = 'Item',
+  SwitchIcon = 'SwitchIcon',
+  Ravel = 'Ravel',
+  Lock = 'Lock',
+}
+
+export interface CanvasItem {
+  classType: ClassType;
+  value: number;
+}

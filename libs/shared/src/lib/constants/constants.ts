@@ -125,6 +125,11 @@ export const commandsMapping = {
   CANVAS_COPY_ALL_STOCK_VARS: '/minsky/canvas/copyAllStockVars',
   CANVAS_ZOOM_TO_DISPLAY: '/minsky/canvas/zoomToDisplay',
   CANVAS_UNGROUP_ITEM: '/minsky/canvas/ungroupItem',
+  CANVAS_WIRE_VISIBLE: '/minsky/canvas/wire/visible',
+  CANVAS_ITEM_VALUE: '/minsky/canvas/item/value',
+  CANVAS_REMOVE_ITEM_FROM_ITS_GROUP: '/minsky/canvas/removeItemFromItsGroup',
+  CANVAS_DEFAULT_ROTATION: '/minsky/canvas/defaultRotation',
+  CANVAS_ITEM_FLIP: '/minsky/canvas/item/flip',
 };
 
 export const minskyProcessReplyIndicators = {
@@ -249,18 +254,3 @@ export const unExposedTerminalCommands = [
   '/minsky/canvas/itemFocus/rotation',
   '/minsky/canvas/itemFocus/setUnits',
 ];
-
-export enum ClassType {
-  Variable = 'Variable',
-  VarConstant = 'VarConstant',
-  Operation = 'Operation',
-  IntOp = 'IntOp',
-  DataOp = 'DataOp',
-  PlotWidget = 'PlotWidget',
-  GodleyIcon = 'GodleyIcon',
-  Group = 'Group',
-  Item = 'Item',
-  SwitchIcon = 'SwitchIcon',
-  Ravel = 'Ravel',
-  Lock = 'Lock',
-}

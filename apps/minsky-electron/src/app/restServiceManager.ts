@@ -384,7 +384,7 @@ export class RestServiceManager {
       })();
 
       (async () => {
-        this.queue.add(() => {
+        await this.queue.add(() => {
           minskyProcess.stdin.write(renderCommand);
         });
       })();
@@ -417,16 +417,16 @@ export class RestServiceManager {
   private static getRenderCommand() {
     const {
       leftOffset,
-      topOffset,
       canvasWidth,
       canvasHeight,
       activeWindows,
+      electronTopOffset,
     } = WindowManager;
 
     const mainWindowId = activeWindows.get(1).windowId;
 
     const renderCommand =
-      `${commandsMapping.RENDER_FRAME} [${mainWindowId}, ${leftOffset}, ${topOffset}, ${canvasWidth}, ${canvasHeight}]` +
+      `${commandsMapping.RENDER_FRAME} [${mainWindowId}, ${leftOffset}, ${electronTopOffset}, ${canvasWidth}, ${canvasHeight}]` +
       newLineCharacter;
 
     return renderCommand;
