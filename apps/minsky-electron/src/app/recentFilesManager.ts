@@ -36,7 +36,7 @@ export class RecentFilesManager {
           new MenuItem({
             label: filePath,
             click: () => {
-              WindowManager.scrollToCenter();
+              WindowManager.scrollToCenter(); // TODO:: Same needs to be added on normal file load .. perhaps better to do this as a callback / in ipc listeners
               
               RestServiceManager.handleMinskyProcess({
                 command: commandsMapping.LOAD,

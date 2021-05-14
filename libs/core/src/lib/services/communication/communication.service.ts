@@ -73,45 +73,26 @@ export class CommunicationService {
 
       switch (target) {
         case 'ZOOM_OUT':
-          command = ` ${command} [${canvasWidth / 2},${
-            canvasHeight / 2
-          },${ZOOM_OUT_FACTOR}]`;
+          command = `${command} [${canvasWidth/2}, ${canvasHeight/2}, ${ZOOM_OUT_FACTOR}]`;
           break;
         case 'ZOOM_IN':
-          command = `${command} [${canvasWidth / 2},${
-            canvasHeight / 2
-          },${ZOOM_IN_FACTOR}]`;
+          command = `${command} [${canvasWidth/2}, ${canvasHeight/2}, ${ZOOM_IN_FACTOR}]`;
           break;
         case 'RESET_ZOOM':
-          autoHandleMinskyProcess = false;
-          /* this.electronService.sendMinskyCommandAndRender({
-            command: `${commandsMapping.MOVE_TO} [0,0]`,
+          this.electronService.sendMinskyCommandAndRender({
+            command: `${await this.getResetZoomCommand(canvasWidth/2, canvasHeight/2)}`,
           });
 
-          this.electronService.sendMinskyCommandAndRender({
-            command: `${command} ${RESET_ZOOM_FACTOR}`,
-          });
-           */
-
-          this.electronService.sendMinskyCommandAndRender({
-            command: `${await this.getResetZoomCommand()}`,
-          });
-
-          this.electronService.sendMinskyCommandAndRender({
-            command: commandsMapping.RECENTER,
-          });
+          // this.electronService.sendMinskyCommandAndRender({
+          //   command: commandsMapping.RECENTER,
+          // });
           break;
         case 'ZOOM_TO_FIT':
-          autoHandleMinskyProcess = false;
+          command = `${command} [${await this.getZoomToFitArgs(canvasWidth, canvasHeight)}]`;
 
-          command = `${command} [${await this.getZoomToFitArgs(
-            canvasWidth,
-            canvasHeight
-          )}]`;
-
-          this.electronService.sendMinskyCommandAndRender({
-            command: commandsMapping.RECENTER,
-          });
+          // this.electronService.sendMinskyCommandAndRender({
+          //   command: commandsMapping.RECENTER,
+          // });
 
           break;
 
@@ -181,7 +162,7 @@ export class CommunicationService {
     }
   }
 
-  private async getResetZoomCommand() {
+  private async getResetZoomCommand(centerX : number, centerY : number) {
     /*
      if {[minsky.model.zoomFactor]>0} {
             zoom [expr 1/[minsky.model.relZoom]]
@@ -207,7 +188,7 @@ export class CommunicationService {
         )
       );
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
-      return `${commandsMapping.ZOOM_IN} ${1 / (relZoom || 1)}`;
+      return `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${1 / (relZoom || 1)}]`;
     } else {
       return `${commandsMapping.SET_ZOOM} 1`;
     }

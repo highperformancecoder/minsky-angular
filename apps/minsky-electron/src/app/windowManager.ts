@@ -91,14 +91,12 @@ export class WindowManager {
   public static scrollToCenter() {
     // TODO:: Replace this with something cleaner
     this.getMainWindow().webContents.executeJavaScript(
-      `var container=document.getElementsByClassName('minsky-canvas-container')[0]; var canvas = container.getElementsByTagName('canvas')[0]; container.scrollTop=canvas.clientHeight/2; container.scrollLeft=canvas.clientWidth/2;`,
-      (result)=> {
-        console.log(result);
-        }
-      );
+      `var container=document.getElementsByClassName('minsky-canvas-container')[0]; var canvas = container.getElementsByTagName('canvas')[0]; container.scrollTop=canvas.clientHeight/2; container.scrollLeft=canvas.clientWidth/2;`, false);
   }
   
   static checkBackgroundAndApplyTextColor(color) {
+    // TODO:: Let us move this to a Utilities class so main windowManager logic in the file stands out clearly
+    
     // Variables for red, green, blue values
 
     let colorArray;
