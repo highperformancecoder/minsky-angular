@@ -3,10 +3,12 @@ import {
   ClassType,
   commandsMapping,
   isEmptyObject,
+  rendererAppURL,
   toBoolean,
 } from '@minsky/shared';
 import { dialog } from 'electron';
 import { RestServiceManager } from './restServiceManager';
+import { WindowManager } from './windowManager';
 
 export class CommandsManager {
   static async getItemAt(
@@ -26,12 +28,15 @@ export class CommandsManager {
     return item;
   }
 
-  static async getItemClassType(
-    x: number,
-    y: number,
+  private static async getItemClassType(
+    x: number = null,
+    y: number = null,
     reInvokeGetItemAt = false
   ): Promise<ClassType> {
     if (reInvokeGetItemAt) {
+      if (!x && !y) {
+        throw new Error('Please provide x and y when reInvokeGetItemAt=true');
+      }
       RestServiceManager.handleMinskyProcess({
         command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
       });
@@ -54,12 +59,15 @@ export class CommandsManager {
     return ClassType[classType];
   }
 
-  static async getItemValue(
-    x: number,
-    y: number,
+  private static async getItemValue(
+    x: number = null,
+    y: number = null,
     reInvokeGetItemAt = false
   ): Promise<number> {
     if (reInvokeGetItemAt) {
+      if (!x && !y) {
+        throw new Error('Please provide x and y when reInvokeGetItemAt=true');
+      }
       RestServiceManager.handleMinskyProcess({
         command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
       });
@@ -74,26 +82,70 @@ export class CommandsManager {
     return value;
   }
 
+  private static async getItemName(
+    x: number = null,
+    y: number = null,
+    reInvokeGetItemAt = false
+  ): Promise<string> {
+    if (reInvokeGetItemAt) {
+      if (!x && !y) {
+        throw new Error('Please provide x and y when reInvokeGetItemAt=true');
+      }
+
+      RestServiceManager.handleMinskyProcess({
+        command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
+      });
+    }
+
+    const name = String(
+      await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM_NAME,
+      })
+    );
+
+    return name;
+  }
+
+  private static async getItemDescription(
+    x: number = null,
+    y: number = null,
+    reInvokeGetItemAt = false
+  ): Promise<string> {
+    if (reInvokeGetItemAt) {
+      if (!x && !y) {
+        throw new Error('Please provide x and y when reInvokeGetItemAt=true');
+      }
+
+      RestServiceManager.handleMinskyProcess({
+        command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
+      });
+    }
+
+    const description = String(
+      await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM_DESCRIPTION,
+      })
+    );
+
+    return description;
+  }
+
   static async getItemInfo(x: number, y: number): Promise<CanvasItem> {
     const item = await this.getItemAt(x, y);
-    console.log(
-      '🚀 ~ file: commandsManager.ts ~ line 78 ~ CommandsManager ~ getItemInfo ~ item',
-      item
-    );
 
     if (isEmptyObject(item)) {
       return null;
     }
 
     const classType = await this.getItemClassType(x, y);
-    console.log(
-      '🚀 ~ file: commandsManager.ts ~ line 85 ~ CommandsManager ~ getItemInfo ~ classType',
-      classType
-    );
 
     const value = await this.getItemValue(x, y);
 
     const itemInfo: CanvasItem = { classType, value };
+    console.log(
+      '🚀 ~ file: commandsManager.ts ~ line 139 ~ CommandsManager ~ getItemInfo ~ itemInfo',
+      itemInfo
+    );
     return itemInfo;
   }
 
@@ -161,11 +213,6 @@ export class CommandsManager {
 
     const newRotation = (defaultRotation + 180) % 360;
 
-    console.log(
-      '🚀 ~ file: commandsManager.ts ~ line 155 ~ CommandsManager ~ flipDefault ~ newRotation',
-      newRotation
-    );
-
     RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_DEFAULT_ROTATION} ${newRotation}`,
     });
@@ -218,5 +265,39 @@ proc exportItemAsImg {} {
     });
   }
 
+  static async renameAllInstances(itemInfo: CanvasItem): Promise<void> {
+    switch (itemInfo.classType) {
+      case ClassType.Variable:
+      case ClassType.VarConstant:
+        CommandsManager.openRenameInstancesDialog(await this.getItemName());
+        break;
+
+      case ClassType.Operation:
+      case ClassType.IntOp:
+      case ClassType.DataOp:
+        CommandsManager.openRenameInstancesDialog(
+          await this.getItemDescription()
+        );
+        break;
+
+      case ClassType.GodleyIcon:
+        CommandsManager.openRenameInstancesDialog(await this.getItemName());
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  private static openRenameInstancesDialog(name: string) {
+    WindowManager.createMenuPopUpWithRouting({
+      title: `Rename ${name}`,
+      url: `${rendererAppURL}/#/headless/rename-all-instances?name=${
+        name?.slice(1, 1) || ''
+      }`,
+      height: 100,
+      width: 200,
+    });
+  }
   // static exportItemAsImg() {}
 }

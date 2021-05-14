@@ -1,4 +1,8 @@
 export const toBoolean = (booleanString: string) => {
+  if (booleanString === '{}') {
+    return false;
+  }
+
   if (booleanString === 'true') {
     return true;
   }

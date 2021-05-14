@@ -3,6 +3,7 @@ import {
   ClassType,
   commandsMapping,
   isEmptyObject,
+  toBoolean,
 } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
 import { CommandsManager } from './commandsManager';
@@ -26,15 +27,13 @@ export class ContextMenuManager {
 
       const isWirePresent = !isEmptyObject(wire);
 
-      /*
-      TODO: CANVAS_WIRE_VISIBLE does not return a boolean string.
       const isWireVisible = toBoolean(
         await RestServiceManager.getCommandValue({
           command: commandsMapping.CANVAS_WIRE_VISIBLE,
         })
-      ); */
+      );
 
-      if (isWirePresent /* && isWireVisible */) {
+      if (isWirePresent && isWireVisible) {
         ContextMenuManager.buildAndDisplayContextMenu(
           ContextMenuManager.wireContextMenu(),
           mainWindow,
@@ -45,11 +44,6 @@ export class ContextMenuManager {
       }
 
       const itemInfo = await CommandsManager.getItemInfo(x, cairoTopOffset);
-
-      console.log(
-        '🚀 ~ file: contextMenuManager.ts ~ line 41 ~ ContextMenuManager ~ mainWindow.webContents.on ~ itemInfo',
-        itemInfo
-      );
 
       if (itemInfo?.classType) {
         switch (itemInfo?.classType) {
@@ -119,8 +113,12 @@ export class ContextMenuManager {
             });
           },
         }),
-        // TODO: use Rename all instances in original minsky app and code a similar functionality here
-        new MenuItem({ label: 'Rename all instances' }),
+        new MenuItem({
+          label: 'Rename all instances',
+          click: async () => {
+            await CommandsManager.renameAllInstances(itemInfo);
+          },
+        }),
       ];
 
       return menuItems;
@@ -287,7 +285,7 @@ export class ContextMenuManager {
       case ClassType.VarConstant:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: `Value ${itemInfo?.value || ''}}` }),
+          new MenuItem({ label: `Value ${itemInfo?.value || ''}` }),
           new MenuItem({ label: 'Dims' }),
           new MenuItem({ label: 'Find definition' }),
           new MenuItem({
@@ -299,7 +297,12 @@ export class ContextMenuManager {
             },
           }),
           new MenuItem({ label: 'Find all instances' }),
-          new MenuItem({ label: 'Rename all instances' }),
+          new MenuItem({
+            label: 'Rename all instances',
+            click: async () => {
+              await CommandsManager.renameAllInstances(itemInfo);
+            },
+          }),
           new MenuItem({ label: 'Edit' }),
           new MenuItem({
             label: 'Copy item',
@@ -355,7 +358,12 @@ export class ContextMenuManager {
               });
             },
           }),
-          new MenuItem({ label: 'Rename all instances' }),
+          new MenuItem({
+            label: 'Rename all instances',
+            click: async () => {
+              await CommandsManager.renameAllInstances(itemInfo);
+            },
+          }),
         ];
         break;
 

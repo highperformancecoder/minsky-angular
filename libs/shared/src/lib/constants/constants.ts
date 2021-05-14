@@ -127,9 +127,12 @@ export const commandsMapping = {
   CANVAS_UNGROUP_ITEM: '/minsky/canvas/ungroupItem',
   CANVAS_WIRE_VISIBLE: '/minsky/canvas/wire/visible',
   CANVAS_ITEM_VALUE: '/minsky/canvas/item/value',
+  CANVAS_ITEM_NAME: '/minsky/canvas/item/name',
+  CANVAS_ITEM_DESCRIPTION: '/minsky/canvas/item/description',
   CANVAS_REMOVE_ITEM_FROM_ITS_GROUP: '/minsky/canvas/removeItemFromItsGroup',
   CANVAS_DEFAULT_ROTATION: '/minsky/canvas/defaultRotation',
   CANVAS_ITEM_FLIP: '/minsky/canvas/item/flip',
+  CANVAS_RENAME_ALL_INSTANCES: '/minsky/canvas/renameAllInstances',
 };
 
 export const minskyProcessReplyIndicators = {
