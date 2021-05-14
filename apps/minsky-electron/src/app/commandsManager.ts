@@ -245,6 +245,56 @@ proc exportItemAsImg {} {
 
   */
 
+  static async exportItemAsImage(): Promise<void> {
+    const exportImage = await dialog.showSaveDialog({
+      title: 'Export item as...',
+      defaultPath: 'export.svg',
+      properties: ['showOverwriteConfirmation', 'createDirectory'],
+      filters: [
+        { extensions: ['svg'], name: 'SVG' },
+        { extensions: ['pdf'], name: 'PDF' },
+        { extensions: ['ps'], name: 'PostScript' },
+        { extensions: ['emf'], name: 'LaTeX' },
+      ],
+    });
+
+    const { canceled, filePath } = exportImage;
+    if (canceled || !filePath) {
+      return;
+    }
+
+    const extension = filePath.split('.').pop();
+
+    switch (extension?.toLowerCase()) {
+      case 'svg':
+        RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_SVG} "${filePath}"`,
+        });
+        break;
+
+      case 'pdf':
+        RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PDF} "${filePath}"`,
+        });
+        break;
+
+      case 'ps':
+        RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PS} "${filePath}"`,
+        });
+        break;
+
+      case 'emf':
+        RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_EMF} "${filePath}"`,
+        });
+        break;
+
+      default:
+        break;
+    }
+  }
+
   static async exportItemAsCSV(): Promise<void> {
     const exportItemDialog = await dialog.showSaveDialog({
       title: 'Export item as csv',

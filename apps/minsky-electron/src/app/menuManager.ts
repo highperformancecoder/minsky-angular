@@ -220,7 +220,7 @@ export class MenuManager {
 
               const extension = filePath.split('.').pop();
 
-              switch (extension) {
+              switch (extension?.toLowerCase()) {
                 case 'svg':
                   RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_SVG} "${filePath}"`,

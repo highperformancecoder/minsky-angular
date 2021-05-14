@@ -386,7 +386,12 @@ export class ContextMenuManager {
               await CommandsManager.exportItemAsCSV();
             },
           }),
-          new MenuItem({ label: 'Export as Image' }),
+          new MenuItem({
+            label: 'Export as Image',
+            click: async () => {
+              await CommandsManager.exportItemAsImage();
+            },
+          }),
         ];
         break;
 

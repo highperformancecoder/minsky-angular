@@ -134,6 +134,10 @@ export const commandsMapping = {
   CANVAS_ITEM_FLIP: '/minsky/canvas/item/flip',
   CANVAS_RENAME_ALL_INSTANCES: '/minsky/canvas/renameAllInstances',
   CANVAS_EXPORT_AS_CSV: '/minsky/canvas/item/exportAsCSV',
+  CANVAS_ITEM_RENDER_TO_SVG: '/minsky/canvas/item/renderToSVG',
+  CANVAS_ITEM_RENDER_TO_PDF: '/minsky/canvas/item/renderToPDF',
+  CANVAS_ITEM_RENDER_TO_EMF: '/minsky/canvas/item/renderToEMF',
+  CANVAS_ITEM_RENDER_TO_PS: '/minsky/canvas/item/renderToPS',
 };
 
 export const minskyProcessReplyIndicators = {
