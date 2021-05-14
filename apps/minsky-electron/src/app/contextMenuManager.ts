@@ -322,7 +322,12 @@ export class ContextMenuManager {
           }),
           new MenuItem({ label: 'Import CSV' }),
           new MenuItem({ label: 'Display CSV values on tab' }),
-          new MenuItem({ label: 'Export as CSV' }),
+          new MenuItem({
+            label: 'Export as CSV',
+            click: async () => {
+              await CommandsManager.exportItemAsCSV();
+            },
+          }),
         ];
         break;
 
@@ -375,7 +380,12 @@ export class ContextMenuManager {
           new MenuItem({ label: 'Options' }),
           new MenuItem({ label: 'Pen Styles' }),
           new MenuItem({ label: 'Display plot on tab' }),
-          new MenuItem({ label: 'Export as CSV' }),
+          new MenuItem({
+            label: 'Export as CSV',
+            click: async () => {
+              await CommandsManager.exportItemAsCSV();
+            },
+          }),
           new MenuItem({ label: 'Export as Image' }),
         ];
         break;
@@ -487,7 +497,12 @@ export class ContextMenuManager {
       case ClassType.Ravel:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: 'Export as CSV' }),
+          new MenuItem({
+            label: 'Export as CSV',
+            click: async () => {
+              await CommandsManager.exportItemAsCSV();
+            },
+          }),
           new MenuItem({ label: 'Axis properties' }),
           new MenuItem({ label: 'Lock specific handles' }),
           new MenuItem({ label: 'Unlock' }),

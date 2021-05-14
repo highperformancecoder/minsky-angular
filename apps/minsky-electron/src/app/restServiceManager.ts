@@ -33,7 +33,7 @@ export class RestServiceManager {
   private static queue = new PQueue({
     concurrency: 1,
     autoStart: false,
-    interval: 10,
+    interval: 1,
     intervalCap: 1,
   });
   private static isRecording = false;

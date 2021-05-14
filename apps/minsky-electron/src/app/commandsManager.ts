@@ -20,9 +20,11 @@ export class CommandsManager {
     });
 
     const item: Record<string, unknown> = JSON.parse(
-      await RestServiceManager.getCommandValue({
-        command: commandsMapping.CANVAS_ITEM,
-      })
+      (
+        await RestServiceManager.getCommandValue({
+          command: commandsMapping.CANVAS_ITEM,
+        })
+      ).replace(/\bnan\b/g, null)
     );
 
     return item;
@@ -261,8 +263,10 @@ proc exportItemAsImg {} {
     }
 
     RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.EXPORT_ALL_PLOTS_AS_CSV} "${filePath}"`,
+      command: `${commandsMapping.CANVAS_EXPORT_AS_CSV} "${filePath}"`,
     });
+
+    return;
   }
 
   static async renameAllInstances(itemInfo: CanvasItem): Promise<void> {

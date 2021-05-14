@@ -133,6 +133,7 @@ export const commandsMapping = {
   CANVAS_DEFAULT_ROTATION: '/minsky/canvas/defaultRotation',
   CANVAS_ITEM_FLIP: '/minsky/canvas/item/flip',
   CANVAS_RENAME_ALL_INSTANCES: '/minsky/canvas/renameAllInstances',
+  CANVAS_EXPORT_AS_CSV: '/minsky/canvas/item/exportAsCSV',
 };
 
 export const minskyProcessReplyIndicators = {
