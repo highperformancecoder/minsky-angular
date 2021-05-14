@@ -3,6 +3,8 @@ interface Offset {
   top: number;
 }
 
+const SCROLLABLE_AREA_FACTOR = 10;
+
 abstract class WindowUtilitiesGlobal {
   private static minskyCanvasElement: HTMLElement = null;
   private static minskyCanvasContainer : HTMLElement = null;
@@ -10,6 +12,9 @@ abstract class WindowUtilitiesGlobal {
   private static topOffset = 0;
   private static drawableWidth = 0;
   private static drawableHeight = 0;
+  private static containerWidth = 0;
+  private static containerHeight = 0;
+
 
 
   private static initializeIfNeeded() {
@@ -23,10 +28,13 @@ abstract class WindowUtilitiesGlobal {
         this.drawableWidth = this.minskyCanvasContainer.clientWidth;
         this.drawableHeight = this.minskyCanvasContainer.clientHeight;
 
-        // TODO:: Review ---> Canvas dimenstions 10X of container
+        // TODO:: Review ---> Canvas dimenstions logic
 
-        this.minskyCanvasElement.style.width = 10*this.drawableWidth + "px";
-        this.minskyCanvasElement.style.height = 10*this.drawableHeight + "px";
+        this.containerWidth = this.drawableWidth*SCROLLABLE_AREA_FACTOR;
+        this.containerHeight = this.drawableHeight*SCROLLABLE_AREA_FACTOR;
+
+        this.minskyCanvasElement.style.width = this.containerWidth + "px";
+        this.minskyCanvasElement.style.height = this.containerHeight + "px";
 
         const clientRect = this.minskyCanvasContainer.getBoundingClientRect();
         this.leftOffset = Math.ceil(clientRect.left);
@@ -34,6 +42,14 @@ abstract class WindowUtilitiesGlobal {
       }
     }
   }
+
+
+  public static scrollToCenter() {
+    this.initializeIfNeeded();
+    this.minskyCanvasElement.scrollTop = this.containerHeight/2;
+    this.minskyCanvasElement.scrollLeft = this.containerWidth/2;
+  }
+
 
   public static getMinskyCanvasOffset(): Offset {
     this.initializeIfNeeded();
@@ -48,6 +64,15 @@ abstract class WindowUtilitiesGlobal {
     return {
       width : this.drawableWidth,
       height : this.drawableHeight
+    }
+  }
+
+
+  public static getScrollableArea() {
+    this.initializeIfNeeded();
+    return {
+      width : this.containerWidth,
+      height : this.containerHeight
     }
   }
 

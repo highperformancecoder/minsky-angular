@@ -23,8 +23,6 @@ import { sampleTime } from 'rxjs/operators';
 export class WiringComponent implements OnInit, OnDestroy {
   mouseMove$: Observable<MouseEvent>;
   offsetTop: string;
-  previousScrollTop : number;
-  previousScrollLeft : number;
   
   _availableOperations = availableOperations;
   _commandsMapping = commandsMapping;
@@ -34,25 +32,23 @@ export class WiringComponent implements OnInit, OnDestroy {
     private electronService: ElectronService,
     private stateManagementService: StateManagementService
   ) { 
-    this.previousScrollLeft = 0;
-    this.previousScrollTop = 0; // TODO:: Reinitialize them whenever new model is loaded
   }
 
   ngOnInit() {
     const minskyCanvasContainer = WindowUtilitiesGlobal.getMinskyContainerElement();
     const minskyCanvasElement = WindowUtilitiesGlobal.getMinskyCanvasElement();
+
+    const scrollableArea  = WindowUtilitiesGlobal.getScrollableArea();
+
     this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
 
     if (this.electronService.isElectron) {
       const handleScroll = (scrollTop : number, scrollLeft : number) => {
-        const diffX = scrollLeft - this.previousScrollLeft;
-        const diffY = scrollTop - this.previousScrollTop;
-      
-        const newX = this.stateManagementService.modelX - diffX;
-        const newY = this.stateManagementService.modelY - diffY;
-
+        const posX = scrollableArea.width/2 - scrollLeft;
+        const posY = scrollableArea.height/2 - scrollTop;
+        
         this.electronService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.MOVE_TO} [${newX},${newY}]`,
+          command: `${commandsMapping.MOVE_TO} [${posX},${posY}]`,
         });
       };
 
