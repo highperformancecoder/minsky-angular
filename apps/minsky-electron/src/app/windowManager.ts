@@ -88,6 +88,16 @@ export class WindowManager {
     });
   }
 
+  public static scrollToCenter() {
+    // TODO:: Replace this with something cleaner
+    this.getMainWindow().webContents.executeJavaScript(
+      `var container=document.getElementsByClassName('minsky-canvas-container')[0]; var canvas = container.getElementsByTagName('canvas')[0]; container.scrollTop=canvas.clientHeight/2; container.scrollLeft=canvas.clientWidth/2;`,
+      (result)=> {
+        console.log(result);
+        }
+      );
+  }
+  
   static checkBackgroundAndApplyTextColor(color) {
     // Variables for red, green, blue values
 

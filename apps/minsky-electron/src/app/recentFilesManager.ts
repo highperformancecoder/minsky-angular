@@ -2,6 +2,7 @@ import { commandsMapping } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
+import { WindowManager } from './windowManager';
 
 export class RecentFilesManager {
   static addFileToRecentFiles(filepath: string) {
@@ -35,10 +36,13 @@ export class RecentFilesManager {
           new MenuItem({
             label: filePath,
             click: () => {
+              WindowManager.scrollToCenter();
+              
               RestServiceManager.handleMinskyProcess({
                 command: commandsMapping.LOAD,
                 filePath,
               });
+              
             },
           })
         );
