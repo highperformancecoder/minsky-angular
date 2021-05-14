@@ -222,29 +222,6 @@ export class CommandsManager {
     return;
   }
 
-  /*
-
-  proc exportItemAsCSV {} {
-    global workDir
-    set f [tk_getSaveFile -defaultextension .csv -filetypes {
-        {"CSV" .csv TEXT} {"All" {.*} TEXT}
-    } -initialdir $workDir ]
-    if {$f!=""} {
-        set workDir [file dirname $f]
-        eval minsky.canvas.item.exportAsCSV {$f}
-    }
-}
-
-proc exportItemAsImg {} {
-    global workDir type
-    set f [tk_getSaveFile -filetypes [imageFileTypes] -initialdir $workDir -typevariable type ]
-    if {$f==""} return
-    set workDir [file dirname $f]
-    renderImage $f $type minsky.canvas.item
-}
-
-  */
-
   static async exportItemAsImage(): Promise<void> {
     const exportImage = await dialog.showSaveDialog({
       title: 'Export item as...',
