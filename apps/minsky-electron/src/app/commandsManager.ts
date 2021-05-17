@@ -471,5 +471,19 @@ export class CommandsManager {
     return;
   }
 
+  static pasteAt(x: number, y: number): void {
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.PASTE}`,
+    });
+
+    RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.mousemove,
+      mouseX: x,
+      mouseY: y,
+    });
+
+    return;
+  }
+
   // static exportItemAsImg() {}
 }

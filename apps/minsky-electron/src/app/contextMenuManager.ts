@@ -205,7 +205,12 @@ export class ContextMenuManager {
         },
       }),
       new MenuItem({ label: 'Save selection as' }),
-      new MenuItem({ label: 'Paste selection' }),
+      new MenuItem({
+        label: 'Paste selection',
+        click: () => {
+          CommandsManager.pasteAt(x, y);
+        },
+      }),
       new MenuItem({
         label: 'Hide defining groups of selected variables',
         click: () => {
