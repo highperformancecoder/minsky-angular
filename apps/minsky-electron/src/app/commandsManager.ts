@@ -416,5 +416,16 @@ export class CommandsManager {
 
     return;
   }
+
+  static async getLockGroup(): Promise<unknown[]> {
+    const lockGroup = JSON.parse(
+      await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM_LOCK_GROUP,
+      })
+    );
+
+    return lockGroup;
+  }
+
   // static exportItemAsImg() {}
 }

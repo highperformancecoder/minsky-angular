@@ -142,6 +142,8 @@ export const commandsMapping = {
   CANVAS_ITEM_TOGGLE_LOCKED: '/minsky/canvas/item/toggleLocked',
   CANVAS_ITEM_NUM_CASES: '/minsky/canvas/item/numCases',
   CANVAS_ITEM_SET_NUM_CASES: '/minsky/canvas/item/setNumCases',
+  CANVAS_ITEM_LOCK_GROUP: '/minsky/canvas/item/lockGroup',
+  CANVAS_ITEM_LEAVE_LOCK_GROUP: '/minsky/canvas/item/leaveLockGroup',
 };
 
 export const minskyProcessReplyIndicators = {
