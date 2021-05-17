@@ -1,6 +1,7 @@
 import {
   commandsMapping,
   events,
+  green,
   MinskyProcessPayload,
   minskyProcessReplyIndicators,
   newLineCharacter,
@@ -539,7 +540,7 @@ export class RestServiceManager {
         }),
       ]);
 
-      console.log(`command: ${payload.command}, value:${res}`);
+      console.log(green(`command: ${payload.command}, value:${res}`));
       return res as string;
     } catch (error) {
       console.error(

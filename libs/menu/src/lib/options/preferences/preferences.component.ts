@@ -29,16 +29,7 @@ export class PreferencesComponent {
   }
 
   handleSubmit() {
-    // this.communicationService.sendMinskyCommandAndRender({
-    //   command
-    // })
-
-    console.log(
-      '🚀 ~ file: preferences.component.ts ~ line 38 ~ PreferencesComponent ~ handleSubmit ~ this.form.value',
-      this.form.value
-    );
-
-    // this.closeWindow();
+    // TODO:
   }
 
   closeWindow() {

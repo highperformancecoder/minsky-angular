@@ -293,10 +293,7 @@ export class CommunicationService {
       // When the event DOMContentLoaded occurs, it is safe to access the DOM
 
       const offset = this.windowUtilityService.getMinskyCanvasOffset();
-      // console.log(
-      //   '🚀 ~ file: communication.service.ts ~ line 298 ~ CommunicationService ~ document.addEventListener ~ offset',
-      //   offset
-      // );
+
       const offSetValue = 'top:' + offset.top + ' ' + 'left:' + offset.left;
 
       if (this.electronService.isElectron) {

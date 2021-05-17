@@ -2,6 +2,7 @@ import {
   CanvasItem,
   ClassType,
   commandsMapping,
+  green,
   isEmptyObject,
   rendererAppURL,
   toBoolean,
@@ -144,10 +145,9 @@ export class CommandsManager {
     const value = await this.getItemValue(x, y);
 
     const itemInfo: CanvasItem = { classType, value };
-    console.log(
-      '🚀 ~ file: commandsManager.ts ~ line 139 ~ CommandsManager ~ getItemInfo ~ itemInfo',
-      itemInfo
-    );
+
+    console.log(green(itemInfo));
+
     return itemInfo;
   }
 
@@ -329,6 +329,41 @@ export class CommandsManager {
       height: 100,
       width: 200,
     });
+  }
+
+  static async getItemDims(
+    x: number = null,
+    y: number = null,
+    reInvokeGetItemAt = false
+  ): Promise<number[]> {
+    try {
+      if (reInvokeGetItemAt) {
+        if (!x && !y) {
+          throw new Error('Please provide x and y when reInvokeGetItemAt=true');
+        }
+        RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
+        });
+      }
+
+      const dimsRes = await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM_DIMS,
+      });
+
+      if (dimsRes === '{}') {
+        return null;
+      }
+
+      const dims = JSON.parse(dimsRes) as Array<number>;
+
+      return dims;
+    } catch (error) {
+      console.error(
+        '🚀 ~ file: commandsManager.ts ~ line 361 ~ CommandsManager ~ error',
+        error
+      );
+      return null;
+    }
   }
   // static exportItemAsImg() {}
 }

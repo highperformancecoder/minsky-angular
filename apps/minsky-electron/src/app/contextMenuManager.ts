@@ -75,7 +75,7 @@ export class ContextMenuManager {
 
           default:
             ContextMenuManager.buildAndDisplayContextMenu(
-              ContextMenuManager.contextMenu(itemInfo),
+              await ContextMenuManager.contextMenu(itemInfo),
               mainWindow,
               x,
               y
@@ -123,7 +123,7 @@ export class ContextMenuManager {
 
       return menuItems;
     } else {
-      return ContextMenuManager.contextMenu(itemInfo);
+      return await ContextMenuManager.contextMenu(itemInfo);
     }
   }
 
@@ -155,7 +155,7 @@ export class ContextMenuManager {
 
       return menuItems;
     } else {
-      return ContextMenuManager.contextMenu(itemInfo);
+      return await ContextMenuManager.contextMenu(itemInfo);
     }
   }
 
@@ -274,19 +274,28 @@ export class ContextMenuManager {
     }
   }
 
-  private static contextMenu(itemInfo: CanvasItem) {
+  private static async contextMenu(itemInfo: CanvasItem) {
     let menuItems: MenuItem[] = [
       new MenuItem({ label: 'Help' }),
       new MenuItem({ label: 'Description' }),
     ];
+
+    let dims = null;
+    if (
+      itemInfo?.classType === ClassType.Variable ||
+      itemInfo?.classType === ClassType.VarConstant
+    ) {
+      dims = await CommandsManager.getItemDims();
+    }
 
     switch (itemInfo?.classType) {
       case ClassType.Variable:
       case ClassType.VarConstant:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: `Value ${itemInfo?.value || ''}` }),
-          new MenuItem({ label: 'Dims' }),
+          dims && dims.length
+            ? new MenuItem({ label: `Dims ${dims.toString()}` })
+            : new MenuItem({ label: `Value ${itemInfo?.value || ''}` }),
           new MenuItem({ label: 'Find definition' }),
           new MenuItem({
             label: 'Select all instances',
