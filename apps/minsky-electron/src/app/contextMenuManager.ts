@@ -445,14 +445,7 @@ export class ContextMenuManager {
       case ClassType.SwitchIcon:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: 'Add case' }),
-          new MenuItem({ label: 'Delete case' }),
-          new MenuItem({
-            label: 'Flip',
-            click: async () => {
-              await CommandsManager.flip();
-            },
-          }),
+          ...(await ContextMenuManager.buildContextMenuForSwitchIcon()),
         ];
 
         break;
@@ -494,6 +487,31 @@ export class ContextMenuManager {
           RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_DELETE_ITEM,
           });
+        },
+      }),
+    ];
+
+    return menuItems;
+  }
+
+  private static async buildContextMenuForSwitchIcon(): Promise<MenuItem[]> {
+    const menuItems = [
+      new MenuItem({
+        label: 'Add case',
+        click: async () => {
+          await CommandsManager.incrCase(1);
+        },
+      }),
+      new MenuItem({
+        label: 'Delete case',
+        click: async () => {
+          await CommandsManager.incrCase(-1);
+        },
+      }),
+      new MenuItem({
+        label: 'Flip',
+        click: async () => {
+          await CommandsManager.flip();
         },
       }),
     ];

@@ -396,5 +396,25 @@ export class CommandsManager {
       return null;
     }
   }
+
+  static async incrCase(delta: number): Promise<void> {
+    const numCases = Number(
+      await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM_NUM_CASES,
+      })
+    );
+
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
+        numCases + delta
+      }`,
+    });
+
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CANVAS_REQUEST_REDRAW}`,
+    });
+
+    return;
+  }
   // static exportItemAsImg() {}
 }
