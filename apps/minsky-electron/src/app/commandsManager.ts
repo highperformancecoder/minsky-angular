@@ -427,5 +427,49 @@ export class CommandsManager {
     return lockGroup;
   }
 
+  static bookmarkThisPosition(): void {
+    WindowManager.createMenuPopUpWithRouting({
+      width: 420,
+      height: 250,
+      title: 'Bookmarks',
+      url: `${rendererAppURL}/#/headless/menu/bookmarks/add-bookmark`,
+    });
+
+    return;
+  }
+
+  static async getModelX(): Promise<number> {
+    const x = Number(
+      await RestServiceManager.getCommandValue({ command: commandsMapping.X })
+    );
+
+    return x;
+  }
+
+  static async getModelY(): Promise<number> {
+    const y = Number(
+      await RestServiceManager.getCommandValue({ command: commandsMapping.Y })
+    );
+
+    return y;
+  }
+
+  static async bookmarkAt(x: number, y: number): Promise<void> {
+    //  centre x,y in the visible canvas
+
+    const modelX = await this.getModelX();
+    const modelY = await this.getModelY();
+
+    const delX = 0.5 * WindowManager.canvasWidth - x + modelX;
+    const delY = 0.5 * WindowManager.canvasHeight - y + modelY;
+
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.MOVE_TO} [${delX},${delY}]`,
+    });
+
+    this.bookmarkThisPosition();
+    return;
+  }
+
   // static exportItemAsImg() {}
 }

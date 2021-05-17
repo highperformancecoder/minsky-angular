@@ -6,6 +6,7 @@ import {
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { dialog, Menu, shell } from 'electron';
+import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
@@ -474,12 +475,7 @@ export class MenuManager {
           {
             label: 'Bookmark this position',
             click() {
-              WindowManager.createMenuPopUpWithRouting({
-                width: 420,
-                height: 250,
-                title: 'Bookmarks',
-                url: `${rendererAppURL}/#/headless/menu/bookmarks/add-bookmark`,
-              });
+              CommandsManager.bookmarkThisPosition();
             },
           },
           {

@@ -88,7 +88,7 @@ export class ContextMenuManager {
       }
 
       ContextMenuManager.buildAndDisplayContextMenu(
-        ContextMenuManager.canvasContext(),
+        ContextMenuManager.canvasContext(x, y),
         mainWindow,
         x,
         y
@@ -185,7 +185,7 @@ export class ContextMenuManager {
     return menuItems;
   }
 
-  private static canvasContext(): MenuItem[] {
+  private static canvasContext(x: number, y: number): MenuItem[] {
     const menuItems = [
       new MenuItem({ label: 'Help' }),
       new MenuItem({
@@ -230,7 +230,12 @@ export class ContextMenuManager {
           });
         },
       }),
-      new MenuItem({ label: 'Bookmark here' }),
+      new MenuItem({
+        label: 'Bookmark here',
+        click: async () => {
+          await CommandsManager.bookmarkAt(x, y);
+        },
+      }),
       new MenuItem({
         label: 'Group',
         click: () => {
