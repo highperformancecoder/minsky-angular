@@ -280,63 +280,12 @@ export class ContextMenuManager {
       new MenuItem({ label: 'Description' }),
     ];
 
-    let dims = null;
-    if (
-      itemInfo?.classType === ClassType.Variable ||
-      itemInfo?.classType === ClassType.VarConstant
-    ) {
-      dims = await CommandsManager.getItemDims();
-    }
-
     switch (itemInfo?.classType) {
       case ClassType.Variable:
       case ClassType.VarConstant:
         menuItems = [
           ...menuItems,
-          dims && dims.length
-            ? new MenuItem({ label: `Dims ${dims.toString()}` })
-            : new MenuItem({ label: `Value ${itemInfo?.value || ''}` }),
-          new MenuItem({ label: 'Find definition' }),
-          new MenuItem({
-            label: 'Select all instances',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_SELECT_ALL_VARIABLES,
-              });
-            },
-          }),
-          new MenuItem({ label: 'Find all instances' }),
-          new MenuItem({
-            label: 'Rename all instances',
-            click: async () => {
-              await CommandsManager.renameAllInstances(itemInfo);
-            },
-          }),
-          new MenuItem({ label: 'Edit' }),
-          new MenuItem({
-            label: 'Copy item',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_COPY_ITEM,
-              });
-            },
-          }),
-          new MenuItem({ label: 'Add integral' }),
-          new MenuItem({ label: 'Display variable on tab' }),
-          new MenuItem({
-            label: 'Flip',
-            click: async () => {
-              await CommandsManager.flip();
-            },
-          }),
-          new MenuItem({ label: 'Import CSV' }),
-          new MenuItem({ label: 'Display CSV values on tab' }),
-          new MenuItem({
-            label: 'Export as CSV',
-            click: async () => {
-              await CommandsManager.exportItemAsCSV();
-            },
-          }),
+          ...(await ContextMenuManager.buildContextMenuForVariables(itemInfo)),
         ];
         break;
 
@@ -527,8 +476,7 @@ export class ContextMenuManager {
       case ClassType.Lock:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: 'Unlock' }),
-          new MenuItem({ label: 'Lock' }),
+          ...(await ContextMenuManager.buildContextMenuForLock()),
         ];
 
         break;
@@ -546,6 +494,88 @@ export class ContextMenuManager {
           RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_DELETE_ITEM,
           });
+        },
+      }),
+    ];
+
+    return menuItems;
+  }
+
+  private static async buildContextMenuForLock(): Promise<MenuItem[]> {
+    const menuItems = [];
+
+    const isItemLocked = await CommandsManager.isItemLocked();
+
+    const toggleLocked = () => {
+      RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.CANVAS_ITEM_TOGGLE_LOCKED,
+      });
+    };
+
+    if (isItemLocked) {
+      menuItems.push(new MenuItem({ label: 'Unlock', click: toggleLocked }));
+    } else {
+      menuItems.push(new MenuItem({ label: 'Lock', click: toggleLocked }));
+    }
+
+    return menuItems;
+  }
+
+  private static async buildContextMenuForVariables(
+    itemInfo: CanvasItem
+  ): Promise<MenuItem[]> {
+    let dims = null;
+
+    if (
+      itemInfo?.classType === ClassType.Variable ||
+      itemInfo?.classType === ClassType.VarConstant
+    ) {
+      dims = await CommandsManager.getItemDims();
+    }
+
+    const menuItems = [
+      dims && dims.length
+        ? new MenuItem({ label: `Dims ${dims.toString()}` })
+        : new MenuItem({ label: `Value ${itemInfo?.value || ''}` }),
+      new MenuItem({ label: 'Find definition' }),
+      new MenuItem({
+        label: 'Select all instances',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_SELECT_ALL_VARIABLES,
+          });
+        },
+      }),
+      new MenuItem({ label: 'Find all instances' }),
+      new MenuItem({
+        label: 'Rename all instances',
+        click: async () => {
+          await CommandsManager.renameAllInstances(itemInfo);
+        },
+      }),
+      new MenuItem({ label: 'Edit' }),
+      new MenuItem({
+        label: 'Copy item',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_COPY_ITEM,
+          });
+        },
+      }),
+      new MenuItem({ label: 'Add integral' }),
+      new MenuItem({ label: 'Display variable on tab' }),
+      new MenuItem({
+        label: 'Flip',
+        click: async () => {
+          await CommandsManager.flip();
+        },
+      }),
+      new MenuItem({ label: 'Import CSV' }),
+      new MenuItem({ label: 'Display CSV values on tab' }),
+      new MenuItem({
+        label: 'Export as CSV',
+        click: async () => {
+          await CommandsManager.exportItemAsCSV();
         },
       }),
     ];

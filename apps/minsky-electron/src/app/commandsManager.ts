@@ -365,5 +365,36 @@ export class CommandsManager {
       return null;
     }
   }
+
+  static async isItemLocked(
+    x: number = null,
+    y: number = null,
+    reInvokeGetItemAt = false
+  ): Promise<boolean> {
+    try {
+      if (reInvokeGetItemAt) {
+        if (!x && !y) {
+          throw new Error('Please provide x and y when reInvokeGetItemAt=true');
+        }
+        RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
+        });
+      }
+
+      const isLocked = toBoolean(
+        await RestServiceManager.getCommandValue({
+          command: commandsMapping.CANVAS_ITEM_DIMS,
+        })
+      );
+
+      return isLocked;
+    } catch (error) {
+      console.error(
+        '🚀 ~ file: commandsManager.ts ~ line 361 ~ CommandsManager ~ error',
+        error
+      );
+      return null;
+    }
+  }
   // static exportItemAsImg() {}
 }

@@ -139,6 +139,7 @@ export const commandsMapping = {
   CANVAS_ITEM_RENDER_TO_EMF: '/minsky/canvas/item/renderToEMF',
   CANVAS_ITEM_RENDER_TO_PS: '/minsky/canvas/item/renderToPS',
   CANVAS_ITEM_DIMS: '/minsky/canvas/item/dims',
+  CANVAS_ITEM_TOGGLE_LOCKED: '/minsky/canvas/item/toggleLocked',
 };
 
 export const minskyProcessReplyIndicators = {
