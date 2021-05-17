@@ -485,5 +485,19 @@ export class CommandsManager {
     return;
   }
 
+  static async saveSelectionAsFile(): Promise<void> {
+    const saveDialog = await dialog.showSaveDialog({});
+
+    if (saveDialog.canceled || !saveDialog.filePath) {
+      return;
+    }
+
+    RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.SAVE_SELECTION_AS_FILE} "${saveDialog.filePath}"`,
+    });
+
+    return;
+  }
+
   // static exportItemAsImg() {}
 }

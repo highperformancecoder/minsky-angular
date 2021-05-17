@@ -151,6 +151,10 @@ export class MenuManager {
                 } else {
                   const saveDialog = await dialog.showSaveDialog({});
 
+                  if (saveDialog.canceled || !saveDialog.filePath) {
+                    return;
+                  }
+
                   RestServiceManager.handleMinskyProcess({
                     command: commandsMapping.SAVE,
                     filePath: saveDialog.filePath,
@@ -164,6 +168,11 @@ export class MenuManager {
             accelerator: 'CmdOrCtrl + Shift + S',
             async click() {
               const saveDialog = await dialog.showSaveDialog({});
+
+              if (saveDialog.canceled || !saveDialog.filePath) {
+                return;
+              }
+
               RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
               });

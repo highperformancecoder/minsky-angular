@@ -144,6 +144,7 @@ export const commandsMapping = {
   CANVAS_ITEM_SET_NUM_CASES: '/minsky/canvas/item/setNumCases',
   CANVAS_ITEM_LOCK_GROUP: '/minsky/canvas/item/lockGroup',
   CANVAS_ITEM_LEAVE_LOCK_GROUP: '/minsky/canvas/item/leaveLockGroup',
+  SAVE_SELECTION_AS_FILE: '/minsky/saveSelectionAsFile',
 };
 
 export const minskyProcessReplyIndicators = {

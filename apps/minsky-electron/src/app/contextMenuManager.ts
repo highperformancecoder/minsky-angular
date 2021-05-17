@@ -204,7 +204,12 @@ export class ContextMenuManager {
           });
         },
       }),
-      new MenuItem({ label: 'Save selection as' }),
+      new MenuItem({
+        label: 'Save selection as',
+        click: async () => {
+          await CommandsManager.saveSelectionAsFile();
+        },
+      }),
       new MenuItem({
         label: 'Paste selection',
         click: () => {
