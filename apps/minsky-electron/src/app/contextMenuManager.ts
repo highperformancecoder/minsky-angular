@@ -400,44 +400,7 @@ export class ContextMenuManager {
       case ClassType.Group:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: 'Edit' }),
-          new MenuItem({ label: 'Open in canvas' }),
-          new MenuItem({
-            label: 'Zoom to display',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_ZOOM_TO_DISPLAY,
-              });
-            },
-          }),
-          new MenuItem({ label: 'Remove plot icon' }),
-          new MenuItem({
-            label: 'Copy',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_COPY_ITEM,
-              });
-            },
-          }),
-          new MenuItem({ label: 'Save group as' }),
-          new MenuItem({
-            label: 'Flip',
-            click: async () => {
-              await CommandsManager.flip();
-            },
-          }),
-          new MenuItem({ label: 'Flip Contents' }),
-          new MenuItem({
-            label: 'Ungroup',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_UNGROUP_ITEM,
-              });
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_REQUEST_REDRAW,
-              });
-            },
-          }),
+          ...(await ContextMenuManager.buildContextMenuForGroup()),
         ];
         break;
 
@@ -491,6 +454,83 @@ export class ContextMenuManager {
         click: () => {
           RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_DELETE_ITEM,
+          });
+        },
+      }),
+    ];
+
+    return menuItems;
+  }
+
+  private static async buildContextMenuForGroup(): Promise<MenuItem[]> {
+    const menuItems = [
+      new MenuItem({ label: 'Edit' }),
+      new MenuItem({
+        label: 'Open in canvas',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_OPEN_GROUP_IN_CANVAS,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Zoom to display',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_ZOOM_TO_DISPLAY,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Remove plot icon',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_ITEM_REMOVE_DISPLAY_PLOT,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Copy',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_COPY_ITEM,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Save group as',
+        click: () => {
+          // TODO:
+          RestServiceManager.handleMinskyProcess({
+            command: `${commandsMapping.CANVAS_SAVE_GROUP_AS_FILE} "${__dirname}/aaa.txt"`,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Flip',
+        click: async () => {
+          await CommandsManager.flip();
+        },
+      }),
+      new MenuItem({
+        label: 'Flip Contents',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_ITEM_FLIP_CONTENTS,
+          });
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_REQUEST_REDRAW,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Ungroup',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_UNGROUP_ITEM,
+          });
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_REQUEST_REDRAW,
           });
         },
       }),
