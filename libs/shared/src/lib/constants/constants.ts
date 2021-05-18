@@ -156,6 +156,9 @@ export const commandsMapping = {
   CANVAS_ITEM_REMOVE_DISPLAY_PLOT: '/minsky/canvas/item/removeDisplayPlot',
   CANVAS_ITEM_FLIP_CONTENTS: '/minsky/canvas/item/flipContents',
   CANVAS_SAVE_GROUP_AS_FILE: '/minsky/saveGroupAsFile',
+  CANVAS_TOGGLE_COUPLED: '/minsky/toggleCoupled',
+  CANVAS_ITEM_READ_DATA: '/minsky/canvas/item/readData',
+  CANVAS_ITEM_PORT_VALUES: '/minsky/canvas/item/portValues',
 };
 
 export const minskyProcessReplyIndicators = {

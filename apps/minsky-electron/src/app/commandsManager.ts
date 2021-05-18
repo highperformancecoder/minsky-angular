@@ -572,5 +572,15 @@ proc findDefinition {} {
     return varTabDisplay;
   }
 
+  static async getFilePathUsingSaveDialog(): Promise<string> {
+    const saveDialog = await dialog.showSaveDialog({});
+
+    if (saveDialog.canceled || !saveDialog.filePath) {
+      return null;
+    }
+
+    return saveDialog.filePath;
+  }
+
   // static exportItemAsImg() {}
 }

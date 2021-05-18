@@ -308,39 +308,7 @@ export class ContextMenuManager {
       case ClassType.DataOp:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: 'Port values' }),
-          new MenuItem({ label: 'Edit' }),
-          new MenuItem({ label: 'Import Data' }),
-          new MenuItem({ label: 'Initialize Random' }),
-          new MenuItem({
-            label: 'Copy item',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_COPY_ITEM,
-              });
-            },
-          }),
-          new MenuItem({
-            label: 'Flip',
-            click: async () => {
-              await CommandsManager.flip();
-            },
-          }),
-          new MenuItem({ label: 'Toggle var binding' }),
-          new MenuItem({
-            label: 'Select all instances',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_SELECT_ALL_VARIABLES,
-              });
-            },
-          }),
-          new MenuItem({
-            label: 'Rename all instances',
-            click: async () => {
-              await CommandsManager.renameAllInstances(itemInfo);
-            },
-          }),
+          ...(await ContextMenuManager.buildContextMenuForOperations(itemInfo)),
         ];
         break;
 
@@ -459,6 +427,94 @@ export class ContextMenuManager {
       }),
     ];
 
+    return menuItems;
+  }
+
+  private static async buildContextMenuForOperations(
+    itemInfo: CanvasItem
+  ): Promise<MenuItem[]> {
+    let portValues = 'unknown';
+
+    portValues = await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_ITEM_PORT_VALUES,
+    }).catch(() => 'unknown');
+
+    let menuItems = [
+      new MenuItem({ label: `Port values ${portValues}}` }),
+      new MenuItem({ label: 'Edit' }),
+    ];
+
+    if ((await CommandsManager.getItemType()) === 'data') {
+      menuItems.push(
+        new MenuItem({
+          label: 'Import Data',
+          click: async () => {
+            const filePath = await CommandsManager.getFilePathUsingSaveDialog();
+
+            if (filePath) {
+              RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.CANVAS_ITEM_READ_DATA} "${filePath}"`,
+              });
+            }
+          },
+        })
+      );
+
+      // TODO:
+      menuItems.push(new MenuItem({ label: 'Initialize Random' }));
+    }
+
+    menuItems = [
+      ...menuItems,
+      new MenuItem({
+        label: 'Copy item',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_COPY_ITEM,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Flip',
+        click: async () => {
+          await CommandsManager.flip();
+        },
+      }),
+    ];
+
+    if ((await CommandsManager.getItemType()) === 'integrate') {
+      menuItems.push(
+        new MenuItem({
+          label: 'Toggle var binding',
+          click: () => {
+            RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.CANVAS_TOGGLE_COUPLED,
+            });
+            RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.CANVAS_REQUEST_REDRAW,
+            });
+          },
+        })
+      );
+      menuItems.push(
+        new MenuItem({
+          label: 'Select all instances',
+          click: () => {
+            RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.CANVAS_SELECT_ALL_VARIABLES,
+            });
+          },
+        })
+      );
+      menuItems.push(
+        new MenuItem({
+          label: 'Rename all instances',
+          click: async () => {
+            await CommandsManager.renameAllInstances(itemInfo);
+          },
+        })
+      );
+    }
     return menuItems;
   }
 
