@@ -48,7 +48,9 @@ export class WiringComponent implements OnInit, OnDestroy {
         const posY = scrollableArea.height/2 - scrollTop;
         
         this.electronService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.MOVE_TO} [${posX},${posY}]`,
+          command: commandsMapping.MOVE_TO,
+          mouseX : posX,
+          mouseY : posY
         });
       };
 
@@ -73,7 +75,7 @@ export class WiringComponent implements OnInit, OnDestroy {
     this.mouseMove$ = fromEvent<MouseEvent>(
       minskyCanvasElement,
       'mousemove'
-    ).pipe(sampleTime(60)); // This is approx 15 fps (having high fps doesn't seem feasible [minsky performance limit] and lower fps will not be smooth)
+    ).pipe(sampleTime(30)); // FPS=1000/sampleTime
 
     this.mouseMove$.subscribe((event: MouseEvent) => {
       this.cmService.mouseEvents('CANVAS_EVENT', event);
