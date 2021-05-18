@@ -145,6 +145,13 @@ export const commandsMapping = {
   CANVAS_ITEM_LOCK_GROUP: '/minsky/canvas/item/lockGroup',
   CANVAS_ITEM_LEAVE_LOCK_GROUP: '/minsky/canvas/item/leaveLockGroup',
   SAVE_SELECTION_AS_FILE: '/minsky/saveSelectionAsFile',
+  CANVAS_FIND_VARIABLE_DEFINITION: '/minsky/canvas/findVariableDefinition',
+  CANVAS_ITEM_INDICATOR: '/minsky/canvas/itemIndicator',
+  CANVAS_ADD_INTEGRAL: '/minsky/canvas/addIntegral',
+  CANVAS_ITEM_DEFINED: '/minsky/canvas/item/defined',
+  CANVAS_ITEM_TYPE: '/minsky/canvas/item/type',
+  CANVAS_ITEM_VAR_TAB_DISPLAY: '/minsky/canvas/item/varTabDisplay',
+  CANVAS_ITEM_TOGGLE_VAR_TAB_DISPLAY: '/minsky/canvas/item/toggleVarTabDisplay',
 };
 
 export const minskyProcessReplyIndicators = {

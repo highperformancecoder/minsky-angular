@@ -498,6 +498,79 @@ export class CommandsManager {
 
     return;
   }
+  /*
+proc findDefinition {} {
+    set cwidth [.wiring.canvas cget -width]
+    set cheight [.wiring.canvas cget -height]
+    if [findVariableDefinition] {
+        if {abs([minsky.canvas.item.x]-0.5*$cwidth)>0.5*$cwidth ||
+            abs([minsky.canvas.item.y]-0.5*$cheight)>0.5*$cheight} {
+            # recentre found item
+            set offsX [expr [minsky.canvas.model.x]-[minsky.canvas.item.x]+0.5*$cwidth]
+            set offsY [expr [minsky.canvas.model.y]-[minsky.canvas.item.y]+0.5*$cheight]
+            panCanvas $offsX $offsY
+            // TODO: what is panCanvas
+        }
+        canvas.itemIndicator 1
+    } else {
+        tk_messageBox -message "Definition not found"
+    }
+}
+ */
+  static async findDefinition(): Promise<void> {
+    // TODO:
+    const findVariableDefinition = await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_FIND_VARIABLE_DEFINITION,
+    });
+
+    if (findVariableDefinition) {
+      // if ((Math.abs(itemX - 0.5 * WindowManager.canvasWidth) > 0.5 * WindowManager.canvasWidth ||
+      //   (Math.abs(itemY - 0.5 * WindowManager.canvasHeight) > 0.5 * WindowManager.canvasHeight
+      //   ){
+      //   // recenter found item
+      // }
+
+      RestServiceManager.handleMinskyProcess({
+        command: `${commandsMapping.CANVAS_ITEM_INDICATOR} 1`,
+      });
+    } else {
+      //TODO: start here -> tk_messageBox -message "Definition not found"
+    }
+
+    return;
+  }
+
+  static async isItemDefined(): Promise<boolean> {
+    const isItemDefined = toBoolean(
+      await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM_DEFINED,
+      })
+    );
+
+    return isItemDefined;
+  }
+
+  static async getItemType(): Promise<string> {
+    const type = (
+      await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM_TYPE,
+      })
+    )
+      .slice(1, -1)
+      .trim();
+
+    return type;
+  }
+
+  static async getVarTabDisplay(): Promise<boolean> {
+    const varTabDisplay = toBoolean(
+      await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM_VAR_TAB_DISPLAY,
+      })
+    );
+
+    return varTabDisplay;
+  }
 
   // static exportItemAsImg() {}
 }

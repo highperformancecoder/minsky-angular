@@ -171,7 +171,6 @@ export class ContextMenuManager {
           });
         },
       }),
-      new MenuItem({ label: 'Browse object' }),
       new MenuItem({
         label: 'Delete wire',
         click: () => {
@@ -487,7 +486,6 @@ export class ContextMenuManager {
 
     menuItems = [
       ...menuItems,
-      new MenuItem({ label: 'Browse Object' }),
       new MenuItem({
         label: `Delete ${itemInfo.classType}`,
         click: () => {
@@ -595,7 +593,13 @@ export class ContextMenuManager {
       dims && dims.length
         ? new MenuItem({ label: `Dims ${dims.toString()}` })
         : new MenuItem({ label: `Value ${itemInfo?.value || ''}` }),
-      new MenuItem({ label: 'Find definition' }),
+      new MenuItem({
+        label: 'Find definition',
+        click: async () => {
+          // TODO:
+          await CommandsManager.findDefinition();
+        },
+      }),
       new MenuItem({
         label: 'Select all instances',
         click: () => {
@@ -620,23 +624,52 @@ export class ContextMenuManager {
           });
         },
       }),
-      new MenuItem({ label: 'Add integral' }),
-      new MenuItem({ label: 'Display variable on tab' }),
+      new MenuItem({
+        label: 'Add integral',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_ADD_INTEGRAL,
+          });
+        },
+      }),
+    ];
+
+    if (await CommandsManager.isItemDefined()) {
+      // const varTabDisplay = await CommandsManager.getVarTabDisplay();
+      menuItems.push(
+        new MenuItem({
+          label: 'Display variable on tab',
+          click: () => {
+            RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.CANVAS_ITEM_TOGGLE_VAR_TAB_DISPLAY,
+            });
+          },
+        })
+      );
+    }
+
+    menuItems.push(
       new MenuItem({
         label: 'Flip',
         click: async () => {
           await CommandsManager.flip();
         },
-      }),
-      new MenuItem({ label: 'Import CSV' }),
-      new MenuItem({ label: 'Display CSV values on tab' }),
+      })
+    );
+
+    if ((await CommandsManager.getItemType()) === 'parameter') {
+      menuItems.push(new MenuItem({ label: 'Import CSV' }));
+      menuItems.push(new MenuItem({ label: 'Display CSV values on tab' }));
+    }
+
+    menuItems.push(
       new MenuItem({
         label: 'Export as CSV',
         click: async () => {
           await CommandsManager.exportItemAsCSV();
         },
-      }),
-    ];
+      })
+    );
 
     return menuItems;
   }
