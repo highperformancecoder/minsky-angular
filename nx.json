@@ -18,13 +18,7 @@
     "default": {
       "runner": "@nrwl/workspace/tasks-runners/default",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "lint",
-          "test",
-          "e2e",
-          "compodoc"
-        ]
+        "cacheableOperations": ["build", "lint", "test", "e2e", "compodoc"]
       }
     }
   },
@@ -34,9 +28,7 @@
     },
     "minsky-web-e2e": {
       "tags": [],
-      "implicitDependencies": [
-        "minsky-web"
-      ]
+      "implicitDependencies": ["minsky-web"]
     },
     "minsky-electron": {
       "tags": []
