@@ -1,9 +1,5 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
-import {
-  CommunicationService,
-  ElectronService,
-  StateManagementService,
-} from '@minsky/core';
+import { CommunicationService, ElectronService } from '@minsky/core';
 import {
   availableOperations,
   commandsMapping,
@@ -12,7 +8,7 @@ import {
 } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
-import { filter, map, pairwise, sampleTime } from 'rxjs/operators';
+import { sampleTime } from 'rxjs/operators';
 
 @AutoUnsubscribe()
 @Component({
@@ -23,8 +19,6 @@ import { filter, map, pairwise, sampleTime } from 'rxjs/operators';
 export class WiringComponent implements OnInit, OnDestroy {
   mouseMove$: Observable<any>;
   offsetTop: string;
-  previousScrollTop: number;
-  previousScrollLeft: number;
 
   _availableOperations = availableOperations;
   _commandsMapping = commandsMapping;
@@ -32,33 +26,31 @@ export class WiringComponent implements OnInit, OnDestroy {
   constructor(
     public cmService: CommunicationService,
     private electronService: ElectronService,
-    private stateManagementService: StateManagementService,
     private zone: NgZone
-  ) {
-    this.previousScrollLeft = 0;
-    this.previousScrollTop = 0; // TODO:: Reinitialize them whenever new model is loaded
-  }
+  ) {}
 
   ngOnInit() {
     const minskyCanvasContainer = WindowUtilitiesGlobal.getMinskyContainerElement();
     const minskyCanvasElement = WindowUtilitiesGlobal.getMinskyCanvasElement();
+
+    const scrollableArea = WindowUtilitiesGlobal.getScrollableArea();
+
     this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
 
     this.zone.runOutsideAngular(() => {
       if (this.electronService.isElectron) {
         const handleScroll = (scrollTop: number, scrollLeft: number) => {
-          const diffX = scrollLeft - this.previousScrollLeft;
-          const diffY = scrollTop - this.previousScrollTop;
-
-          const newX = this.stateManagementService.modelX - diffX;
-          const newY = this.stateManagementService.modelY - diffY;
+          const posX = scrollableArea.width / 2 - scrollLeft;
+          const posY = scrollableArea.height / 2 - scrollTop;
 
           this.electronService.sendMinskyCommandAndRender({
-            command: `${commandsMapping.MOVE_TO} [${newX},${newY}]`,
+            command: commandsMapping.MOVE_TO,
+            mouseX: posX,
+            mouseY: posY,
           });
         };
 
-        minskyCanvasContainer.addEventListener('scroll', (e) => {
+        minskyCanvasContainer.addEventListener('scroll', () => {
           handleScroll(
             minskyCanvasContainer.scrollTop,
             minskyCanvasContainer.scrollLeft
@@ -81,19 +73,27 @@ export class WiringComponent implements OnInit, OnDestroy {
         this.mouseMove$ = fromEvent<MouseEvent>(
           minskyCanvasElement,
           'mousemove'
-        ).pipe(
-          sampleTime(70),
-          pairwise(),
-          map(([a, b]) => ({
-            event: b,
-            ignore: a.x == b.x && a.y == b.y,
-          })),
-          filter((e) => e.ignore)
-        ); // This is approx 15 fps (having high fps doesn't seem feasible [minsky performance limit] and lower fps will not be smooth)
+        ).pipe(sampleTime(30)); /// FPS=1000/sampleTime
 
         this.mouseMove$.subscribe((e) => {
-          this.cmService.mouseEvents('CANVAS_EVENT', e.event as MouseEvent);
+          this.cmService.mouseEvents('CANVAS_EVENT', e as MouseEvent);
         });
+
+        // this.mouseMove$ = fromEvent<MouseEvent>(
+        //   minskyCanvasElement,
+        //   'mousemove'
+        // ).pipe(
+        //   sampleTime(30),
+        //   pairwise(),
+        //   map(([a, b]) => ({
+        //     event: b,
+        //     ignore: a.x == b.x && a.y == b.y,
+        //   })),
+        //   filter((e) => !e.ignore)
+        // );
+        // this.mouseMove$.subscribe((e) => {
+        //   this.cmService.mouseEvents('CANVAS_EVENT', e.event as MouseEvent);
+        // });
 
         // this.minskyCanvas.addEventListener('click', (event: MouseEvent) => {
         //   this.cmService.mouseEvents('CANVAS_EVENT', event);
@@ -110,6 +110,7 @@ export class WiringComponent implements OnInit, OnDestroy {
           this.cmService.mouseEvents('CANVAS_EVENT', event);
         });
       }
+
       // this.cmService.dispatchEvents('canvasEvent');
     });
   }

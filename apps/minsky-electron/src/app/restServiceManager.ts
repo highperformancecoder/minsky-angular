@@ -18,7 +18,6 @@ import {
   WriteStream,
 } from 'fs';
 import * as JSONStream from 'JSONStream';
-import { default as PQueue } from 'p-queue';
 import { join } from 'path';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
@@ -28,12 +27,6 @@ export class RestServiceManager {
   static minskyProcess: ChildProcess;
   static currentMinskyModelFilePath: string;
   static isFirstStart = true;
-  private static queue = new PQueue({
-    concurrency: 1,
-    autoStart: false,
-    interval: 15,
-    intervalCap: 1,
-  });
   private static isRecording = false;
   private static recordingWriteStream: WriteStream;
   private static recordingReadStream: ReadStream;
@@ -41,25 +34,150 @@ export class RestServiceManager {
   private static JSONStreamWriter;
   static isCanvasEdited = false;
 
-  static handleMinskyProcess(payload: MinskyProcessPayload) {
-    // TODO:: Add Logic to merge consecutive mouse move evets
-    // If queue already has a move move event, just change the coordinates and do not add new event to the queue
-    // Store index of / pointer to mouse move event in the queue
-    // we can do this only with consecutive mouse move events
+  private static lastMouseMovePayload: MinskyProcessPayload = null;
+  private static lastModelMoveToPayload: MinskyProcessPayload = null;
+  private static payloadDataQueue: Array<MinskyProcessPayload> = [];
+  private static runningCommand = false;
+
+  private static processCommandsInQueueNew() {
+    // Should be on a separate thread......? Janak
+    if (!this.runningCommand && this.payloadDataQueue.length > 0) {
+      const nextPayload = this.payloadDataQueue.shift();
+
+      if (nextPayload.command === commandsMapping.mousemove) {
+        this.lastMouseMovePayload = null;
+      } else if (nextPayload.command === commandsMapping.MOVE_TO) {
+        this.lastModelMoveToPayload = null;
+      }
+      this.runningCommand = true;
+      this.handleMinskyPayload(nextPayload);
+    }
+  }
+
+  public static handleMinskyProcess(payload: MinskyProcessPayload) {
+    const wasQueueEmpty = this.payloadDataQueue.length === 0;
+    const isStartProcessCommand =
+      payload.command === commandsMapping.START_MINSKY_PROCESS;
+    if (isStartProcessCommand) {
+      this.startMinskyProcess(payload);
+      return;
+    } else {
+      if (!this.minskyProcess) {
+        logError('Minsky process is not running yet.');
+        return;
+      }
+      if (payload.command === commandsMapping.mousemove) {
+        if (this.lastMouseMovePayload !== null) {
+          this.lastMouseMovePayload.mouseX = payload.mouseX;
+          this.lastMouseMovePayload.mouseY = payload.mouseY;
+        } else {
+          this.lastMouseMovePayload = payload;
+          this.payloadDataQueue.push(payload);
+        }
+        this.lastModelMoveToPayload = null;
+      } else if (payload.command === commandsMapping.MOVE_TO) {
+        if (this.lastModelMoveToPayload !== null) {
+          this.lastModelMoveToPayload.mouseX = payload.mouseX;
+          this.lastModelMoveToPayload.mouseY = payload.mouseY;
+        } else {
+          this.lastModelMoveToPayload = payload;
+          this.payloadDataQueue.push(payload);
+        }
+        this.lastMouseMovePayload = null;
+      } else {
+        this.lastMouseMovePayload = null;
+        this.lastMouseMovePayload = null;
+        this.payloadDataQueue.push(payload);
+      }
+    }
+    if (!this.runningCommand && wasQueueEmpty) {
+      this.processCommandsInQueueNew();
+    }
+  }
+
+  private static startMinskyProcess(payload: MinskyProcessPayload) {
+    if (this.minskyProcess) {
+      this.minskyProcess.stdout.emit('close');
+      this.minskyProcess = null;
+      this.payloadDataQueue = [];
+      this.lastMouseMovePayload = null;
+      this.lastModelMoveToPayload = null;
+    }
+    try {
+      if (this.isFirstStart) {
+        this.isFirstStart = false;
+      }
+
+      const { filePath, showServiceStartedDialog = true } = payload;
+      StoreManager.store.set('minskyRESTServicePath', filePath);
+
+      this.minskyProcess = spawn(filePath);
+      if (this.minskyProcess) {
+        // this.minskyProcess.stdout.once('data', () => {
+        //   // Earlier we were pausing queue here
+        // });
+
+        this.minskyProcess.stdout.on('data', (data) => {
+          const stdout = data.toString().trim();
+          const message = `stdout: ${stdout}`;
+          log.info(message);
+
+          this.emitReplyEvent(message);
+
+          // if (stdout.includes('=>') || stdout === '{}') {
+          //   //this.queue.start();
+          // }
+
+          if (stdout.includes('renderFrame=>')) {
+            this.runningCommand = false;
+            this.processCommandsInQueueNew();
+          }
+
+          RestServiceManager.handleStdout(stdout);
+        });
+
+        this.minskyProcess.stderr.on('data', (data) => {
+          const message = `stderr: ${data}`;
+          log.info(message);
+
+          this.processCommandsInQueueNew();
+
+          this.emitReplyEvent(message);
+        });
+
+        this.minskyProcess.on('error', (error) => {
+          const message = `error: ${error.message}`;
+          log.info(message);
+
+          this.emitReplyEvent(message);
+        });
+
+        this.minskyProcess.on('close', (code) => {
+          log.info(`child process exited with code ${code}`);
+        });
+
+        if (!showServiceStartedDialog) {
+          return;
+        }
+        dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+          type: 'info',
+          title: 'Minsky Service Started',
+          message: 'You can now choose model files to be loaded',
+        });
+        this.runningCommand = false;
+        this.processCommandsInQueueNew();
+      }
+    } catch {
+      dialog.showErrorBox('Execution error', 'Could not execute chosen file');
+      this.minskyProcess = null;
+    }
+  }
+
+  private static handleMinskyPayload(payload: MinskyProcessPayload) {
     if (this.minskyProcess) {
       switch (payload.command) {
-        case commandsMapping.START_MINSKY_PROCESS:
-          this.minskyProcess.stdout.emit('close');
-          this.minskyProcess = null;
-          this.queue.clear();
-          this.queue.removeAllListeners();
-
-          this.handleMinskyProcess(payload);
-          break;
-
         case commandsMapping.RECORD:
           this.handleRecord();
-
           break;
 
         case commandsMapping.RECORDING_REPLAY:
@@ -71,78 +189,7 @@ export class RestServiceManager {
           break;
       }
     } else {
-      if (payload.command === commandsMapping.START_MINSKY_PROCESS) {
-        try {
-          if (this.isFirstStart) {
-            this.isFirstStart = false;
-            this.queue.start();
-          }
-
-          const { filePath, showServiceStartedDialog = true } = payload;
-          StoreManager.store.set('minskyRESTServicePath', filePath);
-
-          this.minskyProcess = spawn(filePath);
-          if (this.minskyProcess) {
-            this.minskyProcess.stdout.once('data', () => {
-              this.queue.on('next', () => {
-                this.queue.pause();
-              });
-            });
-
-            this.minskyProcess.stdout.on('data', (data) => {
-              const stdout = data.toString();
-
-              const message = `stdout: ${stdout}`;
-              log.info(message);
-
-              this.emitReplyEvent(message);
-
-              if (stdout.includes('=>')) {
-                this.queue.start();
-              }
-
-              RestServiceManager.handleStdout(stdout);
-            });
-
-            this.minskyProcess.stderr.on('data', (data) => {
-              const message = `stderr: ${data}`;
-              log.info(message);
-
-              this.queue.start();
-
-              this.emitReplyEvent(message);
-            });
-
-            this.minskyProcess.on('error', (error) => {
-              const message = `error: ${error.message}`;
-              log.info(message);
-
-              this.emitReplyEvent(message);
-            });
-
-            this.minskyProcess.on('close', (code) => {
-              log.info(`child process exited with code ${code}`);
-            });
-
-            if (!showServiceStartedDialog) {
-              return;
-            }
-            dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
-              type: 'info',
-              title: 'Minsky Service Started',
-              message: 'You can now choose model files to be loaded',
-            });
-          }
-        } catch {
-          dialog.showErrorBox(
-            'Execution error',
-            'Could not execute chosen file'
-          );
-          this.minskyProcess = null;
-        }
-      } else {
-        logError('Please select the minsky executable first...');
-      }
+      logError('Please select the minsky executable first...');
     }
   }
 
@@ -336,6 +383,10 @@ export class RestServiceManager {
         }, ${payload.mouseY - WindowManager.topOffset}]`;
         break;
 
+      case commandsMapping.MOVE_TO:
+        stdinCommand = `${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
+        break;
+
       case commandsMapping.mousedown:
         stdinCommand = `${payload.command} [${
           payload.mouseX - WindowManager.leftOffset
@@ -378,17 +429,8 @@ export class RestServiceManager {
 
       RestServiceManager.handleMarkEdited(stdinCommand);
 
-      (async () => {
-        await this.queue.add(() => {
-          minskyProcess.stdin.write(miscCommand);
-        });
-      })();
-
-      (async () => {
-        this.queue.add(() => {
-          minskyProcess.stdin.write(renderCommand);
-        });
-      })();
+      minskyProcess.stdin.write(miscCommand);
+      minskyProcess.stdin.write(renderCommand);
     }
   }
 
@@ -424,7 +466,6 @@ export class RestServiceManager {
       activeWindows,
     } = WindowManager;
 
-    
     const mainWindowId = activeWindows.get(1).windowId;
 
     const renderCommand =

@@ -68,50 +68,32 @@ export class CommunicationService {
       const dimensions = WindowUtilitiesGlobal.getDrawableArea();
       const canvasWidth = dimensions.width;
       const canvasHeight = dimensions.height;
-      
+
       let autoHandleMinskyProcess = true;
 
       switch (target) {
         case 'ZOOM_OUT':
-          command = ` ${command} [${canvasWidth / 2},${
+          command = `${command} [${canvasWidth / 2}, ${
             canvasHeight / 2
-          },${ZOOM_OUT_FACTOR}]`;
+          }, ${ZOOM_OUT_FACTOR}]`;
           break;
         case 'ZOOM_IN':
-          command = `${command} [${canvasWidth / 2},${
+          command = `${command} [${canvasWidth / 2}, ${
             canvasHeight / 2
-          },${ZOOM_IN_FACTOR}]`;
+          }, ${ZOOM_IN_FACTOR}]`;
           break;
         case 'RESET_ZOOM':
-          autoHandleMinskyProcess = false;
-          /* this.electronService.sendMinskyCommandAndRender({
-            command: `${commandsMapping.MOVE_TO} [0,0]`,
-          });
+          command = `${await this.getResetZoomCommand(
+            canvasWidth / 2,
+            canvasHeight / 2
+          )}`;
 
-          this.electronService.sendMinskyCommandAndRender({
-            command: `${command} ${RESET_ZOOM_FACTOR}`,
-          });
-           */
-
-          this.electronService.sendMinskyCommandAndRender({
-            command: `${await this.getResetZoomCommand()}`,
-          });
-
-          this.electronService.sendMinskyCommandAndRender({
-            command: commandsMapping.RECENTER,
-          });
           break;
         case 'ZOOM_TO_FIT':
-          autoHandleMinskyProcess = false;
-
           command = `${command} [${await this.getZoomToFitArgs(
             canvasWidth,
             canvasHeight
           )}]`;
-
-          this.electronService.sendMinskyCommandAndRender({
-            command: commandsMapping.RECENTER,
-          });
 
           break;
 
@@ -181,7 +163,7 @@ export class CommunicationService {
     }
   }
 
-  private async getResetZoomCommand() {
+  private async getResetZoomCommand(centerX: number, centerY: number) {
     /*
      if {[minsky.model.zoomFactor]>0} {
             zoom [expr 1/[minsky.model.relZoom]]
@@ -207,7 +189,9 @@ export class CommunicationService {
         )
       );
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
-      return `${commandsMapping.ZOOM_IN} ${1 / (relZoom || 1)}`;
+      return `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
+        1 / (relZoom || 1)
+      }]`;
     } else {
       return `${commandsMapping.SET_ZOOM} 1`;
     }
@@ -292,18 +276,15 @@ export class CommunicationService {
       const offSetValue = 'top:' + offset.top + ' ' + 'left:' + offset.left;
 
       if (this.electronService.isElectron) {
-        this.electronService.ipcRenderer.send(
-          events.ipc.APP_LAYOUT_CHANGED,
-          { type: 'OFFSET', value: offset }
-        );
+        this.electronService.ipcRenderer.send(events.ipc.APP_LAYOUT_CHANGED, {
+          type: 'OFFSET',
+          value: offset,
+        });
 
-        this.electronService.ipcRenderer.send(
-          events.ipc.APP_LAYOUT_CHANGED,
-          {
-            type: 'CANVAS',
-            value: WindowUtilitiesGlobal.getDrawableArea(),
-          }
-        );
+        this.electronService.ipcRenderer.send(events.ipc.APP_LAYOUT_CHANGED, {
+          type: 'CANVAS',
+          value: WindowUtilitiesGlobal.getDrawableArea(),
+        });
       } else {
         this.emitValues('Values', offSetValue);
       }
