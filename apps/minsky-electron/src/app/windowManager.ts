@@ -8,6 +8,7 @@ const logWindows = debug('minsky:electron_windows');
 
 export class WindowManager {
   static topOffset: number;
+  static electronTopOffset: number;
   static leftOffset: number;
   static canvasHeight: number;
   static canvasWidth: number;
@@ -150,17 +151,14 @@ export class WindowManager {
         break;
 
       case 'OFFSET':
-        // top + menubar height
-        WindowManager.topOffset =
-          value.top +
-          (this.getMainWindow().getSize()[1] -
-            this.getMainWindow().getContentSize()[1]);
+        WindowManager.topOffset = value.top;
+
+        WindowManager.electronTopOffset = value.electronTop;
 
         WindowManager.leftOffset = value.left;
         break;
 
       case 'CANVAS':
-        
         WindowManager.canvasHeight = value.height;
         WindowManager.canvasWidth = value.width;
         break;

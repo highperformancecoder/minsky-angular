@@ -1,10 +1,14 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { CommunicationService, ElectronService } from '@minsky/core';
+import {
+  CommunicationService,
+  ElectronService,
+  WindowUtilityService,
+} from '@minsky/core';
 import {
   availableOperations,
   commandsMapping,
   events,
-  WindowUtilitiesGlobal,
+  MinskyProcessPayload,
 } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
@@ -26,14 +30,15 @@ export class WiringComponent implements OnInit, OnDestroy {
   constructor(
     public cmService: CommunicationService,
     private electronService: ElectronService,
+    private windowUtilityService: WindowUtilityService,
     private zone: NgZone
   ) {}
 
   ngOnInit() {
-    const minskyCanvasContainer = WindowUtilitiesGlobal.getMinskyContainerElement();
-    const minskyCanvasElement = WindowUtilitiesGlobal.getMinskyCanvasElement();
+    const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
+    const minskyCanvasElement = this.windowUtilityService.getMinskyCanvasElement();
 
-    const scrollableArea = WindowUtilitiesGlobal.getScrollableArea();
+    const scrollableArea = this.windowUtilityService.getScrollableArea();
 
     this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
 
@@ -59,15 +64,7 @@ export class WiringComponent implements OnInit, OnDestroy {
         minskyCanvasContainer.onwheel = this.cmService.onMouseWheelZoom;
 
         minskyCanvasContainer.addEventListener('keydown', (event) => {
-          this.electronService.ipcRenderer.send(events.ipc.KEY_PRESS, {
-            key: event.key,
-            shift: event.shiftKey,
-            capsLock: event.getModifierState('CapsLock'),
-            ctrl: event.ctrlKey,
-            alt: event.altKey,
-            mouseX: this.cmService.mouseX,
-            mouseY: this.cmService.mouseY,
-          });
+          this.handleKeyPress(event);
         });
 
         this.mouseMove$ = fromEvent<MouseEvent>(
@@ -113,6 +110,26 @@ export class WiringComponent implements OnInit, OnDestroy {
 
       // this.cmService.dispatchEvents('canvasEvent');
     });
+  }
+
+  private handleKeyPress(event: KeyboardEvent) {
+    const payload: MinskyProcessPayload = {
+      command: commandsMapping.KEY_PRESS,
+      key: event.key,
+      shift: event.shiftKey,
+      capsLock: event.getModifierState('CapsLock'),
+      ctrl: event.ctrlKey,
+      alt: event.altKey,
+      mouseX: this.cmService.mouseX,
+      mouseY: this.cmService.mouseY,
+    };
+
+    console.table(payload);
+
+    this.electronService.sendMinskyCommandAndRender(
+      payload,
+      events.ipc.KEY_PRESS
+    );
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method

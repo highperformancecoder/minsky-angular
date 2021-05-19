@@ -5,6 +5,11 @@ export interface MinskyProcessPayload {
   command?: string;
   windowId?: number;
   showServiceStartedDialog?: boolean;
+  key?: string;
+  shift?: boolean;
+  capsLock?: boolean;
+  ctrl?: boolean;
+  alt?: boolean;
 }
 
 export interface AppLayoutPayload {
@@ -16,4 +21,24 @@ export interface HeaderEvent {
   action: string;
   target: string;
   value?: unknown;
+}
+
+export enum ClassType {
+  Variable = 'Variable',
+  VarConstant = 'VarConstant',
+  Operation = 'Operation',
+  IntOp = 'IntOp',
+  DataOp = 'DataOp',
+  PlotWidget = 'PlotWidget',
+  GodleyIcon = 'GodleyIcon',
+  Group = 'Group',
+  Item = 'Item',
+  SwitchIcon = 'SwitchIcon',
+  Ravel = 'Ravel',
+  Lock = 'Lock',
+}
+
+export interface CanvasItem {
+  classType: ClassType;
+  value: number;
 }

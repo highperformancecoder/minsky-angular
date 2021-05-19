@@ -4,17 +4,15 @@ import {
   events,
   HeaderEvent,
   minskyProcessReplyIndicators,
-  WindowUtilitiesGlobal,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
-import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
 import { StateManagementService } from '../state-management/state-management.service';
+import { WindowUtilityService } from '../WindowUtility/window-utility.service';
 import { ElectronService } from './../electron/electron.service';
 
-const logInfo = debug('minsky:web:info');
 export class Message {
   id: string;
   body: string;
@@ -37,7 +35,8 @@ export class CommunicationService {
   constructor(
     private socket: Socket,
     private electronService: ElectronService,
-    private stateManagementService: StateManagementService
+    private stateManagementService: StateManagementService,
+    private windowUtilityService: WindowUtilityService
   ) {
     if (electronService.isElectron) {
       this.electronService.ipcRenderer.on('Save_file', (event, result) => {
@@ -65,7 +64,7 @@ export class CommunicationService {
     const { target } = message;
     if (this.electronService.isElectron) {
       let command = commandsMapping[target];
-      const dimensions = WindowUtilitiesGlobal.getDrawableArea();
+      const dimensions = this.windowUtilityService.getDrawableArea();
       const canvasWidth = dimensions.width;
       const canvasHeight = dimensions.height;
 
@@ -165,7 +164,7 @@ export class CommunicationService {
 
   private async getResetZoomCommand(centerX: number, centerY: number) {
     /*
-     if {[minsky.model.zoomFactor]>0} {
+    if {[minsky.model.zoomFactor]>0} {
             zoom [expr 1/[minsky.model.relZoom]]
         } else {
             minsky.model.setZoom 1
@@ -176,7 +175,7 @@ export class CommunicationService {
 
     const zoomFactor = Number(
       await this.stateManagementService.getCommandValue(
-        commandsMapping.ZOOM_FACTOR,
+        { command: commandsMapping.ZOOM_FACTOR },
         minskyProcessReplyIndicators.ZOOM_FACTOR
       )
     );
@@ -184,7 +183,7 @@ export class CommunicationService {
     if (zoomFactor > 0) {
       const relZoom = Number(
         await this.stateManagementService.getCommandValue(
-          commandsMapping.REL_ZOOM,
+          { command: commandsMapping.REL_ZOOM },
           minskyProcessReplyIndicators.REL_ZOOM
         )
       );
@@ -210,7 +209,7 @@ export class CommunicationService {
     */
 
     const cBoundsString = await this.stateManagementService.getCommandValue(
-      commandsMapping.C_BOUNDS,
+      { command: commandsMapping.C_BOUNDS },
       minskyProcessReplyIndicators.C_BOUNDS
     );
 
@@ -235,8 +234,11 @@ export class CommunicationService {
   public mouseEvents(event, message) {
     const { type, clientX, clientY } = message;
 
+    const offset = this.windowUtilityService.getMinskyCanvasOffset();
+
     this.mouseX = clientX;
-    this.mouseY = clientY;
+    // this.mouseY = clientY - offset.electronTop + 68;
+    this.mouseY = clientY - offset.electronTop;
 
     const clickData = {
       type,
@@ -251,7 +253,7 @@ export class CommunicationService {
         this.electronService.sendMinskyCommandAndRender({
           command: command,
           mouseX: clientX,
-          mouseY: clientY,
+          mouseY: this.mouseY,
         });
       }
     } else {
@@ -272,7 +274,8 @@ export class CommunicationService {
     document.addEventListener('DOMContentLoaded', () => {
       // When the event DOMContentLoaded occurs, it is safe to access the DOM
 
-      const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
+      const offset = this.windowUtilityService.getMinskyCanvasOffset();
+
       const offSetValue = 'top:' + offset.top + ' ' + 'left:' + offset.left;
 
       if (this.electronService.isElectron) {
@@ -283,7 +286,7 @@ export class CommunicationService {
 
         this.electronService.ipcRenderer.send(events.ipc.APP_LAYOUT_CHANGED, {
           type: 'CANVAS',
-          value: WindowUtilitiesGlobal.getDrawableArea(),
+          value: this.windowUtilityService.getDrawableArea(),
         });
       } else {
         this.emitValues('Values', offSetValue);
@@ -315,7 +318,7 @@ export class CommunicationService {
     event.preventDefault();
     const { deltaY } = event;
     const zoomIn = deltaY < 0;
-    const offset = WindowUtilitiesGlobal.getMinskyCanvasOffset();
+    const offset = this.windowUtilityService.getMinskyCanvasOffset();
 
     let command = null;
     if (zoomIn) {

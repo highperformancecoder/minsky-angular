@@ -6,6 +6,7 @@ import {
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { dialog, Menu, shell } from 'electron';
+import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
@@ -25,7 +26,7 @@ export class MenuManager {
                 width: 420,
                 height: 440,
                 title: '',
-                url: `${rendererAppURL}/#/menu/file/about`,
+                url: `${rendererAppURL}/#/headless/menu/file/about`,
               });
 
               shell.beep();
@@ -150,6 +151,10 @@ export class MenuManager {
                 } else {
                   const saveDialog = await dialog.showSaveDialog({});
 
+                  if (saveDialog.canceled || !saveDialog.filePath) {
+                    return;
+                  }
+
                   RestServiceManager.handleMinskyProcess({
                     command: commandsMapping.SAVE,
                     filePath: saveDialog.filePath,
@@ -163,6 +168,11 @@ export class MenuManager {
             accelerator: 'CmdOrCtrl + Shift + S',
             async click() {
               const saveDialog = await dialog.showSaveDialog({});
+
+              if (saveDialog.canceled || !saveDialog.filePath) {
+                return;
+              }
+
               RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
               });
@@ -220,7 +230,7 @@ export class MenuManager {
 
               const extension = filePath.split('.').pop();
 
-              switch (extension) {
+              switch (extension?.toLowerCase()) {
                 case 'svg':
                   RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_SVG} "${filePath}"`,
@@ -316,7 +326,7 @@ export class MenuManager {
                 width: 250,
                 height: 500,
                 title: 'Log simulation',
-                url: `${rendererAppURL}/#/menu/file/log-simulation`,
+                url: `${rendererAppURL}/#/headless/menu/file/log-simulation`,
               });
             },
           },
@@ -352,7 +362,7 @@ export class MenuManager {
                 width: 400,
                 height: 230,
                 title: '',
-                url: `${rendererAppURL}/#/menu/file/object-browser`,
+                url: `${rendererAppURL}/#/headless/menu/file/object-browser`,
               });
             },
           },
@@ -363,7 +373,7 @@ export class MenuManager {
                 width: 290,
                 height: 153,
                 title: '',
-                url: `${rendererAppURL}/#/menu/file/select-items`,
+                url: `${rendererAppURL}/#/headless/menu/file/select-items`,
               });
             },
           },
@@ -437,7 +447,7 @@ export class MenuManager {
                 width: 420,
                 height: 250,
                 title: 'Dimensions',
-                url: `${rendererAppURL}/#/menu/edit/dimensions`,
+                url: `${rendererAppURL}/#/headless/menu/edit/dimensions`,
               });
             },
           },
@@ -474,12 +484,7 @@ export class MenuManager {
           {
             label: 'Bookmark this position',
             click() {
-              WindowManager.createMenuPopUpWithRouting({
-                width: 420,
-                height: 250,
-                title: 'Bookmarks',
-                url: `${rendererAppURL}/#/menu/bookmarks/add-bookmark`,
-              });
+              CommandsManager.bookmarkThisPosition();
             },
           },
           {
@@ -523,7 +528,7 @@ export class MenuManager {
                     width: 500,
                     height: 550,
                     title: 'Specify variable name',
-                    url: `${rendererAppURL}/#/menu/insert/create-variable/flow`,
+                    url: `${rendererAppURL}/#/headless/menu/insert/create-variable/flow`,
                   });
                 },
               },
@@ -534,7 +539,7 @@ export class MenuManager {
                     width: 500,
                     height: 550,
                     title: 'Specify variable name',
-                    url: `${rendererAppURL}/#/menu/insert/create-variable/constant`,
+                    url: `${rendererAppURL}/#/headless/menu/insert/create-variable/constant`,
                   });
                 },
               },
@@ -545,7 +550,7 @@ export class MenuManager {
                     width: 500,
                     height: 550,
                     title: 'Specify variable name',
-                    url: `${rendererAppURL}/#/menu/insert/create-variable/parameter`,
+                    url: `${rendererAppURL}/#/headless/menu/insert/create-variable/parameter`,
                   });
                 },
               },
@@ -1012,7 +1017,7 @@ export class MenuManager {
                 width: 500,
                 height: 450,
                 title: 'Preferences',
-                url: `${rendererAppURL}/#/menu/options/preferences`,
+                url: `${rendererAppURL}/#/headless/menu/options/preferences`,
               });
             },
           },
@@ -1023,7 +1028,7 @@ export class MenuManager {
                 width: 450,
                 height: 320,
                 title: 'Background Colour',
-                url: `${rendererAppURL}/#/menu/options/background-color`,
+                url: `${rendererAppURL}/#/headless/menu/options/background-color`,
               });
             },
           },
@@ -1039,7 +1044,7 @@ export class MenuManager {
                 width: 550,
                 height: 550,
                 title: 'Simulation',
-                url: `${rendererAppURL}/#/menu/simulation/simulation-parameters`,
+                url: `${rendererAppURL}/#/headless/menu/simulation/simulation-parameters`,
               });
             },
           },

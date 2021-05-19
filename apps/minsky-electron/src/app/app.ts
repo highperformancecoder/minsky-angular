@@ -77,6 +77,8 @@ export default class App {
 
     App.initMenu();
 
+    ContextMenuManager.initContextMenu();
+
     App.initMinskyService();
   }
 
@@ -89,7 +91,7 @@ export default class App {
       if (minskyRestServiceFilePath) {
         setTimeout(() => {
           RestServiceManager.startMinskyService(minskyRestServiceFilePath);
-        }, 5000);
+        }, 4000);
       }
     } catch (error) {
       console.warn(error);
@@ -179,7 +181,7 @@ export default class App {
 
     logWindows(WindowManager.activeWindows);
 
-    ContextMenuManager.buildContextMenu();
+    // ContextMenuManager.buildContextMenu();
     App.mainWindow.on('close', () => {
       WindowManager.activeWindows.delete(App.mainWindow.id);
     });

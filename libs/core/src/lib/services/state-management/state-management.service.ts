@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   commandsMapping,
   events,
+  MinskyProcessPayload,
   minskyProcessReplyIndicators,
 } from '@minsky/shared';
 import { BehaviorSubject } from 'rxjs';
@@ -62,18 +63,20 @@ export class StateManagementService {
     });
   }
 
-  async getCommandValue(command: string, minskyProcessReplyIndicator: string) {
+  async getCommandValue(
+    payload: MinskyProcessPayload,
+    minskyProcessReplyIndicator: string
+  ): Promise<string> {
     try {
-      this.electronService.sendMinskyCommandAndRender({ command });
+      this.electronService.sendMinskyCommandAndRender(payload);
 
       const res = await Promise.race([
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
           this.electronService.ipcRenderer.on(
             events.ipc.MINSKY_PROCESS_REPLY,
             (event, stdout: string) => {
               if (stdout.includes(minskyProcessReplyIndicator)) {
-                resolve(stdout.split('=>').pop());
+                resolve(stdout.split('=>').pop().trim());
               }
             }
           );
@@ -81,14 +84,14 @@ export class StateManagementService {
         new Promise((resolve, reject) => {
           setTimeout(function () {
             reject(
-              `command: "${command}" with minskyProcessReplyIndicator "${minskyProcessReplyIndicator}" Timed out`
+              `command: "${payload.command}" with minskyProcessReplyIndicator "${minskyProcessReplyIndicator}" Timed out`
             );
           }, 4000);
         }),
       ]);
 
-      console.log(`command: ${command}, value:${res}`);
-      return res;
+      console.log(`command: ${payload.command}, value:${res}`);
+      return res as string;
     } catch (error) {
       console.error(
         '🚀 ~ file: state-management.service.ts ~ line 118 ~ StateManagementService ~ getCommandValue ~ error',
