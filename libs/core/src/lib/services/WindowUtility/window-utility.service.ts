@@ -42,7 +42,7 @@ export class WindowUtilityService {
         //   this.drawableHeight
         // );
 
-        // TODO:: Review ---> Canvas dimenstions 10X of container
+        // TODO:: Review ---> Canvas dimensions 10X of container
 
         this.containerWidth = this.drawableWidth * this.SCROLLABLE_AREA_FACTOR;
         this.containerHeight =

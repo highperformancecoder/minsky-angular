@@ -65,7 +65,7 @@ export class CliInputComponent implements OnInit, OnDestroy {
         { command: commandsMapping.LIST }
       );
 
-      this.stateManagementService.minskyProcessReply$.subscribe((v) => {
+      this.stateManagementService.minskyProcessReply$.subscribe(() => {
         this.changeDetectionRef.detectChanges();
       });
     }

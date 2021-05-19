@@ -7,14 +7,12 @@ import {
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
-import * as debug from 'debug';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
 import { StateManagementService } from '../state-management/state-management.service';
 import { WindowUtilityService } from '../WindowUtility/window-utility.service';
 import { ElectronService } from './../electron/electron.service';
 
-const logInfo = debug('minsky:web:info');
 export class Message {
   id: string;
   body: string;
