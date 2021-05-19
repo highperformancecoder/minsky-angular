@@ -64,11 +64,11 @@
     "keysym": "0.0.6",
     "ngx-auto-unsubscribe": "^3.0.1",
     "ngx-socket-io": "^3.3.1",
-    "p-queue": "^6.6.2",
     "rxjs": "^6.6.7",
     "socket.io": "^2.4.1",
     "tslib": "^2.2.0",
     "utf8": "^3.0.0",
+    "v8-compile-cache": "^2.3.0",
     "zone.js": "^0.10.3"
   },
   "devDependencies": {
@@ -101,7 +101,7 @@
     "@typescript-eslint/parser": "4.3.0",
     "cypress": "^6.0.1",
     "dotenv": "8.2.0",
-    "electron": "^11.4.2",
+    "electron": "^11.4.4",
     "eslint": "7.18.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "^2.10.3",
@@ -119,6 +119,6 @@
   "engines": {
     "node": "14",
     "vscode": "^1.50.0",
-    "npm": "~7.5.4"
+    "npm": "7"
   }
 }

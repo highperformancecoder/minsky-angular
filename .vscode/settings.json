@@ -22,12 +22,16 @@
     "exitzero",
     "infimum",
     "keysym",
+    "lindex",
     "minimizable",
     "ngcc",
     "nrwl",
+    "recentre",
+    "scrollable",
     "submenu",
     "supremum",
     "tmax",
-    "ungroup"
+    "ungroup",
+    "winfo"
   ]
 }

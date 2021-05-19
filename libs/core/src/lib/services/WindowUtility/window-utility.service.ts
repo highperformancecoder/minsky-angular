@@ -18,6 +18,9 @@ export class WindowUtilityService {
   private electronTopOffset = 0;
   private drawableWidth = 0;
   private drawableHeight = 0;
+  private containerWidth = 0;
+  private containerHeight = 0;
+  SCROLLABLE_AREA_FACTOR = 10;
 
   constructor(private electronService: ElectronService) {}
 
@@ -41,8 +44,12 @@ export class WindowUtilityService {
 
         // TODO:: Review ---> Canvas dimenstions 10X of container
 
-        this.minskyCanvasElement.style.width = 10 * this.drawableWidth + 'px';
-        this.minskyCanvasElement.style.height = 10 * this.drawableHeight + 'px';
+        this.containerWidth = this.drawableWidth * this.SCROLLABLE_AREA_FACTOR;
+        this.containerHeight =
+          this.drawableHeight * this.SCROLLABLE_AREA_FACTOR;
+
+        this.minskyCanvasElement.style.width = this.containerWidth + 'px';
+        this.minskyCanvasElement.style.height = this.containerHeight + 'px';
 
         const clientRect = this.minskyCanvasContainer.getBoundingClientRect();
 
@@ -58,6 +65,12 @@ export class WindowUtilityService {
         this.electronTopOffset = this.topOffset + electronMenuBarHeight;
       }
     }
+  }
+
+  public scrollToCenter() {
+    this.initializeIfNeeded();
+    this.minskyCanvasElement.scrollTop = this.containerHeight / 2;
+    this.minskyCanvasElement.scrollLeft = this.containerWidth / 2;
   }
 
   public getMinskyCanvasOffset(): Offset {
@@ -76,6 +89,14 @@ export class WindowUtilityService {
     return {
       width: this.drawableWidth,
       height: this.drawableHeight,
+    };
+  }
+
+  public getScrollableArea() {
+    this.initializeIfNeeded();
+    return {
+      width: this.containerWidth,
+      height: this.containerHeight,
     };
   }
 
