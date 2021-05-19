@@ -17,7 +17,7 @@ import { sampleTime } from 'rxjs/operators';
   styleUrls: ['./wiring.component.scss'],
 })
 export class WiringComponent implements OnInit, OnDestroy {
-  mouseMove$: Observable<any>;
+  mouseMove$: Observable<MouseEvent>;
   offsetTop: string;
 
   _availableOperations = availableOperations;
@@ -75,8 +75,8 @@ export class WiringComponent implements OnInit, OnDestroy {
           'mousemove'
         ).pipe(sampleTime(30)); /// FPS=1000/sampleTime
 
-        this.mouseMove$.subscribe((e) => {
-          this.cmService.mouseEvents('CANVAS_EVENT', e as MouseEvent);
+        this.mouseMove$.subscribe((event: MouseEvent) => {
+          this.cmService.mouseEvents('CANVAS_EVENT', event);
         });
 
         // this.mouseMove$ = fromEvent<MouseEvent>(
