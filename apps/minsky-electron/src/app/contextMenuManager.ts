@@ -162,7 +162,12 @@ export class ContextMenuManager {
   private static wireContextMenu(): MenuItem[] {
     const menuItems = [
       new MenuItem({ label: 'Help' }),
-      new MenuItem({ label: 'Description' }),
+      new MenuItem({
+        label: 'Description',
+        click: () => {
+          CommandsManager.openEditDescriptionDialog('');
+        },
+      }),
       new MenuItem({
         label: 'Straighten',
         click: () => {
@@ -291,7 +296,12 @@ export class ContextMenuManager {
   private static async contextMenu(itemInfo: CanvasItem) {
     let menuItems: MenuItem[] = [
       new MenuItem({ label: 'Help' }),
-      new MenuItem({ label: 'Description' }),
+      new MenuItem({
+        label: 'Description',
+        click: () => {
+          CommandsManager.openEditDescriptionDialog('');
+        },
+      }),
     ];
 
     switch (itemInfo?.classType) {

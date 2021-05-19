@@ -1,4 +1,5 @@
 export * from './lib/cli-input/cli-input.component';
+export * from './lib/edit-description/edit-description.component';
 export * from './lib/equations/equations.component';
 export * from './lib/header/header.component';
 export * from './lib/input-modal/input-modal.component';

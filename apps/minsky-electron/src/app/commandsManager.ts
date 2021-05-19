@@ -331,6 +331,15 @@ export class CommandsManager {
     });
   }
 
+  static openEditDescriptionDialog(description: string) {
+    WindowManager.createMenuPopUpWithRouting({
+      title: `Description`,
+      url: `${rendererAppURL}/#/headless/edit-description?description=${
+        description?.slice(1, 1) || ''
+      }`,
+    });
+  }
+
   static async getItemDims(
     x: number = null,
     y: number = null,

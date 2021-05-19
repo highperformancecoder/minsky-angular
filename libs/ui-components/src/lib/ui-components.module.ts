@@ -18,6 +18,7 @@ import { ScansComponent } from './wiring/scans/scans.component';
 import { TensorOperationsComponent } from './wiring/tensor-operations/tensor-operations.component';
 import { VariableComponent } from './wiring/variable/variable.component';
 import { WiringComponent } from './wiring/wiring.component';
+import { EditDescriptionComponent } from './edit-description/edit-description.component';
 @NgModule({
   declarations: [
     HeaderComponent,
@@ -37,6 +38,7 @@ import { WiringComponent } from './wiring/wiring.component';
     VariableComponent,
     RenameAllInstancesComponent,
     InputModalComponent,
+    EditDescriptionComponent,
   ],
   imports: [CommonModule, SharedModule],
   exports: [
@@ -50,6 +52,7 @@ import { WiringComponent } from './wiring/wiring.component';
     CliInputComponent,
     RenameAllInstancesComponent,
     InputModalComponent,
+    EditDescriptionComponent,
   ],
 })
 export class UiComponentsModule {}
