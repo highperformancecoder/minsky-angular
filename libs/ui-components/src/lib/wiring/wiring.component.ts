@@ -63,7 +63,7 @@ export class WiringComponent implements OnInit, OnDestroy {
         });
         minskyCanvasContainer.onwheel = this.cmService.onMouseWheelZoom;
 
-        minskyCanvasContainer.addEventListener('keydown', async (event) => {
+        minskyCanvasContainer.addEventListener('keydown', (event) => {
           this.handleKeyPress(event);
         });
 
