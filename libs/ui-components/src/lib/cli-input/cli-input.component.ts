@@ -11,11 +11,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import {
-  CommunicationService,
-  ElectronService,
-  StateManagementService,
-} from '@minsky/core';
+import { ElectronService, StateManagementService } from '@minsky/core';
 import { commandsMapping, events, MinskyProcessPayload } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
@@ -43,7 +39,6 @@ export class CliInputComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private communicationService: CommunicationService,
     private electronService: ElectronService,
     public stateManagementService: StateManagementService,
     private changeDetectionRef: ChangeDetectorRef
@@ -100,5 +95,5 @@ export class CliInputComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
-  ngOnDestroy(): void {}
+  ngOnDestroy() {}
 }

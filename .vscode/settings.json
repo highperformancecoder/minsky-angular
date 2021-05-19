@@ -21,10 +21,16 @@
     "devkit",
     "exitzero",
     "infimum",
+    "keysym",
+    "lindex",
     "minimizable",
     "ngcc",
     "nrwl",
+    "recentre",
+    "scrollable",
     "submenu",
-    "supremum"
+    "supremum",
+    "tmax",
+    "winfo"
   ]
 }

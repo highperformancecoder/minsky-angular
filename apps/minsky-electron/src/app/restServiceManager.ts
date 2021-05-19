@@ -39,10 +39,9 @@ export class RestServiceManager {
   private static payloadDataQueue: Array<MinskyProcessPayload> = [];
   private static runningCommand = false;
 
-
   private static processCommandsInQueueNew() {
     // Should be on a separate thread......? Janak
-    if (!this.runningCommand && (this.payloadDataQueue.length > 0)) {
+    if (!this.runningCommand && this.payloadDataQueue.length > 0) {
       const nextPayload = this.payloadDataQueue.shift();
 
       if (nextPayload.command === commandsMapping.mousemove) {
@@ -56,13 +55,14 @@ export class RestServiceManager {
   }
 
   public static handleMinskyProcess(payload: MinskyProcessPayload) {
-    const wasQueueEmpty = (this.payloadDataQueue.length === 0);
-    const isStartProcessCommand = (payload.command === commandsMapping.START_MINSKY_PROCESS);
-    if(isStartProcessCommand) {
+    const wasQueueEmpty = this.payloadDataQueue.length === 0;
+    const isStartProcessCommand =
+      payload.command === commandsMapping.START_MINSKY_PROCESS;
+    if (isStartProcessCommand) {
       this.startMinskyProcess(payload);
       return;
     } else {
-      if(!this.minskyProcess) {
+      if (!this.minskyProcess) {
         logError('Minsky process is not running yet.');
         return;
       }
@@ -95,7 +95,6 @@ export class RestServiceManager {
     }
   }
 
-
   private static startMinskyProcess(payload: MinskyProcessPayload) {
     if (this.minskyProcess) {
       this.minskyProcess.stdout.emit('close');
@@ -114,25 +113,20 @@ export class RestServiceManager {
 
       this.minskyProcess = spawn(filePath);
       if (this.minskyProcess) {
-        this.minskyProcess.stdout.once('data', () => {
-          // Earlier we were pausing queue here
-        });
+        // this.minskyProcess.stdout.once('data', () => {
+        //   // Earlier we were pausing queue here
+        // });
 
         this.minskyProcess.stdout.on('data', (data) => {
           const stdout = data.toString().trim();
-          log.info(`stdout: ${stdout}`);
+          const message = `stdout: ${stdout}`;
+          log.info(message);
 
-          WindowManager.activeWindows.forEach((aw) => {
-            aw.context.webContents.send(
-              events.ipc.MINSKY_PROCESS_REPLY,
-              `stdout: ${stdout}`
-            );
-          });
+          this.emitReplyEvent(message);
 
-
-          if (stdout.includes('=>') || stdout === "{}") {
-            //this.queue.start();
-          }
+          // if (stdout.includes('=>') || stdout === '{}') {
+          //   //this.queue.start();
+          // }
 
           if (stdout.includes('renderFrame=>')) {
             this.runningCommand = false;
@@ -143,24 +137,19 @@ export class RestServiceManager {
         });
 
         this.minskyProcess.stderr.on('data', (data) => {
-          log.info(`stderr: ${data}`);
+          const message = `stderr: ${data}`;
+          log.info(message);
+
           this.processCommandsInQueueNew();
-          WindowManager.activeWindows.forEach((aw) => {
-            aw.context.webContents.send(
-              events.ipc.MINSKY_PROCESS_REPLY,
-              `stderr: ${data}`
-            );
-          });
+
+          this.emitReplyEvent(message);
         });
 
         this.minskyProcess.on('error', (error) => {
-          log.info(`error: ${error.message}`);
-          WindowManager.activeWindows.forEach((aw) => {
-            aw.context.webContents.send(
-              events.ipc.MINSKY_PROCESS_REPLY,
-              `error: ${error.message}`
-            );
-          });
+          const message = `error: ${error.message}`;
+          log.info(message);
+
+          this.emitReplyEvent(message);
         });
 
         this.minskyProcess.on('close', (code) => {
@@ -179,14 +168,10 @@ export class RestServiceManager {
         this.processCommandsInQueueNew();
       }
     } catch {
-      dialog.showErrorBox(
-        'Execution error',
-        'Could not execute chosen file'
-      );
+      dialog.showErrorBox('Execution error', 'Could not execute chosen file');
       this.minskyProcess = null;
     }
   }
-
 
   private static handleMinskyPayload(payload: MinskyProcessPayload) {
     if (this.minskyProcess) {
@@ -206,6 +191,12 @@ export class RestServiceManager {
     } else {
       logError('Please select the minsky executable first...');
     }
+  }
+
+  private static emitReplyEvent(message: string) {
+    WindowManager.activeWindows.forEach((aw) => {
+      aw.context.webContents.send(events.ipc.MINSKY_PROCESS_REPLY, message);
+    });
   }
 
   private static handleStdout(stdout: string) {
@@ -320,11 +311,11 @@ export class RestServiceManager {
     const recordIgnoreCommands = [
       // 'mouseMove' ||
       'getItemAt' ||
-      'getItemAtFocus' ||
-      'getWireAt' ||
-      commandsMapping.START_MINSKY_PROCESS ||
-      commandsMapping.RECORD ||
-      commandsMapping.RECORDING_REPLAY,
+        'getItemAtFocus' ||
+        'getWireAt' ||
+        commandsMapping.START_MINSKY_PROCESS ||
+        commandsMapping.RECORD ||
+        commandsMapping.RECORDING_REPLAY,
     ];
 
     if (!recordIgnoreCommands.find((cmd) => command.includes(cmd)))
@@ -389,7 +380,7 @@ export class RestServiceManager {
       case commandsMapping.mousemove:
         stdinCommand = `${payload.command} [${
           payload.mouseX - WindowManager.leftOffset
-          }, ${payload.mouseY - WindowManager.topOffset}]`;
+        }, ${payload.mouseY - WindowManager.topOffset}]`;
         break;
 
       case commandsMapping.MOVE_TO:
@@ -399,13 +390,13 @@ export class RestServiceManager {
       case commandsMapping.mousedown:
         stdinCommand = `${payload.command} [${
           payload.mouseX - WindowManager.leftOffset
-          }, ${payload.mouseY - WindowManager.topOffset}]`;
+        }, ${payload.mouseY - WindowManager.topOffset}]`;
         break;
 
       case commandsMapping.mouseup:
         stdinCommand = `${payload.command} [${
           payload.mouseX - WindowManager.leftOffset
-          }, ${payload.mouseY - WindowManager.topOffset}]`;
+        }, ${payload.mouseY - WindowManager.topOffset}]`;
         break;
 
       case commandsMapping.SET_GODLEY_ICON_RESOURCE:
@@ -447,11 +438,11 @@ export class RestServiceManager {
     const markEditIgnore = [
       // 'mouseMove' ||
       'getItemAt' ||
-      'getItemAtFocus' ||
-      'getWireAt' ||
-      commandsMapping.START_MINSKY_PROCESS ||
-      commandsMapping.RECORD ||
-      commandsMapping.RECORDING_REPLAY,
+        'getItemAtFocus' ||
+        'getWireAt' ||
+        commandsMapping.START_MINSKY_PROCESS ||
+        commandsMapping.RECORD ||
+        commandsMapping.RECORDING_REPLAY,
       commandsMapping.MARK_EDITED,
       commandsMapping.EDITED,
       commandsMapping.RENDER_FRAME,
@@ -474,7 +465,6 @@ export class RestServiceManager {
       canvasHeight,
       activeWindows,
     } = WindowManager;
-
 
     const mainWindowId = activeWindows.get(1).windowId;
 

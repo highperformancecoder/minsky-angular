@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormControl, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
-import { CommunicationService, ElectronService } from '@minsky/core';
+import { CommunicationService } from '@minsky/core';
 @Component({
   selector: 'minsky-background-color',
   templateUrl: './background-color.component.html',
@@ -20,10 +20,7 @@ export class BackgroundColorComponent {
 
   public listColors = ['primary', 'accent', 'warn'];
 
-  constructor(
-    private eleService: ElectronService,
-    private communicationService: CommunicationService
-  ) {}
+  constructor(private communicationService: CommunicationService) {}
 
   onClickOk() {
     this.communicationService.setBackgroundColor(this.colorCtr.value);

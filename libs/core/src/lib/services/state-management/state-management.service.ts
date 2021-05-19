@@ -67,6 +67,7 @@ export class StateManagementService {
       this.electronService.sendMinskyCommandAndRender({ command });
 
       const res = await Promise.race([
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         new Promise((resolve, reject) => {
           this.electronService.ipcRenderer.on(
             events.ipc.MINSKY_PROCESS_REPLY,
