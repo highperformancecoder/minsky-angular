@@ -5,6 +5,7 @@ import {
   MinskyProcessPayload,
   minskyProcessReplyIndicators,
   newLineCharacter,
+  red,
   unExposedTerminalCommands,
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
@@ -112,6 +113,14 @@ export class RestServiceManager {
       }
 
       const { filePath, showServiceStartedDialog = true } = payload;
+
+      /*
+      uncomment this to enable minsky binary installed on system
+
+      const { showServiceStartedDialog = true } = payload;
+      const filePath = 'minsky-RESTService';
+      */
+
       StoreManager.store.set('minskyRESTServicePath', filePath);
 
       this.minskyProcess = spawn(filePath);
@@ -141,7 +150,7 @@ export class RestServiceManager {
 
         this.minskyProcess.stderr.on('data', (data) => {
           const message = `stderr: ${data}`;
-          log.info(message);
+          log.info(red(message));
 
           this.processCommandsInQueueNew();
 
@@ -150,7 +159,7 @@ export class RestServiceManager {
 
         this.minskyProcess.on('error', (error) => {
           const message = `error: ${error.message}`;
-          log.info(message);
+          log.info(red(message));
 
           this.emitReplyEvent(message);
         });

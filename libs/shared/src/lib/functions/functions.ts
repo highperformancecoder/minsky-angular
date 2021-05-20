@@ -21,3 +21,7 @@ export const isEmptyObject = (obj) => {
 export const green = (anything: unknown): string => {
   return '\x1b[32m' + `${anything}`;
 };
+
+export const red = (anything: unknown): string => {
+  return '\x1b[31m' + `${anything}`;
+};
