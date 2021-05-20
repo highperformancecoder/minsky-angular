@@ -159,6 +159,10 @@ export const commandsMapping = {
   CANVAS_TOGGLE_COUPLED: '/minsky/toggleCoupled',
   CANVAS_ITEM_READ_DATA: '/minsky/canvas/item/readData',
   CANVAS_ITEM_PORT_VALUES: '/minsky/canvas/item/portValues',
+  CANVAS_ITEM_DETAILED_TEXT: '/minsky/canvas/item/detailedText',
+  CANVAS_ITEM_TOOLTIP: '/minsky/canvas/item/tooltip',
+  CANVAS_WIRE_DETAILED_TEXT: '/minsky/canvas/wire/detailedText',
+  CANVAS_WIRE_TOOLTIP: '/minsky/canvas/wire/tooltip',
 };
 
 export const minskyProcessReplyIndicators = {

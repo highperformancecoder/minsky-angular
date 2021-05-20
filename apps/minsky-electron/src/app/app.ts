@@ -139,7 +139,6 @@ export default class App {
         nodeIntegration: true,
         backgroundThrottling: false,
         affinity: 'window',
-        // allowRunningInsecureContent: this.isDevelopmentMode ? true : false,
       },
       x: 0,
       y: 0,

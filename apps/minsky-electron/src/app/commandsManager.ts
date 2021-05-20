@@ -331,12 +331,24 @@ export class CommandsManager {
     });
   }
 
-  static openEditDescriptionDialog(description: string) {
+  static async postNote(type: string) {
+    const tooltip =
+      (
+        await RestServiceManager.getCommandValue({
+          command: `/minsky/canvas/${type}/tooltip`,
+        })
+      )?.slice(1, 1) || '';
+
+    const detailedText =
+      (
+        await RestServiceManager.getCommandValue({
+          command: `/minsky/canvas/${type}/detailedText`,
+        })
+      )?.slice(1, 1) || '';
+
     WindowManager.createMenuPopUpWithRouting({
       title: `Description`,
-      url: `${rendererAppURL}/#/headless/edit-description?description=${
-        description?.slice(1, 1) || ''
-      }`,
+      url: `${rendererAppURL}/#/headless/edit-description?type=${type}&tooltip=${tooltip}&detailedText=${detailedText}`,
     });
   }
 

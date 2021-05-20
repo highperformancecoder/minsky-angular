@@ -165,7 +165,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Description',
         click: () => {
-          CommandsManager.openEditDescriptionDialog('');
+          CommandsManager.postNote('wire');
         },
       }),
       new MenuItem({
@@ -299,7 +299,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Description',
         click: () => {
-          CommandsManager.openEditDescriptionDialog('');
+          CommandsManager.postNote('item');
         },
       }),
     ];
