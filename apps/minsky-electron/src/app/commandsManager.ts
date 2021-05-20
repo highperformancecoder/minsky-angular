@@ -327,7 +327,7 @@ export class CommandsManager {
         name?.slice(1, 1) || ''
       }`,
       height: 100,
-      width: 200,
+      width: 400,
     });
   }
 
