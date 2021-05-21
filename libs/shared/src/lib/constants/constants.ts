@@ -163,6 +163,13 @@ export const commandsMapping = {
   CANVAS_ITEM_TOOLTIP: '/minsky/canvas/item/tooltip',
   CANVAS_WIRE_DETAILED_TEXT: '/minsky/canvas/wire/detailedText',
   CANVAS_WIRE_TOOLTIP: '/minsky/canvas/wire/tooltip',
+  CANVAS_ITEM_TOGGLE_EDITOR_MODE: '/minsky/canvas/item/toggleEditorMode',
+  CANVAS_ITEM_TOGGLE_BUTTONS: '/minsky/canvas/item/toggleButtons',
+  CANVAS_ITEM_TOGGLE_VARIABLE_DISPLAY:
+    '/minsky/canvas/item/toggleVariableDisplay',
+  CANVAS_ITEM_MAKE_DISPLAY_PLOT: '/minsky/canvas/item/makeDisplayPlot',
+  CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY:
+    '/minsky/canvas/item/togglePlotTabDisplay',
 };
 
 export const minskyProcessReplyIndicators = {

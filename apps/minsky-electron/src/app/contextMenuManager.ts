@@ -326,10 +326,24 @@ export class ContextMenuManager {
         menuItems = [
           ...menuItems,
           new MenuItem({ label: 'Expand' }),
-          new MenuItem({ label: 'Make Group Plot' }),
+          new MenuItem({
+            label: 'Make Group Plot',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_ITEM_MAKE_DISPLAY_PLOT,
+              });
+            },
+          }),
           new MenuItem({ label: 'Options' }),
           new MenuItem({ label: 'Pen Styles' }),
-          new MenuItem({ label: 'Display plot on tab' }),
+          new MenuItem({
+            label: 'Display plot on tab',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY,
+              });
+            },
+          }),
           new MenuItem({
             label: 'Export as CSV',
             click: async () => {
@@ -351,9 +365,30 @@ export class ContextMenuManager {
           new MenuItem({ label: 'Open Godley Table' }),
           new MenuItem({ label: 'Title' }),
           new MenuItem({ label: 'Set currency' }),
-          new MenuItem({ label: 'Editor mode' }),
-          new MenuItem({ label: 'Row/Col buttons' }),
-          new MenuItem({ label: 'Display variables' }),
+          new MenuItem({
+            label: 'Editor mode',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_ITEM_TOGGLE_EDITOR_MODE,
+              });
+            },
+          }),
+          new MenuItem({
+            label: 'Row/Col buttons',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_ITEM_TOGGLE_BUTTONS,
+              });
+            },
+          }),
+          new MenuItem({
+            label: 'Display variables',
+            click: () => {
+              RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.CANVAS_ITEM_TOGGLE_VARIABLE_DISPLAY,
+              });
+            },
+          }),
           new MenuItem({
             label: 'Copy flow variables',
             click: () => {
