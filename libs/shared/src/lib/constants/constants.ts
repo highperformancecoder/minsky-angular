@@ -294,3 +294,6 @@ export const unExposedTerminalCommands = [
   '/minsky/canvas/itemFocus/rotation',
   '/minsky/canvas/itemFocus/setUnits',
 ];
+
+export const USE_MINSKY_SYSTEM_BINARY = false;
+export const MINSKY_SYSTEM_BINARY_PATH = 'minsky-RESTService';
