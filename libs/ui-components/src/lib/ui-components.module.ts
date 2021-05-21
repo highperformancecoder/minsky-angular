@@ -19,6 +19,8 @@ import { TensorOperationsComponent } from './wiring/tensor-operations/tensor-ope
 import { VariableComponent } from './wiring/variable/variable.component';
 import { WiringComponent } from './wiring/wiring.component';
 import { EditDescriptionComponent } from './edit-description/edit-description.component';
+import { EditGodleyTitleComponent } from './edit-godley-title/edit-godley-title.component';
+import { EditGodleyCurrencyComponent } from './edit-godley-currency/edit-godley-currency.component';
 @NgModule({
   declarations: [
     HeaderComponent,
@@ -39,6 +41,8 @@ import { EditDescriptionComponent } from './edit-description/edit-description.co
     RenameAllInstancesComponent,
     InputModalComponent,
     EditDescriptionComponent,
+    EditGodleyTitleComponent,
+    EditGodleyCurrencyComponent,
   ],
   imports: [CommonModule, SharedModule],
   exports: [
@@ -53,6 +57,8 @@ import { EditDescriptionComponent } from './edit-description/edit-description.co
     RenameAllInstancesComponent,
     InputModalComponent,
     EditDescriptionComponent,
+    EditGodleyTitleComponent,
+    EditGodleyCurrencyComponent,
   ],
 })
 export class UiComponentsModule {}

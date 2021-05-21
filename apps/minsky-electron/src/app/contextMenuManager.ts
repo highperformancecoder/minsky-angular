@@ -443,8 +443,18 @@ export class ContextMenuManager {
   private static buildContextMenuForGodleyIcon(): MenuItem[] {
     const menuItems = [
       new MenuItem({ label: 'Open Godley Table' }),
-      new MenuItem({ label: 'Title' }),
-      new MenuItem({ label: 'Set currency' }),
+      new MenuItem({
+        label: 'Title',
+        click: () => {
+          CommandsManager.editGodleyTitle();
+        },
+      }),
+      new MenuItem({
+        label: 'Set currency',
+        click: () => {
+          CommandsManager.setGodleyCurrency();
+        },
+      }),
       new MenuItem({
         label: 'Editor mode',
         click: () => {

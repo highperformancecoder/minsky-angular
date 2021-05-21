@@ -170,6 +170,8 @@ export const commandsMapping = {
   CANVAS_ITEM_MAKE_DISPLAY_PLOT: '/minsky/canvas/item/makeDisplayPlot',
   CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY:
     '/minsky/canvas/item/togglePlotTabDisplay',
+  CANVAS_ITEM_TABLE_TITLE: '/minsky/canvas/item/table/title',
+  CANVAS_ITEM_SET_CURRENCY: '/minsky/canvas/item/setCurrency',
 };
 
 export const minskyProcessReplyIndicators = {
