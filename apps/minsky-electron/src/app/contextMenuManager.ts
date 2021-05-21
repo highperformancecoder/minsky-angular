@@ -325,87 +325,14 @@ export class ContextMenuManager {
       case ClassType.PlotWidget:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: 'Expand' }),
-          new MenuItem({
-            label: 'Make Group Plot',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_ITEM_MAKE_DISPLAY_PLOT,
-              });
-            },
-          }),
-          new MenuItem({ label: 'Options' }),
-          new MenuItem({ label: 'Pen Styles' }),
-          new MenuItem({
-            label: 'Display plot on tab',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY,
-              });
-            },
-          }),
-          new MenuItem({
-            label: 'Export as CSV',
-            click: async () => {
-              await CommandsManager.exportItemAsCSV();
-            },
-          }),
-          new MenuItem({
-            label: 'Export as Image',
-            click: async () => {
-              await CommandsManager.exportItemAsImage();
-            },
-          }),
+          ...(await ContextMenuManager.buildContextMenuForPlotWidget()),
         ];
         break;
 
       case ClassType.GodleyIcon:
         menuItems = [
           ...menuItems,
-          new MenuItem({ label: 'Open Godley Table' }),
-          new MenuItem({ label: 'Title' }),
-          new MenuItem({ label: 'Set currency' }),
-          new MenuItem({
-            label: 'Editor mode',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_ITEM_TOGGLE_EDITOR_MODE,
-              });
-            },
-          }),
-          new MenuItem({
-            label: 'Row/Col buttons',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_ITEM_TOGGLE_BUTTONS,
-              });
-            },
-          }),
-          new MenuItem({
-            label: 'Display variables',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_ITEM_TOGGLE_VARIABLE_DISPLAY,
-              });
-            },
-          }),
-          new MenuItem({
-            label: 'Copy flow variables',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_COPY_ALL_FLOW_VARS,
-              });
-            },
-          }),
-          new MenuItem({
-            label: 'Copy stock variables',
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.CANVAS_COPY_ALL_STOCK_VARS,
-              });
-            },
-          }),
-          new MenuItem({ label: 'Export to file' }),
+          ...ContextMenuManager.buildContextMenuForGodleyIcon(),
         ];
 
         break;
@@ -472,6 +399,94 @@ export class ContextMenuManager {
       }),
     ];
 
+    return menuItems;
+  }
+
+  private static async buildContextMenuForPlotWidget(): Promise<MenuItem[]> {
+    const menuItems = [
+      new MenuItem({ label: 'Expand' }),
+      new MenuItem({
+        label: 'Make Group Plot',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_ITEM_MAKE_DISPLAY_PLOT,
+          });
+        },
+      }),
+      new MenuItem({ label: 'Options' }),
+      new MenuItem({ label: 'Pen Styles' }),
+      new MenuItem({
+        label: 'Display plot on tab',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Export as CSV',
+        click: async () => {
+          await CommandsManager.exportItemAsCSV();
+        },
+      }),
+      new MenuItem({
+        label: 'Export as Image',
+        click: async () => {
+          await CommandsManager.exportItemAsImage();
+        },
+      }),
+    ];
+
+    return menuItems;
+  }
+
+  private static buildContextMenuForGodleyIcon(): MenuItem[] {
+    const menuItems = [
+      new MenuItem({ label: 'Open Godley Table' }),
+      new MenuItem({ label: 'Title' }),
+      new MenuItem({ label: 'Set currency' }),
+      new MenuItem({
+        label: 'Editor mode',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_ITEM_TOGGLE_EDITOR_MODE,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Row/Col buttons',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_ITEM_TOGGLE_BUTTONS,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Display variables',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_ITEM_TOGGLE_VARIABLE_DISPLAY,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Copy flow variables',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_COPY_ALL_FLOW_VARS,
+          });
+        },
+      }),
+      new MenuItem({
+        label: 'Copy stock variables',
+        click: () => {
+          RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_COPY_ALL_STOCK_VARS,
+          });
+        },
+      }),
+      new MenuItem({ label: 'Export to file' }),
+    ];
     return menuItems;
   }
 
