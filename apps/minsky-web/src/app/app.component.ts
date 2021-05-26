@@ -20,7 +20,6 @@ const logInfo = debug('minsky:web:info');
 })
 export class AppComponent implements AfterViewInit {
   loader = false;
-  directory: string[];
   toggleButtonText = 'Start Minsky Service';
 
   constructor(
@@ -39,29 +38,12 @@ export class AppComponent implements AfterViewInit {
     } else {
       logInfo('Run in browser');
     }
-    this.openFile();
-    this.saveFile();
-    this.windowSize();
   }
 
   ngAfterViewInit() {
     this.cmService.canvasOffsetValues();
 
     this.cmService.setBackgroundColor();
-  }
-
-  windowSize() {
-    // code for window size
-    const windowDetail = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
-
-    logInfo(
-      'width:' + window.innerWidth + ' ' + 'height:' + window.innerHeight
-    );
-
-    this.emitData(windowDetail);
   }
 
   windowResize(event: ResizedEvent) {
@@ -82,29 +64,9 @@ export class AppComponent implements AfterViewInit {
         events.ipc.APP_LAYOUT_CHANGED,
         payload
       );
-    } else {
-      this.emitData(windowResizeDetail);
     }
 
     this.cmService.canvasOffsetValues();
-  }
-
-  saveFile() {
-    this.cmService.directory.subscribe((value) => {
-      this.directory = value;
-      this.emitData(this.directory);
-    });
-  }
-
-  openFile() {
-    this.cmService.openDirectory.subscribe((value) => {
-      this.emitData(value);
-    });
-  }
-
-  emitData(data) {
-    this.cmService.emitValues('Values', data);
-    // this.cmService.dispatchEvents('Values');
   }
 
   async toggleMinskyService() {

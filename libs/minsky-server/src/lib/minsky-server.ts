@@ -1,7 +1,6 @@
 import * as debug from 'debug';
 import * as express from 'express';
 import * as http from 'http';
-import * as os from 'os';
 import * as socketIO from 'socket.io';
 const app = express();
 
@@ -75,23 +74,6 @@ io.on('connection', (socket) => {
       logUiEvent('Canvas Event: ', data);
     }
     socket.broadcast.emit('canvasEvent', data);
-  });
-
-  socket.on('Values', (data) => {
-    // code for x11 window, left/top offset, window size
-    if (Buffer.isBuffer(data)) {
-      const offset = 0;
-
-      const windowId =
-        os.endianness() == 'LE'
-          ? data.readInt32LE(offset)
-          : data.readInt32BE(offset);
-
-      logUiEvent('Buffer :', data, ' window id = ', windowId);
-    } else {
-      logUiEvent('Values :', data);
-    }
-    socket.broadcast.emit(data);
   });
 });
 
