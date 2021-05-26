@@ -801,7 +801,6 @@ export class ContextMenuManager {
     ];
 
     if (await CommandsManager.isItemDefined()) {
-      // const varTabDisplay = await CommandsManager.getVarTabDisplay();
       menuItems.push(
         new MenuItem({
           label: 'Display variable on tab',
