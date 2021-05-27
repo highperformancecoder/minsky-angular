@@ -478,6 +478,8 @@ export class RestServiceManager {
       `${commandsMapping.RENDER_FRAME} [${mainWindowId}, ${leftOffset}, ${electronTopOffset}, ${canvasWidth}, ${canvasHeight}]` +
       newLineCharacter;
 
+    log.info(renderCommand);
+
     return renderCommand;
   }
 
@@ -514,7 +516,7 @@ export class RestServiceManager {
       });
   }
 
-  static async toggleMinskyService(event: Electron.IpcMainEvent) {
+  static async toggleMinskyService() {
     try {
       const _dialog = await dialog.showOpenDialog({
         properties: ['openFile'],
@@ -522,16 +524,12 @@ export class RestServiceManager {
       });
 
       if (_dialog.canceled) {
-        event.returnValue = false;
         return;
       }
 
       this.startMinskyService(_dialog.filePaths[0]);
-
-      event.returnValue = true;
     } catch (error) {
       logError(error);
-      event.returnValue = false;
     }
   }
 

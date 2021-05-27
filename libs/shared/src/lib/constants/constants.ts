@@ -191,7 +191,6 @@ export const minskyProcessReplyIndicators = {
   SIMULATION_SPEED: '/minsky/nSteps=>',
   EDITED: '/minsky/edited=>',
   C_BOUNDS: '/minsky/model/cBounds=>',
-  MINSKY_PROCESS_START: '/minsky/setGodleyIconResource',
   X: '/minsky/model/x=>',
   Y: '/minsky/model/y=>',
   ZOOM_FACTOR: '/minsky/model/zoomFactor',

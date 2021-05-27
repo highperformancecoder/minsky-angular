@@ -274,7 +274,7 @@ export class MenuManager {
                 async click() {
                   const exportPlotDialog = await dialog.showSaveDialog({
                     title: 'Export plot as svg',
-                    defaultPath: 'plot.svg',
+                    defaultPath: 'plot',
                     properties: [
                       'showOverwriteConfirmation',
                       'createDirectory',
@@ -298,7 +298,7 @@ export class MenuManager {
                 async click() {
                   const exportPlotDialog = await dialog.showSaveDialog({
                     title: 'Export plot as csv',
-                    defaultPath: 'plot.csv',
+                    defaultPath: 'plot',
                     properties: [
                       'showOverwriteConfirmation',
                       'createDirectory',

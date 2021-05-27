@@ -12,7 +12,6 @@ import { ElectronService } from './../electron/electron.service';
   providedIn: 'root',
 })
 export class StateManagementService {
-  isTerminalDisabled$ = new BehaviorSubject<boolean>(true);
   minskyProcessReply$ = new BehaviorSubject<Array<string>>([]);
 
   t = '0';
@@ -116,7 +115,6 @@ export class StateManagementService {
       EPS_REL,
       T,
       DELTA_T,
-      MINSKY_PROCESS_START,
       X,
       Y,
     } = minskyProcessReplyIndicators;
@@ -133,8 +131,6 @@ export class StateManagementService {
           this.t = Number(stdout.split('=>').pop()).toFixed(2);
         } else if (stdout.includes(DELTA_T)) {
           this.deltaT = Number(stdout.split('=>').pop()).toFixed(2);
-        } else if (stdout.includes(MINSKY_PROCESS_START)) {
-          this.isTerminalDisabled$.next(false);
         } else if (stdout.includes(TIME_UNIT)) {
           this.timeUnit = stdout.split('=>').pop().trim().split('"').join('');
         } else if (stdout.includes(STEP_MIN)) {
