@@ -159,6 +159,19 @@ export const commandsMapping = {
   CANVAS_TOGGLE_COUPLED: '/minsky/toggleCoupled',
   CANVAS_ITEM_READ_DATA: '/minsky/canvas/item/readData',
   CANVAS_ITEM_PORT_VALUES: '/minsky/canvas/item/portValues',
+  CANVAS_ITEM_DETAILED_TEXT: '/minsky/canvas/item/detailedText',
+  CANVAS_ITEM_TOOLTIP: '/minsky/canvas/item/tooltip',
+  CANVAS_WIRE_DETAILED_TEXT: '/minsky/canvas/wire/detailedText',
+  CANVAS_WIRE_TOOLTIP: '/minsky/canvas/wire/tooltip',
+  CANVAS_ITEM_TOGGLE_EDITOR_MODE: '/minsky/canvas/item/toggleEditorMode',
+  CANVAS_ITEM_TOGGLE_BUTTONS: '/minsky/canvas/item/toggleButtons',
+  CANVAS_ITEM_TOGGLE_VARIABLE_DISPLAY:
+    '/minsky/canvas/item/toggleVariableDisplay',
+  CANVAS_ITEM_MAKE_DISPLAY_PLOT: '/minsky/canvas/item/makeDisplayPlot',
+  CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY:
+    '/minsky/canvas/item/togglePlotTabDisplay',
+  CANVAS_ITEM_TABLE_TITLE: '/minsky/canvas/item/table/title',
+  CANVAS_ITEM_SET_CURRENCY: '/minsky/canvas/item/setCurrency',
 };
 
 export const minskyProcessReplyIndicators = {
@@ -283,3 +296,6 @@ export const unExposedTerminalCommands = [
   '/minsky/canvas/itemFocus/rotation',
   '/minsky/canvas/itemFocus/setUnits',
 ];
+
+export const USE_MINSKY_SYSTEM_BINARY = false;
+export const MINSKY_SYSTEM_BINARY_PATH = 'minsky-RESTService';

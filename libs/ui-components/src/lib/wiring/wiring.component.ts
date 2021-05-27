@@ -92,10 +92,6 @@ export class WiringComponent implements OnInit, OnDestroy {
         //   this.cmService.mouseEvents('CANVAS_EVENT', e.event as MouseEvent);
         // });
 
-        // this.minskyCanvas.addEventListener('click', (event: MouseEvent) => {
-        //   this.cmService.mouseEvents('CANVAS_EVENT', event);
-        // });
-
         minskyCanvasElement.addEventListener(
           'mousedown',
           (event: MouseEvent) => {

@@ -22,11 +22,6 @@ export class Message {
   providedIn: 'root',
 })
 export class CommunicationService {
-  canvasElement: HTMLElement;
-  sticky: number;
-  directory = new BehaviorSubject<string[]>([]);
-  openDirectory = new BehaviorSubject<string[]>([]);
-
   stepIntervalId;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
   mouseX: number;
@@ -37,21 +32,7 @@ export class CommunicationService {
     private electronService: ElectronService,
     private stateManagementService: StateManagementService,
     private windowUtilityService: WindowUtilityService
-  ) {
-    if (electronService.isElectron) {
-      this.electronService.ipcRenderer.on('Save_file', (event, result) => {
-        this.directory.next(result);
-      });
-
-      this.electronService.ipcRenderer.on('Open_file', (event, result) => {
-        this.openDirectory.next(result);
-      });
-    }
-  }
-
-  public emitValues(message, data) {
-    this.socket.emit(message, data);
-  }
+  ) {}
 
   setBackgroundColor(color = null) {
     if (this.electronService.isElectron)
@@ -65,6 +46,7 @@ export class CommunicationService {
     if (this.electronService.isElectron) {
       let command = commandsMapping[target];
       const dimensions = this.windowUtilityService.getDrawableArea();
+
       const canvasWidth = dimensions.width;
       const canvasHeight = dimensions.height;
 
@@ -163,16 +145,6 @@ export class CommunicationService {
   }
 
   private async getResetZoomCommand(centerX: number, centerY: number) {
-    /*
-    if {[minsky.model.zoomFactor]>0} {
-            zoom [expr 1/[minsky.model.relZoom]]
-        } else {
-            minsky.model.setZoom 1
-        }
-        recentreCanvas
-
-    */
-
     const zoomFactor = Number(
       await this.stateManagementService.getCommandValue(
         { command: commandsMapping.ZOOM_FACTOR },
@@ -197,17 +169,6 @@ export class CommunicationService {
   }
 
   private async getZoomToFitArgs(canvasWidth: number, canvasHeight: number) {
-    /*
-      set cb [minsky.canvas.model.cBounds]
-        set z1 [expr double([winfo width .wiring.canvas])/([lindex $cb 2]-[lindex $cb 0])]
-        set z2 [expr double([winfo height .wiring.canvas])/([lindex $cb 3]-[lindex $cb 1])]
-        if {$z2<$z1} {set z1 $z2}
-        set x [expr -0.5*([lindex $cb 2]+[lindex $cb 0])]
-        set y [expr -0.5*([lindex $cb 3]+[lindex $cb 1])]
-        zoomAt $x $y $z1
-        recentreCanvas
-    */
-
     const cBoundsString = await this.stateManagementService.getCommandValue(
       { command: commandsMapping.C_BOUNDS },
       minskyProcessReplyIndicators.C_BOUNDS
@@ -261,22 +222,12 @@ export class CommunicationService {
     }
   }
 
-  /*   public dispatchEvents(eventName) {
-    this.socket.on(eventName, (data) => {
-      // common code for dispatch events
-      logInfo('Event received', data);
-      document.querySelector(data.id).dispatchEvent(data.event);
-    });
-  } */
-
   canvasOffsetValues() {
     // code for canvas offset values
     document.addEventListener('DOMContentLoaded', () => {
       // When the event DOMContentLoaded occurs, it is safe to access the DOM
 
       const offset = this.windowUtilityService.getMinskyCanvasOffset();
-
-      const offSetValue = 'top:' + offset.top + ' ' + 'left:' + offset.left;
 
       if (this.electronService.isElectron) {
         this.electronService.ipcRenderer.send(events.ipc.APP_LAYOUT_CHANGED, {
@@ -288,14 +239,8 @@ export class CommunicationService {
           type: 'CANVAS',
           value: this.windowUtilityService.getDrawableArea(),
         });
-      } else {
-        this.emitValues('Values', offSetValue);
       }
     });
-
-    /*  if (!this.electronService.isElectron) {
-      this.dispatchEvents('Values');
-    } */
   }
 
   addOperation(arg) {

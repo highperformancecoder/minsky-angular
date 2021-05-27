@@ -8,18 +8,18 @@ import { ElectronService } from '@minsky/core';
   styleUrls: ['./input-modal.component.scss'],
 })
 export class InputModalComponent implements OnInit {
-  @Input() name: string;
-  @Output() saveName = new EventEmitter<string>();
+  @Input() input: string;
+  @Output() saveInput = new EventEmitter<string>();
 
   nameControl: FormControl;
   constructor(private electronService: ElectronService) {}
 
   ngOnInit(): void {
-    this.nameControl = new FormControl(this.name);
+    this.nameControl = new FormControl(this.input);
   }
 
   handleSave() {
-    this.saveName.emit(this.nameControl.value);
+    this.saveInput.emit(this.nameControl.value);
   }
 
   handleCancel() {

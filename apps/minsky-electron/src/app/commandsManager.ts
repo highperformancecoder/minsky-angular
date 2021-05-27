@@ -327,7 +327,52 @@ export class CommandsManager {
         name?.slice(1, 1) || ''
       }`,
       height: 100,
-      width: 200,
+      width: 400,
+    });
+  }
+
+  static async editGodleyTitle(): Promise<void> {
+    const title = await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_ITEM_TABLE_TITLE,
+    });
+
+    WindowManager.createMenuPopUpWithRouting({
+      title: `Edit godley title`,
+      url: `${rendererAppURL}/#/headless/edit-godley-title?title=${
+        title?.slice(1, 1) || ''
+      }`,
+      height: 100,
+      width: 400,
+    });
+  }
+
+  static async setGodleyCurrency(): Promise<void> {
+    WindowManager.createMenuPopUpWithRouting({
+      title: `Edit godley currency`,
+      url: `${rendererAppURL}/#/headless/edit-godley-currency`,
+      height: 100,
+      width: 400,
+    });
+  }
+
+  static async postNote(type: string) {
+    const tooltip =
+      (
+        await RestServiceManager.getCommandValue({
+          command: `/minsky/canvas/${type}/tooltip`,
+        })
+      )?.slice(1, 1) || '';
+
+    const detailedText =
+      (
+        await RestServiceManager.getCommandValue({
+          command: `/minsky/canvas/${type}/detailedText`,
+        })
+      )?.slice(1, 1) || '';
+
+    WindowManager.createMenuPopUpWithRouting({
+      title: `Description`,
+      url: `${rendererAppURL}/#/headless/edit-description?type=${type}&tooltip=${tooltip}&detailedText=${detailedText}`,
     });
   }
 

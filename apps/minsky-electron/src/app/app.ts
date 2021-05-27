@@ -1,7 +1,10 @@
-require('v8-compile-cache');
-
 import { startServer } from '@minsky/minsky-server';
-import { ActiveWindow, rendererAppName, rendererAppURL } from '@minsky/shared';
+import {
+  ActiveWindow,
+  green,
+  rendererAppName,
+  rendererAppURL,
+} from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
 import { join } from 'path';
@@ -87,6 +90,10 @@ export default class App {
       'minskyRESTServicePath'
     );
 
+    const windowId = WindowManager.activeWindows.get(1).windowId;
+
+    console.log('🚀🚀🚀🚀🚀' + green(` WindowId -> ${windowId}`));
+
     try {
       if (minskyRestServiceFilePath) {
         setTimeout(() => {
@@ -139,7 +146,6 @@ export default class App {
         nodeIntegration: true,
         backgroundThrottling: false,
         affinity: 'window',
-        // allowRunningInsecureContent: this.isDevelopmentMode ? true : false,
       },
       x: 0,
       y: 0,

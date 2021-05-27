@@ -4,8 +4,11 @@ import {
   green,
   MinskyProcessPayload,
   minskyProcessReplyIndicators,
+  MINSKY_SYSTEM_BINARY_PATH,
   newLineCharacter,
+  red,
   unExposedTerminalCommands,
+  USE_MINSKY_SYSTEM_BINARY,
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
@@ -62,7 +65,11 @@ export class RestServiceManager {
     const isStartProcessCommand =
       payload.command === commandsMapping.START_MINSKY_PROCESS;
     if (isStartProcessCommand) {
-      this.startMinskyProcess(payload);
+      this.startMinskyProcess(
+        USE_MINSKY_SYSTEM_BINARY
+          ? { ...payload, filePath: MINSKY_SYSTEM_BINARY_PATH }
+          : payload
+      );
       return;
     } else {
       if (!this.minskyProcess) {
@@ -112,24 +119,26 @@ export class RestServiceManager {
       }
 
       const { filePath, showServiceStartedDialog = true } = payload;
-      StoreManager.store.set('minskyRESTServicePath', filePath);
+
+      /*
+      uncomment this to enable minsky binary installed on system
+
+      const { showServiceStartedDialog = true } = payload;
+      const filePath = 'minsky-RESTService';
+      */
+
+      if (!USE_MINSKY_SYSTEM_BINARY) {
+        StoreManager.store.set('minskyRESTServicePath', filePath);
+      }
 
       this.minskyProcess = spawn(filePath);
       if (this.minskyProcess) {
-        // this.minskyProcess.stdout.once('data', () => {
-        //   // Earlier we were pausing queue here
-        // });
-
         this.minskyProcess.stdout.on('data', (data) => {
           const stdout = data.toString().trim();
           const message = `stdout: ${stdout}`;
           log.info(message);
 
           this.emitReplyEvent(message);
-
-          // if (stdout.includes('=>') || stdout === '{}') {
-          //   //this.queue.start();
-          // }
 
           if (stdout.includes('renderFrame=>')) {
             this.runningCommand = false;
@@ -141,7 +150,7 @@ export class RestServiceManager {
 
         this.minskyProcess.stderr.on('data', (data) => {
           const message = `stderr: ${data}`;
-          log.info(message);
+          log.info(red(message));
 
           this.processCommandsInQueueNew();
 
@@ -150,13 +159,13 @@ export class RestServiceManager {
 
         this.minskyProcess.on('error', (error) => {
           const message = `error: ${error.message}`;
-          log.info(message);
+          log.info(red(message));
 
           this.emitReplyEvent(message);
         });
 
         this.minskyProcess.on('close', (code) => {
-          log.info(`child process exited with code ${code}`);
+          log.info(red(`child process exited with code ${code}`));
         });
 
         if (!showServiceStartedDialog) {

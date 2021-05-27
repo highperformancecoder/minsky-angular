@@ -2,6 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
   CliInputComponent,
+  EditDescriptionComponent,
+  EditGodleyCurrencyComponent,
+  EditGodleyTitleComponent,
   EquationsComponent,
   PageNotFoundComponent,
   ParametersComponent,
@@ -39,6 +42,18 @@ const routes: Routes = [
   {
     path: 'headless/rename-all-instances',
     component: RenameAllInstancesComponent,
+  },
+  {
+    path: 'headless/edit-godley-title',
+    component: EditGodleyTitleComponent,
+  },
+  {
+    path: 'headless/edit-godley-currency',
+    component: EditGodleyCurrencyComponent,
+  },
+  {
+    path: 'headless/edit-description',
+    component: EditDescriptionComponent,
   },
   {
     path: 'headless/terminal',

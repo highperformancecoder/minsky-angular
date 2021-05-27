@@ -37,10 +37,6 @@ export class WindowUtilityService {
 
         this.drawableWidth = this.minskyCanvasContainer.clientWidth;
         this.drawableHeight = this.minskyCanvasContainer.clientHeight;
-        // console.log(
-        //   '🚀 ~ file: window-utility.service.ts ~ line 37 ~ WindowUtilityService ~ initializeIfNeeded ~ this.drawableHeight',
-        //   this.drawableHeight
-        // );
 
         // TODO:: Review ---> Canvas dimensions 10X of container
 

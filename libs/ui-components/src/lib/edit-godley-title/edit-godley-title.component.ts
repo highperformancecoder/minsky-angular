@@ -4,13 +4,12 @@ import { ElectronService } from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 
 @Component({
-  selector: 'minsky-rename-all-instances',
-  templateUrl: './rename-all-instances.component.html',
-  styleUrls: ['./rename-all-instances.component.scss'],
+  selector: 'minsky-edit-godley-title',
+  templateUrl: './edit-godley-title.component.html',
+  styleUrls: ['./edit-godley-title.component.scss'],
 })
-export class RenameAllInstancesComponent implements OnInit {
-  name: string;
-
+export class EditGodleyTitleComponent implements OnInit {
+  title: string;
   constructor(
     private route: ActivatedRoute,
     private electronService: ElectronService
@@ -18,14 +17,14 @@ export class RenameAllInstancesComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      this.name = params['name'];
+      this.title = params['title'];
     });
   }
 
-  handleSaveInput(newName: string) {
+  handleEditTitle(newTitle: string) {
     if (this.electronService.isElectron) {
       this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.CANVAS_RENAME_ALL_INSTANCES} "${newName}"`,
+        command: `${commandsMapping.CANVAS_ITEM_TABLE_TITLE} "${newTitle}"`,
       });
 
       this.electronService.sendMinskyCommandAndRender({
