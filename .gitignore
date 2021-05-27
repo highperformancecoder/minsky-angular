@@ -38,3 +38,4 @@ minsky-RESTService*
 # System Files
 .DS_Store
 Thumbs.db
+libs/shared/src/lib/constants/run.sh
