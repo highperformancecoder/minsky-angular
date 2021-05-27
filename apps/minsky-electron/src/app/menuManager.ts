@@ -95,7 +95,12 @@ export class MenuManager {
               try {
                 const _dialog = await dialog.showOpenDialog({
                   properties: ['openFile'],
-                  filters: [{ name: '*.mky', extensions: ['mky'] }],
+                  filters: [
+                    { name: '*.mky', extensions: ['mky'] },
+                    { name: '*.rvl', extensions: ['rvl'] },
+                    { name: '*.xml', extensions: ['xml'] },
+                    { name: '*.*', extensions: ['*'] },
+                  ],
                 });
 
                 const loadPayload: MinskyProcessPayload = {
