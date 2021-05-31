@@ -3,7 +3,6 @@ import {
   commandsMapping,
   events,
   HeaderEvent,
-  minskyProcessReplyIndicators,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
@@ -146,18 +145,16 @@ export class CommunicationService {
 
   private async getResetZoomCommand(centerX: number, centerY: number) {
     const zoomFactor = Number(
-      await this.stateManagementService.getCommandValue(
-        { command: commandsMapping.ZOOM_FACTOR },
-        minskyProcessReplyIndicators.ZOOM_FACTOR
-      )
+      await this.stateManagementService.getCommandValue({
+        command: commandsMapping.ZOOM_FACTOR,
+      })
     );
 
     if (zoomFactor > 0) {
       const relZoom = Number(
-        await this.stateManagementService.getCommandValue(
-          { command: commandsMapping.REL_ZOOM },
-          minskyProcessReplyIndicators.REL_ZOOM
-        )
+        await this.stateManagementService.getCommandValue({
+          command: commandsMapping.REL_ZOOM,
+        })
       );
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
       return `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
@@ -169,10 +166,9 @@ export class CommunicationService {
   }
 
   private async getZoomToFitArgs(canvasWidth: number, canvasHeight: number) {
-    const cBoundsString = await this.stateManagementService.getCommandValue(
-      { command: commandsMapping.C_BOUNDS },
-      minskyProcessReplyIndicators.C_BOUNDS
-    );
+    const cBoundsString = await this.stateManagementService.getCommandValue({
+      command: commandsMapping.C_BOUNDS,
+    });
 
     const cBounds = JSON.parse(cBoundsString as string);
 

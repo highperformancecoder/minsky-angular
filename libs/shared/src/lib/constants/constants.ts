@@ -172,6 +172,9 @@ export const commandsMapping = {
     '/minsky/canvas/item/togglePlotTabDisplay',
   CANVAS_ITEM_TABLE_TITLE: '/minsky/canvas/item/table/title',
   CANVAS_ITEM_SET_CURRENCY: '/minsky/canvas/item/setCurrency',
+  ECOLAB_VERSION: '/minsky/ecolabVersion',
+  MINSKY_VERSION: '/minsky/minskyVersion',
+  RAVEL_VERSION: '/minsky/ravelVersion',
 };
 
 export const minskyProcessReplyIndicators = {

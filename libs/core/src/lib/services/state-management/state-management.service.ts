@@ -4,6 +4,7 @@ import {
   events,
   MinskyProcessPayload,
   minskyProcessReplyIndicators,
+  newLineCharacter,
 } from '@minsky/shared';
 import { BehaviorSubject } from 'rxjs';
 import { ElectronService } from './../electron/electron.service';
@@ -62,10 +63,7 @@ export class StateManagementService {
     });
   }
 
-  async getCommandValue(
-    payload: MinskyProcessPayload,
-    minskyProcessReplyIndicator: string
-  ): Promise<string> {
+  async getCommandValue(payload: MinskyProcessPayload): Promise<string> {
     try {
       this.electronService.sendMinskyCommandAndRender(payload);
 
@@ -74,17 +72,27 @@ export class StateManagementService {
           this.electronService.ipcRenderer.on(
             events.ipc.MINSKY_PROCESS_REPLY,
             (event, stdout: string) => {
-              if (stdout.includes(minskyProcessReplyIndicator)) {
-                resolve(stdout.split('=>').pop().trim());
+              let response = stdout;
+
+              if (response.includes(newLineCharacter)) {
+                response = response
+                  .split(newLineCharacter)
+                  .filter((r) => Boolean(r))
+                  .find((r) => r.includes(payload.command.split(' ')[0]));
+              }
+
+              if (
+                response &&
+                response.includes(payload.command.split(' ')[0])
+              ) {
+                return resolve(response.split('=>').pop().trim());
               }
             }
           );
         }),
         new Promise((resolve, reject) => {
           setTimeout(function () {
-            reject(
-              `command: "${payload.command}" with minskyProcessReplyIndicator "${minskyProcessReplyIndicator}" Timed out`
-            );
+            return reject(`command: "${payload.command}" Timed out`);
           }, 4000);
         }),
       ]);

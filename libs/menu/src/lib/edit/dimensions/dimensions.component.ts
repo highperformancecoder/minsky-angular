@@ -9,5 +9,9 @@ import { ElectronService } from '@minsky/core';
 export class DimensionsComponent {
   constructor(private electronService: ElectronService) {}
 
-  submitBtn() {}
+  closeWindow() {
+    if (this.electronService.isElectron) {
+      this.electronService.remote.getCurrentWindow().close();
+    }
+  }
 }
