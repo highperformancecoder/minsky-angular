@@ -175,6 +175,8 @@ export const commandsMapping = {
   ECOLAB_VERSION: '/minsky/ecolabVersion',
   MINSKY_VERSION: '/minsky/minskyVersion',
   RAVEL_VERSION: '/minsky/ravelVersion',
+  MATLAB: '/minsky/matlab',
+  LATEX: '/minsky/latex',
 };
 
 export const minskyProcessReplyIndicators = {

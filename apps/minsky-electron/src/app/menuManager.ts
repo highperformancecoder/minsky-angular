@@ -222,69 +222,75 @@ export class MenuManager {
             },
           },
           {
-            label: 'Export Canvas',
-            async click() {
-              const exportCanvasDialog = await dialog.showSaveDialog({
-                title: 'Export canvas as...',
-                defaultPath: 'export.svg',
-                properties: ['showOverwriteConfirmation', 'createDirectory'],
-                filters: [
-                  { extensions: ['svg'], name: 'SVG' },
-                  { extensions: ['pdf'], name: 'PDF' },
-                  { extensions: ['eps'], name: 'PostScript' },
-                  { extensions: ['tex'], name: 'LaTeX' },
-                  { extensions: ['m'], name: 'Matlab' },
-                ],
-              });
+            label: 'Export Canvas as',
+            submenu: [
+              {
+                label: 'SVG',
+                click: async () => {
+                  const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+                    'svg'
+                  );
 
-              const { canceled, filePath } = exportCanvasDialog;
-              if (canceled || !filePath) {
-                return;
-              }
-
-              const extension = filePath.split('.').pop();
-
-              switch (extension?.toLowerCase()) {
-                case 'svg':
                   RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_SVG} "${filePath}"`,
                   });
-                  break;
+                },
+              },
+              {
+                label: 'PDF',
+                click: async () => {
+                  const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+                    'pdf'
+                  );
 
-                case 'pdf':
                   RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_PDF} "${filePath}"`,
                   });
-                  break;
+                },
+              },
+              {
+                label: 'PostScript',
+                click: async () => {
+                  const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+                    'eps'
+                  );
 
-                case 'eps':
                   RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_PS} "${filePath}"`,
                   });
-                  break;
+                },
+              },
+              {
+                label: 'LaTeX',
+                click: async () => {
+                  const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+                    'tex'
+                  );
 
-                case 'tex':
                   RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.RENDER_CANVAS_TO_PNG} "${filePath}"`,
+                    command: `${commandsMapping.LATEX} "${filePath}"`,
                   });
-                  break;
+                },
+              },
+              {
+                label: 'Matlab',
+                click: async () => {
+                  const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+                    'm'
+                  );
 
-                case 'm':
                   RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.RENDER_CANVAS_TO_EMF} "${filePath}"`,
+                    command: `${commandsMapping.MATLAB} "${filePath}"`,
                   });
-                  break;
-
-                default:
-                  break;
-              }
-            },
+                },
+              },
+            ],
           },
           {
-            label: 'Export Plots',
+            label: 'Export Plots as',
             submenu: [
               {
-                label: 'as SVG',
+                label: 'SVG',
                 async click() {
                   const exportPlotDialog = await dialog.showSaveDialog({
                     title: 'Export plot as svg',
@@ -308,7 +314,7 @@ export class MenuManager {
                 },
               },
               {
-                label: 'as CSV',
+                label: 'CSV',
                 async click() {
                   const exportPlotDialog = await dialog.showSaveDialog({
                     title: 'Export plot as csv',

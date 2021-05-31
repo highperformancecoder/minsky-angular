@@ -627,5 +627,22 @@ proc findDefinition {} {
     return saveDialog.filePath;
   }
 
+  static async getFilePathFromExportCanvasDialog(
+    type: string
+  ): Promise<string> {
+    const exportCanvasDialog = await dialog.showSaveDialog({
+      title: 'Export canvas',
+      defaultPath: `canvas.${type}`,
+      properties: ['showOverwriteConfirmation', 'createDirectory'],
+    });
+
+    const { canceled, filePath } = exportCanvasDialog;
+    if (canceled || !filePath) {
+      return;
+    }
+
+    return filePath;
+  }
+
   // static exportItemAsImg() {}
 }
