@@ -172,7 +172,16 @@ export class MenuManager {
             label: 'SaveAs',
             accelerator: 'CmdOrCtrl + Shift + S',
             async click() {
-              const saveDialog = await dialog.showSaveDialog({});
+              const saveDialog = await dialog.showSaveDialog({
+                filters: [
+                  { name: 'Minsky', extensions: ['mky'] },
+                  { name: 'Ravel', extensions: ['rvl'] },
+                  { name: 'All', extensions: ['*'] },
+                ],
+                defaultPath:
+                  RestServiceManager.currentMinskyModelFilePath || '',
+                properties: ['showOverwriteConfirmation'],
+              });
 
               if (saveDialog.canceled || !saveDialog.filePath) {
                 return;
