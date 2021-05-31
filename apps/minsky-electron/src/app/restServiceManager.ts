@@ -211,13 +211,13 @@ export class RestServiceManager {
   }
 
   private static handleStdout(stdout: string) {
-    if (stdout.includes(minskyProcessReplyIndicators.BOOKMARK_LIST)) {
+    if (stdout.includes(commandsMapping.BOOKMARK_LIST)) {
       // handle bookmarks
       const _event = null;
       ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
     } else if (stdout.includes(commandsMapping.DIMENSIONAL_ANALYSIS)) {
       // handle dimensional analysis
-      if (minskyProcessReplyIndicators.DIMENSIONAL_ANALYSIS) {
+      if (stdout === minskyProcessReplyIndicators.DIMENSIONAL_ANALYSIS) {
         dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
           type: 'info',
           title: 'Dimensional Analysis',

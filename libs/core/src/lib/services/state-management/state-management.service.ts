@@ -3,7 +3,6 @@ import {
   commandsMapping,
   events,
   MinskyProcessPayload,
-  minskyProcessReplyIndicators,
   newLineCharacter,
 } from '@minsky/shared';
 import { BehaviorSubject } from 'rxjs';
@@ -125,7 +124,7 @@ export class StateManagementService {
       DELTA_T,
       X,
       Y,
-    } = minskyProcessReplyIndicators;
+    } = commandsMapping;
 
     this.electronService.ipcRenderer.on(
       events.ipc.MINSKY_PROCESS_REPLY,

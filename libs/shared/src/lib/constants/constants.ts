@@ -179,26 +179,7 @@ export const commandsMapping = {
 };
 
 export const minskyProcessReplyIndicators = {
-  T: '/minsky/t=>',
-  DELTA_T: '/minsky/deltaT=>',
-  BOOKMARK_LIST: '/minsky/model/bookmarkList=>',
   DIMENSIONAL_ANALYSIS: '/minsky/dimensionalAnalysis=>{}',
-  T_ZERO: '/minsky/t0=>',
-  T_MAX: '/minsky/tmax=>',
-  EPS_ABS: '/minsky/epsAbs=>',
-  TIME_UNIT: '/minsky/timeUnit=>',
-  STEP_MIN: '/minsky/stepMin=>',
-  STEP_MAX: '/minsky/stepMax=>',
-  EPS_REL: '/minsky/epsRel=>',
-  ORDER: '/minsky/order=>',
-  IMPLICIT: '/minsky/implicit=>',
-  SIMULATION_SPEED: '/minsky/nSteps=>',
-  C_BOUNDS: '/minsky/model/cBounds=>',
-  X: '/minsky/model/x=>',
-  Y: '/minsky/model/y=>',
-  ZOOM_FACTOR: '/minsky/model/zoomFactor',
-  REL_ZOOM: '/minsky/model/relZoom=>',
-  KEY_PRESS: '/minsky/canvas/keyPress=>',
 };
 
 export const availableOperations = {
