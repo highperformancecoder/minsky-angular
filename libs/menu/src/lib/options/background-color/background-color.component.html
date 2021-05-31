@@ -10,12 +10,11 @@
   </div>
 
   <div class="background-buttons">
-    <button
-      mat-raised-button
-      class="btn ok-btn"
-      id="backgroundOk"
-      (click)="onClickOk()"
-    >
+    <button mat-raised-button class="btn ok-btn" (click)="closeWindow()">
+      Cancel
+    </button>
+
+    <button mat-raised-button class="btn ok-btn" (click)="onClickOk()">
       Apply
     </button>
   </div>
