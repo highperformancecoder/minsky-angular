@@ -38,7 +38,6 @@ export class RestServiceManager {
   private static recordingReadStream: ReadStream;
   private static recordingFilePath: string;
   private static JSONStreamWriter;
-  static isCanvasEdited = false;
 
   private static lastMouseMovePayload: MinskyProcessPayload = null;
   private static lastModelMoveToPayload: MinskyProcessPayload = null;
@@ -227,9 +226,6 @@ export class RestServiceManager {
       } else {
         dialog.showErrorBox('Dimensional Analysis Failed', stdout);
       }
-    } else if (stdout.includes(minskyProcessReplyIndicators.EDITED)) {
-      // handle edited
-      this.isCanvasEdited = stdout.split('=>').pop().trim() == 'true';
     }
   }
 
@@ -433,33 +429,8 @@ export class RestServiceManager {
         this.record(stdinCommand);
       }
 
-      RestServiceManager.handleMarkEdited(stdinCommand);
-
       minskyProcess.stdin.write(miscCommand);
       minskyProcess.stdin.write(renderCommand);
-    }
-  }
-
-  private static handleMarkEdited(command: string) {
-    const markEditIgnore = [
-      // 'mouseMove' ||
-      'getItemAt' ||
-        'getItemAtFocus' ||
-        'getWireAt' ||
-        commandsMapping.START_MINSKY_PROCESS ||
-        commandsMapping.RECORD ||
-        commandsMapping.RECORDING_REPLAY,
-      commandsMapping.MARK_EDITED,
-      commandsMapping.EDITED,
-      commandsMapping.RENDER_FRAME,
-    ];
-
-    if (
-      !this.isCanvasEdited &&
-      !markEditIgnore.find((c) => command.includes(c))
-    ) {
-      this.handleMinskyProcess({ command: commandsMapping.MARK_EDITED });
-      this.handleMinskyProcess({ command: commandsMapping.EDITED });
     }
   }
 
@@ -572,10 +543,17 @@ export class RestServiceManager {
       const res = await Promise.race([
         new Promise((resolve) => {
           this.minskyProcess.stdout.on('data', (data: Buffer) => {
-            const stdout = data.toString();
+            let response = data.toString();
 
-            if (stdout.includes(payload.command.split(' ')[0])) {
-              return resolve(stdout.split('=>').pop().trim());
+            if (response.includes(newLineCharacter)) {
+              response = response
+                .split(newLineCharacter)
+                .filter((r) => Boolean(r))
+                .find((r) => r.includes(payload.command.split(' ')[0]));
+            }
+
+            if (response && response.includes(payload.command.split(' ')[0])) {
+              return resolve(response.split('=>').pop().trim());
             }
           });
         }),

@@ -3,6 +3,7 @@ import {
   commandsMapping,
   MinskyProcessPayload,
   rendererAppURL,
+  toBoolean,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { dialog, Menu, shell } from 'electron';
@@ -42,9 +43,15 @@ export class MenuManager {
             label: 'New System',
             accelerator: 'CmdOrCtrl + Shift + N',
             async click() {
-              if (RestServiceManager.isCanvasEdited) {
+              const isCanvasEdited = toBoolean(
+                await RestServiceManager.getCommandValue({
+                  command: commandsMapping.EDITED,
+                })
+              );
+
+              if (isCanvasEdited) {
                 const saveModelDialog = await dialog.showSaveDialog({
-                  title: 'Save??',
+                  title: 'Save Model?',
                   properties: ['showOverwriteConfirmation', 'createDirectory'],
                 });
 
@@ -58,17 +65,12 @@ export class MenuManager {
                 });
               }
 
-              // ??? deleteSubsidiaryTopLevels -> close all the windows
               WindowManager.activeWindows.forEach((window) => {
                 if (!window.isMainWindow) {
                   window.context.close();
                 }
               });
 
-              // {window management -> set window title to new system}
-              // global fname progName
-              // set fname ""
-              // wm title . "$progName: New System"
               WindowManager.getMainWindow().setTitle('New System');
 
               const newSystemCommands = [
