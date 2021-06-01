@@ -247,10 +247,21 @@ export class CommunicationService {
     }
   }
 
-  insertElement(command) {
+  insertElement(command, arg = null, type = null) {
     if (this.electronService.isElectron) {
+      let _cmd = commandsMapping[command];
+      let _arg = arg;
+
+      if (arg) {
+        if (type === 'string') {
+          _arg = `"${_arg}"`;
+        }
+
+        _cmd = `${_cmd} ${_arg}`;
+      }
+
       this.electronService.sendMinskyCommandAndRender({
-        command: commandsMapping[command],
+        command: _cmd,
       });
     }
   }
