@@ -189,9 +189,11 @@ export class RestServiceManager {
       switch (payload.command) {
         case commandsMapping.RECORD:
           this.handleRecord();
+          this.runningCommand = false;
           break;
 
         case commandsMapping.RECORDING_REPLAY:
+          this.runningCommand = false;
           this.handleRecordingReplay();
           break;
 
@@ -271,6 +273,7 @@ export class RestServiceManager {
           command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
         });
 
+        this.runningCommand = false;
         this.replay(replayRecordingDialog);
       }
 
@@ -288,6 +291,7 @@ export class RestServiceManager {
       filePath: StoreManager.store.get('minskyRESTServicePath'),
       showServiceStartedDialog: false,
     });
+    this.runningCommand = false;
 
     this.recordingReadStream = createReadStream(
       replayRecordingDialog.filePaths[0]
@@ -298,7 +302,7 @@ export class RestServiceManager {
     });
 
     JSON.parse(replayFile).forEach((line) => {
-      this.executeCommandOnMinskyServer(this.minskyProcess, {
+      this.handleMinskyProcess({
         command: line.command,
       });
     });
