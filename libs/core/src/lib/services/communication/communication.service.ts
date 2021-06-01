@@ -3,6 +3,7 @@ import {
   commandsMapping,
   events,
   HeaderEvent,
+  MinskyProcessPayload,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
@@ -285,4 +286,24 @@ export class CommunicationService {
 
     this.electronService.sendMinskyCommandAndRender({ command });
   };
+
+  handleKeyPress(event: KeyboardEvent) {
+    const payload: MinskyProcessPayload = {
+      command: commandsMapping.KEY_PRESS,
+      key: event.key,
+      shift: event.shiftKey,
+      capsLock: event.getModifierState('CapsLock'),
+      ctrl: event.ctrlKey,
+      alt: event.altKey,
+      mouseX: this.mouseX,
+      mouseY: this.mouseY,
+    };
+
+    console.table(payload);
+
+    this.electronService.sendMinskyCommandAndRender(
+      payload,
+      events.ipc.KEY_PRESS
+    );
+  }
 }
