@@ -222,7 +222,7 @@ export const availableOperations = {
   FLOOR: 'floor',
   FRAC: 'frac',
   NOT_: 'not_',
-  GAMMA: 'gamma',
+  GAMMA: 'Gamma',
   FACT: 'fact',
   SUM: 'sum',
   PRODUCT: 'product',
