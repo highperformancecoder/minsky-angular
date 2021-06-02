@@ -94,6 +94,7 @@ export class AppComponent implements AfterViewInit {
         url: `${rendererAppURL}/#/headless/terminal`,
         width: 800,
         height: 668,
+        modal: false,
       });
     }
   }
