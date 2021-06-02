@@ -119,13 +119,6 @@ export class RestServiceManager {
 
       const { filePath, showServiceStartedDialog = true } = payload;
 
-      /*
-      uncomment this to enable minsky binary installed on system
-
-      const { showServiceStartedDialog = true } = payload;
-      const filePath = 'minsky-RESTService';
-      */
-
       if (!USE_MINSKY_SYSTEM_BINARY) {
         StoreManager.store.set('minskyRESTServicePath', filePath);
       }
