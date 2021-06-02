@@ -560,9 +560,7 @@ export class ContextMenuManager {
             RestServiceManager.handleMinskyProcess({
               command: commandsMapping.CANVAS_TOGGLE_COUPLED,
             });
-            RestServiceManager.handleMinskyProcess({
-              command: commandsMapping.CANVAS_REQUEST_REDRAW,
-            });
+            CommandsManager.requestRedraw();
           },
         })
       );
@@ -644,9 +642,7 @@ export class ContextMenuManager {
           RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_FLIP_CONTENTS,
           });
-          RestServiceManager.handleMinskyProcess({
-            command: commandsMapping.CANVAS_REQUEST_REDRAW,
-          });
+          CommandsManager.requestRedraw();
         },
       }),
       new MenuItem({
@@ -655,9 +651,7 @@ export class ContextMenuManager {
           RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_UNGROUP_ITEM,
           });
-          RestServiceManager.handleMinskyProcess({
-            command: commandsMapping.CANVAS_REQUEST_REDRAW,
-          });
+          CommandsManager.requestRedraw();
         },
       }),
     ];
@@ -687,9 +681,7 @@ export class ContextMenuManager {
               command: commandsMapping.CANVAS_ITEM_LEAVE_LOCK_GROUP,
             });
 
-            RestServiceManager.handleMinskyProcess({
-              command: commandsMapping.CANVAS_REQUEST_REDRAW,
-            });
+            CommandsManager.requestRedraw();
           },
         }),
       ];

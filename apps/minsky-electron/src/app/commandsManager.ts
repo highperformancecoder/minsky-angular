@@ -455,9 +455,7 @@ export class CommandsManager {
       }`,
     });
 
-    RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_REQUEST_REDRAW}`,
-    });
+    CommandsManager.requestRedraw();
 
     return;
   }
@@ -642,6 +640,44 @@ proc findDefinition {} {
     }
 
     return filePath;
+  }
+
+  static async mouseDown(mouseX: number, mouseY: number): Promise<void> {
+    RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.mousedown,
+      mouseX,
+      mouseY,
+    });
+
+    return;
+  }
+
+  static async mouseUp(mouseX: number, mouseY: number): Promise<void> {
+    RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.mouseup,
+      mouseX,
+      mouseY,
+    });
+
+    return;
+  }
+
+  static async mouseMove(mouseX: number, mouseY: number): Promise<void> {
+    RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.mousemove,
+      mouseX,
+      mouseY,
+    });
+
+    return;
+  }
+
+  static async requestRedraw(): Promise<void> {
+    RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.CANVAS_REQUEST_REDRAW,
+    });
+
+    return;
   }
 
   // static exportItemAsImg() {}
