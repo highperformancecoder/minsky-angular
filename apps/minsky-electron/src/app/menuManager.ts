@@ -3,6 +3,7 @@ import {
   commandsMapping,
   MinskyProcessPayload,
   rendererAppURL,
+  toBoolean,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { dialog, Menu, shell } from 'electron';
@@ -42,9 +43,15 @@ export class MenuManager {
             label: 'New System',
             accelerator: 'CmdOrCtrl + Shift + N',
             async click() {
-              if (RestServiceManager.isCanvasEdited) {
+              const isCanvasEdited = toBoolean(
+                await RestServiceManager.getCommandValue({
+                  command: commandsMapping.EDITED,
+                })
+              );
+
+              if (isCanvasEdited) {
                 const saveModelDialog = await dialog.showSaveDialog({
-                  title: 'Save??',
+                  title: 'Save Model?',
                   properties: ['showOverwriteConfirmation', 'createDirectory'],
                 });
 
@@ -58,17 +65,12 @@ export class MenuManager {
                 });
               }
 
-              // ??? deleteSubsidiaryTopLevels -> close all the windows
               WindowManager.activeWindows.forEach((window) => {
                 if (!window.isMainWindow) {
                   window.context.close();
                 }
               });
 
-              // {window management -> set window title to new system}
-              // global fname progName
-              // set fname ""
-              // wm title . "$progName: New System"
               WindowManager.getMainWindow().setTitle('New System');
 
               const newSystemCommands = [
@@ -95,7 +97,12 @@ export class MenuManager {
               try {
                 const _dialog = await dialog.showOpenDialog({
                   properties: ['openFile'],
-                  filters: [{ name: '*.mky', extensions: ['mky'] }],
+                  filters: [
+                    { name: '*.mky', extensions: ['mky'] },
+                    { name: '*.rvl', extensions: ['rvl'] },
+                    { name: '*.xml', extensions: ['xml'] },
+                    { name: '*.*', extensions: ['*'] },
+                  ],
                 });
 
                 const loadPayload: MinskyProcessPayload = {
@@ -167,7 +174,16 @@ export class MenuManager {
             label: 'SaveAs',
             accelerator: 'CmdOrCtrl + Shift + S',
             async click() {
-              const saveDialog = await dialog.showSaveDialog({});
+              const saveDialog = await dialog.showSaveDialog({
+                filters: [
+                  { name: 'Minsky', extensions: ['mky'] },
+                  { name: 'Ravel', extensions: ['rvl'] },
+                  { name: 'All', extensions: ['*'] },
+                ],
+                defaultPath:
+                  RestServiceManager.currentMinskyModelFilePath || '',
+                properties: ['showOverwriteConfirmation'],
+              });
 
               if (saveDialog.canceled || !saveDialog.filePath) {
                 return;
@@ -208,73 +224,79 @@ export class MenuManager {
             },
           },
           {
-            label: 'Export Canvas',
-            async click() {
-              const exportCanvasDialog = await dialog.showSaveDialog({
-                title: 'Export canvas as...',
-                defaultPath: 'export.svg',
-                properties: ['showOverwriteConfirmation', 'createDirectory'],
-                filters: [
-                  { extensions: ['svg'], name: 'SVG' },
-                  { extensions: ['pdf'], name: 'PDF' },
-                  { extensions: ['eps'], name: 'PostScript' },
-                  { extensions: ['tex'], name: 'LaTeX' },
-                  { extensions: ['m'], name: 'Matlab' },
-                ],
-              });
+            label: 'Export Canvas as',
+            submenu: [
+              {
+                label: 'SVG',
+                click: async () => {
+                  const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+                    'svg'
+                  );
 
-              const { canceled, filePath } = exportCanvasDialog;
-              if (canceled || !filePath) {
-                return;
-              }
-
-              const extension = filePath.split('.').pop();
-
-              switch (extension?.toLowerCase()) {
-                case 'svg':
                   RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_SVG} "${filePath}"`,
                   });
-                  break;
+                },
+              },
+              {
+                label: 'PDF',
+                click: async () => {
+                  const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+                    'pdf'
+                  );
 
-                case 'pdf':
                   RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_PDF} "${filePath}"`,
                   });
-                  break;
+                },
+              },
+              {
+                label: 'PostScript',
+                click: async () => {
+                  const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+                    'eps'
+                  );
 
-                case 'eps':
                   RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_PS} "${filePath}"`,
                   });
-                  break;
+                },
+              },
+              {
+                label: 'LaTeX',
+                click: async () => {
+                  const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+                    'tex'
+                  );
 
-                case 'tex':
                   RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.RENDER_CANVAS_TO_PNG} "${filePath}"`,
+                    command: `${commandsMapping.LATEX} "${filePath}"`,
                   });
-                  break;
+                },
+              },
+              {
+                label: 'Matlab',
+                click: async () => {
+                  const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+                    'm'
+                  );
 
-                case 'm':
                   RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.RENDER_CANVAS_TO_EMF} "${filePath}"`,
+                    command: `${commandsMapping.MATLAB} "${filePath}"`,
                   });
-                  break;
-
-                default:
-                  break;
-              }
-            },
+                },
+              },
+            ],
           },
           {
-            label: 'Export Plots',
+            label: 'Export Plots as',
             submenu: [
               {
-                label: 'as SVG',
+                label: 'SVG',
                 async click() {
                   const exportPlotDialog = await dialog.showSaveDialog({
                     title: 'Export plot as svg',
-                    defaultPath: 'plot.svg',
+                    defaultPath: 'plot',
                     properties: [
                       'showOverwriteConfirmation',
                       'createDirectory',
@@ -294,11 +316,11 @@ export class MenuManager {
                 },
               },
               {
-                label: 'as CSV',
+                label: 'CSV',
                 async click() {
                   const exportPlotDialog = await dialog.showSaveDialog({
                     title: 'Export plot as csv',
-                    defaultPath: 'plot.csv',
+                    defaultPath: 'plot',
                     properties: [
                       'showOverwriteConfirmation',
                       'createDirectory',

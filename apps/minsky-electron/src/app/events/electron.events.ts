@@ -89,8 +89,8 @@ ipcMain.on(ADD_RECENT_FILE, (event, filePath: string) => {
   RecentFilesManager.addFileToRecentFiles(filePath);
 });
 
-ipcMain.on(TOGGLE_MINSKY_SERVICE, async (event) => {
-  await RestServiceManager.toggleMinskyService(event);
+ipcMain.on(TOGGLE_MINSKY_SERVICE, async () => {
+  await RestServiceManager.toggleMinskyService();
 });
 
 ipcMain.on(KEY_PRESS, async (event, payload: MinskyProcessPayload) => {

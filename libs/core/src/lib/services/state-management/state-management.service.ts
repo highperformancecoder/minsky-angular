@@ -3,7 +3,7 @@ import {
   commandsMapping,
   events,
   MinskyProcessPayload,
-  minskyProcessReplyIndicators,
+  newLineCharacter,
 } from '@minsky/shared';
 import { BehaviorSubject } from 'rxjs';
 import { ElectronService } from './../electron/electron.service';
@@ -12,7 +12,6 @@ import { ElectronService } from './../electron/electron.service';
   providedIn: 'root',
 })
 export class StateManagementService {
-  isTerminalDisabled$ = new BehaviorSubject<boolean>(true);
   minskyProcessReply$ = new BehaviorSubject<Array<string>>([]);
 
   t = '0';
@@ -63,10 +62,7 @@ export class StateManagementService {
     });
   }
 
-  async getCommandValue(
-    payload: MinskyProcessPayload,
-    minskyProcessReplyIndicator: string
-  ): Promise<string> {
+  async getCommandValue(payload: MinskyProcessPayload): Promise<string> {
     try {
       this.electronService.sendMinskyCommandAndRender(payload);
 
@@ -75,17 +71,27 @@ export class StateManagementService {
           this.electronService.ipcRenderer.on(
             events.ipc.MINSKY_PROCESS_REPLY,
             (event, stdout: string) => {
-              if (stdout.includes(minskyProcessReplyIndicator)) {
-                resolve(stdout.split('=>').pop().trim());
+              let response = stdout;
+
+              if (response.includes(newLineCharacter)) {
+                response = response
+                  .split(newLineCharacter)
+                  .filter((r) => Boolean(r))
+                  .find((r) => r.includes(payload.command.split(' ')[0]));
+              }
+
+              if (
+                response &&
+                response.includes(payload.command.split(' ')[0])
+              ) {
+                return resolve(response.split('=>').pop().trim());
               }
             }
           );
         }),
         new Promise((resolve, reject) => {
           setTimeout(function () {
-            reject(
-              `command: "${payload.command}" with minskyProcessReplyIndicator "${minskyProcessReplyIndicator}" Timed out`
-            );
+            return reject(`command: "${payload.command}" Timed out`);
           }, 4000);
         }),
       ]);
@@ -116,10 +122,9 @@ export class StateManagementService {
       EPS_REL,
       T,
       DELTA_T,
-      MINSKY_PROCESS_START,
       X,
       Y,
-    } = minskyProcessReplyIndicators;
+    } = commandsMapping;
 
     this.electronService.ipcRenderer.on(
       events.ipc.MINSKY_PROCESS_REPLY,
@@ -133,8 +138,6 @@ export class StateManagementService {
           this.t = Number(stdout.split('=>').pop()).toFixed(2);
         } else if (stdout.includes(DELTA_T)) {
           this.deltaT = Number(stdout.split('=>').pop()).toFixed(2);
-        } else if (stdout.includes(MINSKY_PROCESS_START)) {
-          this.isTerminalDisabled$.next(false);
         } else if (stdout.includes(TIME_UNIT)) {
           this.timeUnit = stdout.split('=>').pop().trim().split('"').join('');
         } else if (stdout.includes(STEP_MIN)) {

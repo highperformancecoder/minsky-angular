@@ -76,7 +76,7 @@ export class CreateVariableComponent implements OnDestroy {
     this.form = new FormGroup({
       variableName: new FormControl('', Validators.required),
       type: new FormControl(this.variableType, Validators.required),
-      value: new FormControl(null),
+      value: new FormControl(''),
       units: new FormControl(''),
       rotation: new FormControl(null),
       shortDescription: new FormControl(''),

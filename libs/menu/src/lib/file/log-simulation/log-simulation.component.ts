@@ -7,7 +7,11 @@ import { ElectronService } from '@minsky/core';
   styleUrls: ['./log-simulation.component.scss'],
 })
 export class LogSimulationComponent {
-  constructor(private eleService: ElectronService) {}
+  constructor(private electronService: ElectronService) {}
 
-  onClickOk() {}
+  closeWindow() {
+    if (this.electronService.isElectron) {
+      this.electronService.remote.getCurrentWindow().close();
+    }
+  }
 }

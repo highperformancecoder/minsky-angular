@@ -27,6 +27,7 @@ export class PreferencesComponent {
 
   handleSubmit() {
     // TODO:
+    this.closeWindow();
   }
 
   closeWindow() {

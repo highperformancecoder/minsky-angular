@@ -9,5 +9,9 @@ import { ElectronService } from '@minsky/core';
 export class SelectItemsComponent {
   constructor(private electronService: ElectronService) {}
 
-  onClickOk() {}
+  closeWindow() {
+    if (this.electronService.isElectron) {
+      this.electronService.remote.getCurrentWindow().close();
+    }
+  }
 }

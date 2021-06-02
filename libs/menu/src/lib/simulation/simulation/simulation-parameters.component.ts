@@ -108,9 +108,11 @@ export class SimulationParametersComponent implements OnInit {
         }
       }
     }
+
+    this.closeWindow();
   }
 
-  handleCancel() {
+  closeWindow() {
     if (this.electronService.isElectron) {
       this.electronService.remote.getCurrentWindow().close();
     }

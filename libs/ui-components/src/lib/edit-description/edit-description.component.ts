@@ -45,9 +45,8 @@ export class EditDescriptionComponent implements OnInit {
           this.editDescriptionForm.get('detailedText').value
         }"`,
       });
-
-      this.closeWindow();
     }
+    this.closeWindow();
   }
 
   closeWindow() {

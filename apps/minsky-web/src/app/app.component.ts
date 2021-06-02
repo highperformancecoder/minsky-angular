@@ -44,6 +44,18 @@ export class AppComponent implements AfterViewInit {
     this.cmService.canvasOffsetValues();
 
     this.cmService.setBackgroundColor();
+
+    // close modals with ESC
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        const currentWindow = this.electronService.remote.getCurrentWindow();
+        const isModal = currentWindow.isModal();
+
+        if (isModal) {
+          currentWindow.close();
+        }
+      }
+    });
   }
 
   windowResize(event: ResizedEvent) {
@@ -71,11 +83,7 @@ export class AppComponent implements AfterViewInit {
 
   async toggleMinskyService() {
     if (this.electronService.isElectron) {
-      const isTerminalDisabled = !this.electronService.ipcRenderer.sendSync(
-        events.ipc.TOGGLE_MINSKY_SERVICE
-      );
-
-      this.stateManagementService.isTerminalDisabled$.next(isTerminalDisabled);
+      this.electronService.ipcRenderer.send(events.ipc.TOGGLE_MINSKY_SERVICE);
     }
   }
 
@@ -84,9 +92,9 @@ export class AppComponent implements AfterViewInit {
       this.electronService.ipcRenderer.send(events.ipc.CREATE_MENU_POPUP, {
         title: 'Terminal',
         url: `${rendererAppURL}/#/headless/terminal`,
-        modal: false,
         width: 800,
         height: 668,
+        modal: false,
       });
     }
   }

@@ -3,10 +3,10 @@
 
   <div class="wrapper">
     <div>
-      <div class="mt-10">Minsky 2.18</div>
-      <div class="mt-10">EcoLab 5.73</div>
-      <div class="mt-10">Angular 10</div>
-      <div class="mt-10">Ravel unavailable</div>
+      <div class="mt-10">Minsky {{ minskyVersion ? minskyVersion : 'NA' }}</div>
+      <div class="mt-10">EcoLab {{ ecolabVersion ? ecolabVersion : 'NA' }}</div>
+      <div class="mt-10">Ravel {{ ravelVersion ? ravelVersion : 'NA' }}</div>
+      <div class="mt-10">Angular {{ angularVersion }}</div>
       <div class="mt-20">
         Minsky is FREE software, distributed under the GNU General Public
         License. It comes with ABSOLUTELY NO WARRANTY.See
@@ -24,5 +24,5 @@
   </div>
 </div>
 <div class="footer_btn">
-  <button type="button" (click)="onClickOk()">OK</button>
+  <button type="button" (click)="closeWindow()">OK</button>
 </div>

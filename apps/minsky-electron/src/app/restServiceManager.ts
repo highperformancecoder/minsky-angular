@@ -38,7 +38,6 @@ export class RestServiceManager {
   private static recordingReadStream: ReadStream;
   private static recordingFilePath: string;
   private static JSONStreamWriter;
-  static isCanvasEdited = false;
 
   private static lastMouseMovePayload: MinskyProcessPayload = null;
   private static lastModelMoveToPayload: MinskyProcessPayload = null;
@@ -120,13 +119,6 @@ export class RestServiceManager {
 
       const { filePath, showServiceStartedDialog = true } = payload;
 
-      /*
-      uncomment this to enable minsky binary installed on system
-
-      const { showServiceStartedDialog = true } = payload;
-      const filePath = 'minsky-RESTService';
-      */
-
       if (!USE_MINSKY_SYSTEM_BINARY) {
         StoreManager.store.set('minskyRESTServicePath', filePath);
       }
@@ -190,9 +182,11 @@ export class RestServiceManager {
       switch (payload.command) {
         case commandsMapping.RECORD:
           this.handleRecord();
+          this.runningCommand = false;
           break;
 
         case commandsMapping.RECORDING_REPLAY:
+          this.runningCommand = false;
           this.handleRecordingReplay();
           break;
 
@@ -212,13 +206,13 @@ export class RestServiceManager {
   }
 
   private static handleStdout(stdout: string) {
-    if (stdout.includes(minskyProcessReplyIndicators.BOOKMARK_LIST)) {
+    if (stdout.includes(commandsMapping.BOOKMARK_LIST)) {
       // handle bookmarks
       const _event = null;
       ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
     } else if (stdout.includes(commandsMapping.DIMENSIONAL_ANALYSIS)) {
       // handle dimensional analysis
-      if (minskyProcessReplyIndicators.DIMENSIONAL_ANALYSIS) {
+      if (stdout === minskyProcessReplyIndicators.DIMENSIONAL_ANALYSIS) {
         dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
           type: 'info',
           title: 'Dimensional Analysis',
@@ -227,9 +221,6 @@ export class RestServiceManager {
       } else {
         dialog.showErrorBox('Dimensional Analysis Failed', stdout);
       }
-    } else if (stdout.includes(minskyProcessReplyIndicators.EDITED)) {
-      // handle edited
-      this.isCanvasEdited = stdout.split('=>').pop().trim() == 'true';
     }
   }
 
@@ -275,6 +266,7 @@ export class RestServiceManager {
           command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
         });
 
+        this.runningCommand = false;
         this.replay(replayRecordingDialog);
       }
 
@@ -292,6 +284,7 @@ export class RestServiceManager {
       filePath: StoreManager.store.get('minskyRESTServicePath'),
       showServiceStartedDialog: false,
     });
+    this.runningCommand = false;
 
     this.recordingReadStream = createReadStream(
       replayRecordingDialog.filePaths[0]
@@ -302,7 +295,7 @@ export class RestServiceManager {
     });
 
     JSON.parse(replayFile).forEach((line) => {
-      this.executeCommandOnMinskyServer(this.minskyProcess, {
+      this.handleMinskyProcess({
         command: line.command,
       });
     });
@@ -433,33 +426,8 @@ export class RestServiceManager {
         this.record(stdinCommand);
       }
 
-      RestServiceManager.handleMarkEdited(stdinCommand);
-
       minskyProcess.stdin.write(miscCommand);
       minskyProcess.stdin.write(renderCommand);
-    }
-  }
-
-  private static handleMarkEdited(command: string) {
-    const markEditIgnore = [
-      // 'mouseMove' ||
-      'getItemAt' ||
-        'getItemAtFocus' ||
-        'getWireAt' ||
-        commandsMapping.START_MINSKY_PROCESS ||
-        commandsMapping.RECORD ||
-        commandsMapping.RECORDING_REPLAY,
-      commandsMapping.MARK_EDITED,
-      commandsMapping.EDITED,
-      commandsMapping.RENDER_FRAME,
-    ];
-
-    if (
-      !this.isCanvasEdited &&
-      !markEditIgnore.find((c) => command.includes(c))
-    ) {
-      this.handleMinskyProcess({ command: commandsMapping.MARK_EDITED });
-      this.handleMinskyProcess({ command: commandsMapping.EDITED });
     }
   }
 
@@ -477,6 +445,8 @@ export class RestServiceManager {
     const renderCommand =
       `${commandsMapping.RENDER_FRAME} [${mainWindowId}, ${leftOffset}, ${electronTopOffset}, ${canvasWidth}, ${canvasHeight}]` +
       newLineCharacter;
+
+    log.info(renderCommand);
 
     return renderCommand;
   }
@@ -514,7 +484,7 @@ export class RestServiceManager {
       });
   }
 
-  static async toggleMinskyService(event: Electron.IpcMainEvent) {
+  static async toggleMinskyService() {
     try {
       const _dialog = await dialog.showOpenDialog({
         properties: ['openFile'],
@@ -522,16 +492,12 @@ export class RestServiceManager {
       });
 
       if (_dialog.canceled) {
-        event.returnValue = false;
         return;
       }
 
       this.startMinskyService(_dialog.filePaths[0]);
-
-      event.returnValue = true;
     } catch (error) {
       logError(error);
-      event.returnValue = false;
     }
   }
 
@@ -574,10 +540,17 @@ export class RestServiceManager {
       const res = await Promise.race([
         new Promise((resolve) => {
           this.minskyProcess.stdout.on('data', (data: Buffer) => {
-            const stdout = data.toString();
+            let response = data.toString();
 
-            if (stdout.includes(payload.command.split(' ')[0])) {
-              return resolve(stdout.split('=>').pop().trim());
+            if (response.includes(newLineCharacter)) {
+              response = response
+                .split(newLineCharacter)
+                .filter((r) => Boolean(r))
+                .find((r) => r.includes(payload.command.split(' ')[0]));
+            }
+
+            if (response && response.includes(payload.command.split(' ')[0])) {
+              return resolve(response.split('=>').pop().trim());
             }
           });
         }),

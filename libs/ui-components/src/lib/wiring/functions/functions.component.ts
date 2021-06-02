@@ -27,7 +27,7 @@ export class FunctionsComponent {
       'floor',
       'frac',
       'not_',
-      'gamma',
+      'Gamma',
       'fact',
     ];
   }

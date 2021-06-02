@@ -62,7 +62,12 @@
       <img src="assets/images/icons/sheet.gif" alt="Sheet" title="Sheet" />
     </button>
 
-    <button class="tab" (click)="cmService.addOperation('ADD_NOTE')">
+    <button
+      class="tab"
+      (click)="
+        cmService.insertElement('ADD_NOTE', 'Enter your note here', 'string')
+      "
+    >
       <img src="assets/images/icons/note.gif" alt="Note" title="Note" />
     </button>
 

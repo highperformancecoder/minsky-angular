@@ -35,5 +35,7 @@ input {
 
 .background-buttons {
   text-align: center;
-  margin: $margin;
+  button {
+    margin: $margin;
+  }
 }
