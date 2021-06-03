@@ -178,10 +178,6 @@ export const commandsMapping = {
   LATEX: '/minsky/latex',
 };
 
-export const minskyProcessReplyIndicators = {
-  DIMENSIONAL_ANALYSIS: '/minsky/dimensionalAnalysis=>{}',
-};
-
 export const availableOperations = {
   TIME: 'time',
   INTEGRATE: 'integrate',

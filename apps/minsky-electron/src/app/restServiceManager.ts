@@ -3,7 +3,6 @@ import {
   events,
   green,
   MinskyProcessPayload,
-  minskyProcessReplyIndicators,
   MINSKY_HTTP_SERVER_PORT,
   MINSKY_SYSTEM_BINARY_PATH,
   MINSKY_SYSTEM_HTTP_SERVER_PATH,
@@ -139,8 +138,6 @@ export class RestServiceManager {
             this.runningCommand = false;
             this.processCommandsInQueueNew();
           }
-
-          RestServiceManager.handleStdout(stdout);
         });
 
         this.minskyProcess.stderr.on('data', (data) => {
@@ -206,25 +203,6 @@ export class RestServiceManager {
     WindowManager.activeWindows.forEach((aw) => {
       aw.context.webContents.send(events.ipc.MINSKY_PROCESS_REPLY, message);
     });
-  }
-
-  private static handleStdout(stdout: string) {
-    if (stdout.includes(commandsMapping.BOOKMARK_LIST)) {
-      // handle bookmarks
-      const _event = null;
-      ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
-    } else if (stdout.includes(commandsMapping.DIMENSIONAL_ANALYSIS)) {
-      // handle dimensional analysis
-      if (stdout === minskyProcessReplyIndicators.DIMENSIONAL_ANALYSIS) {
-        dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
-          type: 'info',
-          title: 'Dimensional Analysis',
-          message: 'Dimensional Analysis Passed',
-        });
-      } else {
-        dialog.showErrorBox('Dimensional Analysis Failed', stdout);
-      }
-    }
   }
 
   private static handleRecordingReplay() {
