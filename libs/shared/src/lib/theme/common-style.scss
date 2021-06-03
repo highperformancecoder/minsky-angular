@@ -35,3 +35,9 @@ input {
 .form-buttons .btn {
   display: inline-block;
 }
+
+.submit {
+  // Do not add css properties here
+  // this is required to handle submit form on click of enter
+  // the app component gets the element by className and clicks it
+}

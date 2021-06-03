@@ -4,7 +4,9 @@ import {
   green,
   MinskyProcessPayload,
   minskyProcessReplyIndicators,
+  MINSKY_HTTP_SERVER_PORT,
   MINSKY_SYSTEM_BINARY_PATH,
+  MINSKY_SYSTEM_HTTP_SERVER_PATH,
   newLineCharacter,
   red,
   unExposedTerminalCommands,
@@ -31,6 +33,7 @@ const logError = debug('minsky:electron_error');
 
 export class RestServiceManager {
   static minskyProcess: ChildProcess;
+  static minskyHttpServer: ChildProcess;
   static currentMinskyModelFilePath: string;
   static isFirstStart = true;
   private static isRecording = false;
@@ -571,5 +574,26 @@ export class RestServiceManager {
 
       throw error;
     }
+  }
+
+  static startHttpServer() {
+    this.minskyHttpServer = spawn(`${MINSKY_SYSTEM_HTTP_SERVER_PATH}`, [
+      `${MINSKY_HTTP_SERVER_PORT}`,
+    ]);
+
+    console.log(
+      green(`Minsky Http Server started on port ${MINSKY_HTTP_SERVER_PORT}`)
+    );
+
+    this.minskyHttpServer.stdout
+      .on('data', (data) => {
+        log.info(`http: ${data}`);
+      })
+      .on('error', (error) => {
+        log.error(`error: ${error.message}`);
+      })
+      .on('close', (code) => {
+        log.info(`"http-server" child process exited with code ${code}`);
+      });
   }
 }

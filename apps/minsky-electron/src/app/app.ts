@@ -72,7 +72,9 @@ export default class App {
     // Some APIs can only be used after this event occurs.
 
     (async () => {
-      await startServer(/* { serverPortRangeEnd, serverPortRangeStart } */);
+      await startServer();
+
+      // RestServiceManager.startHttpServer();
     })();
 
     App.initMainWindow();

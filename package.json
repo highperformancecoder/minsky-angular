@@ -55,6 +55,7 @@
     "@nrwl/linter": "12.3.4",
     "@nrwl/tao": "12.3.4",
     "angular-resize-event": "^2.1.0",
+    "axios": "^0.21.1",
     "debug": "^4.3.1",
     "electron-log": "^4.3.5",
     "electron-store": "^7.0.3",
