@@ -1,18 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { ElectronService, StateManagementService } from '@minsky/core';
-import { commandsMapping, events, MinskyProcessPayload } from '@minsky/shared';
+import { ElectronService, HttpService } from '@minsky/core';
+import { commandsMapping } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -22,13 +16,13 @@ import { map, startWith } from 'rxjs/operators';
   selector: 'minsky-cli-input',
   templateUrl: './cli-input.component.html',
   styleUrls: ['./cli-input.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CliInputComponent implements OnInit, OnDestroy {
   commands: Array<string>;
   filteredOptions$: Observable<string[]>;
   command: string;
   form: FormGroup;
+  output = [];
 
   public get commandControl(): AbstractControl {
     return this.form.get('command');
@@ -40,8 +34,7 @@ export class CliInputComponent implements OnInit, OnDestroy {
 
   constructor(
     private electronService: ElectronService,
-    public stateManagementService: StateManagementService,
-    private changeDetectionRef: ChangeDetectorRef
+    public httpService: HttpService
   ) {}
 
   ngOnInit(): void {
@@ -60,32 +53,19 @@ export class CliInputComponent implements OnInit, OnDestroy {
     });
 
     if (this.electronService.isElectron) {
-      this.commands = this.electronService.ipcRenderer.sendSync(
-        events.ipc.GET_COMMAND_OUTPUT,
-        { command: commandsMapping.LIST }
-      );
-
-      // (async () => {
-      //   // this.commands = await axios.get('http://localhost:4445/minsky/@list');
-      //   const res = await axios.get('http://localhost:4445/minsky/@list');
-      //   console.log(
-      //     '🚀 ~ file: cli-input.component.ts ~ line 72 ~ CliInputComponent ~ res',
-      //     res
-      //   );
-      // })();
-
-      this.stateManagementService.minskyProcessReply$.subscribe(() => {
-        this.changeDetectionRef.detectChanges();
-      });
+      this.httpService
+        .handleMinskyCommand(commandsMapping.LIST_V2)
+        .subscribe((commands: string[]) => {
+          this.commands = commands.map((c) => `/minsky${c}`);
+        });
     }
   }
 
   handleSubmit() {
-    if (this.command) {
-      const payload: MinskyProcessPayload = {
-        command: this.command,
-      };
-      this.electronService.sendMinskyCommandAndRender(payload);
+    if (this.electronService.isElectron && this.command) {
+      this.httpService.handleMinskyCommand(this.command).subscribe((output) => {
+        this.output.push(`${this.command} ==> ${JSON.stringify(output)}`);
+      });
     }
   }
 
@@ -98,7 +78,7 @@ export class CliInputComponent implements OnInit, OnDestroy {
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.commands.filter((option) =>
+    return this.commands?.filter((option) =>
       option.toLowerCase().includes(filterValue)
     );
   }

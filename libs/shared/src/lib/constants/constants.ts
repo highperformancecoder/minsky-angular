@@ -36,6 +36,7 @@ export const commandsMapping = {
   GROUP_SELECTION: `/minsky/canvas/groupSelection`,
   IMPLICIT: '/minsky/implicit',
   LIST: '/list',
+  LIST_V2: '/minsky/@list',
   LOAD: '/minsky/load',
   mousedown: '/minsky/canvas/mouseDown',
   mousemove: `/minsky/canvas/mouseMove`,
@@ -279,4 +280,5 @@ export const unExposedTerminalCommands = [
 export const USE_MINSKY_SYSTEM_BINARY = false;
 export const MINSKY_SYSTEM_BINARY_PATH = 'minsky-RESTService';
 export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
-export const MINSKY_HTTP_SERVER_PORT = 4445;
+export const MINSKY_HTTP_SERVER_PORT = 4444;
+export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;

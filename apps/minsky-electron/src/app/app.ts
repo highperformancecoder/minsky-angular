@@ -1,4 +1,4 @@
-import { startServer } from '@minsky/minsky-server';
+import { startSocketServer } from '@minsky/minsky-server';
 import {
   ActiveWindow,
   green,
@@ -12,6 +12,7 @@ import { format } from 'url';
 import { environment } from '../environments/environment';
 import { ContextMenuManager } from './contextMenuManager';
 import { MenuManager } from './menuManager';
+import { startProxyServer } from './proxy';
 import { RecentFilesManager } from './recentFilesManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
@@ -71,11 +72,10 @@ export default class App {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
 
-    (async () => {
-      await startServer();
-
-      // RestServiceManager.startHttpServer();
-    })();
+    // start servers
+    RestServiceManager.startHttpServer();
+    startSocketServer();
+    startProxyServer();
 
     App.initMainWindow();
     App.loadMainWindow();
@@ -226,8 +226,8 @@ export default class App {
     App.BrowserWindow = browserWindow;
     App.application = app;
 
-    App.application.commandLine.appendSwitch('high-dpi-support', '1');
-    App.application.commandLine.appendSwitch('force-device-scale-factor', '1');
+    // App.application.commandLine.appendSwitch('high-dpi-support', '1');
+    // App.application.commandLine.appendSwitch('force-device-scale-factor', '1');
     App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
     App.application.on('ready', App.onReady); // App is ready to load data
     App.application.on('activate', App.onActivate); // App is activated

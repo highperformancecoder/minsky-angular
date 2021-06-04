@@ -58,9 +58,9 @@
   </b>
 </h3>
 <div class="output">
-  <ul *ngFor="let output of stateManagementService.minskyProcessReply$ | async">
+  <ul *ngFor="let o of output.reverse()">
     <li>
-      {{ output }}
+      {{ o }}
     </li>
   </ul>
 </div>
