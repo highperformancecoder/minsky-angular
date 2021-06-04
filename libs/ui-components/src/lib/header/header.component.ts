@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 import { CommunicationService, StateManagementService } from '@minsky/core';
 import { HeaderEvent } from '@minsky/shared';
-import * as debug from 'debug';
-
-const logInfo = debug('minsky:web:info');
 
 @Component({
   selector: 'minsky-header',
@@ -26,7 +23,6 @@ export class HeaderComponent {
       action: 'CLICKED',
       target: 'RECORD',
     });
-    logInfo('recordButtons');
   }
 
   recordingReplyButton() {
@@ -34,7 +30,6 @@ export class HeaderComponent {
       action: 'CLICKED',
       target: 'RECORDING_REPLAY',
     });
-    logInfo('recordingReplyButton');
   }
 
   reverseCheckboxButton(event) {
@@ -43,6 +38,5 @@ export class HeaderComponent {
       target: 'REVERSE_CHECKBOX',
       value: event.target.checked,
     });
-    logInfo('reverseCheckboxButton');
   }
 }

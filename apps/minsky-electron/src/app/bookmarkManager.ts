@@ -4,7 +4,7 @@ import { RestServiceManager } from './restServiceManager';
 
 export class BookmarkManager {
   static async populateBookmarks(bookmarkString: string) {
-    const bookmarks: string[] = JSON.parse(bookmarkString.split('=>').pop());
+    const bookmarks: string[] = JSON.parse(bookmarkString);
     const mainSubmenu = Menu.getApplicationMenu().getMenuItemById(
       'main-bookmark'
     ).submenu;
