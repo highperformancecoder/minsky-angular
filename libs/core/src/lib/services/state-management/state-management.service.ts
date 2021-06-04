@@ -3,7 +3,7 @@ import {
   commandsMapping,
   events,
   MinskyProcessPayload,
-  newLineCharacter,
+  retrieveCommandValueFromStdout,
 } from '@minsky/shared';
 import { BehaviorSubject } from 'rxjs';
 import { ElectronService } from './../electron/electron.service';
@@ -71,21 +71,12 @@ export class StateManagementService {
           this.electronService.ipcRenderer.on(
             events.ipc.MINSKY_PROCESS_REPLY,
             (event, stdout: string) => {
-              let response = stdout;
-
-              if (response.includes(newLineCharacter)) {
-                response = response
-                  .split(newLineCharacter)
-                  .filter((r) => Boolean(r))
-                  .find((r) => r.includes(payload.command.split(' ')[0]));
-              }
-
-              if (
-                response &&
-                response.includes(payload.command.split(' ')[0])
-              ) {
-                return resolve(response.split('=>').pop().trim());
-              }
+              return resolve(
+                retrieveCommandValueFromStdout({
+                  stdout,
+                  command: payload.command,
+                })
+              );
             }
           );
         }),
@@ -135,34 +126,71 @@ export class StateManagementService {
         ]);
 
         if (stdout.includes(T)) {
-          this.t = Number(stdout.split('=>').pop()).toFixed(2);
+          this.t = Number(
+            retrieveCommandValueFromStdout({ stdout, command: T })
+          ).toFixed(2);
         } else if (stdout.includes(DELTA_T)) {
-          this.deltaT = Number(stdout.split('=>').pop()).toFixed(2);
+          this.deltaT = Number(
+            retrieveCommandValueFromStdout({ stdout, command: DELTA_T })
+          ).toFixed(2);
         } else if (stdout.includes(TIME_UNIT)) {
-          this.timeUnit = stdout.split('=>').pop().trim().split('"').join('');
+          this.timeUnit = retrieveCommandValueFromStdout({
+            stdout,
+            command: TIME_UNIT,
+          })
+            .trim()
+            .split('"')
+            .join('');
         } else if (stdout.includes(STEP_MIN)) {
-          this.minStepSize = Number(stdout.split('=>').pop().trim());
+          this.minStepSize = Number(
+            retrieveCommandValueFromStdout({ stdout, command: STEP_MIN }).trim()
+          );
         } else if (stdout.includes(STEP_MAX)) {
-          this.maxStepSize = Number(stdout.split('=>').pop().trim());
+          this.maxStepSize = Number(
+            retrieveCommandValueFromStdout({ stdout, command: STEP_MAX }).trim()
+          );
         } else if (stdout.includes(T_ZERO)) {
-          this.startTime = Number(stdout.split('=>').pop().trim());
+          this.startTime = Number(
+            retrieveCommandValueFromStdout({ stdout, command: T_ZERO }).trim()
+          );
         } else if (stdout.includes(T_MAX)) {
-          this.runUntilTime = stdout.split('=>').pop().trim();
+          this.runUntilTime = retrieveCommandValueFromStdout({
+            stdout,
+            command: T_MAX,
+          }).trim();
         } else if (stdout.includes(EPS_ABS)) {
-          this.absoluteError = Number(stdout.split('=>').pop().trim());
+          this.absoluteError = Number(
+            retrieveCommandValueFromStdout({ stdout, command: EPS_ABS }).trim()
+          );
         } else if (stdout.includes(EPS_REL)) {
-          this.relativeError = Number(stdout.split('=>').pop().trim());
+          this.relativeError = Number(
+            retrieveCommandValueFromStdout({ stdout, command: EPS_REL }).trim()
+          );
         } else if (stdout.includes(ORDER)) {
-          this.solverOrder = Number(stdout.split('=>').pop().trim());
+          this.solverOrder = Number(
+            retrieveCommandValueFromStdout({ stdout, command: ORDER }).trim()
+          );
         } else if (stdout.includes(IMPLICIT)) {
-          const _implicit = stdout.split('=>').pop().trim();
+          const _implicit = retrieveCommandValueFromStdout({
+            stdout,
+            command: IMPLICIT,
+          }).trim();
           this.implicitSolver = _implicit === 'false' ? false : true;
         } else if (stdout.includes(SIMULATION_SPEED)) {
-          this.noOfStepsPerIteration = Number(stdout.split('=>').pop().trim());
+          this.noOfStepsPerIteration = Number(
+            retrieveCommandValueFromStdout({
+              stdout,
+              command: SIMULATION_SPEED,
+            }).trim()
+          );
         } else if (stdout.includes(X)) {
-          this.modelX = Number(stdout.split('=>').pop().trim());
+          this.modelX = Number(
+            retrieveCommandValueFromStdout({ stdout, command: X }).trim()
+          );
         } else if (stdout.includes(Y)) {
-          this.modelY = Number(stdout.split('=>').pop().trim());
+          this.modelY = Number(
+            retrieveCommandValueFromStdout({ stdout, command: Y }).trim()
+          );
         }
       }
     );

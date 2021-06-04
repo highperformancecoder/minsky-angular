@@ -8,6 +8,7 @@ import {
   MINSKY_SYSTEM_HTTP_SERVER_PATH,
   newLineCharacter,
   red,
+  retrieveCommandValueFromStdout,
   unExposedTerminalCommands,
   USE_MINSKY_SYSTEM_BINARY,
 } from '@minsky/shared';
@@ -521,18 +522,14 @@ export class RestServiceManager {
       const res = await Promise.race([
         new Promise((resolve) => {
           this.minskyProcess.stdout.on('data', (data: Buffer) => {
-            let response = data.toString();
+            const stdout = data.toString();
 
-            if (response.includes(newLineCharacter)) {
-              response = response
-                .split(newLineCharacter)
-                .filter((r) => Boolean(r))
-                .find((r) => r.includes(payload.command.split(' ')[0]));
-            }
-
-            if (response && response.includes(payload.command.split(' ')[0])) {
-              return resolve(response.split('=>').pop().trim());
-            }
+            return resolve(
+              retrieveCommandValueFromStdout({
+                stdout,
+                command: payload.command,
+              })
+            );
           });
         }),
         new Promise((resolve, reject) => {
