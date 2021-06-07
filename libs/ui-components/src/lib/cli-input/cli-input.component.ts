@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ElectronService, HttpService } from '@minsky/core';
-import { commandsMapping } from '@minsky/shared';
+import { commandsMapping, unExposedTerminalCommands } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -57,6 +57,7 @@ export class CliInputComponent implements OnInit, OnDestroy {
         .handleMinskyCommand(commandsMapping.LIST_V2)
         .subscribe((commands: string[]) => {
           this.commands = commands.map((c) => `/minsky${c}`);
+          this.commands = [...this.commands, ...unExposedTerminalCommands];
         });
     }
   }

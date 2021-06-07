@@ -9,7 +9,6 @@ import {
   newLineCharacter,
   red,
   retrieveCommandValueFromStdout,
-  unExposedTerminalCommands,
   USE_MINSKY_SYSTEM_BINARY,
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
@@ -431,39 +430,6 @@ export class RestServiceManager {
     log.info(renderCommand);
 
     return renderCommand;
-  }
-
-  static onGetMinskyCommands(event: Electron.IpcMainEvent) {
-    let listOfCommands = [...unExposedTerminalCommands];
-
-    const getMinskyCommandsProcess = spawn(
-      StoreManager.store.get('minskyRESTServicePath')
-    );
-
-    getMinskyCommandsProcess.stdin.write(
-      commandsMapping.LIST + newLineCharacter
-    );
-
-    setTimeout(() => {
-      getMinskyCommandsProcess.stdout.emit('close');
-    }, 1000);
-
-    getMinskyCommandsProcess.stdout
-      .on('data', (data) => {
-        listOfCommands = [
-          ...listOfCommands,
-          ...data.toString().trim().split(newLineCharacter),
-        ];
-      })
-      .on('error', (error) => {
-        log.error(`error: ${error.message}`);
-      })
-      .on('close', (code) => {
-        log.info(
-          `"get-minsky-commands" child process exited with code ${code}`
-        );
-        event.returnValue = listOfCommands.sort();
-      });
   }
 
   static async toggleMinskyService() {

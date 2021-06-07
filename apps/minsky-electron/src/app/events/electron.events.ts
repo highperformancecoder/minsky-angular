@@ -3,12 +3,7 @@
  * between the frontend to the electron backend.
  */
 
-import {
-  AppLayoutPayload,
-  commandsMapping,
-  events,
-  MinskyProcessPayload,
-} from '@minsky/shared';
+import { AppLayoutPayload, events, MinskyProcessPayload } from '@minsky/shared';
 import * as debug from 'debug';
 import { ipcMain } from 'electron';
 import { environment } from '../../environments/environment';
@@ -32,7 +27,6 @@ const {
     ADD_RECENT_FILE,
     APP_LAYOUT_CHANGED,
     CREATE_MENU_POPUP,
-    GET_COMMAND_OUTPUT,
     MINSKY_PROCESS,
     POPULATE_BOOKMARKS,
     SET_BACKGROUND_COLOR,
@@ -64,17 +58,6 @@ ipcMain.on(CREATE_MENU_POPUP, (event, data) => {
 
 ipcMain.on(MINSKY_PROCESS, (event, payload: MinskyProcessPayload) => {
   RestServiceManager.handleMinskyProcess(payload);
-});
-
-ipcMain.on(GET_COMMAND_OUTPUT, (event, { command }) => {
-  switch (command) {
-    case commandsMapping.LIST:
-      RestServiceManager.onGetMinskyCommands(event);
-      break;
-
-    default:
-      break;
-  }
 });
 
 ipcMain.on(APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {

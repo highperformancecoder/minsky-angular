@@ -249,7 +249,6 @@ export const events = {
     SET_BACKGROUND_COLOR: 'set-background-color',
     CREATE_MENU_POPUP: 'create-menu-popup',
     MINSKY_PROCESS: 'minsky-process',
-    GET_COMMAND_OUTPUT: 'get-command-output',
     APP_LAYOUT_CHANGED: 'app-layout-changed',
     POPULATE_BOOKMARKS: 'populate-bookmarks',
     ADD_RECENT_FILE: 'add-recent-file',
