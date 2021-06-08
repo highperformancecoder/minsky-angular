@@ -60,7 +60,7 @@ export class MenuManager {
                   return;
                 }
 
-                RestServiceManager.handleMinskyProcess({
+                await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.SAVE} "${filePath}"`,
                 });
               }
@@ -84,9 +84,9 @@ export class MenuManager {
                 `${commandsMapping.PUSH_HISTORY} 1`,
               ];
 
-              newSystemCommands.forEach((command) =>
-                RestServiceManager.handleMinskyProcess({ command })
-              );
+              for (const command of newSystemCommands) {
+                await RestServiceManager.handleMinskyProcess({ command });
+              }
             },
           },
           {
@@ -110,7 +110,7 @@ export class MenuManager {
                   filePath: _dialog.filePaths[0].toString(),
                 };
 
-                RestServiceManager.handleMinskyProcess(loadPayload);
+                await RestServiceManager.handleMinskyProcess(loadPayload);
               } catch (error) {
                 logError(error);
               }
@@ -151,7 +151,7 @@ export class MenuManager {
             async click() {
               if (RestServiceManager.minskyProcess) {
                 if (RestServiceManager.currentMinskyModelFilePath) {
-                  RestServiceManager.handleMinskyProcess({
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.SAVE}`,
                     filePath: RestServiceManager.currentMinskyModelFilePath,
                   });
@@ -162,7 +162,7 @@ export class MenuManager {
                     return;
                   }
 
-                  RestServiceManager.handleMinskyProcess({
+                  await RestServiceManager.handleMinskyProcess({
                     command: commandsMapping.SAVE,
                     filePath: saveDialog.filePath,
                   });
@@ -189,7 +189,7 @@ export class MenuManager {
                 return;
               }
 
-              RestServiceManager.handleMinskyProcess({
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
               });
 
@@ -205,7 +205,7 @@ export class MenuManager {
                   properties: ['openFile'],
                 });
 
-                RestServiceManager.handleMinskyProcess({
+                await RestServiceManager.handleMinskyProcess({
                   command: `${
                     commandsMapping.INSERT_GROUP_FROM_FILE
                   } "${insertGroupDialog.filePaths[0].toString()}"}`,
@@ -243,7 +243,7 @@ export class MenuManager {
                     'svg'
                   );
 
-                  RestServiceManager.handleMinskyProcess({
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_SVG} "${filePath}"`,
                   });
                 },
@@ -255,7 +255,7 @@ export class MenuManager {
                     'pdf'
                   );
 
-                  RestServiceManager.handleMinskyProcess({
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_PDF} "${filePath}"`,
                   });
                 },
@@ -267,7 +267,7 @@ export class MenuManager {
                     'eps'
                   );
 
-                  RestServiceManager.handleMinskyProcess({
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_CANVAS_TO_PS} "${filePath}"`,
                   });
                 },
@@ -279,7 +279,7 @@ export class MenuManager {
                     'tex'
                   );
 
-                  RestServiceManager.handleMinskyProcess({
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.LATEX} "${filePath}"`,
                   });
                 },
@@ -291,7 +291,7 @@ export class MenuManager {
                     'm'
                   );
 
-                  RestServiceManager.handleMinskyProcess({
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.MATLAB} "${filePath}"`,
                   });
                 },
@@ -320,7 +320,7 @@ export class MenuManager {
                     return;
                   }
 
-                  RestServiceManager.handleMinskyProcess({
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.RENDER_ALL_PLOTS_AS_SVG} "${filePath}"`,
                   });
                 },
@@ -344,7 +344,7 @@ export class MenuManager {
                     return;
                   }
 
-                  RestServiceManager.handleMinskyProcess({
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.EXPORT_ALL_PLOTS_AS_CSV} "${filePath}"`,
                   });
                 },
@@ -382,8 +382,8 @@ export class MenuManager {
           },
           {
             label: 'Redraw',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: commandsMapping.REDRAW,
               });
             },
@@ -421,9 +421,9 @@ export class MenuManager {
           {
             label: 'Undo',
             accelerator: 'CmdOrCtrl + Z',
-            click() {
+            async click() {
               const numberOfTimes = -1;
-              RestServiceManager.handleMinskyProcess({
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.UNDO} ${numberOfTimes}`,
               });
             },
@@ -431,9 +431,9 @@ export class MenuManager {
           {
             label: 'Redo',
             accelerator: 'CmdOrCtrl + Y',
-            click() {
+            async click() {
               const numberOfTimes = 1;
-              RestServiceManager.handleMinskyProcess({
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.REDO} ${numberOfTimes}`,
               });
             },
@@ -441,8 +441,8 @@ export class MenuManager {
           {
             label: 'Cut',
             accelerator: 'CmdOrCtrl + Shift + X',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.CUT}`,
               });
             },
@@ -450,8 +450,8 @@ export class MenuManager {
           {
             label: 'Copy',
             accelerator: 'CmdOrCtrl + Shift + C',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.COPY}`,
               });
             },
@@ -459,16 +459,16 @@ export class MenuManager {
           {
             label: 'Paste',
             accelerator: 'CmdOrCtrl + Shift + V',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.PASTE}`,
               });
             },
           },
           {
             label: 'Group selection',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.GROUP_SELECTION}`,
               });
             },
@@ -486,24 +486,24 @@ export class MenuManager {
           },
           {
             label: 'Remove Units',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.REMOVE_UNITS}`,
               });
             },
           },
           {
             label: 'Auto Layout',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.AUTO_LAYOUT}`,
               });
             },
           },
           {
             label: 'Random Layout',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.RANDOM_LAYOUT}`,
               });
             },
@@ -533,16 +533,16 @@ export class MenuManager {
         submenu: [
           {
             label: 'plot',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: commandsMapping.ADD_PLOT,
               });
             },
           },
           {
             label: 'Godley Table',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: commandsMapping.ADD_GODLEY,
               });
             },
@@ -594,112 +594,112 @@ export class MenuManager {
             submenu: [
               {
                 label: 'add',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ADD}"`,
                   });
                 },
               },
               {
                 label: 'subtract',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUBTRACT}"`,
                   });
                 },
               },
               {
                 label: 'multiply',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MULTIPLY}"`,
                   });
                 },
               },
               {
                 label: 'divide',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIVIDE}"`,
                   });
                 },
               },
               {
                 label: 'min',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MIN}"`,
                   });
                 },
               },
               {
                 label: 'max',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MAX}"`,
                   });
                 },
               },
               {
                 label: 'and',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.AND_}"`,
                   });
                 },
               },
               {
                 label: 'or',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.OR_}"`,
                   });
                 },
               },
               {
                 label: 'log',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LOG}"`,
                   });
                 },
               },
               {
                 label: 'pow',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.POW}"`,
                   });
                 },
               },
               {
                 label: 'polygamma',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.POLYGAMMA}"`,
                   });
                 },
               },
               {
                 label: 'lt',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LT}"`,
                   });
                 },
               },
               {
                 label: 'le',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LE}"`,
                   });
                 },
               },
               {
                 label: 'eq',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.EQ}"`,
                   });
                 },
@@ -711,152 +711,152 @@ export class MenuManager {
             submenu: [
               {
                 label: 'copy',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COPY}"`,
                   });
                 },
               },
               {
                 label: 'sqrt',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SQRT}"`,
                   });
                 },
               },
               {
                 label: 'exp',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.EXP}"`,
                   });
                 },
               },
               {
                 label: 'ln',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LN}"`,
                   });
                 },
               },
               {
                 label: 'sin',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SIN}"`,
                   });
                 },
               },
               {
                 label: 'cos',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COS}"`,
                   });
                 },
               },
               {
                 label: 'tan',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TAN}"`,
                   });
                 },
               },
               {
                 label: 'asin',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ASIN}"`,
                   });
                 },
               },
               {
                 label: 'acos',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ACOS}"`,
                   });
                 },
               },
               {
                 label: 'atan',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ATAN}"`,
                   });
                 },
               },
               {
                 label: 'sinh',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SINH}"`,
                   });
                 },
               },
               {
                 label: 'cosh',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COSH}"`,
                   });
                 },
               },
               {
                 label: 'tanh',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TANH}"`,
                   });
                 },
               },
               {
                 label: 'abs',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ABS}"`,
                   });
                 },
               },
               {
                 label: 'floor',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FLOOR}"`,
                   });
                 },
               },
               {
                 label: 'frac',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FRAC}"`,
                   });
                 },
               },
               {
                 label: 'not',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.NOT_}"`,
                   });
                 },
               },
               {
                 label: 'gamma',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.GAMMA}"`,
                   });
                 },
               },
               {
                 label: 'fact',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FACT}"`,
                   });
                 },
@@ -868,64 +868,64 @@ export class MenuManager {
             submenu: [
               {
                 label: 'sum',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUM}"`,
                   });
                 },
               },
               {
                 label: 'product',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.PRODUCT}"`,
                   });
                 },
               },
               {
                 label: 'infimum',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INFIMUM}"`,
                   });
                 },
               },
               {
                 label: 'supremum',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUPREMUM}"`,
                   });
                 },
               },
               {
                 label: 'any',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ANY}"`,
                   });
                 },
               },
               {
                 label: 'all',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ALL}"`,
                   });
                 },
               },
               {
                 label: 'infIndex',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INF_INDEX}"`,
                   });
                 },
               },
               {
                 label: 'supIndex',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUP_INDEX}"`,
                   });
                 },
@@ -937,24 +937,24 @@ export class MenuManager {
             submenu: [
               {
                 label: 'runningSum',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.RUNNING_SUM}"`,
                   });
                 },
               },
               {
                 label: 'runningProduct',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.RUNNING_PRODUCT}"`,
                   });
                 },
               },
               {
                 label: 'difference',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIFFERENCE}"`,
                   });
                 },
@@ -966,32 +966,32 @@ export class MenuManager {
             submenu: [
               {
                 label: 'innerProduct',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INNER_PRODUCT}"`,
                   });
                 },
               },
               {
                 label: 'outerProduct',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.OUTER_PRODUCT}"`,
                   });
                 },
               },
               {
                 label: 'index',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INDEX}"`,
                   });
                 },
               },
               {
                 label: 'gather',
-                click() {
-                  RestServiceManager.handleMinskyProcess({
+                async click() {
+                  await RestServiceManager.handleMinskyProcess({
                     command: `${commandsMapping.ADD_OPERATION} "${availableOperations.GATHER}"`,
                   });
                 },
@@ -1000,40 +1000,40 @@ export class MenuManager {
           },
           {
             label: 'time',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TIME}"`,
               });
             },
           },
           {
             label: 'integrate',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INTEGRATE}"`,
               });
             },
           },
           {
             label: 'differentiate',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIFFERENTIATE}"`,
               });
             },
           },
           {
             label: 'data',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DATA}"`,
               });
             },
           },
           {
             label: 'ravel',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
                 command: commandsMapping.ADD_RAVEL,
               });
             },

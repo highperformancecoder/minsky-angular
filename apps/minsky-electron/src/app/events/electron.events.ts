@@ -56,8 +56,8 @@ ipcMain.on(CREATE_MENU_POPUP, (event, data) => {
   WindowManager.createMenuPopUpWithRouting(data);
 });
 
-ipcMain.on(MINSKY_PROCESS, (event, payload: MinskyProcessPayload) => {
-  RestServiceManager.handleMinskyProcess(payload);
+ipcMain.on(MINSKY_PROCESS, async (event, payload: MinskyProcessPayload) => {
+  await RestServiceManager.handleMinskyProcess(payload);
 });
 
 ipcMain.on(APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {

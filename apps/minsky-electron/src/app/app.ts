@@ -98,8 +98,10 @@ export default class App {
 
     try {
       if (minskyRestServiceFilePath) {
-        setTimeout(() => {
-          RestServiceManager.startMinskyService(minskyRestServiceFilePath);
+        setTimeout(async () => {
+          await RestServiceManager.startMinskyService(
+            minskyRestServiceFilePath
+          );
         }, 4000);
       }
     } catch (error) {

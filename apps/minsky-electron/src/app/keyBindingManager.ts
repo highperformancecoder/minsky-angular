@@ -150,8 +150,8 @@ export class KeyBindingManager {
     return;
   }
 
-  private static zoomAt(x: number, y: number, zoomFactor: number) {
-    RestServiceManager.handleMinskyProcess({
+  private static async zoomAt(x: number, y: number, zoomFactor: number) {
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.ZOOM_IN} [${x},${y},${zoomFactor}]`,
     });
 
@@ -169,14 +169,16 @@ export class KeyBindingManager {
     );
 
     if (!isCanvasSelectionEmpty) {
-      RestServiceManager.handleMinskyProcess({ command: commandsMapping.CUT });
+      await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.CUT,
+      });
       return;
     }
 
     const item = await CommandsManager.getItemAt(mouseX, mouseY);
 
     if (!isEmptyObject(item)) {
-      RestServiceManager.handleMinskyProcess({
+      await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_DELETE_ITEM,
       });
       return;
@@ -185,7 +187,7 @@ export class KeyBindingManager {
     const wire = await CommandsManager.getWireAt(mouseX, mouseY);
 
     if (!isEmptyObject(wire)) {
-      RestServiceManager.handleMinskyProcess({
+      await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_DELETE_WIRE,
       });
       return;

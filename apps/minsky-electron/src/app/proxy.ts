@@ -12,35 +12,45 @@ const app = express();
 const SERVER_URL = `http://localhost:${MINSKY_HTTP_SERVER_PORT}`;
 
 app.use(cors());
-app.use(bodyParser.text());
+app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded());
 
 app.get('*', async (req, res) => {
   try {
     const _res = await axios.get(`${SERVER_URL}${req.url}`);
 
-    console.log(
-      '🚀 ~ file: proxy.ts ~ line 20 ~ app.get ~ _res.data',
-      _res.data
-    );
+    // console.log(
+    //   '🚀 ~ file: proxy.ts ~ line 20 ~ app.get ~ _res.data',
+    //   _res.data
+    // );
     res.status(200).json(_res.data);
   } catch (error) {
-    console.log('🚀 ~ file: proxy.ts ~ line 19 ~ app.all ~ error', error);
+    // console.error(
+    //   '🚀 ~ file: proxy.ts ~ line 27 ~ app.get ~ error',
+    //   error.response.data
+    // );
     res.status(500).json(error);
   }
 });
 
 app.put('*', async (req, res) => {
   try {
-    console.log('🚀 ~ file: proxy.ts ~ line 33 ~ app.put ~ req.body', req.body);
-    const _res = await axios.put(`${SERVER_URL}${req.url}`, req.body);
-
     console.log(
-      '🚀 ~ file: proxy.ts ~ line 31 ~ app.put ~ _res.data',
-      _res.data
+      '🚀 ~ file: proxy.ts ~ line 33 ~ app.put ~ req.body',
+      req.body.arg
     );
+    const _res = await axios.put(`${SERVER_URL}${req.url}`, req.body.arg);
+
+    // console.log(
+    //   '🚀 ~ file: proxy.ts ~ line 31 ~ app.put ~ _res.data',
+    //   _res.data
+    // );
     res.status(200).json(_res.data);
   } catch (error) {
-    console.log('🚀 ~ file: proxy.ts ~ line 19 ~ app.all ~ error', error);
+    // console.error(
+    //   '🚀 ~ file: proxy.ts ~ line 43 ~ app.put ~ error',
+    //   error.response.data
+    // );
     res.status(500).json(error);
   }
 });

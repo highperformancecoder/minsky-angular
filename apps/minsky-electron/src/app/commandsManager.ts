@@ -16,7 +16,7 @@ export class CommandsManager {
     x: number,
     y: number
   ): Promise<Record<string, unknown>> {
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
     });
 
@@ -40,7 +40,7 @@ export class CommandsManager {
       if (!x && !y) {
         throw new Error('Please provide x and y when reInvokeGetItemAt=true');
       }
-      RestServiceManager.handleMinskyProcess({
+      await RestServiceManager.handleMinskyProcess({
         command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
       });
     }
@@ -71,7 +71,7 @@ export class CommandsManager {
       if (!x && !y) {
         throw new Error('Please provide x and y when reInvokeGetItemAt=true');
       }
-      RestServiceManager.handleMinskyProcess({
+      await RestServiceManager.handleMinskyProcess({
         command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
       });
     }
@@ -95,7 +95,7 @@ export class CommandsManager {
         throw new Error('Please provide x and y when reInvokeGetItemAt=true');
       }
 
-      RestServiceManager.handleMinskyProcess({
+      await RestServiceManager.handleMinskyProcess({
         command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
       });
     }
@@ -119,7 +119,7 @@ export class CommandsManager {
         throw new Error('Please provide x and y when reInvokeGetItemAt=true');
       }
 
-      RestServiceManager.handleMinskyProcess({
+      await RestServiceManager.handleMinskyProcess({
         command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
       });
     }
@@ -155,7 +155,7 @@ export class CommandsManager {
     x: number,
     y: number
   ): Promise<Record<string, unknown>> {
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_GET_WIRE_AT} [${x},${y}]`,
     });
 
@@ -168,24 +168,24 @@ export class CommandsManager {
     return wire;
   }
 
-  static addOperation(operation: string): void {
-    RestServiceManager.handleMinskyProcess({
+  static async addOperation(operation: string): Promise<void> {
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.ADD_OPERATION} "${operation}"`,
     });
 
     return;
   }
 
-  static addPlot(): void {
-    RestServiceManager.handleMinskyProcess({
+  static async addPlot(): Promise<void> {
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.ADD_PLOT}`,
     });
 
     return;
   }
 
-  static addGodley(): void {
-    RestServiceManager.handleMinskyProcess({
+  static async addGodley(): Promise<void> {
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.ADD_GODLEY}`,
     });
 
@@ -203,7 +203,7 @@ export class CommandsManager {
   }
 
   static async flip(): Promise<void> {
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_ITEM_FLIP}`,
     });
 
@@ -215,7 +215,7 @@ export class CommandsManager {
 
     const newRotation = (defaultRotation + 180) % 360;
 
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_DEFAULT_ROTATION} ${newRotation}`,
     });
 
@@ -244,25 +244,25 @@ export class CommandsManager {
 
     switch (extension?.toLowerCase()) {
       case 'svg':
-        RestServiceManager.handleMinskyProcess({
+        await RestServiceManager.handleMinskyProcess({
           command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_SVG} "${filePath}"`,
         });
         break;
 
       case 'pdf':
-        RestServiceManager.handleMinskyProcess({
+        await RestServiceManager.handleMinskyProcess({
           command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PDF} "${filePath}"`,
         });
         break;
 
       case 'ps':
-        RestServiceManager.handleMinskyProcess({
+        await RestServiceManager.handleMinskyProcess({
           command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PS} "${filePath}"`,
         });
         break;
 
       case 'emf':
-        RestServiceManager.handleMinskyProcess({
+        await RestServiceManager.handleMinskyProcess({
           command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_EMF} "${filePath}"`,
         });
         break;
@@ -289,7 +289,7 @@ export class CommandsManager {
       return;
     }
 
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_EXPORT_AS_CSV} "${filePath}"`,
     });
 
@@ -386,7 +386,7 @@ export class CommandsManager {
         if (!x && !y) {
           throw new Error('Please provide x and y when reInvokeGetItemAt=true');
         }
-        RestServiceManager.handleMinskyProcess({
+        await RestServiceManager.handleMinskyProcess({
           command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
         });
       }
@@ -421,7 +421,7 @@ export class CommandsManager {
         if (!x && !y) {
           throw new Error('Please provide x and y when reInvokeGetItemAt=true');
         }
-        RestServiceManager.handleMinskyProcess({
+        await RestServiceManager.handleMinskyProcess({
           command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
         });
       }
@@ -449,7 +449,7 @@ export class CommandsManager {
       })
     );
 
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
         numCases + delta
       }`,
@@ -506,7 +506,7 @@ export class CommandsManager {
     const delX = 0.5 * WindowManager.canvasWidth - x + modelX;
     const delY = 0.5 * WindowManager.canvasHeight - y + modelY;
 
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.MOVE_TO} [${delX},${delY}]`,
     });
 
@@ -514,12 +514,12 @@ export class CommandsManager {
     return;
   }
 
-  static pasteAt(x: number, y: number): void {
-    RestServiceManager.handleMinskyProcess({
+  static async pasteAt(x: number, y: number): Promise<void> {
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.PASTE}`,
     });
 
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.mousemove,
       mouseX: x,
       mouseY: y,
@@ -535,7 +535,7 @@ export class CommandsManager {
       return;
     }
 
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.SAVE_SELECTION_AS_FILE} "${saveDialog.filePath}"`,
     });
 
@@ -573,7 +573,7 @@ proc findDefinition {} {
       //   // recenter found item
       // }
 
-      RestServiceManager.handleMinskyProcess({
+      await RestServiceManager.handleMinskyProcess({
         command: `${commandsMapping.CANVAS_ITEM_INDICATOR} 1`,
       });
     } else {
@@ -643,7 +643,7 @@ proc findDefinition {} {
   }
 
   static async mouseDown(mouseX: number, mouseY: number): Promise<void> {
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.mousedown,
       mouseX,
       mouseY,
@@ -653,7 +653,7 @@ proc findDefinition {} {
   }
 
   static async mouseUp(mouseX: number, mouseY: number): Promise<void> {
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.mouseup,
       mouseX,
       mouseY,
@@ -663,7 +663,7 @@ proc findDefinition {} {
   }
 
   static async mouseMove(mouseX: number, mouseY: number): Promise<void> {
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.mousemove,
       mouseX,
       mouseY,
@@ -673,12 +673,30 @@ proc findDefinition {} {
   }
 
   static async requestRedraw(): Promise<void> {
-    RestServiceManager.handleMinskyProcess({
+    await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_REQUEST_REDRAW,
     });
 
     return;
   }
+
+  // static async setGroupIconResource() {
+  //   const groupIconResourcePayload: MinskyProcessPayload = {
+  //     command: commandsMapping.SET_GROUP_ICON_RESOURCE,
+  //   };
+
+  //   await RestServiceManager.handleMinskyProcess(groupIconResourcePayload);
+  //   return;
+  // }
+
+  // static async setGodleyIconResource() {
+  //   const godleyIconPayload: MinskyProcessPayload = {
+  //     command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
+  //   };
+
+  //   await RestServiceManager.handleMinskyProcess(godleyIconPayload);
+  //   return;
+  // }
 
   // static exportItemAsImg() {}
 }

@@ -34,8 +34,8 @@ export class BookmarkManager {
             new MenuItem({
               id: 'minsky-bookmark',
               label: bookmark,
-              click: () => {
-                RestServiceManager.handleMinskyProcess({
+              click: async () => {
+                await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.GOTO_BOOKMARK} ${index}`,
                 });
               },
@@ -47,7 +47,7 @@ export class BookmarkManager {
               id: 'minsky-bookmark',
               label: bookmark,
               click: async () => {
-                RestServiceManager.handleMinskyProcess({
+                await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.DELETE_BOOKMARK} ${index}`,
                 });
 
