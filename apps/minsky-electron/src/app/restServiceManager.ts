@@ -61,11 +61,15 @@ export class RestServiceManager {
     }
   }
 
+  private static async resumeQueueProcessing() {
+    this.runningCommand = false;
+    await this.processCommandsInQueueNew();
+  }
+
   public static async handleMinskyProcess(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
-    console.log("STATE BEFORE: ", this.runningCommand, wasQueueEmpty, this.payloadDataQueue);
     const isStartProcessCommand =
       payload.command === commandsMapping.START_MINSKY_PROCESS;
     if (isStartProcessCommand) {
@@ -82,6 +86,7 @@ export class RestServiceManager {
       }
       if (payload.command === commandsMapping.mousemove) {
         if (this.lastMouseMovePayload !== null) {
+          console.log("MERGING MOUSE MOVE COMMANDS");
           this.lastMouseMovePayload.mouseX = payload.mouseX;
           this.lastMouseMovePayload.mouseY = payload.mouseY;
         } else {
@@ -100,12 +105,12 @@ export class RestServiceManager {
         this.lastMouseMovePayload = null;
       } else {
         this.lastMouseMovePayload = null;
-        this.lastMouseMovePayload = null;
+        this.lastModelMoveToPayload = null;
         this.payloadDataQueue.push(payload);
       }
     }
-    console.log("STATE AFTER: ", this.runningCommand, wasQueueEmpty, this.payloadDataQueue);
-    if (!this.runningCommand || wasQueueEmpty) {
+    if (!this.runningCommand && wasQueueEmpty) {
+      // Control will come here when a new command comes after the whole queue was proce
       await this.processCommandsInQueueNew();
     }
   }
@@ -190,11 +195,9 @@ export class RestServiceManager {
       switch (payload.command) {
         case commandsMapping.RECORD:
           this.handleRecord();
-          this.runningCommand = false;
           break;
 
         case commandsMapping.RECORDING_REPLAY:
-          this.runningCommand = false;
           this.handleRecordingReplay();
           break;
 
@@ -202,6 +205,7 @@ export class RestServiceManager {
           await this.executeCommandOnMinskyServer(this.minskyProcess, payload);
           break;
       }
+      this.resumeQueueProcessing();
     } else {
       logError('Please select the minsky executable first...');
     }
@@ -254,8 +258,6 @@ export class RestServiceManager {
         await this.handleMinskyProcess({
           command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
         });
-
-        this.runningCommand = false;
         this.replay(replayRecordingDialog);
       }
 
@@ -275,7 +277,6 @@ export class RestServiceManager {
       filePath: StoreManager.store.get('minskyRESTServicePath'),
       showServiceStartedDialog: false,
     });
-    this.runningCommand = false;
 
     this.recordingReadStream = createReadStream(
       replayRecordingDialog.filePaths[0]
@@ -419,23 +420,17 @@ export class RestServiceManager {
         this.record(stdinCommand);
       }
 
-      console.log("Sending command: ", miscCommand);
       const res = await HttpManager.handleMinskyCommand(miscCommand);
-      console.log("Sending render command: ", renderCommand);
       try {
         await HttpManager.handleMinskyCommand(renderCommand);
       } catch(error) {
         console.error("Error executing command: ", error);
       }
-      console.log("Resetting flag: (current value = ", this.runningCommand, ")");
-      this.runningCommand = false;
-
       return res;
-
       // minskyProcess.stdin.write(miscCommand);
       // minskyProcess.stdin.write(renderCommand);
     }
-    console.log("STDIN COMMAND WAS NULL OR UNDEFINED!");
+    console.error("Command was null or undefined");
   }
 
   private static getRenderCommand() {
