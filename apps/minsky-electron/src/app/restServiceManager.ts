@@ -65,6 +65,7 @@ export class RestServiceManager {
     payload: MinskyProcessPayload
   ): Promise<unknown> {
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
+    console.log("STATE BEFORE: ", this.runningCommand, wasQueueEmpty, this.payloadDataQueue);
     const isStartProcessCommand =
       payload.command === commandsMapping.START_MINSKY_PROCESS;
     if (isStartProcessCommand) {
@@ -103,7 +104,8 @@ export class RestServiceManager {
         this.payloadDataQueue.push(payload);
       }
     }
-    if (!this.runningCommand && wasQueueEmpty) {
+    console.log("STATE AFTER: ", this.runningCommand, wasQueueEmpty, this.payloadDataQueue);
+    if (!this.runningCommand || wasQueueEmpty) {
       await this.processCommandsInQueueNew();
     }
   }
@@ -417,8 +419,15 @@ export class RestServiceManager {
         this.record(stdinCommand);
       }
 
+      console.log("Sending command: ", miscCommand);
       const res = await HttpManager.handleMinskyCommand(miscCommand);
-      await HttpManager.handleMinskyCommand(renderCommand);
+      console.log("Sending render command: ", renderCommand);
+      try {
+        await HttpManager.handleMinskyCommand(renderCommand);
+      } catch(error) {
+        console.error("Error executing command: ", error);
+      }
+      console.log("Resetting flag: (current value = ", this.runningCommand, ")");
       this.runningCommand = false;
 
       return res;
@@ -426,6 +435,7 @@ export class RestServiceManager {
       // minskyProcess.stdin.write(miscCommand);
       // minskyProcess.stdin.write(renderCommand);
     }
+    console.log("STDIN COMMAND WAS NULL OR UNDEFINED!");
   }
 
   private static getRenderCommand() {
@@ -488,8 +498,8 @@ export class RestServiceManager {
       await this.handleMinskyProcess(godleyIconPayload);
     };
 
-    setGodleyIconResource();
-    setGroupIconResource();
+    await setGodleyIconResource();
+    await setGroupIconResource();
   }
 
   static async getCommandValue(payload: MinskyProcessPayload): Promise<string> {
