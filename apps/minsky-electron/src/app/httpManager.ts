@@ -35,17 +35,17 @@ export class HttpManager {
       if (commandMetaData.length >= 2) {
         const [cmd] = commandMetaData;
         const arg = command.substring(command.indexOf(' ') + 1);
-        log.info('🚀🚀🚀 ~ PUT ->', cmd, arg);
+        // log.info('🚀🚀🚀 ~ PUT ->', cmd, arg);
         const response = await HttpManager.put(cmd, arg);
-        log.info('PUT:response ->' + JSON.stringify(response));
+        // log.info('PUT:response ->' + JSON.stringify(response));
 
         return response;
       }
 
       const [cmd] = commandMetaData;
-      log.info('🚀🚀🚀 ~ GET ->', cmd);
+      // log.info('🚀🚀🚀 ~ GET ->', cmd);
       const response = await HttpManager.get(cmd);
-      log.info('GET:response ->' + JSON.stringify(response));
+      // log.info('GET:response ->' + JSON.stringify(response));
 
       return response;
     } catch (error) {

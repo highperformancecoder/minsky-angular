@@ -35,10 +35,10 @@ app.get('*', async (req, res) => {
 
 app.put('*', async (req, res) => {
   try {
-    console.log(
-      '🚀 ~ file: proxy.ts ~ line 33 ~ app.put ~ req.body',
-      req.body.arg
-    );
+    // console.log(
+    //   '🚀 ~ file: proxy.ts ~ line 33 ~ app.put ~ req.body',
+    //   req.body.arg
+    // );
     const _res = await axios.put(`${SERVER_URL}${req.url}`, req.body.arg);
 
     // console.log(

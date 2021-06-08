@@ -86,7 +86,7 @@ export class RestServiceManager {
       }
       if (payload.command === commandsMapping.mousemove) {
         if (this.lastMouseMovePayload !== null) {
-          console.log("MERGING MOUSE MOVE COMMANDS");
+          // console.log("Merging mouse move commands");
           this.lastMouseMovePayload.mouseX = payload.mouseX;
           this.lastMouseMovePayload.mouseY = payload.mouseY;
         } else {
@@ -420,12 +420,17 @@ export class RestServiceManager {
         this.record(stdinCommand);
       }
 
+      const tsStep0 = Date.now();
       const res = await HttpManager.handleMinskyCommand(miscCommand);
+      const tsStep1 = Date.now();
       try {
         await HttpManager.handleMinskyCommand(renderCommand);
+        
       } catch(error) {
         console.error("Error executing command: ", error);
       }
+      const tsStep2 = Date.now();
+      console.log("Time stamps::" , (tsStep2 - tsStep1)/1000,  (tsStep1 - tsStep0)/1000, tsStep0, tsStep1, tsStep2);
       return res;
       // minskyProcess.stdin.write(miscCommand);
       // minskyProcess.stdin.write(renderCommand);
@@ -446,7 +451,7 @@ export class RestServiceManager {
 
     const renderCommand = `${commandsMapping.RENDER_FRAME} [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}]`;
 
-    log.info(renderCommand);
+    // log.info(renderCommand);
 
     return renderCommand;
   }
@@ -525,7 +530,7 @@ export class RestServiceManager {
         }),
       ]);
 
-      console.log(green(`command: ${payload.command}, value:${res}`));
+      // console.log(green(`command: ${payload.command}, value:${res}`));
       return res as string;
     } catch (error) {
       console.error(
