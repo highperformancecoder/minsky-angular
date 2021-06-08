@@ -65,7 +65,8 @@ ipcMain.on(APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {
 });
 
 ipcMain.on(POPULATE_BOOKMARKS, async (event, bookmarkString: string) => {
-  await BookmarkManager.populateBookmarks(bookmarkString);
+  const bookmarks = JSON.parse(bookmarkString);
+  await BookmarkManager.populateBookmarks(bookmarks);
 });
 
 ipcMain.on(ADD_RECENT_FILE, (event, filePath: string) => {

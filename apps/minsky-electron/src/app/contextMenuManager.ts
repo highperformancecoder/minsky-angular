@@ -28,9 +28,9 @@ export class ContextMenuManager {
       const isWirePresent = !isEmptyObject(wire);
 
       const isWireVisible = toBoolean(
-        await RestServiceManager.getCommandValue({
+        (await RestServiceManager.getCommandValue({
           command: commandsMapping.CANVAS_WIRE_VISIBLE,
-        })
+        })) as string
       );
 
       if (isWirePresent && isWireVisible) {
@@ -505,9 +505,13 @@ export class ContextMenuManager {
   ): Promise<MenuItem[]> {
     let portValues = 'unknown';
 
-    portValues = await RestServiceManager.getCommandValue({
-      command: commandsMapping.CANVAS_ITEM_PORT_VALUES,
-    }).catch(() => 'unknown');
+    try {
+      portValues = (await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM_PORT_VALUES,
+      })) as string;
+    } catch (error) {
+      portValues = 'unknown';
+    }
 
     let menuItems = [
       new MenuItem({ label: `Port values ${portValues}}` }),

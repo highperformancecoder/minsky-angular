@@ -21,11 +21,9 @@ export class CommandsManager {
     });
 
     const item: Record<string, unknown> = JSON.parse(
-      (
-        await RestServiceManager.getCommandValue({
-          command: commandsMapping.CANVAS_ITEM,
-        })
-      ).replace(/\bnan\b/g, null)
+      ((await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM,
+      })) as string).replace(/\bnan\b/g, null)
     );
 
     return item;
@@ -45,11 +43,9 @@ export class CommandsManager {
       });
     }
 
-    const classTypeRes = (
-      await RestServiceManager.getCommandValue({
-        command: commandsMapping.CANVAS_ITEM_CLASS_TYPE,
-      })
-    ).slice(1, -1);
+    const classTypeRes = ((await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_ITEM_CLASS_TYPE,
+    })) as string).slice(1, -1);
 
     const classType = classTypeRes.includes(':')
       ? classTypeRes.split(':')[0]
@@ -160,9 +156,9 @@ export class CommandsManager {
     });
 
     const wire: Record<string, unknown> = JSON.parse(
-      await RestServiceManager.getCommandValue({
+      (await RestServiceManager.getCommandValue({
         command: commandsMapping.CANVAS_WIRE,
-      })
+      })) as string
     );
 
     return wire;
@@ -194,9 +190,9 @@ export class CommandsManager {
 
   static async selectVar(x: number, y: number): Promise<boolean> {
     const selectVar = toBoolean(
-      await RestServiceManager.getCommandValue({
+      (await RestServiceManager.getCommandValue({
         command: `${commandsMapping.CANVAS_SELECT_VAR} [${x},${y}]`,
-      })
+      })) as string
     );
 
     return selectVar;
@@ -332,9 +328,9 @@ export class CommandsManager {
   }
 
   static async editGodleyTitle(): Promise<void> {
-    const title = await RestServiceManager.getCommandValue({
+    const title = (await RestServiceManager.getCommandValue({
       command: commandsMapping.CANVAS_ITEM_TABLE_TITLE,
-    });
+    })) as string;
 
     WindowManager.createMenuPopUpWithRouting({
       title: `Edit godley title`,
@@ -357,18 +353,14 @@ export class CommandsManager {
 
   static async postNote(type: string) {
     const tooltip =
-      (
-        await RestServiceManager.getCommandValue({
-          command: `/minsky/canvas/${type}/tooltip`,
-        })
-      )?.slice(1, 1) || '';
+      ((await RestServiceManager.getCommandValue({
+        command: `/minsky/canvas/${type}/tooltip`,
+      })) as string)?.slice(1, 1) || '';
 
     const detailedText =
-      (
-        await RestServiceManager.getCommandValue({
-          command: `/minsky/canvas/${type}/detailedText`,
-        })
-      )?.slice(1, 1) || '';
+      ((await RestServiceManager.getCommandValue({
+        command: `/minsky/canvas/${type}/detailedText`,
+      })) as string)?.slice(1, 1) || '';
 
     WindowManager.createMenuPopUpWithRouting({
       title: `Description`,
@@ -391,9 +383,9 @@ export class CommandsManager {
         });
       }
 
-      const dimsRes = await RestServiceManager.getCommandValue({
+      const dimsRes = (await RestServiceManager.getCommandValue({
         command: commandsMapping.CANVAS_ITEM_DIMS,
-      });
+      })) as string;
 
       if (dimsRes === '{}') {
         return null;
@@ -427,9 +419,9 @@ export class CommandsManager {
       }
 
       const isLocked = toBoolean(
-        await RestServiceManager.getCommandValue({
+        (await RestServiceManager.getCommandValue({
           command: commandsMapping.CANVAS_ITEM_DIMS,
-        })
+        })) as string
       );
 
       return isLocked;
@@ -462,9 +454,9 @@ export class CommandsManager {
 
   static async getLockGroup(): Promise<unknown[]> {
     const lockGroup = JSON.parse(
-      await RestServiceManager.getCommandValue({
+      (await RestServiceManager.getCommandValue({
         command: commandsMapping.CANVAS_ITEM_LOCK_GROUP,
-      })
+      })) as string
     );
 
     return lockGroup;
@@ -585,20 +577,18 @@ proc findDefinition {} {
 
   static async isItemDefined(): Promise<boolean> {
     const isItemDefined = toBoolean(
-      await RestServiceManager.getCommandValue({
+      (await RestServiceManager.getCommandValue({
         command: commandsMapping.CANVAS_ITEM_DEFINED,
-      })
+      })) as string
     );
 
     return isItemDefined;
   }
 
   static async getItemType(): Promise<string> {
-    const type = (
-      await RestServiceManager.getCommandValue({
-        command: commandsMapping.CANVAS_ITEM_TYPE,
-      })
-    )
+    const type = ((await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_ITEM_TYPE,
+    })) as string)
       .slice(1, -1)
       .trim();
 
@@ -607,9 +597,9 @@ proc findDefinition {} {
 
   static async getVarTabDisplay(): Promise<boolean> {
     const varTabDisplay = toBoolean(
-      await RestServiceManager.getCommandValue({
+      (await RestServiceManager.getCommandValue({
         command: commandsMapping.CANVAS_ITEM_VAR_TAB_DISPLAY,
-      })
+      })) as string
     );
 
     return varTabDisplay;

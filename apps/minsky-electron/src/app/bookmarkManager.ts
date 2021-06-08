@@ -3,8 +3,7 @@ import { Menu, MenuItem } from 'electron';
 import { RestServiceManager } from './restServiceManager';
 
 export class BookmarkManager {
-  static async populateBookmarks(bookmarkString: string) {
-    const bookmarks: string[] = JSON.parse(bookmarkString);
+  static async populateBookmarks(bookmarks: string[]) {
     const mainSubmenu = Menu.getApplicationMenu().getMenuItemById(
       'main-bookmark'
     ).submenu;
@@ -51,13 +50,11 @@ export class BookmarkManager {
                   command: `${commandsMapping.DELETE_BOOKMARK} ${index}`,
                 });
 
-                const _bookmarkString = await RestServiceManager.getCommandValue(
-                  {
-                    command: commandsMapping.BOOKMARK_LIST,
-                  }
-                );
+                const _bookmarks = await RestServiceManager.getCommandValue({
+                  command: commandsMapping.BOOKMARK_LIST,
+                });
 
-                await this.populateBookmarks(_bookmarkString);
+                await this.populateBookmarks(_bookmarks as string[]);
               },
             })
           );

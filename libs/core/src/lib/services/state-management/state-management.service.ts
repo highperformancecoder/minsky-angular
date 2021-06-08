@@ -56,10 +56,11 @@ export class StateManagementService {
       commandsMapping.X,
       commandsMapping.Y,
     ];
-
-    simulationCommands.forEach((command) => {
-      this.electronService.sendMinskyCommandAndRender({ command });
-    });
+    setTimeout(() => {
+      simulationCommands.forEach((command) => {
+        this.electronService.sendMinskyCommandAndRender({ command });
+      });
+    }, 4000);
   }
 
   async getCommandValue(payload: MinskyProcessPayload): Promise<string> {

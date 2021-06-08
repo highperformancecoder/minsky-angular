@@ -3,7 +3,6 @@ import {
   commandsMapping,
   MinskyProcessPayload,
   rendererAppURL,
-  toBoolean,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { dialog, Menu, shell } from 'electron';
@@ -43,11 +42,9 @@ export class MenuManager {
             label: 'New System',
             accelerator: 'CmdOrCtrl + Shift + N',
             async click() {
-              const isCanvasEdited = toBoolean(
-                await RestServiceManager.getCommandValue({
-                  command: commandsMapping.EDITED,
-                })
-              );
+              const isCanvasEdited = await RestServiceManager.getCommandValue({
+                command: commandsMapping.EDITED,
+              });
 
               if (isCanvasEdited) {
                 const saveModelDialog = await dialog.showSaveDialog({
@@ -149,24 +146,22 @@ export class MenuManager {
             label: 'Save',
             accelerator: 'CmdOrCtrl + S',
             async click() {
-              if (RestServiceManager.minskyProcess) {
-                if (RestServiceManager.currentMinskyModelFilePath) {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.SAVE}`,
-                    filePath: RestServiceManager.currentMinskyModelFilePath,
-                  });
-                } else {
-                  const saveDialog = await dialog.showSaveDialog({});
+              if (RestServiceManager.currentMinskyModelFilePath) {
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.SAVE}`,
+                  filePath: RestServiceManager.currentMinskyModelFilePath,
+                });
+              } else {
+                const saveDialog = await dialog.showSaveDialog({});
 
-                  if (saveDialog.canceled || !saveDialog.filePath) {
-                    return;
-                  }
-
-                  await RestServiceManager.handleMinskyProcess({
-                    command: commandsMapping.SAVE,
-                    filePath: saveDialog.filePath,
-                  });
+                if (saveDialog.canceled || !saveDialog.filePath) {
+                  return;
                 }
+
+                await RestServiceManager.handleMinskyProcess({
+                  command: commandsMapping.SAVE,
+                  filePath: saveDialog.filePath,
+                });
               }
             },
           },

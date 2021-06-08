@@ -4,11 +4,8 @@ import {
   green,
   MinskyProcessPayload,
   MINSKY_HTTP_SERVER_PORT,
-  MINSKY_SYSTEM_BINARY_PATH,
   MINSKY_SYSTEM_HTTP_SERVER_PATH,
   red,
-  retrieveCommandValueFromStdout,
-  USE_MINSKY_SYSTEM_BINARY,
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import * as debug from 'debug';
@@ -31,10 +28,9 @@ import { WindowManager } from './windowManager';
 const logError = debug('minsky:electron_error');
 
 export class RestServiceManager {
-  static minskyProcess: ChildProcess;
   static minskyHttpServer: ChildProcess;
   static currentMinskyModelFilePath: string;
-  static isFirstStart = true;
+  // static isFirstStart = true;
   private static isRecording = false;
   private static recordingWriteStream: WriteStream;
   private static recordingReadStream: ReadStream;
@@ -57,7 +53,7 @@ export class RestServiceManager {
         this.lastModelMoveToPayload = null;
       }
       this.runningCommand = true;
-      await this.handleMinskyPayload(nextPayload);
+      return await this.handleMinskyPayload(nextPayload);
     }
   }
 
@@ -70,145 +66,141 @@ export class RestServiceManager {
     payload: MinskyProcessPayload
   ): Promise<unknown> {
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
-    const isStartProcessCommand =
-      payload.command === commandsMapping.START_MINSKY_PROCESS;
-    if (isStartProcessCommand) {
-      this.startMinskyProcess(
-        USE_MINSKY_SYSTEM_BINARY
-          ? { ...payload, filePath: MINSKY_SYSTEM_BINARY_PATH }
-          : payload
-      );
-      return;
-    } else {
-      if (!this.minskyProcess) {
-        logError('Minsky process is not running yet.');
-        return;
-      }
-      if (payload.command === commandsMapping.mousemove) {
-        if (this.lastMouseMovePayload !== null) {
-          // console.log("Merging mouse move commands");
-          this.lastMouseMovePayload.mouseX = payload.mouseX;
-          this.lastMouseMovePayload.mouseY = payload.mouseY;
-        } else {
-          this.lastMouseMovePayload = payload;
-          this.payloadDataQueue.push(payload);
-        }
-        this.lastModelMoveToPayload = null;
-      } else if (payload.command === commandsMapping.MOVE_TO) {
-        if (this.lastModelMoveToPayload !== null) {
-          this.lastModelMoveToPayload.mouseX = payload.mouseX;
-          this.lastModelMoveToPayload.mouseY = payload.mouseY;
-        } else {
-          this.lastModelMoveToPayload = payload;
-          this.payloadDataQueue.push(payload);
-        }
-        this.lastMouseMovePayload = null;
+    // const isStartProcessCommand =
+    //   payload.command === commandsMapping.START_MINSKY_PROCESS;
+    // if (isStartProcessCommand) {
+    //   this.startMinskyProcess(
+    //     USE_MINSKY_SYSTEM_BINARY
+    //       ? { ...payload, filePath: MINSKY_SYSTEM_BINARY_PATH }
+    //       : payload
+    //   );
+    //   return;
+    // } else {
+    if (payload.command === commandsMapping.mousemove) {
+      if (this.lastMouseMovePayload !== null) {
+        // console.log("Merging mouse move commands");
+        this.lastMouseMovePayload.mouseX = payload.mouseX;
+        this.lastMouseMovePayload.mouseY = payload.mouseY;
       } else {
-        this.lastMouseMovePayload = null;
-        this.lastModelMoveToPayload = null;
+        this.lastMouseMovePayload = payload;
         this.payloadDataQueue.push(payload);
       }
+      this.lastModelMoveToPayload = null;
+    } else if (payload.command === commandsMapping.MOVE_TO) {
+      if (this.lastModelMoveToPayload !== null) {
+        this.lastModelMoveToPayload.mouseX = payload.mouseX;
+        this.lastModelMoveToPayload.mouseY = payload.mouseY;
+      } else {
+        this.lastModelMoveToPayload = payload;
+        this.payloadDataQueue.push(payload);
+      }
+      this.lastMouseMovePayload = null;
+    } else {
+      this.lastMouseMovePayload = null;
+      this.lastModelMoveToPayload = null;
+      this.payloadDataQueue.push(payload);
     }
+    // }
     if (!this.runningCommand && wasQueueEmpty) {
-      // Control will come here when a new command comes after the whole queue was proce
-      await this.processCommandsInQueueNew();
+      // Control will come here when a new command comes after the whole queue was processed
+      return await this.processCommandsInQueueNew();
     }
   }
 
   private static async startMinskyProcess(payload: MinskyProcessPayload) {
-    if (this.minskyProcess) {
-      this.minskyProcess.stdout.emit('close');
-      this.minskyProcess = null;
-      this.payloadDataQueue = [];
-      this.lastMouseMovePayload = null;
-      this.lastModelMoveToPayload = null;
-    }
-    try {
-      if (this.isFirstStart) {
-        this.isFirstStart = false;
-      }
+    // if (this.minskyProcess) {
+    //   this.minskyProcess.stdout.emit('close');
+    //   this.minskyProcess = null;
+    // this.payloadDataQueue = [];
+    // this.lastMouseMovePayload = null;
+    // this.lastModelMoveToPayload = null;
+    // }
+    // try {
+    // if (this.isFirstStart) {
+    //   this.isFirstStart = false;
+    // }
 
-      const { filePath, showServiceStartedDialog = true } = payload;
+    // const { filePath, showServiceStartedDialog = true } = payload;
 
-      if (!USE_MINSKY_SYSTEM_BINARY) {
-        StoreManager.store.set('minskyRESTServicePath', filePath);
-      }
+    // if (!USE_MINSKY_SYSTEM_BINARY) {
+    //   StoreManager.store.set('minskyRESTServicePath', filePath);
+    // }
 
-      this.minskyProcess = spawn(filePath);
+    // this.minskyProcess = spawn(filePath);
 
-      if (this.minskyProcess) {
-        this.runningCommand = false;
-        await this.processCommandsInQueueNew();
+    // if (this.minskyProcess) {
+    this.runningCommand = false;
+    await this.processCommandsInQueueNew();
 
-        this.minskyProcess.stdout.on('data', async (data) => {
-          const stdout = data.toString().trim();
-          const message = `stdout: ${stdout}`;
-          log.info(message);
+    // this.minskyProcess.stdout.on('data', async (data) => {
+    //   const stdout = data.toString().trim();
+    //   const message = `stdout: ${stdout}`;
+    //   log.info(message);
 
-          this.emitReplyEvent(message);
+    //   this.emitReplyEvent(message);
 
-          // if (stdout.includes('renderFrame=>')) {
-          this.runningCommand = false;
-          await this.processCommandsInQueueNew();
-          // }
-        });
+    //   // if (stdout.includes('renderFrame=>')) {
+    //   this.runningCommand = false;
+    //   await this.processCommandsInQueueNew();
+    //   // }
+    // });
 
-        this.minskyProcess.stderr.on('data', async (data) => {
-          const message = `stderr: ${data}`;
-          log.info(red(message));
+    // this.minskyProcess.stderr.on('data', async (data) => {
+    //   const message = `stderr: ${data}`;
+    //   log.info(red(message));
 
-          await this.processCommandsInQueueNew();
+    //   await this.processCommandsInQueueNew();
 
-          this.emitReplyEvent(message);
-        });
+    //   this.emitReplyEvent(message);
+    // });
 
-        this.minskyProcess.on('error', (error) => {
-          const message = `error: ${error.message}`;
-          log.info(red(message));
+    // this.minskyProcess.on('error', (error) => {
+    //   const message = `error: ${error.message}`;
+    //   log.info(red(message));
 
-          this.emitReplyEvent(message);
-        });
+    //   this.emitReplyEvent(message);
+    // });
 
-        this.minskyProcess.on('close', (code) => {
-          log.info(red(`child process exited with code ${code}`));
-        });
+    // this.minskyProcess.on('close', (code) => {
+    //   log.info(red(`child process exited with code ${code}`));
+    // });
 
-        if (!showServiceStartedDialog) {
-          return;
-        }
-        dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
-          type: 'info',
-          title: 'Minsky Service Started',
-          message: 'You can now choose model files to be loaded',
-        });
-        this.runningCommand = false;
-        await this.processCommandsInQueueNew();
-      }
-    } catch {
-      dialog.showErrorBox('Execution error', 'Could not execute chosen file');
-      this.minskyProcess = null;
-    }
+    // if (!showServiceStartedDialog) {
+    //   return;
+    // }
+    // dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+    //   type: 'info',
+    //   title: 'Minsky Service Started',
+    //   message: 'You can now choose model files to be loaded',
+    // });
+    // this.runningCommand = false;
+    // await this.processCommandsInQueueNew();
+    // }
+    // } catch {
+    //   dialog.showErrorBox('Execution error', 'Could not execute chosen file');
+    // this.minskyProcess = null;
+    // }
   }
 
   private static async handleMinskyPayload(payload: MinskyProcessPayload) {
-    if (this.minskyProcess) {
-      switch (payload.command) {
-        case commandsMapping.RECORD:
-          this.handleRecord();
-          break;
+    // if (this.minskyProcess) {
+    switch (payload.command) {
+      case commandsMapping.RECORD:
+        this.handleRecord();
+        break;
 
-        case commandsMapping.RECORDING_REPLAY:
-          this.handleRecordingReplay();
-          break;
+      case commandsMapping.RECORDING_REPLAY:
+        this.handleRecordingReplay();
+        break;
 
-        default:
-          await this.executeCommandOnMinskyServer(this.minskyProcess, payload);
-          break;
-      }
-      this.resumeQueueProcessing();
-    } else {
-      logError('Please select the minsky executable first...');
+      default:
+        await this.executeCommandOnMinskyServer(payload);
+        break;
     }
+    this.resumeQueueProcessing();
+    // } else {
+    //   logError('Please select the minsky executable first...');
+    // }
   }
 
   private static emitReplyEvent(message: string) {
@@ -355,7 +347,6 @@ export class RestServiceManager {
   }
 
   private static async executeCommandOnMinskyServer(
-    minskyProcess: ChildProcess,
     payload: MinskyProcessPayload
   ) {
     let stdinCommand = null;
@@ -425,17 +416,23 @@ export class RestServiceManager {
       const tsStep1 = Date.now();
       try {
         await HttpManager.handleMinskyCommand(renderCommand);
-        
-      } catch(error) {
-        console.error("Error executing command: ", error);
+      } catch (error) {
+        console.error('Error executing command: ', error);
       }
       const tsStep2 = Date.now();
-      console.log("Time stamps::" , (tsStep2 - tsStep1)/1000,  (tsStep1 - tsStep0)/1000, tsStep0, tsStep1, tsStep2);
+      console.log(
+        'Time stamps::',
+        (tsStep2 - tsStep1) / 1000,
+        (tsStep1 - tsStep0) / 1000,
+        tsStep0,
+        tsStep1,
+        tsStep2
+      );
       return res;
       // minskyProcess.stdin.write(miscCommand);
       // minskyProcess.stdin.write(renderCommand);
     }
-    console.error("Command was null or undefined");
+    console.error('Command was null or undefined');
   }
 
   private static getRenderCommand() {
@@ -502,44 +499,44 @@ export class RestServiceManager {
     await setGroupIconResource();
   }
 
-  static async getCommandValue(payload: MinskyProcessPayload): Promise<string> {
-    try {
-      await this.handleMinskyProcess(payload);
+  static async getCommandValue(payload: MinskyProcessPayload) {
+    // try {
+    return await this.handleMinskyProcess(payload);
 
-      if (!this.minskyProcess) {
-        throw new Error('Minsky Process is not initialized');
-      }
+    // if (!this.minskyProcess) {
+    //   throw new Error('Minsky Process is not initialized');
+    // }
 
-      const res = await Promise.race([
-        new Promise((resolve) => {
-          this.minskyProcess.stdout.on('data', (data: Buffer) => {
-            const stdout = data.toString();
+    //   const res = await Promise.race([
+    //     new Promise((resolve) => {
+    //       this.minskyProcess.stdout.on('data', (data: Buffer) => {
+    //         const stdout = data.toString();
 
-            return resolve(
-              retrieveCommandValueFromStdout({
-                stdout,
-                command: payload.command,
-              })
-            );
-          });
-        }),
-        new Promise((resolve, reject) => {
-          setTimeout(function () {
-            return reject(`command: "${payload.command}" Timed out`);
-          }, 4000);
-        }),
-      ]);
+    //         return resolve(
+    //           retrieveCommandValueFromStdout({
+    //             stdout,
+    //             command: payload.command,
+    //           })
+    //         );
+    //       });
+    //     }),
+    //     new Promise((resolve, reject) => {
+    //       setTimeout(function () {
+    //         return reject(`command: "${payload.command}" Timed out`);
+    //       }, 4000);
+    //     }),
+    //   ]);
 
-      // console.log(green(`command: ${payload.command}, value:${res}`));
-      return res as string;
-    } catch (error) {
-      console.error(
-        '🚀 ~ file: state-management.service.ts ~ line 118 ~ StateManagementService ~ getCommandValue ~ error',
-        error
-      );
+    //   console.log(green(`command: ${payload.command}, value:${res}`));
+    //   return res as string;
+    // } catch (error) {
+    //   console.error(
+    //     '🚀 ~ file: state-management.service.ts ~ line 118 ~ StateManagementService ~ getCommandValue ~ error',
+    //     error
+    //   );
 
-      throw error;
-    }
+    //   throw error;
+    // }
   }
 
   static startHttpServer() {

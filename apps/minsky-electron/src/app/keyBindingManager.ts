@@ -138,9 +138,9 @@ export class KeyBindingManager {
 
   private static async zoom(factor: number) {
     const cBounds = JSON.parse(
-      await RestServiceManager.getCommandValue({
+      (await RestServiceManager.getCommandValue({
         command: commandsMapping.C_BOUNDS,
-      })
+      })) as string
     );
 
     const x = 0.5 * (cBounds[2] + cBounds[0]);
@@ -163,9 +163,9 @@ export class KeyBindingManager {
     const { mouseX, mouseY } = payload;
 
     const isCanvasSelectionEmpty = toBoolean(
-      await RestServiceManager.getCommandValue({
+      (await RestServiceManager.getCommandValue({
         command: commandsMapping.CANVAS_SELECTION_EMPTY,
-      })
+      })) as string
     );
 
     if (!isCanvasSelectionEmpty) {
