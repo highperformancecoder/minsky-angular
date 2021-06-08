@@ -65,6 +65,15 @@ export class CliInputComponent implements OnInit, OnDestroy {
         { command: commandsMapping.LIST }
       );
 
+      // (async () => {
+      //   // this.commands = await axios.get('http://localhost:4445/minsky/@list');
+      //   const res = await axios.get('http://localhost:4445/minsky/@list');
+      //   console.log(
+      //     '🚀 ~ file: cli-input.component.ts ~ line 72 ~ CliInputComponent ~ res',
+      //     res
+      //   );
+      // })();
+
       this.stateManagementService.minskyProcessReply$.subscribe(() => {
         this.changeDetectionRef.detectChanges();
       });

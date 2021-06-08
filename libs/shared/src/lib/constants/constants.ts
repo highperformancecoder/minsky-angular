@@ -178,10 +178,6 @@ export const commandsMapping = {
   LATEX: '/minsky/latex',
 };
 
-export const minskyProcessReplyIndicators = {
-  DIMENSIONAL_ANALYSIS: '/minsky/dimensionalAnalysis=>{}',
-};
-
 export const availableOperations = {
   TIME: 'time',
   INTEGRATE: 'integrate',
@@ -282,3 +278,5 @@ export const unExposedTerminalCommands = [
 
 export const USE_MINSKY_SYSTEM_BINARY = false;
 export const MINSKY_SYSTEM_BINARY_PATH = 'minsky-RESTService';
+export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
+export const MINSKY_HTTP_SERVER_PORT = 4445;

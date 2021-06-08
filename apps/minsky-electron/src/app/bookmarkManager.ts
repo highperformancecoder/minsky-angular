@@ -3,8 +3,8 @@ import { Menu, MenuItem } from 'electron';
 import { RestServiceManager } from './restServiceManager';
 
 export class BookmarkManager {
-  static populateBookmarks(bookmarkString: string) {
-    const bookmarks: string[] = JSON.parse(bookmarkString.split('=>').pop());
+  static async populateBookmarks(bookmarkString: string) {
+    const bookmarks: string[] = JSON.parse(bookmarkString);
     const mainSubmenu = Menu.getApplicationMenu().getMenuItemById(
       'main-bookmark'
     ).submenu;
@@ -28,35 +28,41 @@ export class BookmarkManager {
     };
 
     const addNewBookmarks = () => {
-      bookmarks.forEach((bookmark, index) => {
-        mainSubmenu.append(
-          new MenuItem({
-            id: 'minsky-bookmark',
-            label: bookmark,
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.GOTO_BOOKMARK} ${index}`,
-              });
-            },
-          })
-        );
+      if (bookmarks.length) {
+        bookmarks.forEach((bookmark, index) => {
+          mainSubmenu.append(
+            new MenuItem({
+              id: 'minsky-bookmark',
+              label: bookmark,
+              click: () => {
+                RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.GOTO_BOOKMARK} ${index}`,
+                });
+              },
+            })
+          );
 
-        deleteBookmarkSubmenu.append(
-          new MenuItem({
-            id: 'minsky-bookmark',
-            label: bookmark,
-            click: () => {
-              RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.DELETE_BOOKMARK} ${index}`,
-              });
+          deleteBookmarkSubmenu.append(
+            new MenuItem({
+              id: 'minsky-bookmark',
+              label: bookmark,
+              click: async () => {
+                RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.DELETE_BOOKMARK} ${index}`,
+                });
 
-              RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.BOOKMARK_LIST,
-              });
-            },
-          })
-        );
-      });
+                const _bookmarkString = await RestServiceManager.getCommandValue(
+                  {
+                    command: commandsMapping.BOOKMARK_LIST,
+                  }
+                );
+
+                await this.populateBookmarks(_bookmarkString);
+              },
+            })
+          );
+        });
+      }
     };
 
     disableAllBookmarksInListAndDelete();

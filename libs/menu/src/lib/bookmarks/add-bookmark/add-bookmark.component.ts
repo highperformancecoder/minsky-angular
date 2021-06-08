@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { ElectronService } from '@minsky/core';
-import { commandsMapping } from '@minsky/shared';
+import { ElectronService, StateManagementService } from '@minsky/core';
+import { commandsMapping, events } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-add-bookmark',
@@ -11,18 +11,26 @@ import { commandsMapping } from '@minsky/shared';
 export class AddBookmarkComponent {
   bookmarkName: FormControl;
 
-  constructor(private electronService: ElectronService) {
+  constructor(
+    private electronService: ElectronService,
+    private stateManagementService: StateManagementService
+  ) {
     this.bookmarkName = new FormControl('', Validators.required);
   }
 
-  handleSubmit() {
+  async handleSubmit() {
     this.electronService.sendMinskyCommandAndRender({
       command: `${commandsMapping.ADD_BOOKMARK} "${this.bookmarkName.value}"`,
     });
 
-    this.electronService.sendMinskyCommandAndRender({
+    const bookmarkString = await this.stateManagementService.getCommandValue({
       command: commandsMapping.BOOKMARK_LIST,
     });
+
+    this.electronService.ipcRenderer.send(
+      events.ipc.POPULATE_BOOKMARKS,
+      bookmarkString
+    );
 
     this.closeWindow();
   }

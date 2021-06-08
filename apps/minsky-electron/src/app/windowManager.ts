@@ -92,12 +92,14 @@ export class WindowManager {
   public static scrollToCenter() {
     // TODO:: Replace this with something cleaner
     this.getMainWindow().webContents.executeJavaScript(
-      `var container=document.getElementsByClassName('minsky-canvas-container')[0]; var canvas = container.getElementsByTagName('canvas')[0]; container.scrollTop=canvas.clientHeight/2; container.scrollLeft=canvas.clientWidth/2;`, false);
+      `var container=document.getElementsByClassName('minsky-canvas-container')[0]; var canvas = container.getElementsByTagName('canvas')[0]; container.scrollTop=canvas.clientHeight/2; container.scrollLeft=canvas.clientWidth/2;`,
+      false
+    );
   }
-  
+
   static checkBackgroundAndApplyTextColor(color) {
     // TODO:: Let us move this to a Utilities class so main windowManager logic in the file stands out clearly
-    
+
     // Variables for red, green, blue values
 
     let colorArray;
@@ -146,21 +148,37 @@ export class WindowManager {
   static onAppLayoutChanged({ type, value }: AppLayoutPayload) {
     switch (type) {
       case 'RESIZE':
-        WindowManager.mainWindowHeight = value.height;
-        WindowManager.mainWindowWidth = value.width;
+        if (!WindowManager.mainWindowHeight) {
+          WindowManager.mainWindowHeight = value.height;
+        }
+
+        if (!WindowManager.mainWindowWidth) {
+          WindowManager.mainWindowWidth = value.width;
+        }
         break;
 
       case 'OFFSET':
-        WindowManager.topOffset = value.top;
+        if (!WindowManager.topOffset) {
+          WindowManager.topOffset = value.top;
+        }
 
-        WindowManager.electronTopOffset = value.electronTop;
+        if (!WindowManager.electronTopOffset) {
+          WindowManager.electronTopOffset = value.electronTop;
+        }
 
-        WindowManager.leftOffset = value.left;
+        if (!WindowManager.leftOffset) {
+          WindowManager.leftOffset = value.left;
+        }
         break;
 
       case 'CANVAS':
-        WindowManager.canvasHeight = value.height;
-        WindowManager.canvasWidth = value.width;
+        if (!WindowManager.canvasHeight) {
+          WindowManager.canvasHeight = value.height;
+        }
+
+        if (!WindowManager.canvasWidth) {
+          WindowManager.canvasWidth = value.width;
+        }
         break;
 
       default:

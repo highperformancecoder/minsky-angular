@@ -3,10 +3,12 @@ import {
   events,
   green,
   MinskyProcessPayload,
-  minskyProcessReplyIndicators,
+  MINSKY_HTTP_SERVER_PORT,
   MINSKY_SYSTEM_BINARY_PATH,
+  MINSKY_SYSTEM_HTTP_SERVER_PATH,
   newLineCharacter,
   red,
+  retrieveCommandValueFromStdout,
   unExposedTerminalCommands,
   USE_MINSKY_SYSTEM_BINARY,
 } from '@minsky/shared';
@@ -31,6 +33,7 @@ const logError = debug('minsky:electron_error');
 
 export class RestServiceManager {
   static minskyProcess: ChildProcess;
+  static minskyHttpServer: ChildProcess;
   static currentMinskyModelFilePath: string;
   static isFirstStart = true;
   private static isRecording = false;
@@ -136,8 +139,6 @@ export class RestServiceManager {
             this.runningCommand = false;
             this.processCommandsInQueueNew();
           }
-
-          RestServiceManager.handleStdout(stdout);
         });
 
         this.minskyProcess.stderr.on('data', (data) => {
@@ -203,25 +204,6 @@ export class RestServiceManager {
     WindowManager.activeWindows.forEach((aw) => {
       aw.context.webContents.send(events.ipc.MINSKY_PROCESS_REPLY, message);
     });
-  }
-
-  private static handleStdout(stdout: string) {
-    if (stdout.includes(commandsMapping.BOOKMARK_LIST)) {
-      // handle bookmarks
-      const _event = null;
-      ipcMain.emit(events.ipc.POPULATE_BOOKMARKS, _event, stdout);
-    } else if (stdout.includes(commandsMapping.DIMENSIONAL_ANALYSIS)) {
-      // handle dimensional analysis
-      if (stdout === minskyProcessReplyIndicators.DIMENSIONAL_ANALYSIS) {
-        dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
-          type: 'info',
-          title: 'Dimensional Analysis',
-          message: 'Dimensional Analysis Passed',
-        });
-      } else {
-        dialog.showErrorBox('Dimensional Analysis Failed', stdout);
-      }
-    }
   }
 
   private static handleRecordingReplay() {
@@ -540,18 +522,14 @@ export class RestServiceManager {
       const res = await Promise.race([
         new Promise((resolve) => {
           this.minskyProcess.stdout.on('data', (data: Buffer) => {
-            let response = data.toString();
+            const stdout = data.toString();
 
-            if (response.includes(newLineCharacter)) {
-              response = response
-                .split(newLineCharacter)
-                .filter((r) => Boolean(r))
-                .find((r) => r.includes(payload.command.split(' ')[0]));
-            }
-
-            if (response && response.includes(payload.command.split(' ')[0])) {
-              return resolve(response.split('=>').pop().trim());
-            }
+            return resolve(
+              retrieveCommandValueFromStdout({
+                stdout,
+                command: payload.command,
+              })
+            );
           });
         }),
         new Promise((resolve, reject) => {
@@ -571,5 +549,26 @@ export class RestServiceManager {
 
       throw error;
     }
+  }
+
+  static startHttpServer() {
+    this.minskyHttpServer = spawn(`${MINSKY_SYSTEM_HTTP_SERVER_PATH}`, [
+      `${MINSKY_HTTP_SERVER_PORT}`,
+    ]);
+
+    console.log(
+      green(`Minsky Http Server started on port ${MINSKY_HTTP_SERVER_PORT}`)
+    );
+
+    this.minskyHttpServer.stdout
+      .on('data', (data) => {
+        log.info(`http: ${data}`);
+      })
+      .on('error', (error) => {
+        log.error(`error: ${error.message}`);
+      })
+      .on('close', (code) => {
+        log.info(`"http-server" child process exited with code ${code}`);
+      });
   }
 }

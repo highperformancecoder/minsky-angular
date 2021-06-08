@@ -81,8 +81,8 @@ ipcMain.on(APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {
   WindowManager.onAppLayoutChanged(payload);
 });
 
-ipcMain.on(POPULATE_BOOKMARKS, (event, bookmarkString: string) => {
-  BookmarkManager.populateBookmarks(bookmarkString);
+ipcMain.on(POPULATE_BOOKMARKS, async (event, bookmarkString: string) => {
+  await BookmarkManager.populateBookmarks(bookmarkString);
 });
 
 ipcMain.on(ADD_RECENT_FILE, (event, filePath: string) => {

@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -45,16 +46,46 @@ export class AppComponent implements AfterViewInit {
 
     this.cmService.setBackgroundColor();
 
-    // close modals with ESC
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        const currentWindow = this.electronService.remote.getCurrentWindow();
-        const isModal = currentWindow.isModal();
+      switch (event.key) {
+        case 'Escape':
+          this.handleEscKey();
+          break;
 
-        if (isModal) {
-          currentWindow.close();
-        }
+        case 'Enter':
+          this.handleEnterKey();
+
+          break;
+
+        default:
+          break;
       }
+    });
+  }
+
+  // close modals with ESC
+  private handleEscKey() {
+    const currentWindow = this.electronService.remote.getCurrentWindow();
+    const isModal = currentWindow.isModal();
+
+    if (isModal) {
+      currentWindow.close();
+    }
+  }
+
+  // submits form with class="submit" when pressed Enter key
+  private handleEnterKey() {
+    const buttons = Array.from(
+      document.getElementsByClassName('submit')
+    ) as HTMLElement[];
+
+    buttons.forEach((b) => {
+      console.log(
+        '🚀 ~ file: app.component.ts ~ line 68 ~ AppComponent ~ document.addEventListener ~ b',
+        b
+      );
+
+      b.click();
     });
   }
 

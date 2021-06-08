@@ -217,10 +217,20 @@ export class MenuManager {
           },
           {
             label: 'Dimensional Analysis',
-            click() {
-              RestServiceManager.handleMinskyProcess({
+            click: async () => {
+              const res = await RestServiceManager.getCommandValue({
                 command: commandsMapping.DIMENSIONAL_ANALYSIS,
               });
+
+              if (res === '{}') {
+                dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+                  type: 'info',
+                  title: 'Dimensional Analysis',
+                  message: 'Dimensional Analysis Passed',
+                });
+              } else {
+                dialog.showErrorBox('Error', 'Dimensional Analysis Failed');
+              }
             },
           },
           {
@@ -368,6 +378,7 @@ export class MenuManager {
           },
           {
             label: 'Debugging Use',
+            enabled: false,
           },
           {
             label: 'Redraw',

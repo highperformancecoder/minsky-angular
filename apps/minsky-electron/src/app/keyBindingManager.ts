@@ -71,26 +71,38 @@ export class KeyBindingManager {
 
       case '*':
         CommandsManager.addOperation(availableOperations.MULTIPLY);
+        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+
         break;
 
       case '/':
         CommandsManager.addOperation(availableOperations.DIVIDE);
+        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+
         break;
 
       case '^':
         CommandsManager.addOperation(availableOperations.POW);
+        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+
         break;
 
       case '&':
         CommandsManager.addOperation(availableOperations.INTEGRATE);
+        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+
         break;
 
       case '=':
         CommandsManager.addGodley();
+        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+
         break;
 
       case '@':
         CommandsManager.addPlot();
+        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+
         break;
 
       default:
@@ -102,6 +114,8 @@ export class KeyBindingManager {
     if (payload.shift) {
       // <Key-plus>
       CommandsManager.addOperation(availableOperations.ADD);
+      CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+
       return;
     }
 
@@ -141,9 +155,7 @@ export class KeyBindingManager {
       command: `${commandsMapping.ZOOM_IN} [${x},${y},${zoomFactor}]`,
     });
 
-    RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.CANVAS_REQUEST_REDRAW,
-    });
+    CommandsManager.requestRedraw();
     return;
   }
 
