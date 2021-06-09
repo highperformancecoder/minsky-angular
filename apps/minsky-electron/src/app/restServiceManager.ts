@@ -40,7 +40,7 @@ export class RestServiceManager {
   private static lastModelMoveToPayload: MinskyProcessPayload = null;
   private static payloadDataQueue: Array<MinskyProcessPayload> = [];
   private static runningCommand = false;
-  private static isQueueEnabled = true;
+  private static isQueueEnabled = false;
   private static async processCommandsInQueueNew(): Promise<unknown> {
     // Should be on a separate thread......? Janak
     const shouldProcessQueue = this.isQueueEnabled
@@ -72,7 +72,7 @@ export class RestServiceManager {
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
     const shouldProcessQueue = this.isQueueEnabled
       ? !this.runningCommand && wasQueueEmpty
-      : this.isQueueEnabled;
+      : true;
 
     if (payload.command === commandsMapping.mousemove) {
       if (this.lastMouseMovePayload !== null) {
@@ -412,20 +412,6 @@ export class RestServiceManager {
 
     await setGodleyIconResource();
     await setGroupIconResource();
-  }
-
-  static async getCommandValue(
-    payload: MinskyProcessPayload
-  ): Promise<unknown> {
-    try {
-      return await this.handleMinskyProcess(payload);
-    } catch (error) {
-      console.log(
-        red(
-          `🚀 ~ file: restServiceManager.ts ~ line 512 ~ RestServiceManager ~ getCommandValue ~ error: ${error}`
-        )
-      );
-    }
   }
 
   static startHttpServer() {

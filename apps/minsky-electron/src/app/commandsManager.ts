@@ -19,7 +19,7 @@ export class CommandsManager {
       command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
     });
 
-    const item = await RestServiceManager.getCommandValue({
+    const item = await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM,
     });
 
@@ -40,7 +40,7 @@ export class CommandsManager {
       });
     }
 
-    const classTypeRes = (await RestServiceManager.getCommandValue({
+    const classTypeRes = (await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_CLASS_TYPE,
     })) as string;
 
@@ -70,7 +70,7 @@ export class CommandsManager {
     }
 
     const value = Number(
-      await RestServiceManager.getCommandValue({
+      await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_VALUE,
       })
     );
@@ -94,7 +94,7 @@ export class CommandsManager {
     }
 
     const name = String(
-      await RestServiceManager.getCommandValue({
+      await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_NAME,
       })
     );
@@ -118,7 +118,7 @@ export class CommandsManager {
     }
 
     const description = String(
-      await RestServiceManager.getCommandValue({
+      await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_DESCRIPTION,
       })
     );
@@ -152,7 +152,7 @@ export class CommandsManager {
       command: `${commandsMapping.CANVAS_GET_WIRE_AT} [${x},${y}]`,
     });
 
-    const wire = await RestServiceManager.getCommandValue({
+    const wire = await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_WIRE,
     });
 
@@ -184,7 +184,7 @@ export class CommandsManager {
   }
 
   static async selectVar(x: number, y: number): Promise<boolean> {
-    const selectVar = await RestServiceManager.getCommandValue({
+    const selectVar = await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_SELECT_VAR} [${x},${y}]`,
     });
 
@@ -197,7 +197,7 @@ export class CommandsManager {
     });
 
     const defaultRotation = Number(
-      await RestServiceManager.getCommandValue({
+      await RestServiceManager.handleMinskyProcess({
         command: `${commandsMapping.CANVAS_DEFAULT_ROTATION}`,
       })
     );
@@ -321,7 +321,7 @@ export class CommandsManager {
   }
 
   static async editGodleyTitle(): Promise<void> {
-    const title = (await RestServiceManager.getCommandValue({
+    const title = (await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_TABLE_TITLE,
     })) as string;
 
@@ -346,12 +346,12 @@ export class CommandsManager {
 
   static async postNote(type: string) {
     const tooltip =
-      ((await RestServiceManager.getCommandValue({
+      ((await RestServiceManager.handleMinskyProcess({
         command: `/minsky/canvas/${type}/tooltip`,
       })) as string)?.slice(1, 1) || '';
 
     const detailedText =
-      ((await RestServiceManager.getCommandValue({
+      ((await RestServiceManager.handleMinskyProcess({
         command: `/minsky/canvas/${type}/detailedText`,
       })) as string)?.slice(1, 1) || '';
 
@@ -376,7 +376,7 @@ export class CommandsManager {
         });
       }
 
-      const dimsRes = (await RestServiceManager.getCommandValue({
+      const dimsRes = (await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_DIMS,
       })) as string;
 
@@ -411,7 +411,7 @@ export class CommandsManager {
         });
       }
 
-      const isLocked = await RestServiceManager.getCommandValue({
+      const isLocked = await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_DIMS,
       });
 
@@ -427,7 +427,7 @@ export class CommandsManager {
 
   static async incrCase(delta: number): Promise<void> {
     const numCases = Number(
-      await RestServiceManager.getCommandValue({
+      await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_NUM_CASES,
       })
     );
@@ -445,7 +445,7 @@ export class CommandsManager {
 
   static async getLockGroup(): Promise<unknown[]> {
     const lockGroup = JSON.parse(
-      (await RestServiceManager.getCommandValue({
+      (await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_LOCK_GROUP,
       })) as string
     );
@@ -466,7 +466,9 @@ export class CommandsManager {
 
   static async getModelX(): Promise<number> {
     const x = Number(
-      await RestServiceManager.getCommandValue({ command: commandsMapping.X })
+      await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.X,
+      })
     );
 
     return x;
@@ -474,7 +476,9 @@ export class CommandsManager {
 
   static async getModelY(): Promise<number> {
     const y = Number(
-      await RestServiceManager.getCommandValue({ command: commandsMapping.Y })
+      await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.Y,
+      })
     );
 
     return y;
@@ -545,9 +549,11 @@ proc findDefinition {} {
  */
   static async findDefinition(): Promise<void> {
     // TODO:
-    const findVariableDefinition = await RestServiceManager.getCommandValue({
-      command: commandsMapping.CANVAS_FIND_VARIABLE_DEFINITION,
-    });
+    const findVariableDefinition = await RestServiceManager.handleMinskyProcess(
+      {
+        command: commandsMapping.CANVAS_FIND_VARIABLE_DEFINITION,
+      }
+    );
 
     if (findVariableDefinition) {
       // if ((Math.abs(itemX - 0.5 * WindowManager.canvasWidth) > 0.5 * WindowManager.canvasWidth ||
@@ -567,7 +573,7 @@ proc findDefinition {} {
   }
 
   static async isItemDefined(): Promise<boolean> {
-    const isItemDefined = await RestServiceManager.getCommandValue({
+    const isItemDefined = await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_DEFINED,
     });
 
@@ -575,7 +581,7 @@ proc findDefinition {} {
   }
 
   static async getItemType(): Promise<string> {
-    const type = ((await RestServiceManager.getCommandValue({
+    const type = ((await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_TYPE,
     })) as string)
       .slice(1, -1)
@@ -585,7 +591,7 @@ proc findDefinition {} {
   }
 
   static async getVarTabDisplay(): Promise<boolean> {
-    const varTabDisplay = await RestServiceManager.getCommandValue({
+    const varTabDisplay = await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_VAR_TAB_DISPLAY,
     });
 

@@ -50,9 +50,11 @@ export class BookmarkManager {
                   command: `${commandsMapping.DELETE_BOOKMARK} ${index}`,
                 });
 
-                const _bookmarks = await RestServiceManager.getCommandValue({
-                  command: commandsMapping.BOOKMARK_LIST,
-                });
+                const _bookmarks = await RestServiceManager.handleMinskyProcess(
+                  {
+                    command: commandsMapping.BOOKMARK_LIST,
+                  }
+                );
 
                 await this.populateBookmarks(_bookmarks as string[]);
               },

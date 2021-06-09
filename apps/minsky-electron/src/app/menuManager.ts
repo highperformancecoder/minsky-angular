@@ -42,9 +42,11 @@ export class MenuManager {
             label: 'New System',
             accelerator: 'CmdOrCtrl + Shift + N',
             async click() {
-              const isCanvasEdited = await RestServiceManager.getCommandValue({
-                command: commandsMapping.EDITED,
-              });
+              const isCanvasEdited = await RestServiceManager.handleMinskyProcess(
+                {
+                  command: commandsMapping.EDITED,
+                }
+              );
 
               if (isCanvasEdited) {
                 const saveModelDialog = await dialog.showSaveDialog({
@@ -213,7 +215,7 @@ export class MenuManager {
           {
             label: 'Dimensional Analysis',
             click: async () => {
-              const res = await RestServiceManager.getCommandValue({
+              const res = await RestServiceManager.handleMinskyProcess({
                 command: commandsMapping.DIMENSIONAL_ANALYSIS,
               });
 

@@ -41,7 +41,7 @@ export class KeyBindingManager {
         command: `${commandsMapping.KEY_PRESS} [${_keysym},${_utf8},${modifierKeyCode},${mouseX},${mouseY}]`,
       };
 
-      const isKeyPressHandled = await RestServiceManager.getCommandValue(
+      const isKeyPressHandled = await RestServiceManager.handleMinskyProcess(
         _payload
       );
 
@@ -137,7 +137,7 @@ export class KeyBindingManager {
 
   private static async zoom(factor: number) {
     const cBounds = JSON.parse(
-      (await RestServiceManager.getCommandValue({
+      (await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.C_BOUNDS,
       })) as string
     );
@@ -161,9 +161,11 @@ export class KeyBindingManager {
   private static async deleteKey(payload: MinskyProcessPayload) {
     const { mouseX, mouseY } = payload;
 
-    const isCanvasSelectionEmpty = (await RestServiceManager.getCommandValue({
-      command: commandsMapping.CANVAS_SELECTION_EMPTY,
-    })) as boolean;
+    const isCanvasSelectionEmpty = (await RestServiceManager.handleMinskyProcess(
+      {
+        command: commandsMapping.CANVAS_SELECTION_EMPTY,
+      }
+    )) as boolean;
 
     if (!isCanvasSelectionEmpty) {
       await RestServiceManager.handleMinskyProcess({

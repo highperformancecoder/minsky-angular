@@ -27,7 +27,7 @@ export class ContextMenuManager {
 
         const isWirePresent = !isEmptyObject(wire);
 
-        const isWireVisible = (await RestServiceManager.getCommandValue({
+        const isWireVisible = (await RestServiceManager.handleMinskyProcess({
           command: commandsMapping.CANVAS_WIRE_VISIBLE,
         })) as boolean;
 
@@ -510,7 +510,7 @@ export class ContextMenuManager {
     let portValues = 'unknown';
 
     try {
-      portValues = (await RestServiceManager.getCommandValue({
+      portValues = (await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_PORT_VALUES,
       })) as string;
     } catch (error) {
