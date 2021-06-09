@@ -27,6 +27,24 @@ import { WindowManager } from './windowManager';
 
 const logError = debug('minsky:electron_error');
 
+interface QueueItem {
+  promise: Deferred;
+  payload: MinskyProcessPayload;
+}
+
+class Deferred {
+  public promise;
+  public reject;
+  public resolve;
+
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this.reject = reject;
+      this.resolve = resolve;
+    });
+  }
+}
+
 export class RestServiceManager {
   static minskyHttpServer: ChildProcess;
   static currentMinskyModelFilePath: string;
@@ -38,9 +56,10 @@ export class RestServiceManager {
 
   private static lastMouseMovePayload: MinskyProcessPayload = null;
   private static lastModelMoveToPayload: MinskyProcessPayload = null;
-  private static payloadDataQueue: Array<MinskyProcessPayload> = [];
+  private static payloadDataQueue: Array<QueueItem> = [];
   private static runningCommand = false;
-  private static isQueueEnabled = false;
+  private static isQueueEnabled = true;
+
   private static async processCommandsInQueueNew(): Promise<unknown> {
     // Should be on a separate thread......? Janak
     const shouldProcessQueue = this.isQueueEnabled
@@ -48,15 +67,16 @@ export class RestServiceManager {
       : this.payloadDataQueue.length > 0;
 
     if (shouldProcessQueue) {
-      const nextPayload = this.payloadDataQueue.shift();
+      const nextItem = this.payloadDataQueue.shift();
 
-      if (nextPayload.command === commandsMapping.mousemove) {
+      if (nextItem.payload.command === commandsMapping.mousemove) {
         this.lastMouseMovePayload = null;
-      } else if (nextPayload.command === commandsMapping.MOVE_TO) {
+      } else if (nextItem.payload.command === commandsMapping.MOVE_TO) {
         this.lastModelMoveToPayload = null;
       }
       this.runningCommand = true;
-      return await this.handleMinskyPayload(nextPayload);
+      const res = await this.handleMinskyPayload(nextItem.payload);
+      nextItem.promise.resolve(res);
     }
     return;
   }
@@ -74,6 +94,8 @@ export class RestServiceManager {
       ? !this.runningCommand && wasQueueEmpty
       : true;
 
+    const queueItem: QueueItem = { payload, promise: new Deferred() };
+
     if (payload.command === commandsMapping.mousemove) {
       if (this.lastMouseMovePayload !== null) {
         // console.log("Merging mouse move commands");
@@ -81,7 +103,7 @@ export class RestServiceManager {
         this.lastMouseMovePayload.mouseY = payload.mouseY;
       } else {
         this.lastMouseMovePayload = payload;
-        this.payloadDataQueue.push(payload);
+        this.payloadDataQueue.push(queueItem);
       }
       this.lastModelMoveToPayload = null;
     } else if (payload.command === commandsMapping.MOVE_TO) {
@@ -90,19 +112,20 @@ export class RestServiceManager {
         this.lastModelMoveToPayload.mouseY = payload.mouseY;
       } else {
         this.lastModelMoveToPayload = payload;
-        this.payloadDataQueue.push(payload);
+        this.payloadDataQueue.push(queueItem);
       }
       this.lastMouseMovePayload = null;
     } else {
       this.lastMouseMovePayload = null;
       this.lastModelMoveToPayload = null;
-      this.payloadDataQueue.push(payload);
+      this.payloadDataQueue.push(queueItem);
     }
     if (shouldProcessQueue) {
       // Control will come here when a new command comes after the whole queue was processed
-      return await this.processCommandsInQueueNew();
+      await this.processCommandsInQueueNew();
     }
-    return;
+
+    return queueItem.promise.promise;
   }
 
   private static async handleMinskyPayload(
@@ -330,23 +353,9 @@ export class RestServiceManager {
         this.record(stdinCommand);
       }
 
-      // const tsStep0 = Date.now();
       const res = await HttpManager.handleMinskyCommand(miscCommand);
-      // const tsStep1 = Date.now();
-      try {
-        await HttpManager.handleMinskyCommand(renderCommand);
-      } catch (error) {
-        console.error('Error executing command: ', error);
-      }
-      // const tsStep2 = Date.now();
-      // console.log(
-      //   'Time stamps::',
-      //   (tsStep2 - tsStep1) / 1000,
-      //   (tsStep1 - tsStep0) / 1000,
-      //   tsStep0,
-      //   tsStep1,
-      //   tsStep2
-      // );
+      await HttpManager.handleMinskyCommand(renderCommand);
+
       return res;
     }
     console.error('Command was null or undefined');

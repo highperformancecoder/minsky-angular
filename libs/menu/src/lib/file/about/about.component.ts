@@ -1,5 +1,5 @@
 import { Component, OnInit, VERSION } from '@angular/core';
-import { ElectronService, StateManagementService } from '@minsky/core';
+import { ElectronService } from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 
 @Component({
@@ -13,31 +13,44 @@ export class AboutComponent implements OnInit {
   minskyVersion: string;
   ravelVersion: string;
 
-  constructor(
-    private electronService: ElectronService,
-    private stateManagementService: StateManagementService
-  ) {}
+  constructor(private electronService: ElectronService) {}
 
   ngOnInit(): void {
     (async () => {
-      this.ecolabVersion = (
-        await this.stateManagementService.getCommandValue({
+      const _ecolabVersion = (await this.electronService.sendMinskyCommandAndRender(
+        {
           command: commandsMapping.ECOLAB_VERSION,
-        })
-      ).slice(1, -1);
+        }
+      )) as string;
 
-      this.ravelVersion = (
-        await this.stateManagementService.getCommandValue({
+      this.ecolabVersion = this.normalizeVersion(_ecolabVersion);
+
+      const _ravelVersion = (await this.electronService.sendMinskyCommandAndRender(
+        {
           command: commandsMapping.RAVEL_VERSION,
-        })
-      ).slice(1, -1);
+        }
+      )) as string;
 
-      this.minskyVersion = (
-        await this.stateManagementService.getCommandValue({
+      this.ravelVersion = this.normalizeVersion(_ravelVersion);
+
+      const _minskyVersion = (await this.electronService.sendMinskyCommandAndRender(
+        {
           command: commandsMapping.MINSKY_VERSION,
-        })
-      ).slice(1, -1);
+        }
+      )) as string;
+
+      this.minskyVersion = this.normalizeVersion(_minskyVersion);
     })();
+  }
+
+  private normalizeVersion(version: string) {
+    const normalizedVersion =
+      version === 'unavailable' ||
+      JSON.stringify(version) === JSON.stringify({})
+        ? ''
+        : version;
+
+    return normalizedVersion;
   }
 
   closeWindow() {

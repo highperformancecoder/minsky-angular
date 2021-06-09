@@ -1,11 +1,7 @@
 /* eslint-disable no-case-declarations */
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  CommunicationService,
-  ElectronService,
-  StateManagementService,
-} from '@minsky/core';
+import { CommunicationService, ElectronService } from '@minsky/core';
 import { events, rendererAppURL } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { ResizedEvent } from 'angular-resize-event';
@@ -26,19 +22,11 @@ export class AppComponent implements AfterViewInit {
   constructor(
     private electronService: ElectronService,
     private cmService: CommunicationService,
-    public stateManagementService: StateManagementService,
     private translate: TranslateService,
     public router: Router
   ) {
     this.translate.setDefaultLang('en');
     logInfo('AppConfig', AppConfig);
-
-    if (electronService.isElectron) {
-      logInfo('Run in electron');
-      this.stateManagementService.init();
-    } else {
-      logInfo('Run in browser');
-    }
   }
 
   ngAfterViewInit() {

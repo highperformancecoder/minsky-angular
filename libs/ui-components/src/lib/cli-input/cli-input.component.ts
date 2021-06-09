@@ -5,7 +5,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { ElectronService, HttpService } from '@minsky/core';
+import { ElectronService } from '@minsky/core';
 import { commandsMapping, unExposedTerminalCommands } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
@@ -32,12 +32,9 @@ export class CliInputComponent implements OnInit, OnDestroy {
     return this.form.get('args');
   }
 
-  constructor(
-    private electronService: ElectronService,
-    public httpService: HttpService
-  ) {}
+  constructor(private electronService: ElectronService) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.form = new FormGroup({
       command: new FormControl('', Validators.required),
       args: new FormControl(),
@@ -53,20 +50,23 @@ export class CliInputComponent implements OnInit, OnDestroy {
     });
 
     if (this.electronService.isElectron) {
-      this.httpService
-        .handleMinskyCommand(commandsMapping.LIST_V2)
-        .subscribe((commands: string[]) => {
-          this.commands = commands.map((c) => `/minsky${c}`);
-          this.commands = [...this.commands, ...unExposedTerminalCommands];
-        });
+      let _commands = (await this.electronService.sendMinskyCommandAndRender({
+        command: commandsMapping.LIST_V2,
+      })) as string[];
+
+      _commands = _commands.map((c) => `/minsky${c}`);
+
+      this.commands = [..._commands, ...unExposedTerminalCommands];
     }
   }
 
-  handleSubmit() {
+  async handleSubmit() {
     if (this.electronService.isElectron && this.command) {
-      this.httpService.handleMinskyCommand(this.command).subscribe((output) => {
-        this.output.push(`${this.command} ==> ${JSON.stringify(output)}`);
+      const output = await this.electronService.sendMinskyCommandAndRender({
+        command: this.command,
       });
+
+      this.output.push(`${this.command} ==> ${JSON.stringify(output)}`);
     }
   }
 

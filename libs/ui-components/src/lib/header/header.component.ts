@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommunicationService, StateManagementService } from '@minsky/core';
+import { CommunicationService, ElectronService } from '@minsky/core';
 import { HeaderEvent } from '@minsky/shared';
 
 @Component({
@@ -9,9 +9,10 @@ import { HeaderEvent } from '@minsky/shared';
 })
 export class HeaderComponent {
   headerEvent = 'HEADER_EVENT';
+
   constructor(
-    private commService: CommunicationService,
-    public stateManagementService: StateManagementService
+    public commService: CommunicationService,
+    private electronService: ElectronService
   ) {}
 
   async handleToolbarEvent(event: HeaderEvent) {

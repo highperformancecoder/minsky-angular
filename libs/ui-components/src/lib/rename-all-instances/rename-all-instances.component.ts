@@ -22,13 +22,13 @@ export class RenameAllInstancesComponent implements OnInit {
     });
   }
 
-  handleSaveInput(newName: string) {
+  async handleSaveInput(newName: string) {
     if (this.electronService.isElectron) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.CANVAS_RENAME_ALL_INSTANCES} "${newName}"`,
       });
 
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.CANVAS_REQUEST_REDRAW}"`,
       });
 

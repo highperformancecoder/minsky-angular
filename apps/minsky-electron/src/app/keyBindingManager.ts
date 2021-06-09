@@ -12,7 +12,9 @@ import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
 
 export class KeyBindingManager {
-  static async handleOnKeyPress(payload: MinskyProcessPayload) {
+  static async handleOnKeyPress(
+    payload: MinskyProcessPayload
+  ): Promise<unknown> {
     const { key, shift, capsLock, ctrl, alt, mouseX, mouseY } = payload;
 
     const _keysym = keysym.fromName(key)?.keysym;
@@ -45,12 +47,14 @@ export class KeyBindingManager {
         _payload
       );
 
-      if (isKeyPressHandled === 'false') {
-        await this.handleOnKeyPressFallback(payload);
+      if (!isKeyPressHandled) {
+        return await this.handleOnKeyPressFallback(payload);
       }
+
+      return isKeyPressHandled;
     }
 
-    await this.handleOnKeyPressFallback(payload);
+    return await this.handleOnKeyPressFallback(payload);
   }
 
   private static async handleOnKeyPressFallback(payload: MinskyProcessPayload) {
@@ -69,38 +73,38 @@ export class KeyBindingManager {
         break;
 
       case '*':
-        CommandsManager.addOperation(availableOperations.MULTIPLY);
-        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+        await CommandsManager.addOperation(availableOperations.MULTIPLY);
+        await CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
 
         break;
 
       case '/':
-        CommandsManager.addOperation(availableOperations.DIVIDE);
-        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+        await CommandsManager.addOperation(availableOperations.DIVIDE);
+        await CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
 
         break;
 
       case '^':
-        CommandsManager.addOperation(availableOperations.POW);
-        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+        await CommandsManager.addOperation(availableOperations.POW);
+        await CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
 
         break;
 
       case '&':
-        CommandsManager.addOperation(availableOperations.INTEGRATE);
-        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+        await CommandsManager.addOperation(availableOperations.INTEGRATE);
+        await CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
 
         break;
 
       case '=':
-        CommandsManager.addGodley();
-        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+        await CommandsManager.addGodley();
+        await CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
 
         break;
 
       case '@':
-        CommandsManager.addPlot();
-        CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+        await CommandsManager.addPlot();
+        await CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
 
         break;
 
@@ -112,8 +116,8 @@ export class KeyBindingManager {
   private static async handlePlusKey(payload: MinskyProcessPayload) {
     if (payload.shift) {
       // <Key-plus>
-      CommandsManager.addOperation(availableOperations.ADD);
-      CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
+      await CommandsManager.addOperation(availableOperations.ADD);
+      await CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
 
       return;
     }
@@ -154,7 +158,7 @@ export class KeyBindingManager {
       command: `${commandsMapping.ZOOM_IN} [${x},${y},${zoomFactor}]`,
     });
 
-    CommandsManager.requestRedraw();
+    await CommandsManager.requestRedraw();
     return;
   }
 

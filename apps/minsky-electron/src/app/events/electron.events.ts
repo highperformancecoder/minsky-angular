@@ -56,16 +56,15 @@ ipcMain.on(CREATE_MENU_POPUP, (event, data) => {
   WindowManager.createMenuPopUpWithRouting(data);
 });
 
-ipcMain.on(MINSKY_PROCESS, async (event, payload: MinskyProcessPayload) => {
-  await RestServiceManager.handleMinskyProcess(payload);
+ipcMain.handle(MINSKY_PROCESS, async (event, payload: MinskyProcessPayload) => {
+  return await RestServiceManager.handleMinskyProcess(payload);
 });
 
 ipcMain.on(APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {
   WindowManager.onAppLayoutChanged(payload);
 });
 
-ipcMain.on(POPULATE_BOOKMARKS, async (event, bookmarkString: string) => {
-  const bookmarks = JSON.parse(bookmarkString);
+ipcMain.on(POPULATE_BOOKMARKS, async (event, bookmarks: string[]) => {
   await BookmarkManager.populateBookmarks(bookmarks);
 });
 
@@ -77,6 +76,6 @@ ipcMain.on(TOGGLE_MINSKY_SERVICE, async () => {
   await RestServiceManager.toggleMinskyService();
 });
 
-ipcMain.on(KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
-  await KeyBindingManager.handleOnKeyPress(payload);
+ipcMain.handle(KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
+  return await KeyBindingManager.handleOnKeyPress(payload);
 });

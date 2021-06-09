@@ -9,7 +9,6 @@ import {
 } from '@minsky/shared';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
-import { StateManagementService } from '../state-management/state-management.service';
 import { WindowUtilityService } from '../WindowUtility/window-utility.service';
 import { ElectronService } from './../electron/electron.service';
 
@@ -26,11 +25,12 @@ export class CommunicationService {
   showPlayButton$ = new BehaviorSubject<boolean>(true);
   mouseX: number;
   mouseY: number;
+  t = '0';
+  deltaT = '0';
 
   constructor(
     private socket: Socket,
     private electronService: ElectronService,
-    private stateManagementService: StateManagementService,
     private windowUtilityService: WindowUtilityService
   ) {}
 
@@ -85,14 +85,18 @@ export class CommunicationService {
         case 'PLAY':
           autoHandleMinskyProcess = false;
 
-          this.stepIntervalId = setInterval(() => {
-            this.electronService.sendMinskyCommandAndRender({ command });
-            this.electronService.sendMinskyCommandAndRender({
+          this.stepIntervalId = setInterval(async () => {
+            await this.electronService.sendMinskyCommandAndRender({ command });
+
+            this.t = ((await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.T,
-            });
-            this.electronService.sendMinskyCommandAndRender({
-              command: commandsMapping.DELTA_T,
-            });
+            })) as number).toFixed(2);
+
+            this.deltaT = ((await this.electronService.sendMinskyCommandAndRender(
+              {
+                command: commandsMapping.DELTA_T,
+              }
+            )) as number).toFixed(2);
           }, 100); // TODO:: -> Make this delay configurable
           break;
 
@@ -108,24 +112,30 @@ export class CommunicationService {
           this.showPlayButton$.next(true);
           this.clearStepInterval();
 
-          this.electronService.sendMinskyCommandAndRender({ command });
-          this.electronService.sendMinskyCommandAndRender({
+          await this.electronService.sendMinskyCommandAndRender({ command });
+          this.t = ((await this.electronService.sendMinskyCommandAndRender({
             command: commandsMapping.T,
-          });
-          this.electronService.sendMinskyCommandAndRender({
-            command: commandsMapping.DELTA_T,
-          });
+          })) as number).toFixed(2);
+
+          this.deltaT = ((await this.electronService.sendMinskyCommandAndRender(
+            {
+              command: commandsMapping.DELTA_T,
+            }
+          )) as number).toFixed(2);
           break;
 
         case 'STEP':
           autoHandleMinskyProcess = false;
-          this.electronService.sendMinskyCommandAndRender({ command });
-          this.electronService.sendMinskyCommandAndRender({
+          await this.electronService.sendMinskyCommandAndRender({ command });
+          this.t = ((await this.electronService.sendMinskyCommandAndRender({
             command: commandsMapping.T,
-          });
-          this.electronService.sendMinskyCommandAndRender({
-            command: commandsMapping.DELTA_T,
-          });
+          })) as number).toFixed(2);
+
+          this.deltaT = ((await this.electronService.sendMinskyCommandAndRender(
+            {
+              command: commandsMapping.DELTA_T,
+            }
+          )) as number).toFixed(2);
           break;
 
         case 'REVERSE_CHECKBOX':
@@ -137,7 +147,7 @@ export class CommunicationService {
       }
 
       if (command && autoHandleMinskyProcess) {
-        this.electronService.sendMinskyCommandAndRender({ command });
+        await this.electronService.sendMinskyCommandAndRender({ command });
       }
     } else {
       this.socket.emit(event, message);
@@ -145,18 +155,15 @@ export class CommunicationService {
   }
 
   private async getResetZoomCommand(centerX: number, centerY: number) {
-    const zoomFactor = Number(
-      await this.stateManagementService.getCommandValue({
-        command: commandsMapping.ZOOM_FACTOR,
-      })
-    );
+    const zoomFactor = (await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.ZOOM_FACTOR,
+    })) as number;
 
     if (zoomFactor > 0) {
-      const relZoom = Number(
-        await this.stateManagementService.getCommandValue({
-          command: commandsMapping.REL_ZOOM,
-        })
-      );
+      const relZoom = (await this.electronService.sendMinskyCommandAndRender({
+        command: commandsMapping.REL_ZOOM,
+      })) as number;
+
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
       return `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
         1 / (relZoom || 1)
@@ -167,11 +174,9 @@ export class CommunicationService {
   }
 
   private async getZoomToFitArgs(canvasWidth: number, canvasHeight: number) {
-    const cBoundsString = await this.stateManagementService.getCommandValue({
+    const cBounds = (await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.C_BOUNDS,
-    });
-
-    const cBounds = JSON.parse(cBoundsString as string);
+    })) as number[];
 
     const zoomFactorX = canvasWidth / (cBounds[2] - cBounds[0]);
     const zoomFactorY = canvasHeight / (cBounds[3] - cBounds[1]);
@@ -189,7 +194,7 @@ export class CommunicationService {
     }
   }
 
-  public mouseEvents(event, message) {
+  public async mouseEvents(event, message) {
     const { type, clientX, clientY } = message;
 
     const offset = this.windowUtilityService.getMinskyCanvasOffset();
@@ -208,7 +213,7 @@ export class CommunicationService {
       const command = commandsMapping[type];
 
       if (command) {
-        this.electronService.sendMinskyCommandAndRender({
+        await this.electronService.sendMinskyCommandAndRender({
           command: command,
           mouseX: clientX,
           mouseY: this.mouseY,
@@ -240,15 +245,15 @@ export class CommunicationService {
     });
   }
 
-  addOperation(arg) {
+  async addOperation(arg) {
     if (this.electronService.isElectron) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ADD_OPERATION} "${arg}"`,
       });
     }
   }
 
-  insertElement(command, arg = null, type = null) {
+  async insertElement(command, arg = null, type = null) {
     if (this.electronService.isElectron) {
       let _cmd = commandsMapping[command];
       let _arg = arg;
@@ -261,13 +266,13 @@ export class CommunicationService {
         _cmd = `${_cmd} ${_arg}`;
       }
 
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: _cmd,
       });
     }
   }
 
-  onMouseWheelZoom = (event: WheelEvent) => {
+  onMouseWheelZoom = async (event: WheelEvent) => {
     event.preventDefault();
     const { deltaY } = event;
     const zoomIn = deltaY < 0;
@@ -284,10 +289,10 @@ export class CommunicationService {
       }, ${ZOOM_OUT_FACTOR}]`;
     }
 
-    this.electronService.sendMinskyCommandAndRender({ command });
+    await this.electronService.sendMinskyCommandAndRender({ command });
   };
 
-  handleKeyPress(event: KeyboardEvent) {
+  async handleKeyPress(event: KeyboardEvent) {
     const payload: MinskyProcessPayload = {
       command: commandsMapping.KEY_PRESS,
       key: event.key,
@@ -301,7 +306,7 @@ export class CommunicationService {
 
     console.table(payload);
 
-    this.electronService.sendMinskyCommandAndRender(
+    await this.electronService.sendMinskyCommandAndRender(
       payload,
       events.ipc.KEY_PRESS
     );
