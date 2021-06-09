@@ -8,7 +8,6 @@ import {
   red,
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
-import * as debug from 'debug';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
 import { MessageBoxSyncOptions } from 'electron/main';
@@ -24,8 +23,6 @@ import { join } from 'path';
 import { HttpManager } from './httpManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
-
-const logError = debug('minsky:electron_error');
 
 interface QueueItem {
   promise: Deferred;
@@ -135,13 +132,11 @@ export class RestServiceManager {
 
     switch (payload.command) {
       case commandsMapping.RECORD:
-        // TODO: make handleRecord return command value
-        res = this.handleRecord();
+        await this.handleRecord();
         break;
 
       case commandsMapping.RECORDING_REPLAY:
-        // TODO: make handleRecordingReplay return command value
-        res = this.handleRecordingReplay();
+        await this.handleRecordingReplay();
         break;
 
       default:
@@ -153,56 +148,50 @@ export class RestServiceManager {
     return res;
   }
 
-  private static handleRecordingReplay() {
+  private static async handleRecordingReplay() {
     this.stopRecording();
 
-    (async () => {
-      const replayRecordingDialog = await dialog.showOpenDialog({
-        filters: [
-          { extensions: ['json'], name: 'JSON' },
-          { extensions: ['*'], name: 'All Files' },
-        ],
-      });
+    const replayRecordingDialog = await dialog.showOpenDialog({
+      filters: [
+        { extensions: ['json'], name: 'JSON' },
+        { extensions: ['*'], name: 'All Files' },
+      ],
+    });
 
-      if (replayRecordingDialog.canceled) {
+    if (replayRecordingDialog.canceled) {
+      return;
+    }
+
+    const positiveResponseText = 'Yes';
+    const negativeResponseText = 'No';
+    const cancelResponseText = 'Cancel';
+
+    const options: MessageBoxSyncOptions = {
+      buttons: [positiveResponseText, negativeResponseText, cancelResponseText],
+      message: 'Do you want to save the current model?',
+      title: 'Save ?',
+    };
+
+    const index = dialog.showMessageBoxSync(options);
+
+    if (options.buttons[index] === positiveResponseText) {
+      const saveDialog = await dialog.showSaveDialog({});
+
+      if (saveDialog.canceled) {
         return;
       }
 
-      const positiveResponseText = 'Yes';
-      const negativeResponseText = 'No';
-      const cancelResponseText = 'Cancel';
+      await this.handleMinskyProcess({
+        command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
+      });
+      await this.replay(replayRecordingDialog);
+    }
 
-      const options: MessageBoxSyncOptions = {
-        buttons: [
-          positiveResponseText,
-          negativeResponseText,
-          cancelResponseText,
-        ],
-        message: 'Do you want to save the current model?',
-        title: 'Save ?',
-      };
+    if (options.buttons[index] === negativeResponseText) {
+      await this.replay(replayRecordingDialog);
+    }
 
-      const index = dialog.showMessageBoxSync(options);
-
-      if (options.buttons[index] === positiveResponseText) {
-        const saveDialog = await dialog.showSaveDialog({});
-
-        if (saveDialog.canceled) {
-          return;
-        }
-
-        await this.handleMinskyProcess({
-          command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
-        });
-        this.replay(replayRecordingDialog);
-      }
-
-      if (options.buttons[index] === negativeResponseText) {
-        this.replay(replayRecordingDialog);
-      }
-
-      return;
-    })();
+    return;
   }
 
   private static async replay(
@@ -270,24 +259,22 @@ export class RestServiceManager {
     }
   }
 
-  private static handleRecord() {
+  private static async handleRecord() {
     if (this.isRecording) {
       this.stopRecording();
       return;
     }
 
-    (async () => {
-      const saveRecordingDialog = await dialog.showSaveDialog({
-        properties: ['showOverwriteConfirmation', 'createDirectory'],
-        filters: [
-          { extensions: ['json'], name: 'JSON' },
-          { extensions: ['*'], name: 'All Files' },
-        ],
-      });
-      this.isRecording = true;
+    const saveRecordingDialog = await dialog.showSaveDialog({
+      properties: ['showOverwriteConfirmation', 'createDirectory'],
+      filters: [
+        { extensions: ['json'], name: 'JSON' },
+        { extensions: ['*'], name: 'All Files' },
+      ],
+    });
+    this.isRecording = true;
 
-      this.recordingFilePath = saveRecordingDialog.filePath;
-    })();
+    this.recordingFilePath = saveRecordingDialog.filePath;
   }
 
   private static async executeCommandOnMinskyServer(
