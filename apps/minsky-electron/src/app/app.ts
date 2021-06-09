@@ -88,25 +88,13 @@ export default class App {
   }
 
   private static initMinskyService() {
-    const minskyRestServiceFilePath = StoreManager.store.get(
-      'minskyRESTServicePath'
-    );
-
     const windowId = WindowManager.activeWindows.get(1).windowId;
 
     console.log('🚀🚀🚀🚀🚀' + green(` WindowId -> ${windowId}`));
 
-    try {
-      if (minskyRestServiceFilePath) {
-        setTimeout(async () => {
-          await RestServiceManager.startMinskyService(
-            minskyRestServiceFilePath
-          );
-        }, 4000);
-      }
-    } catch (error) {
-      console.warn(error);
-    }
+    setTimeout(async () => {
+      await RestServiceManager.startMinskyService();
+    }, 3000);
   }
 
   private static initMenu() {

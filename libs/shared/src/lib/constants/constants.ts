@@ -254,7 +254,6 @@ export const events = {
     ADD_RECENT_FILE: 'add-recent-file',
     GET_APP_VERSION: 'get-app-version',
     MINSKY_PROCESS_REPLY: 'minsky-process-reply',
-    TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
     KEY_PRESS: 'key-press',
   },
 };

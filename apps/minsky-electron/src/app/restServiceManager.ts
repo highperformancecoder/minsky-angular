@@ -377,28 +377,9 @@ export class RestServiceManager {
     return renderCommand;
   }
 
-  static async toggleMinskyService() {
-    try {
-      const _dialog = await dialog.showOpenDialog({
-        properties: ['openFile'],
-        filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
-      });
-
-      if (_dialog.canceled) {
-        return;
-      }
-
-      await this.startMinskyService(_dialog.filePaths[0]);
-      return;
-    } catch (error) {
-      logError(error);
-    }
-  }
-
-  static async startMinskyService(filePath: string) {
+  static async startMinskyService() {
     const initPayload: MinskyProcessPayload = {
       command: commandsMapping.START_MINSKY_PROCESS,
-      filePath,
     };
 
     await this.handleMinskyProcess(initPayload);

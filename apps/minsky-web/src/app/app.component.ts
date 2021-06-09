@@ -17,7 +17,6 @@ const logInfo = debug('minsky:web:info');
 })
 export class AppComponent implements AfterViewInit {
   loader = false;
-  toggleButtonText = 'Start Minsky Service';
 
   constructor(
     private electronService: ElectronService,
@@ -98,12 +97,6 @@ export class AppComponent implements AfterViewInit {
     }
 
     this.cmService.canvasOffsetValues();
-  }
-
-  async toggleMinskyService() {
-    if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send(events.ipc.TOGGLE_MINSKY_SERVICE);
-    }
   }
 
   async startTerminal() {
