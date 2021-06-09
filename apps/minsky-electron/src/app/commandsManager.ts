@@ -5,7 +5,6 @@ import {
   green,
   isEmptyObject,
   rendererAppURL,
-  toBoolean,
 } from '@minsky/shared';
 import { dialog } from 'electron';
 import { RestServiceManager } from './restServiceManager';
@@ -20,13 +19,11 @@ export class CommandsManager {
       command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
     });
 
-    const item: Record<string, unknown> = JSON.parse(
-      ((await RestServiceManager.getCommandValue({
-        command: commandsMapping.CANVAS_ITEM,
-      })) as string).replace(/\bnan\b/g, null)
-    );
+    const item = await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_ITEM,
+    });
 
-    return item;
+    return item as Record<string, unknown>;
   }
 
   private static async getItemClassType(
@@ -43,9 +40,9 @@ export class CommandsManager {
       });
     }
 
-    const classTypeRes = ((await RestServiceManager.getCommandValue({
+    const classTypeRes = (await RestServiceManager.getCommandValue({
       command: commandsMapping.CANVAS_ITEM_CLASS_TYPE,
-    })) as string).slice(1, -1);
+    })) as string;
 
     const classType = classTypeRes.includes(':')
       ? classTypeRes.split(':')[0]
@@ -142,7 +139,7 @@ export class CommandsManager {
 
     const itemInfo: CanvasItem = { classType, value };
 
-    console.log(green(itemInfo));
+    console.log(green(JSON.stringify(itemInfo)));
 
     return itemInfo;
   }
@@ -155,13 +152,11 @@ export class CommandsManager {
       command: `${commandsMapping.CANVAS_GET_WIRE_AT} [${x},${y}]`,
     });
 
-    const wire: Record<string, unknown> = JSON.parse(
-      (await RestServiceManager.getCommandValue({
-        command: commandsMapping.CANVAS_WIRE,
-      })) as string
-    );
+    const wire = await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_WIRE,
+    });
 
-    return wire;
+    return wire as Record<string, unknown>;
   }
 
   static async addOperation(operation: string): Promise<void> {
@@ -189,13 +184,11 @@ export class CommandsManager {
   }
 
   static async selectVar(x: number, y: number): Promise<boolean> {
-    const selectVar = toBoolean(
-      (await RestServiceManager.getCommandValue({
-        command: `${commandsMapping.CANVAS_SELECT_VAR} [${x},${y}]`,
-      })) as string
-    );
+    const selectVar = await RestServiceManager.getCommandValue({
+      command: `${commandsMapping.CANVAS_SELECT_VAR} [${x},${y}]`,
+    });
 
-    return selectVar;
+    return selectVar as boolean;
   }
 
   static async flip(): Promise<void> {
@@ -418,13 +411,11 @@ export class CommandsManager {
         });
       }
 
-      const isLocked = toBoolean(
-        (await RestServiceManager.getCommandValue({
-          command: commandsMapping.CANVAS_ITEM_DIMS,
-        })) as string
-      );
+      const isLocked = await RestServiceManager.getCommandValue({
+        command: commandsMapping.CANVAS_ITEM_DIMS,
+      });
 
-      return isLocked;
+      return isLocked as boolean;
     } catch (error) {
       console.error(
         '🚀 ~ file: commandsManager.ts ~ line 361 ~ CommandsManager ~ error',
@@ -576,13 +567,11 @@ proc findDefinition {} {
   }
 
   static async isItemDefined(): Promise<boolean> {
-    const isItemDefined = toBoolean(
-      (await RestServiceManager.getCommandValue({
-        command: commandsMapping.CANVAS_ITEM_DEFINED,
-      })) as string
-    );
+    const isItemDefined = await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_ITEM_DEFINED,
+    });
 
-    return isItemDefined;
+    return isItemDefined as boolean;
   }
 
   static async getItemType(): Promise<string> {
@@ -596,13 +585,11 @@ proc findDefinition {} {
   }
 
   static async getVarTabDisplay(): Promise<boolean> {
-    const varTabDisplay = toBoolean(
-      (await RestServiceManager.getCommandValue({
-        command: commandsMapping.CANVAS_ITEM_VAR_TAB_DISPLAY,
-      })) as string
-    );
+    const varTabDisplay = await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_ITEM_VAR_TAB_DISPLAY,
+    });
 
-    return varTabDisplay;
+    return varTabDisplay as boolean;
   }
 
   static async getFilePathUsingSaveDialog(): Promise<string> {

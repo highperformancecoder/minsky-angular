@@ -3,7 +3,6 @@ import {
   ClassType,
   commandsMapping,
   isEmptyObject,
-  toBoolean,
 } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
 import { CommandsManager } from './commandsManager';
@@ -15,86 +14,91 @@ export class ContextMenuManager {
     const mainWindow = WindowManager.getMainWindow();
 
     mainWindow.webContents.on('context-menu', async (event, params) => {
-      const { x, y } = params;
+      try {
+        const { x, y } = params;
 
-      if (y < WindowManager.topOffset) {
-        return;
-      }
+        if (y < WindowManager.topOffset) {
+          return;
+        }
 
-      const cairoTopOffset = y - WindowManager.topOffset;
+        const cairoTopOffset = y - WindowManager.topOffset;
 
-      const wire = await CommandsManager.getWireAt(x, cairoTopOffset);
+        const wire = await CommandsManager.getWireAt(x, cairoTopOffset);
 
-      const isWirePresent = !isEmptyObject(wire);
+        const isWirePresent = !isEmptyObject(wire);
 
-      const isWireVisible = toBoolean(
-        (await RestServiceManager.getCommandValue({
+        const isWireVisible = (await RestServiceManager.getCommandValue({
           command: commandsMapping.CANVAS_WIRE_VISIBLE,
-        })) as string
-      );
+        })) as boolean;
 
-      if (isWirePresent && isWireVisible) {
+        if (isWirePresent && isWireVisible) {
+          ContextMenuManager.buildAndDisplayContextMenu(
+            ContextMenuManager.wireContextMenu(),
+            mainWindow,
+            x,
+            y
+          );
+          return;
+        }
+
+        const itemInfo = await CommandsManager.getItemInfo(x, cairoTopOffset);
+
+        if (itemInfo?.classType) {
+          switch (itemInfo?.classType) {
+            case ClassType.GodleyIcon:
+              ContextMenuManager.buildAndDisplayContextMenu(
+                await ContextMenuManager.rightMouseGodley(
+                  x,
+                  cairoTopOffset,
+                  itemInfo
+                ),
+                mainWindow,
+                x,
+                y
+              );
+              break;
+
+            case ClassType.Group:
+              ContextMenuManager.buildAndDisplayContextMenu(
+                await ContextMenuManager.rightMouseGroup(
+                  x,
+                  cairoTopOffset,
+                  itemInfo
+                ),
+                mainWindow,
+                x,
+                y
+              );
+              break;
+
+            default:
+              ContextMenuManager.buildAndDisplayContextMenu(
+                await ContextMenuManager.contextMenu(itemInfo),
+                mainWindow,
+                x,
+                y
+              );
+
+              break;
+          }
+
+          return;
+        }
+
         ContextMenuManager.buildAndDisplayContextMenu(
-          ContextMenuManager.wireContextMenu(),
+          ContextMenuManager.canvasContext(x, y),
           mainWindow,
           x,
           y
         );
-        return;
-      }
-
-      const itemInfo = await CommandsManager.getItemInfo(x, cairoTopOffset);
-
-      if (itemInfo?.classType) {
-        switch (itemInfo?.classType) {
-          case ClassType.GodleyIcon:
-            ContextMenuManager.buildAndDisplayContextMenu(
-              await ContextMenuManager.rightMouseGodley(
-                x,
-                cairoTopOffset,
-                itemInfo
-              ),
-              mainWindow,
-              x,
-              y
-            );
-            break;
-
-          case ClassType.Group:
-            ContextMenuManager.buildAndDisplayContextMenu(
-              await ContextMenuManager.rightMouseGroup(
-                x,
-                cairoTopOffset,
-                itemInfo
-              ),
-              mainWindow,
-              x,
-              y
-            );
-            break;
-
-          default:
-            ContextMenuManager.buildAndDisplayContextMenu(
-              await ContextMenuManager.contextMenu(itemInfo),
-              mainWindow,
-              x,
-              y
-            );
-
-            break;
-        }
 
         return;
+      } catch (error) {
+        console.log(
+          '🚀 ~ file: contextMenuManager.ts ~ line 117 ~ ContextMenuManager ~ mainWindow.webContents.on ~ error',
+          error
+        );
       }
-
-      ContextMenuManager.buildAndDisplayContextMenu(
-        ContextMenuManager.canvasContext(x, y),
-        mainWindow,
-        x,
-        y
-      );
-
-      return;
     });
   }
 

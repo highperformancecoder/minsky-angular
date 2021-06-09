@@ -4,7 +4,7 @@ import * as log from 'electron-log';
 export class HttpManager {
   private static URL = `http://localhost:${MINSKY_HTTP_PROXY_SERVER_PORT}`;
 
-  private static async get(command: string) {
+  private static async get(command: string): Promise<unknown> {
     if (!command) {
       throw new Error(`command cannot be blank`);
     }
@@ -12,7 +12,7 @@ export class HttpManager {
     return (await axios.get(`${this.URL}${command}`)).data;
   }
 
-  private static async put(command: string, arg: string) {
+  private static async put(command: string, arg: string): Promise<unknown> {
     if (!command) {
       throw new Error(`command cannot be blank`);
     }
@@ -24,7 +24,7 @@ export class HttpManager {
     return (await axios.put(`${this.URL}${command}`, { arg })).data;
   }
 
-  static async handleMinskyCommand(command: string) {
+  static async handleMinskyCommand(command: string): Promise<unknown> {
     try {
       if (!command) {
         throw new Error(`command cannot be blank`);
@@ -35,16 +35,16 @@ export class HttpManager {
       if (commandMetaData.length >= 2) {
         const [cmd] = commandMetaData;
         const arg = command.substring(command.indexOf(' ') + 1);
-        log.info('🚀🚀🚀 ~ PUT ->', cmd, arg);
         const response = await HttpManager.put(cmd, arg);
+        log.info('PUT ->', cmd, arg);
         log.info('PUT:response ->' + JSON.stringify(response));
 
         return response;
       }
 
       const [cmd] = commandMetaData;
-      log.info('🚀🚀🚀 ~ GET ->', cmd);
       const response = await HttpManager.get(cmd);
+      log.info('GET ->', cmd);
       log.info('GET:response ->' + JSON.stringify(response));
 
       return response;

@@ -30,7 +30,6 @@ const logError = debug('minsky:electron_error');
 export class RestServiceManager {
   static minskyHttpServer: ChildProcess;
   static currentMinskyModelFilePath: string;
-  // static isFirstStart = true;
   private static isRecording = false;
   private static recordingWriteStream: WriteStream;
   private static recordingReadStream: ReadStream;
@@ -41,10 +40,14 @@ export class RestServiceManager {
   private static lastModelMoveToPayload: MinskyProcessPayload = null;
   private static payloadDataQueue: Array<MinskyProcessPayload> = [];
   private static runningCommand = false;
-
-  private static async processCommandsInQueueNew() {
+  private static isQueueEnabled = true;
+  private static async processCommandsInQueueNew(): Promise<unknown> {
     // Should be on a separate thread......? Janak
-    if (!this.runningCommand && this.payloadDataQueue.length > 0) {
+    const shouldProcessQueue = this.isQueueEnabled
+      ? !this.runningCommand && this.payloadDataQueue.length > 0
+      : this.payloadDataQueue.length > 0;
+
+    if (shouldProcessQueue) {
       const nextPayload = this.payloadDataQueue.shift();
 
       if (nextPayload.command === commandsMapping.mousemove) {
@@ -55,27 +58,22 @@ export class RestServiceManager {
       this.runningCommand = true;
       return await this.handleMinskyPayload(nextPayload);
     }
+    return;
   }
 
-  private static async resumeQueueProcessing() {
+  private static async resumeQueueProcessing(): Promise<unknown> {
     this.runningCommand = false;
-    await this.processCommandsInQueueNew();
+    return await this.processCommandsInQueueNew();
   }
 
   public static async handleMinskyProcess(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
-    // const isStartProcessCommand =
-    //   payload.command === commandsMapping.START_MINSKY_PROCESS;
-    // if (isStartProcessCommand) {
-    //   this.startMinskyProcess(
-    //     USE_MINSKY_SYSTEM_BINARY
-    //       ? { ...payload, filePath: MINSKY_SYSTEM_BINARY_PATH }
-    //       : payload
-    //   );
-    //   return;
-    // } else {
+    const shouldProcessQueue = this.isQueueEnabled
+      ? !this.runningCommand && wasQueueEmpty
+      : this.isQueueEnabled;
+
     if (payload.command === commandsMapping.mousemove) {
       if (this.lastMouseMovePayload !== null) {
         // console.log("Merging mouse move commands");
@@ -100,113 +98,36 @@ export class RestServiceManager {
       this.lastModelMoveToPayload = null;
       this.payloadDataQueue.push(payload);
     }
-    // }
-    if (!this.runningCommand && wasQueueEmpty) {
+    if (shouldProcessQueue) {
       // Control will come here when a new command comes after the whole queue was processed
       return await this.processCommandsInQueueNew();
     }
+    return;
   }
 
-  private static async startMinskyProcess(payload: MinskyProcessPayload) {
-    // if (this.minskyProcess) {
-    //   this.minskyProcess.stdout.emit('close');
-    //   this.minskyProcess = null;
-    // this.payloadDataQueue = [];
-    // this.lastMouseMovePayload = null;
-    // this.lastModelMoveToPayload = null;
-    // }
-    // try {
-    // if (this.isFirstStart) {
-    //   this.isFirstStart = false;
-    // }
+  private static async handleMinskyPayload(
+    payload: MinskyProcessPayload
+  ): Promise<unknown> {
+    let res = null;
 
-    // const { filePath, showServiceStartedDialog = true } = payload;
-
-    // if (!USE_MINSKY_SYSTEM_BINARY) {
-    //   StoreManager.store.set('minskyRESTServicePath', filePath);
-    // }
-
-    // this.minskyProcess = spawn(filePath);
-
-    // if (this.minskyProcess) {
-    this.runningCommand = false;
-    await this.processCommandsInQueueNew();
-
-    // this.minskyProcess.stdout.on('data', async (data) => {
-    //   const stdout = data.toString().trim();
-    //   const message = `stdout: ${stdout}`;
-    //   log.info(message);
-
-    //   this.emitReplyEvent(message);
-
-    //   // if (stdout.includes('renderFrame=>')) {
-    //   this.runningCommand = false;
-    //   await this.processCommandsInQueueNew();
-    //   // }
-    // });
-
-    // this.minskyProcess.stderr.on('data', async (data) => {
-    //   const message = `stderr: ${data}`;
-    //   log.info(red(message));
-
-    //   await this.processCommandsInQueueNew();
-
-    //   this.emitReplyEvent(message);
-    // });
-
-    // this.minskyProcess.on('error', (error) => {
-    //   const message = `error: ${error.message}`;
-    //   log.info(red(message));
-
-    //   this.emitReplyEvent(message);
-    // });
-
-    // this.minskyProcess.on('close', (code) => {
-    //   log.info(red(`child process exited with code ${code}`));
-    // });
-
-    // if (!showServiceStartedDialog) {
-    //   return;
-    // }
-    // dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
-    //   type: 'info',
-    //   title: 'Minsky Service Started',
-    //   message: 'You can now choose model files to be loaded',
-    // });
-    // this.runningCommand = false;
-    // await this.processCommandsInQueueNew();
-    // }
-    // } catch {
-    //   dialog.showErrorBox('Execution error', 'Could not execute chosen file');
-    // this.minskyProcess = null;
-    // }
-  }
-
-  private static async handleMinskyPayload(payload: MinskyProcessPayload) {
-    // if (this.minskyProcess) {
     switch (payload.command) {
       case commandsMapping.RECORD:
-        this.handleRecord();
+        // TODO: make handleRecord return command value
+        res = this.handleRecord();
         break;
 
       case commandsMapping.RECORDING_REPLAY:
-        this.handleRecordingReplay();
+        // TODO: make handleRecordingReplay return command value
+        res = this.handleRecordingReplay();
         break;
 
       default:
-        await this.executeCommandOnMinskyServer(payload);
+        res = await this.executeCommandOnMinskyServer(payload);
         break;
     }
-    this.resumeQueueProcessing();
-    // } else {
-    //   logError('Please select the minsky executable first...');
-    // }
-  }
+    await this.resumeQueueProcessing();
 
-  private static emitReplyEvent(message: string) {
-    WindowManager.activeWindows.forEach((aw) => {
-      aw.context.webContents.send(events.ipc.MINSKY_PROCESS_REPLY, message);
-    });
+    return res;
   }
 
   private static handleRecordingReplay() {
@@ -348,7 +269,7 @@ export class RestServiceManager {
 
   private static async executeCommandOnMinskyServer(
     payload: MinskyProcessPayload
-  ) {
+  ): Promise<unknown> {
     let stdinCommand = null;
     switch (payload.command) {
       case commandsMapping.LOAD:
@@ -402,8 +323,6 @@ export class RestServiceManager {
         break;
     }
     if (stdinCommand) {
-      log.silly(stdinCommand);
-
       const miscCommand = stdinCommand;
       const renderCommand = this.getRenderCommand();
 
@@ -411,26 +330,24 @@ export class RestServiceManager {
         this.record(stdinCommand);
       }
 
-      const tsStep0 = Date.now();
+      // const tsStep0 = Date.now();
       const res = await HttpManager.handleMinskyCommand(miscCommand);
-      const tsStep1 = Date.now();
+      // const tsStep1 = Date.now();
       try {
         await HttpManager.handleMinskyCommand(renderCommand);
       } catch (error) {
         console.error('Error executing command: ', error);
       }
-      const tsStep2 = Date.now();
-      console.log(
-        'Time stamps::',
-        (tsStep2 - tsStep1) / 1000,
-        (tsStep1 - tsStep0) / 1000,
-        tsStep0,
-        tsStep1,
-        tsStep2
-      );
+      // const tsStep2 = Date.now();
+      // console.log(
+      //   'Time stamps::',
+      //   (tsStep2 - tsStep1) / 1000,
+      //   (tsStep1 - tsStep0) / 1000,
+      //   tsStep0,
+      //   tsStep1,
+      //   tsStep2
+      // );
       return res;
-      // minskyProcess.stdin.write(miscCommand);
-      // minskyProcess.stdin.write(renderCommand);
     }
     console.error('Command was null or undefined');
   }
@@ -447,8 +364,6 @@ export class RestServiceManager {
     const mainWindowId = activeWindows.get(1).windowId;
 
     const renderCommand = `${commandsMapping.RENDER_FRAME} [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}]`;
-
-    // log.info(renderCommand);
 
     return renderCommand;
   }
@@ -499,44 +414,18 @@ export class RestServiceManager {
     await setGroupIconResource();
   }
 
-  static async getCommandValue(payload: MinskyProcessPayload) {
-    // try {
-    return await this.handleMinskyProcess(payload);
-
-    // if (!this.minskyProcess) {
-    //   throw new Error('Minsky Process is not initialized');
-    // }
-
-    //   const res = await Promise.race([
-    //     new Promise((resolve) => {
-    //       this.minskyProcess.stdout.on('data', (data: Buffer) => {
-    //         const stdout = data.toString();
-
-    //         return resolve(
-    //           retrieveCommandValueFromStdout({
-    //             stdout,
-    //             command: payload.command,
-    //           })
-    //         );
-    //       });
-    //     }),
-    //     new Promise((resolve, reject) => {
-    //       setTimeout(function () {
-    //         return reject(`command: "${payload.command}" Timed out`);
-    //       }, 4000);
-    //     }),
-    //   ]);
-
-    //   console.log(green(`command: ${payload.command}, value:${res}`));
-    //   return res as string;
-    // } catch (error) {
-    //   console.error(
-    //     '🚀 ~ file: state-management.service.ts ~ line 118 ~ StateManagementService ~ getCommandValue ~ error',
-    //     error
-    //   );
-
-    //   throw error;
-    // }
+  static async getCommandValue(
+    payload: MinskyProcessPayload
+  ): Promise<unknown> {
+    try {
+      return await this.handleMinskyProcess(payload);
+    } catch (error) {
+      console.log(
+        red(
+          `🚀 ~ file: restServiceManager.ts ~ line 512 ~ RestServiceManager ~ getCommandValue ~ error: ${error}`
+        )
+      );
+    }
   }
 
   static startHttpServer() {

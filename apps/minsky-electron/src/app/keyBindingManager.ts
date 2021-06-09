@@ -3,7 +3,6 @@ import {
   commandsMapping,
   isEmptyObject,
   MinskyProcessPayload,
-  toBoolean,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
@@ -162,11 +161,9 @@ export class KeyBindingManager {
   private static async deleteKey(payload: MinskyProcessPayload) {
     const { mouseX, mouseY } = payload;
 
-    const isCanvasSelectionEmpty = toBoolean(
-      (await RestServiceManager.getCommandValue({
-        command: commandsMapping.CANVAS_SELECTION_EMPTY,
-      })) as string
-    );
+    const isCanvasSelectionEmpty = (await RestServiceManager.getCommandValue({
+      command: commandsMapping.CANVAS_SELECTION_EMPTY,
+    })) as boolean;
 
     if (!isCanvasSelectionEmpty) {
       await RestServiceManager.handleMinskyProcess({
