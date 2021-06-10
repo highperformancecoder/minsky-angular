@@ -6,6 +6,7 @@ import {
   MINSKY_HTTP_SERVER_PORT,
   MINSKY_SYSTEM_HTTP_SERVER_PATH,
   red,
+  USE_MINSKY_SYSTEM_BINARY,
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import { dialog, ipcMain } from 'electron';
@@ -86,7 +87,25 @@ export class RestServiceManager {
   public static async handleMinskyProcess(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
+    const isStartProcessCommand =
+      payload.command === commandsMapping.START_MINSKY_PROCESS;
+
+    if (isStartProcessCommand) {
+      this.startHttpServer(
+        USE_MINSKY_SYSTEM_BINARY
+          ? { ...payload, filePath: MINSKY_SYSTEM_HTTP_SERVER_PATH }
+          : payload
+      );
+      return;
+    }
+
+    if (!this.minskyHttpServer) {
+      console.error('Minsky HTTP server is not running yet.');
+      return;
+    }
+
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
+
     const shouldProcessQueue = this.isQueueEnabled
       ? !this.runningCommand && wasQueueEmpty
       : true;
@@ -199,7 +218,7 @@ export class RestServiceManager {
   ) {
     await this.handleMinskyProcess({
       command: commandsMapping.START_MINSKY_PROCESS,
-      filePath: StoreManager.store.get('minskyRESTServicePath'),
+      filePath: StoreManager.store.get('minskyHttpServerPath'),
       showServiceStartedDialog: false,
     });
 
@@ -364,9 +383,14 @@ export class RestServiceManager {
     return renderCommand;
   }
 
-  static async startMinskyService() {
+  static async startMinskyService(
+    filePath: string,
+    showServiceStartedDialog = true
+  ) {
     const initPayload: MinskyProcessPayload = {
       command: commandsMapping.START_MINSKY_PROCESS,
+      filePath,
+      showServiceStartedDialog,
     };
 
     await this.handleMinskyProcess(initPayload);
@@ -391,24 +415,77 @@ export class RestServiceManager {
     await setGroupIconResource();
   }
 
-  static startHttpServer() {
-    this.minskyHttpServer = spawn(`${MINSKY_SYSTEM_HTTP_SERVER_PATH}`, [
-      `${MINSKY_HTTP_SERVER_PORT}`,
-    ]);
-
-    console.log(
-      green(`Minsky Http Server started on port ${MINSKY_HTTP_SERVER_PORT}`)
-    );
-
-    this.minskyHttpServer.stdout
-      .on('data', (data) => {
-        log.info(`http: ${data}`);
-      })
-      .on('error', (error) => {
-        log.error(red(`error: ${error.message}`));
-      })
-      .on('close', (code) => {
-        log.warn(red(`"http-server" child process exited with code ${code}`));
+  static async toggleMinskyService() {
+    try {
+      const _dialog = await dialog.showOpenDialog({
+        properties: ['openFile'],
+        filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
       });
+
+      if (_dialog.canceled) {
+        return;
+      }
+
+      this.startHttpServer({
+        command: commandsMapping.START_MINSKY_PROCESS,
+        filePath: _dialog.filePaths[0],
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  static startHttpServer(payload: MinskyProcessPayload) {
+    if (this.minskyHttpServer) {
+      this.minskyHttpServer.stdout.emit('close');
+      this.minskyHttpServer = null;
+      this.payloadDataQueue = [];
+      this.lastMouseMovePayload = null;
+      this.lastModelMoveToPayload = null;
+    }
+    try {
+      const { filePath, showServiceStartedDialog = true } = payload;
+
+      if (!USE_MINSKY_SYSTEM_BINARY) {
+        StoreManager.store.set('minskyHttpServerPath', filePath);
+      }
+
+      this.minskyHttpServer = spawn(filePath, [`${MINSKY_HTTP_SERVER_PORT}`]);
+
+      console.log(
+        green(`🚀🚀🚀 HTTP server started on port ${MINSKY_HTTP_SERVER_PORT}`)
+      );
+
+      if (this.minskyHttpServer) {
+        this.minskyHttpServer.stdout.on('data', (data) => {
+          log.info(`http: ${data}`);
+        });
+
+        this.minskyHttpServer.stderr.on('data', (data) => {
+          log.error(red(`error: ${data}`));
+        });
+
+        this.minskyHttpServer.on('error', (error) => {
+          log.error(red(`error: ${error.message}`));
+        });
+
+        this.minskyHttpServer.on('close', (code) => {
+          log.warn(red(`"http-server" child process exited with code ${code}`));
+        });
+
+        if (!showServiceStartedDialog) {
+          return;
+        }
+        dialog.showMessageBoxSync({
+          type: 'info',
+          title: 'Minsky HTTP Service Started',
+          message: 'You can now choose model files to be loaded',
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      dialog.showErrorBox('Execution error', 'Could not start the HTTP Server');
+      this.minskyHttpServer = null;
+    }
   }
 }

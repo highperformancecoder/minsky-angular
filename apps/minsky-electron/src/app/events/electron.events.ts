@@ -32,6 +32,7 @@ const {
     SET_BACKGROUND_COLOR,
     GET_APP_VERSION,
     KEY_PRESS,
+    TOGGLE_MINSKY_SERVICE,
   },
 } = events;
 
@@ -73,4 +74,8 @@ ipcMain.on(ADD_RECENT_FILE, (event, filePath: string) => {
 
 ipcMain.handle(KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
   return await KeyBindingManager.handleOnKeyPress(payload);
+});
+
+ipcMain.on(TOGGLE_MINSKY_SERVICE, async () => {
+  await RestServiceManager.toggleMinskyService();
 });

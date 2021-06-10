@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
@@ -97,6 +96,12 @@ export class AppComponent implements AfterViewInit {
     }
 
     this.cmService.canvasOffsetValues();
+  }
+
+  async toggleMinskyService() {
+    if (this.electronService.isElectron) {
+      this.electronService.ipcRenderer.send(events.ipc.TOGGLE_MINSKY_SERVICE);
+    }
   }
 
   async startTerminal() {

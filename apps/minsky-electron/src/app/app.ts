@@ -2,8 +2,10 @@ import { startSocketServer } from '@minsky/minsky-server';
 import {
   ActiveWindow,
   green,
+  MINSKY_SYSTEM_HTTP_SERVER_PATH,
   rendererAppName,
   rendererAppURL,
+  USE_MINSKY_SYSTEM_BINARY,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
@@ -72,10 +74,7 @@ export default class App {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
 
-    // start servers
-    RestServiceManager.startHttpServer();
     startSocketServer();
-    startProxyServer();
 
     App.initMainWindow();
     App.loadMainWindow();
@@ -89,12 +88,28 @@ export default class App {
 
   private static initMinskyService() {
     const windowId = WindowManager.activeWindows.get(1).windowId;
-
     console.log('🚀🚀🚀🚀🚀' + green(` WindowId -> ${windowId}`));
 
+    startProxyServer();
+
     setTimeout(async () => {
-      await RestServiceManager.startMinskyService();
-    }, 3000);
+      if (USE_MINSKY_SYSTEM_BINARY) {
+        await RestServiceManager.startMinskyService(
+          MINSKY_SYSTEM_HTTP_SERVER_PATH,
+          false
+        );
+      } else {
+        const minskyHttpServerFilePath = StoreManager.store.get(
+          'minskyHttpServerPath'
+        );
+        if (minskyHttpServerFilePath) {
+          await RestServiceManager.startMinskyService(
+            minskyHttpServerFilePath,
+            false
+          );
+        }
+      }
+    }, 4000);
   }
 
   private static initMenu() {

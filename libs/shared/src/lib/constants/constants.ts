@@ -255,6 +255,7 @@ export const events = {
     GET_APP_VERSION: 'get-app-version',
     MINSKY_PROCESS_REPLY: 'minsky-process-reply',
     KEY_PRESS: 'key-press',
+    TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
   },
 };
 
@@ -275,8 +276,7 @@ export const unExposedTerminalCommands = [
   '/minsky/canvas/itemFocus/setUnits',
 ];
 
-export const USE_MINSKY_SYSTEM_BINARY = false;
-export const MINSKY_SYSTEM_BINARY_PATH = 'minsky-RESTService';
+export const USE_MINSKY_SYSTEM_BINARY = true;
 export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
 export const MINSKY_HTTP_SERVER_PORT = 4444;
 export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;
