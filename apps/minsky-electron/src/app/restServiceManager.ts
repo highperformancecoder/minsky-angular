@@ -284,10 +284,7 @@ export class RestServiceManager {
         return;
       }
 
-      this.startHttpServer({
-        command: commandsMapping.START_MINSKY_PROCESS,
-        filePath: _dialog.filePaths[0],
-      });
+      this.startMinskyService(_dialog.filePaths[0], true);
     } catch (error) {
       console.error(error);
     }
