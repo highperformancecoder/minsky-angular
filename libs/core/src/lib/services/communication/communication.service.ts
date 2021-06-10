@@ -22,7 +22,7 @@ export class Message {
 })
 export class CommunicationService {
   private isSimulationOn : boolean;
-  private stepIntervalId : number;
+  private simulationTimerId : number;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
   mouseX: number;
   mouseY: number;
@@ -99,7 +99,7 @@ export class CommunicationService {
           case 'PAUSE':
             autoHandleMinskyProcess = false;
             this.isSimulationOn = false;
-            this.clearStepInterval();
+            this.clearSimulationTimer();
 
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.PAUSE_SIMULATION,
@@ -110,7 +110,7 @@ export class CommunicationService {
           case 'RESET':
             autoHandleMinskyProcess = false;
             this.isSimulationOn = false;
-            this.clearStepInterval();
+            this.clearSimulationTimer();
             this.showPlayButton$.next(true);
 
             // await this.electronService.sendMinskyCommandAndRender({ command });
@@ -155,13 +155,13 @@ export class CommunicationService {
   }
 
   private triggerUpdateTime() {
-    this.clearStepInterval();
-    this.stepIntervalId = window.setTimeout(async () => {
+    this.clearSimulationTimer();
+    this.simulationTimerId = window.setTimeout(async () => {
       await this.updateSimulationTime();
       if(this.isSimulationOn) {
         this.triggerUpdateTime();
       }
-    }, 100);
+    }, 10); // TODO:: Should we change the delay?
   }
 
   private async updateSimulationTime() {
@@ -223,19 +223,19 @@ export class CommunicationService {
     return [x, y, zoomFactor].toString();
   }
 
-  private clearStepInterval() {
+  private clearSimulationTimer() {
     console.log(
       '🚀 ~ file: communication.service.ts ~ line 221 ~ CommunicationService ~ clearStepInterval ~ this.stepIntervalId',
-      this.stepIntervalId
+      this.simulationTimerId
     );
-    if (this.stepIntervalId) {
-      window.clearTimeout(this.stepIntervalId);
+    if (this.simulationTimerId) {
+      window.clearTimeout(this.simulationTimerId);
       console.log(
         "🚀 ~ file: communication.service.ts ~ line 219 ~ CommunicationService ~ 'clearStepInterval'",
         'clearStepInterval'
       );
     }
-    this.stepIntervalId = null;
+    this.simulationTimerId = null;
   }
 
   public async mouseEvents(event, message) {
