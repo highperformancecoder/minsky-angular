@@ -21,13 +21,13 @@ export class EditGodleyTitleComponent implements OnInit {
     });
   }
 
-  handleEditTitle(newTitle: string) {
+  async handleEditTitle(newTitle: string) {
     if (this.electronService.isElectron) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.CANVAS_ITEM_TABLE_TITLE} "${newTitle}"`,
       });
 
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.CANVAS_REQUEST_REDRAW}"`,
       });
 

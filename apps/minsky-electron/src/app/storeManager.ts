@@ -4,7 +4,7 @@ import * as Store from 'electron-store';
 interface MinskyStore {
   recentFiles: Array<string>;
   backgroundColor: string;
-  minskyRESTServicePath: string;
+  minskyHttpServerPath: string;
 }
 
 export class StoreManager {
@@ -12,7 +12,7 @@ export class StoreManager {
     defaults: {
       recentFiles: [],
       backgroundColor: defaultBackgroundColor,
-      minskyRESTServicePath: '',
+      minskyHttpServerPath: '',
     },
   });
 }

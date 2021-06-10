@@ -88,62 +88,55 @@ export class CreateVariableComponent implements OnDestroy {
     });
   }
 
-  createVariable() {
-    this.electronService.sendMinskyCommandAndRender({
+  async createVariable() {
+    await this.electronService.sendMinskyCommandAndRender({
       command: `${commandsMapping.ADD_VARIABLE} ["${this.variableName.value}","${this.type.value}"]`,
     });
 
-    // if (this.value.value) {
-    //   TODO: value;
-    //   this.electronService.sendMinskyCommandAndRender({
-    //     command: `${commandsMapping.ITEM_FOCUS_INIT_VALUE} ${this.value.value}`,
-    //   });
-    // }
-
     if (this.units.value) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${this.units.value}"`,
       });
     }
 
     if (this.rotation.value) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ITEM_FOCUS_ROTATION} ${this.rotation.value}`,
       });
     }
 
     if (this.shortDescription.value) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ITEM_FOCUS_TOOLTIP} "${this.shortDescription.value}"`,
       });
     }
 
     if (this.detailedDescription.value) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ITEM_FOCUS_DETAILED_TEXT} "${this.detailedDescription.value}"`,
       });
     }
 
     if (this.sliderBoundsMax.value) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ITEM_FOCUS_SLIDER_MAX} ${this.sliderBoundsMax.value}`,
       });
     }
 
     if (this.sliderBoundsMin.value) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ITEM_FOCUS_SLIDER_MIN} ${this.sliderBoundsMin.value}`,
       });
     }
 
     if (this.sliderStepSize.value) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP} ${this.sliderStepSize.value}`,
       });
     }
 
     // if (this.sliderStepRel.value) {
-    //   this.electronService.sendMinskyCommandAndRender({
+    //   await this.electronService.sendMinskyCommandAndRender({
     //     command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP_REL} ${this.sliderStepRel.value}`,
     //   });
     // }

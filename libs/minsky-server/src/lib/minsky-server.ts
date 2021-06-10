@@ -81,7 +81,7 @@ io.on('new-message', (message) => {
   io.emit(message);
 });
 
-export async function startServer() {
+export function startSocketServer() {
   server.listen(port, () => {
     logServerEvent(`Started on port: ${port}`);
   });

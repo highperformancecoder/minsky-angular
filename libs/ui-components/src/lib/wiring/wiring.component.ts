@@ -39,27 +39,27 @@ export class WiringComponent implements OnInit, OnDestroy {
 
     this.zone.runOutsideAngular(() => {
       if (this.electronService.isElectron) {
-        const handleScroll = (scrollTop: number, scrollLeft: number) => {
+        const handleScroll = async (scrollTop: number, scrollLeft: number) => {
           const posX = scrollableArea.width / 2 - scrollLeft;
           const posY = scrollableArea.height / 2 - scrollTop;
 
-          this.electronService.sendMinskyCommandAndRender({
+          await this.electronService.sendMinskyCommandAndRender({
             command: commandsMapping.MOVE_TO,
             mouseX: posX,
             mouseY: posY,
           });
         };
 
-        minskyCanvasContainer.addEventListener('scroll', () => {
-          handleScroll(
+        minskyCanvasContainer.addEventListener('scroll', async () => {
+          await handleScroll(
             minskyCanvasContainer.scrollTop,
             minskyCanvasContainer.scrollLeft
           );
         });
         minskyCanvasContainer.onwheel = this.cmService.onMouseWheelZoom;
 
-        minskyCanvasContainer.addEventListener('keydown', (event) => {
-          this.cmService.handleKeyPress(event);
+        minskyCanvasContainer.addEventListener('keydown', async (event) => {
+          await this.cmService.handleKeyPress(event);
         });
 
         this.mouseMove$ = fromEvent<MouseEvent>(
@@ -67,20 +67,23 @@ export class WiringComponent implements OnInit, OnDestroy {
           'mousemove'
         ).pipe(sampleTime(30)); /// FPS=1000/sampleTime
 
-        this.mouseMove$.subscribe((event: MouseEvent) => {
-          this.cmService.mouseEvents('CANVAS_EVENT', event);
+        this.mouseMove$.subscribe(async (event: MouseEvent) => {
+          await this.cmService.mouseEvents('CANVAS_EVENT', event);
         });
 
         minskyCanvasElement.addEventListener(
           'mousedown',
-          (event: MouseEvent) => {
-            this.cmService.mouseEvents('CANVAS_EVENT', event);
+          async (event: MouseEvent) => {
+            await this.cmService.mouseEvents('CANVAS_EVENT', event);
           }
         );
 
-        minskyCanvasElement.addEventListener('mouseup', (event: MouseEvent) => {
-          this.cmService.mouseEvents('CANVAS_EVENT', event);
-        });
+        minskyCanvasElement.addEventListener(
+          'mouseup',
+          async (event: MouseEvent) => {
+            await this.cmService.mouseEvents('CANVAS_EVENT', event);
+          }
+        );
       }
     });
   }

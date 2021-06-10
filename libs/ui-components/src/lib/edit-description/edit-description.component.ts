@@ -32,15 +32,15 @@ export class EditDescriptionComponent implements OnInit {
     });
   }
 
-  handleSave() {
+  async handleSave() {
     if (this.electronService.isElectron) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `/minsky/canvas/${this.type}/tooltip "${
           this.editDescriptionForm.get('tooltip').value
         }"`,
       });
 
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `/minsky/canvas/${this.type}/detailedText "${
           this.editDescriptionForm.get('detailedText').value
         }"`,

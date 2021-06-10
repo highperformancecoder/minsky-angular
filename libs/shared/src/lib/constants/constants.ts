@@ -36,6 +36,7 @@ export const commandsMapping = {
   GROUP_SELECTION: `/minsky/canvas/groupSelection`,
   IMPLICIT: '/minsky/implicit',
   LIST: '/list',
+  LIST_V2: '/minsky/@list',
   LOAD: '/minsky/load',
   mousedown: '/minsky/canvas/mouseDown',
   mousemove: `/minsky/canvas/mouseMove`,
@@ -104,6 +105,7 @@ export const commandsMapping = {
   CANVAS_SELECTION_EMPTY: '/minsky/canvas/selection/empty',
   CANVAS_DELETE_ITEM: '/minsky/canvas/deleteItem',
   CANVAS_DELETE_WIRE: '/minsky/canvas/deleteWire',
+  CANVAS_GET_ITEM_AT_FOCUS: '/minsky/canvas/getItemAtFocus',
   CANVAS_GET_ITEM_AT: '/minsky/canvas/getItemAt',
   CANVAS_GET_WIRE_AT: '/minsky/canvas/getWireAt',
   CANVAS_ITEM: '/minsky/canvas/item',
@@ -176,6 +178,9 @@ export const commandsMapping = {
   RAVEL_VERSION: '/minsky/ravelVersion',
   MATLAB: '/minsky/matlab',
   LATEX: '/minsky/latex',
+  PAUSE_SIMULATION: 'pauseSimulation',
+  START_SIMULATION: 'startSimulation',
+  STOP_SIMULATION: 'stopSimulation',
 };
 
 export const availableOperations = {
@@ -248,14 +253,15 @@ export const events = {
     SET_BACKGROUND_COLOR: 'set-background-color',
     CREATE_MENU_POPUP: 'create-menu-popup',
     MINSKY_PROCESS: 'minsky-process',
-    GET_COMMAND_OUTPUT: 'get-command-output',
+    MINSKY_PROCESS_FOR_IPC_MAIN: 'minsky-process-for-ipc-main',
     APP_LAYOUT_CHANGED: 'app-layout-changed',
     POPULATE_BOOKMARKS: 'populate-bookmarks',
     ADD_RECENT_FILE: 'add-recent-file',
     GET_APP_VERSION: 'get-app-version',
     MINSKY_PROCESS_REPLY: 'minsky-process-reply',
-    TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
     KEY_PRESS: 'key-press',
+    TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
+    NEW_SYSTEM: 'new-system',
   },
 };
 
@@ -277,6 +283,6 @@ export const unExposedTerminalCommands = [
 ];
 
 export const USE_MINSKY_SYSTEM_BINARY = false;
-export const MINSKY_SYSTEM_BINARY_PATH = 'minsky-RESTService';
 export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
-export const MINSKY_HTTP_SERVER_PORT = 4445;
+export const MINSKY_HTTP_SERVER_PORT = 4444;
+export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;

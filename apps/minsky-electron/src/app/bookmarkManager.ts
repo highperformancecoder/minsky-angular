@@ -3,8 +3,7 @@ import { Menu, MenuItem } from 'electron';
 import { RestServiceManager } from './restServiceManager';
 
 export class BookmarkManager {
-  static async populateBookmarks(bookmarkString: string) {
-    const bookmarks: string[] = JSON.parse(bookmarkString);
+  static async populateBookmarks(bookmarks: string[]) {
     const mainSubmenu = Menu.getApplicationMenu().getMenuItemById(
       'main-bookmark'
     ).submenu;
@@ -34,8 +33,8 @@ export class BookmarkManager {
             new MenuItem({
               id: 'minsky-bookmark',
               label: bookmark,
-              click: () => {
-                RestServiceManager.handleMinskyProcess({
+              click: async () => {
+                await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.GOTO_BOOKMARK} ${index}`,
                 });
               },
@@ -47,17 +46,17 @@ export class BookmarkManager {
               id: 'minsky-bookmark',
               label: bookmark,
               click: async () => {
-                RestServiceManager.handleMinskyProcess({
+                await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.DELETE_BOOKMARK} ${index}`,
                 });
 
-                const _bookmarkString = await RestServiceManager.getCommandValue(
+                const _bookmarks = await RestServiceManager.handleMinskyProcess(
                   {
                     command: commandsMapping.BOOKMARK_LIST,
                   }
                 );
 
-                await this.populateBookmarks(_bookmarkString);
+                await this.populateBookmarks(_bookmarks as string[]);
               },
             })
           );

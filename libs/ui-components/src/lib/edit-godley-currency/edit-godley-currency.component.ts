@@ -12,9 +12,9 @@ export class EditGodleyCurrencyComponent {
 
   constructor(private electronService: ElectronService) {}
 
-  handleSaveCurrency(newCurrency: string) {
+  async handleSaveCurrency(newCurrency: string) {
     if (this.electronService.isElectron) {
-      this.electronService.sendMinskyCommandAndRender({
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.CANVAS_ITEM_SET_CURRENCY} "${newCurrency}"`,
       });
 
