@@ -42,50 +42,7 @@ export class MenuManager {
             label: 'New System',
             accelerator: 'CmdOrCtrl + Shift + N',
             async click() {
-              const isCanvasEdited = await RestServiceManager.handleMinskyProcess(
-                {
-                  command: commandsMapping.EDITED,
-                }
-              );
-
-              if (isCanvasEdited) {
-                const saveModelDialog = await dialog.showSaveDialog({
-                  title: 'Save Model?',
-                  properties: ['showOverwriteConfirmation', 'createDirectory'],
-                });
-
-                const { canceled, filePath } = saveModelDialog;
-                if (canceled || !filePath) {
-                  return;
-                }
-
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.SAVE} "${filePath}"`,
-                });
-              }
-
-              WindowManager.activeWindows.forEach((window) => {
-                if (!window.isMainWindow) {
-                  window.context.close();
-                }
-              });
-
-              WindowManager.getMainWindow().setTitle('New System');
-
-              const newSystemCommands = [
-                `${commandsMapping.PUSH_HISTORY} 0`,
-                commandsMapping.CLEAR_ALL_MAPS,
-                commandsMapping.PUSH_FLAGS,
-                commandsMapping.CLEAR_HISTORY,
-                `${commandsMapping.SET_ZOOM} 1`,
-                commandsMapping.RECENTER,
-                commandsMapping.POP_FLAGS,
-                `${commandsMapping.PUSH_HISTORY} 1`,
-              ];
-
-              for (const command of newSystemCommands) {
-                await RestServiceManager.handleMinskyProcess({ command });
-              }
+              await CommandsManager.createNewSystem();
             },
           },
           {

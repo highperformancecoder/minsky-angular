@@ -39,3 +39,4 @@ minsky-RESTService*
 .DS_Store
 Thumbs.db
 libs/shared/src/lib/constants/run.sh
+minsky-httpd*

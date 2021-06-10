@@ -4,7 +4,6 @@ import {
   MINSKY_HTTP_SERVER_PORT,
 } from '@minsky/shared';
 import axios from 'axios';
-import * as bodyParser from 'body-parser';
 import cors from 'cors';
 import * as express from 'express';
 const app = express();
@@ -12,7 +11,7 @@ const app = express();
 const SERVER_URL = `http://localhost:${MINSKY_HTTP_SERVER_PORT}`;
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 // app.use(bodyParser.urlencoded());
 
 app.get('*', async (req, res) => {

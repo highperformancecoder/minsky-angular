@@ -663,6 +663,52 @@ proc findDefinition {} {
     return;
   }
 
+  static async createNewSystem() {
+    const isCanvasEdited = await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.EDITED,
+    });
+
+    if (isCanvasEdited) {
+      const saveModelDialog = await dialog.showSaveDialog({
+        title: 'Save Model?',
+        properties: ['showOverwriteConfirmation', 'createDirectory'],
+      });
+
+      const { canceled, filePath } = saveModelDialog;
+      if (canceled || !filePath) {
+        return;
+      }
+
+      await RestServiceManager.handleMinskyProcess({
+        command: `${commandsMapping.SAVE} "${filePath}"`,
+      });
+    }
+
+    WindowManager.activeWindows.forEach((window) => {
+      if (!window.isMainWindow) {
+        window.context.close();
+      }
+    });
+
+    WindowManager.getMainWindow().setTitle('New System');
+
+    const newSystemCommands = [
+      `${commandsMapping.PUSH_HISTORY} 0`,
+      commandsMapping.CLEAR_ALL_MAPS,
+      commandsMapping.PUSH_FLAGS,
+      commandsMapping.CLEAR_HISTORY,
+      `${commandsMapping.SET_ZOOM} 1`,
+      commandsMapping.RECENTER,
+      commandsMapping.POP_FLAGS,
+      `${commandsMapping.PUSH_HISTORY} 1`,
+    ];
+
+    for (const command of newSystemCommands) {
+      await RestServiceManager.handleMinskyProcess({ command });
+    }
+    return;
+  }
+
   // static async setGroupIconResource() {
   //   const groupIconResourcePayload: MinskyProcessPayload = {
   //     command: commandsMapping.SET_GROUP_ICON_RESOURCE,

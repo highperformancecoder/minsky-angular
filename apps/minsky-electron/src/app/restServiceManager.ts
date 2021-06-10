@@ -11,17 +11,9 @@ import {
 import { ChildProcess, spawn } from 'child_process';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
-import { MessageBoxSyncOptions } from 'electron/main';
-import {
-  createReadStream,
-  createWriteStream,
-  readFileSync,
-  ReadStream,
-  WriteStream,
-} from 'fs';
-import * as JSONStream from 'JSONStream';
 import { join } from 'path';
 import { HttpManager } from './httpManager';
+import { RecordingManager } from './recordingManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
 
@@ -46,11 +38,6 @@ class Deferred {
 export class RestServiceManager {
   static minskyHttpServer: ChildProcess;
   static currentMinskyModelFilePath: string;
-  private static isRecording = false;
-  private static recordingWriteStream: WriteStream;
-  private static recordingReadStream: ReadStream;
-  private static recordingFilePath: string;
-  private static JSONStreamWriter;
 
   private static lastMouseMovePayload: MinskyProcessPayload = null;
   private static lastModelMoveToPayload: MinskyProcessPayload = null;
@@ -151,11 +138,11 @@ export class RestServiceManager {
 
     switch (payload.command) {
       case commandsMapping.RECORD:
-        await this.handleRecord();
+        await RecordingManager.handleRecord();
         break;
 
       case commandsMapping.RECORDING_REPLAY:
-        await this.handleRecordingReplay();
+        await RecordingManager.handleRecordingReplay();
         break;
 
       default:
@@ -165,135 +152,6 @@ export class RestServiceManager {
     await this.resumeQueueProcessing();
 
     return res;
-  }
-
-  private static async handleRecordingReplay() {
-    this.stopRecording();
-
-    const replayRecordingDialog = await dialog.showOpenDialog({
-      filters: [
-        { extensions: ['json'], name: 'JSON' },
-        { extensions: ['*'], name: 'All Files' },
-      ],
-    });
-
-    if (replayRecordingDialog.canceled) {
-      return;
-    }
-
-    const positiveResponseText = 'Yes';
-    const negativeResponseText = 'No';
-    const cancelResponseText = 'Cancel';
-
-    const options: MessageBoxSyncOptions = {
-      buttons: [positiveResponseText, negativeResponseText, cancelResponseText],
-      message: 'Do you want to save the current model?',
-      title: 'Save ?',
-    };
-
-    const index = dialog.showMessageBoxSync(options);
-
-    if (options.buttons[index] === positiveResponseText) {
-      const saveDialog = await dialog.showSaveDialog({});
-
-      if (saveDialog.canceled) {
-        return;
-      }
-
-      await this.handleMinskyProcess({
-        command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
-      });
-      await this.replay(replayRecordingDialog);
-    }
-
-    if (options.buttons[index] === negativeResponseText) {
-      await this.replay(replayRecordingDialog);
-    }
-
-    return;
-  }
-
-  private static async replay(
-    replayRecordingDialog: Electron.OpenDialogReturnValue
-  ) {
-    await this.handleMinskyProcess({
-      command: commandsMapping.START_MINSKY_PROCESS,
-      filePath: StoreManager.store.get('minskyHttpServerPath'),
-      showServiceStartedDialog: false,
-    });
-
-    this.recordingReadStream = createReadStream(
-      replayRecordingDialog.filePaths[0]
-    );
-    const replayFile = readFileSync(replayRecordingDialog.filePaths[0], {
-      encoding: 'utf8',
-      flag: 'r',
-    });
-
-    const replayJSON = JSON.parse(replayFile);
-
-    for (const line of replayJSON) {
-      await this.handleMinskyProcess({
-        command: line.command,
-      });
-    }
-
-    this.recordingReadStream.close();
-    this.recordingReadStream = null;
-  }
-
-  private static record(command: string) {
-    const payload = { command: command, executedAt: Date.now() };
-
-    if (!this.recordingWriteStream) {
-      this.recordingWriteStream = createWriteStream(this.recordingFilePath);
-      this.JSONStreamWriter = JSONStream.stringify();
-      this.JSONStreamWriter.pipe(this.recordingWriteStream);
-    }
-
-    const recordIgnoreCommands = [
-      // 'mouseMove' ||
-      'getItemAt' ||
-        'getItemAtFocus' ||
-        'getWireAt' ||
-        commandsMapping.START_MINSKY_PROCESS ||
-        commandsMapping.RECORD ||
-        commandsMapping.RECORDING_REPLAY,
-    ];
-
-    if (!recordIgnoreCommands.find((cmd) => command.includes(cmd)))
-      this.JSONStreamWriter.write(payload);
-  }
-
-  private static stopRecording() {
-    this.isRecording = false;
-
-    if (this.recordingWriteStream) {
-      if (this.JSONStreamWriter) {
-        this.JSONStreamWriter.end();
-        this.JSONStreamWriter = null;
-      }
-      this.recordingWriteStream.close();
-      this.recordingWriteStream = null;
-    }
-  }
-
-  private static async handleRecord() {
-    if (this.isRecording) {
-      this.stopRecording();
-      return;
-    }
-
-    const saveRecordingDialog = await dialog.showSaveDialog({
-      properties: ['showOverwriteConfirmation', 'createDirectory'],
-      filters: [
-        { extensions: ['json'], name: 'JSON' },
-        { extensions: ['*'], name: 'All Files' },
-      ],
-    });
-    this.isRecording = true;
-
-    this.recordingFilePath = saveRecordingDialog.filePath;
   }
 
   private static async executeCommandOnMinskyServer(
@@ -355,8 +213,8 @@ export class RestServiceManager {
       const miscCommand = stdinCommand;
       const renderCommand = this.getRenderCommand();
 
-      if (this.isRecording) {
-        this.record(stdinCommand);
+      if (RecordingManager.isRecording) {
+        RecordingManager.record(stdinCommand);
       }
 
       const res = await HttpManager.handleMinskyCommand(miscCommand);
@@ -438,6 +296,7 @@ export class RestServiceManager {
   static startHttpServer(payload: MinskyProcessPayload) {
     if (this.minskyHttpServer) {
       this.minskyHttpServer.stdout.emit('close');
+      this.minskyHttpServer.kill();
       this.minskyHttpServer = null;
       this.payloadDataQueue = [];
       this.lastMouseMovePayload = null;
@@ -453,7 +312,9 @@ export class RestServiceManager {
       this.minskyHttpServer = spawn(filePath, [`${MINSKY_HTTP_SERVER_PORT}`]);
 
       console.log(
-        green(`🚀🚀🚀 HTTP server started on port ${MINSKY_HTTP_SERVER_PORT}`)
+        green(
+          `🚀🚀🚀 HTTP server "${filePath}" started on port ${MINSKY_HTTP_SERVER_PORT}`
+        )
       );
 
       if (this.minskyHttpServer) {

@@ -105,6 +105,7 @@ export const commandsMapping = {
   CANVAS_SELECTION_EMPTY: '/minsky/canvas/selection/empty',
   CANVAS_DELETE_ITEM: '/minsky/canvas/deleteItem',
   CANVAS_DELETE_WIRE: '/minsky/canvas/deleteWire',
+  CANVAS_GET_ITEM_AT_FOCUS: '/minsky/canvas/getItemAtFocus',
   CANVAS_GET_ITEM_AT: '/minsky/canvas/getItemAt',
   CANVAS_GET_WIRE_AT: '/minsky/canvas/getWireAt',
   CANVAS_ITEM: '/minsky/canvas/item',
@@ -249,6 +250,7 @@ export const events = {
     SET_BACKGROUND_COLOR: 'set-background-color',
     CREATE_MENU_POPUP: 'create-menu-popup',
     MINSKY_PROCESS: 'minsky-process',
+    MINSKY_PROCESS_FOR_IPC_MAIN: 'minsky-process-for-ipc-main',
     APP_LAYOUT_CHANGED: 'app-layout-changed',
     POPULATE_BOOKMARKS: 'populate-bookmarks',
     ADD_RECENT_FILE: 'add-recent-file',
@@ -256,6 +258,7 @@ export const events = {
     MINSKY_PROCESS_REPLY: 'minsky-process-reply',
     KEY_PRESS: 'key-press',
     TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
+    NEW_SYSTEM: 'new-system',
   },
 };
 
