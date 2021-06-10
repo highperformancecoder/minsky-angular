@@ -275,10 +275,18 @@ export class RestServiceManager {
       }
 
       const res = await HttpManager.handleMinskyCommand(miscCommand);
-      await HttpManager.handleMinskyCommand(renderCommand);
+
+      if((miscCommand !== commandsMapping.T) && (miscCommand !== commandsMapping.DELTA_T)) {
+        // TODO:: Main a config of commands for which auto render should be called / not called
+        await HttpManager.handleMinskyCommand(renderCommand);
+      }
+      
 
       if (miscCommand === commandsMapping.STEP && this.isSimulationOn) {
-        this.handleMinskyProcess({ command: miscCommand });
+        setTimeout(() => {
+          this.handleMinskyProcess({ command: miscCommand });
+        }, 1); // This needs to be done in a setTimeout in order to release control Loop for other events from UI / frontend
+        // TODO:: Make the delay configurable
       }
 
       return res;

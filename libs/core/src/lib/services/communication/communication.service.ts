@@ -21,7 +21,8 @@ export class Message {
   providedIn: 'root',
 })
 export class CommunicationService {
-  stepIntervalId;
+  private isSimulationOn : boolean;
+  private stepIntervalId : number;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
   mouseX: number;
   mouseY: number;
@@ -32,7 +33,9 @@ export class CommunicationService {
     private socket: Socket,
     private electronService: ElectronService,
     private windowUtilityService: WindowUtilityService
-  ) {}
+  ) {
+    this.isSimulationOn = false;
+  }
 
   setBackgroundColor(color = null) {
     if (this.electronService.isElectron)
@@ -76,7 +79,6 @@ export class CommunicationService {
               canvasWidth,
               canvasHeight
             )}]`;
-
             break;
 
           case 'SIMULATION_SPEED':
@@ -85,7 +87,7 @@ export class CommunicationService {
 
           case 'PLAY':
             autoHandleMinskyProcess = false;
-
+            this.isSimulationOn = true;
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.START_SIMULATION,
             });
@@ -96,6 +98,7 @@ export class CommunicationService {
 
           case 'PAUSE':
             autoHandleMinskyProcess = false;
+            this.isSimulationOn = false;
             this.clearStepInterval();
 
             await this.electronService.sendMinskyCommandAndRender({
@@ -106,8 +109,8 @@ export class CommunicationService {
 
           case 'RESET':
             autoHandleMinskyProcess = false;
+            this.isSimulationOn = false;
             this.clearStepInterval();
-
             this.showPlayButton$.next(true);
 
             // await this.electronService.sendMinskyCommandAndRender({ command });
@@ -119,9 +122,7 @@ export class CommunicationService {
               "🚀 ~ file: communication.service.ts ~ line 137 ~ CommunicationService ~ sendEvent ~ 'STOP_SIMULATION'",
               'STOP_SIMULATION'
             );
-
             await this.updateSimulationTime();
-
             break;
 
           case 'STEP':
@@ -157,7 +158,9 @@ export class CommunicationService {
     this.clearStepInterval();
     this.stepIntervalId = window.setTimeout(async () => {
       await this.updateSimulationTime();
-      this.triggerUpdateTime();
+      if(this.isSimulationOn) {
+        this.triggerUpdateTime();
+      }
     }, 100);
   }
 
