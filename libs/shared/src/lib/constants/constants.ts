@@ -178,6 +178,9 @@ export const commandsMapping = {
   RAVEL_VERSION: '/minsky/ravelVersion',
   MATLAB: '/minsky/matlab',
   LATEX: '/minsky/latex',
+  PAUSE_SIMULATION: 'pauseSimulation',
+  START_SIMULATION: 'startSimulation',
+  STOP_SIMULATION: 'stopSimulation',
 };
 
 export const availableOperations = {

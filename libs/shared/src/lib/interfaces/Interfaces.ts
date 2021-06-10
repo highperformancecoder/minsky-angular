@@ -10,6 +10,7 @@ export interface MinskyProcessPayload {
   capsLock?: boolean;
   ctrl?: boolean;
   alt?: boolean;
+  args?: Record<string, unknown>;
 }
 
 export interface AppLayoutPayload {

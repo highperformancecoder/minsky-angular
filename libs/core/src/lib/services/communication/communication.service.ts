@@ -42,115 +42,147 @@ export class CommunicationService {
   }
 
   public async sendEvent(event: string, message: HeaderEvent) {
-    const { target } = message;
-    if (this.electronService.isElectron) {
-      let command = commandsMapping[target];
-      const dimensions = this.windowUtilityService.getDrawableArea();
+    try {
+      const { target } = message;
+      if (this.electronService.isElectron) {
+        let command = commandsMapping[target];
+        const dimensions = this.windowUtilityService.getDrawableArea();
 
-      const canvasWidth = dimensions.width;
-      const canvasHeight = dimensions.height;
+        const canvasWidth = dimensions.width;
+        const canvasHeight = dimensions.height;
 
-      let autoHandleMinskyProcess = true;
+        let autoHandleMinskyProcess = true;
 
-      switch (target) {
-        case 'ZOOM_OUT':
-          command = `${command} [${canvasWidth / 2}, ${
-            canvasHeight / 2
-          }, ${ZOOM_OUT_FACTOR}]`;
-          break;
-        case 'ZOOM_IN':
-          command = `${command} [${canvasWidth / 2}, ${
-            canvasHeight / 2
-          }, ${ZOOM_IN_FACTOR}]`;
-          break;
-        case 'RESET_ZOOM':
-          command = `${await this.getResetZoomCommand(
-            canvasWidth / 2,
-            canvasHeight / 2
-          )}`;
+        switch (target) {
+          case 'ZOOM_OUT':
+            command = `${command} [${canvasWidth / 2}, ${
+              canvasHeight / 2
+            }, ${ZOOM_OUT_FACTOR}]`;
+            break;
+          case 'ZOOM_IN':
+            command = `${command} [${canvasWidth / 2}, ${
+              canvasHeight / 2
+            }, ${ZOOM_IN_FACTOR}]`;
+            break;
+          case 'RESET_ZOOM':
+            command = `${await this.getResetZoomCommand(
+              canvasWidth / 2,
+              canvasHeight / 2
+            )}`;
 
-          break;
-        case 'ZOOM_TO_FIT':
-          command = `${command} [${await this.getZoomToFitArgs(
-            canvasWidth,
-            canvasHeight
-          )}]`;
+            break;
+          case 'ZOOM_TO_FIT':
+            command = `${command} [${await this.getZoomToFitArgs(
+              canvasWidth,
+              canvasHeight
+            )}]`;
 
-          break;
+            break;
 
-        case 'SIMULATION_SPEED':
-          command = `${command} ${message.value}`;
-          break;
+          case 'SIMULATION_SPEED':
+            command = `${command} ${message.value}`;
+            break;
 
-        case 'PLAY':
-          autoHandleMinskyProcess = false;
+          case 'PLAY':
+            autoHandleMinskyProcess = false;
 
-          this.stepIntervalId = setInterval(async () => {
+            await this.electronService.sendMinskyCommandAndRender({
+              command: commandsMapping.START_SIMULATION,
+            });
+
+            this.triggerUpdateTime();
+
+            break;
+
+          case 'PAUSE':
+            autoHandleMinskyProcess = false;
+            this.clearStepInterval();
+
+            await this.electronService.sendMinskyCommandAndRender({
+              command: commandsMapping.PAUSE_SIMULATION,
+            });
+
+            break;
+
+          case 'RESET':
+            autoHandleMinskyProcess = false;
+            this.clearStepInterval();
+
+            this.showPlayButton$.next(true);
+
+            // await this.electronService.sendMinskyCommandAndRender({ command });
+
+            await this.electronService.sendMinskyCommandAndRender({
+              command: commandsMapping.STOP_SIMULATION,
+            });
+            console.log(
+              "🚀 ~ file: communication.service.ts ~ line 137 ~ CommunicationService ~ sendEvent ~ 'STOP_SIMULATION'",
+              'STOP_SIMULATION'
+            );
+
+            await this.updateSimulationTime();
+
+            break;
+
+          case 'STEP':
+            autoHandleMinskyProcess = false;
             await this.electronService.sendMinskyCommandAndRender({ command });
+            await this.updateSimulationTime();
 
-            this.t = ((await this.electronService.sendMinskyCommandAndRender({
-              command: commandsMapping.T,
-            })) as number).toFixed(2);
+            break;
 
-            this.deltaT = ((await this.electronService.sendMinskyCommandAndRender(
-              {
-                command: commandsMapping.DELTA_T,
-              }
-            )) as number).toFixed(2);
-          }, 100); // TODO:: -> Make this delay configurable
-          break;
+          case 'REVERSE_CHECKBOX':
+            command = `${command} ${message.value}`;
+            break;
 
-        case 'PAUSE':
-          autoHandleMinskyProcess = false;
+          default:
+            break;
+        }
 
-          this.clearStepInterval();
-          break;
-
-        case 'RESET':
-          autoHandleMinskyProcess = false;
-
-          this.showPlayButton$.next(true);
-          this.clearStepInterval();
-
+        if (command && autoHandleMinskyProcess) {
           await this.electronService.sendMinskyCommandAndRender({ command });
-          this.t = ((await this.electronService.sendMinskyCommandAndRender({
-            command: commandsMapping.T,
-          })) as number).toFixed(2);
-
-          this.deltaT = ((await this.electronService.sendMinskyCommandAndRender(
-            {
-              command: commandsMapping.DELTA_T,
-            }
-          )) as number).toFixed(2);
-          break;
-
-        case 'STEP':
-          autoHandleMinskyProcess = false;
-          await this.electronService.sendMinskyCommandAndRender({ command });
-          this.t = ((await this.electronService.sendMinskyCommandAndRender({
-            command: commandsMapping.T,
-          })) as number).toFixed(2);
-
-          this.deltaT = ((await this.electronService.sendMinskyCommandAndRender(
-            {
-              command: commandsMapping.DELTA_T,
-            }
-          )) as number).toFixed(2);
-          break;
-
-        case 'REVERSE_CHECKBOX':
-          command = `${command} ${message.value}`;
-          break;
-
-        default:
-          break;
+        }
+      } else {
+        this.socket.emit(event, message);
       }
+    } catch (error) {
+      console.error(
+        '🚀  file: communication.service.ts ~ line 188 ~ CommunicationService ~ sendEvent ~ error',
+        error
+      );
+    }
+  }
 
-      if (command && autoHandleMinskyProcess) {
-        await this.electronService.sendMinskyCommandAndRender({ command });
-      }
-    } else {
-      this.socket.emit(event, message);
+  private triggerUpdateTime() {
+    this.clearStepInterval();
+    this.stepIntervalId = window.setTimeout(async () => {
+      await this.updateSimulationTime();
+      this.triggerUpdateTime();
+    }, 100);
+  }
+
+  private async updateSimulationTime() {
+    try {
+      this.t = ((await this.electronService.sendMinskyCommandAndRender({
+        command: commandsMapping.T,
+      })) as number).toFixed(2);
+      console.log(
+        '🚀 ~ file: communication.service.ts ~ line 162 ~ CommunicationService ~ updateSimulationTime ~ this.t',
+        this.t
+      );
+
+      this.deltaT = ((await this.electronService.sendMinskyCommandAndRender({
+        command: commandsMapping.DELTA_T,
+      })) as number).toFixed(2);
+      console.log(
+        '🚀 ~ file: communication.service.ts ~ line 167 ~ CommunicationService ~ updateSimulationTime ~ this.deltaT',
+        this.deltaT
+      );
+    } catch (error) {
+      console.error(
+        '🚀 ~ file: communication.service.ts ~ line 180 ~ CommunicationService ~ updateSimulationTime ~ error',
+        error
+      );
     }
   }
 
@@ -189,9 +221,18 @@ export class CommunicationService {
   }
 
   private clearStepInterval() {
+    console.log(
+      '🚀 ~ file: communication.service.ts ~ line 221 ~ CommunicationService ~ clearStepInterval ~ this.stepIntervalId',
+      this.stepIntervalId
+    );
     if (this.stepIntervalId) {
-      clearInterval(this.stepIntervalId);
+      window.clearTimeout(this.stepIntervalId);
+      console.log(
+        "🚀 ~ file: communication.service.ts ~ line 219 ~ CommunicationService ~ 'clearStepInterval'",
+        'clearStepInterval'
+      );
     }
+    this.stepIntervalId = null;
   }
 
   public async mouseEvents(event, message) {
@@ -278,18 +319,24 @@ export class CommunicationService {
     const zoomIn = deltaY < 0;
     const offset = this.windowUtilityService.getMinskyCanvasOffset();
 
-    let command = null;
+    const command = commandsMapping.ZOOM_IN;
+    const x = event.clientX - offset.left;
+    const y = event.clientY - offset.top;
+    let zoomFactor = null;
     if (zoomIn) {
-      command = `${commandsMapping.ZOOM_IN} [${event.clientX - offset.left},${
-        event.clientY - offset.top
-      }, ${ZOOM_IN_FACTOR}]`;
+      zoomFactor = ZOOM_IN_FACTOR;
     } else {
-      command = `${commandsMapping.ZOOM_OUT} [${event.clientX - offset.left},${
-        event.clientY - offset.top
-      }, ${ZOOM_OUT_FACTOR}]`;
+      zoomFactor = ZOOM_OUT_FACTOR;
     }
 
-    await this.electronService.sendMinskyCommandAndRender({ command });
+    await this.electronService.sendMinskyCommandAndRender({
+      command,
+      args: {
+        x,
+        y,
+        zoomFactor,
+      },
+    });
   };
 
   async handleKeyPress(event: KeyboardEvent) {

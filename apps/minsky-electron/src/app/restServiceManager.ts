@@ -44,6 +44,8 @@ export class RestServiceManager {
   private static payloadDataQueue: Array<QueueItem> = [];
   private static runningCommand = false;
   private static isQueueEnabled = true;
+  private static lastZoomPayload: MinskyProcessPayload = null;
+  private static isSimulationOn = false;
 
   private static async processCommandsInQueueNew(): Promise<unknown> {
     // Should be on a separate thread......? Janak
@@ -58,6 +60,8 @@ export class RestServiceManager {
         this.lastMouseMovePayload = null;
       } else if (nextItem.payload.command === commandsMapping.MOVE_TO) {
         this.lastModelMoveToPayload = null;
+      } else if (nextItem.payload.command === commandsMapping.ZOOM_IN) {
+        this.lastZoomPayload = null;
       }
       this.runningCommand = true;
       const res = await this.handleMinskyPayload(nextItem.payload);
@@ -97,38 +101,83 @@ export class RestServiceManager {
       ? !this.runningCommand && wasQueueEmpty
       : true;
 
-    const queueItem: QueueItem = { payload, promise: new Deferred() };
+    let queueItem: QueueItem = { payload, promise: new Deferred() };
 
     if (payload.command === commandsMapping.mousemove) {
       if (this.lastMouseMovePayload !== null) {
         // console.log("Merging mouse move commands");
         this.lastMouseMovePayload.mouseX = payload.mouseX;
         this.lastMouseMovePayload.mouseY = payload.mouseY;
+        queueItem = null;
       } else {
         this.lastMouseMovePayload = payload;
         this.payloadDataQueue.push(queueItem);
       }
       this.lastModelMoveToPayload = null;
+      this.lastZoomPayload = null;
     } else if (payload.command === commandsMapping.MOVE_TO) {
       if (this.lastModelMoveToPayload !== null) {
         this.lastModelMoveToPayload.mouseX = payload.mouseX;
         this.lastModelMoveToPayload.mouseY = payload.mouseY;
+        queueItem = null;
       } else {
         this.lastModelMoveToPayload = payload;
         this.payloadDataQueue.push(queueItem);
       }
       this.lastMouseMovePayload = null;
+      this.lastZoomPayload = null;
+    } else if (payload.command === commandsMapping.ZOOM_IN) {
+      if (this.lastZoomPayload !== null) {
+        this.lastZoomPayload.args.x = payload.args.x;
+        this.lastZoomPayload.args.y = payload.args.y;
+        (this.lastZoomPayload.args.zoomFactor as number) *= payload.args
+          .zoomFactor as number;
+        queueItem = null;
+      } else {
+        this.lastZoomPayload = payload;
+        this.payloadDataQueue.push(queueItem);
+      }
+      this.lastMouseMovePayload = null;
+      this.lastModelMoveToPayload = null;
     } else {
       this.lastMouseMovePayload = null;
       this.lastModelMoveToPayload = null;
-      this.payloadDataQueue.push(queueItem);
+      this.lastZoomPayload = null;
+
+      if (payload.command === commandsMapping.START_SIMULATION) {
+        this.isSimulationOn = true;
+        payload.command = commandsMapping.STEP;
+      }
+      if (payload.command === commandsMapping.STOP_SIMULATION) {
+        console.log(
+          "🚀 ~ file: restServiceManager.ts ~ line 150 ~ RestServiceManager ~ 'STOP_SIMULATION'",
+          'STOP_SIMULATION'
+        );
+        console.log(
+          '🚀 ~ file: restServiceManager.ts ~ line 169 ~ RestServiceManager ~ this.payloadDataQueue',
+          this.payloadDataQueue
+        );
+        this.isSimulationOn = false;
+        payload.command = commandsMapping.RESET;
+      }
+      if (payload.command === commandsMapping.PAUSE_SIMULATION) {
+        this.isSimulationOn = false;
+        queueItem = null;
+      }
+
+      if (queueItem) {
+        this.payloadDataQueue.push(queueItem);
+      }
     }
     if (shouldProcessQueue) {
       // Control will come here when a new command comes after the whole queue was processed
       await this.processCommandsInQueueNew();
     }
 
-    return queueItem.promise.promise;
+    if (queueItem) {
+      return queueItem.promise.promise;
+    }
+    return null;
   }
 
   private static async handleMinskyPayload(
@@ -191,6 +240,14 @@ export class RestServiceManager {
         stdinCommand = `${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
 
+      case commandsMapping.ZOOM_IN:
+        stdinCommand = `${payload.command} [${payload.args.x}, ${payload.args.y}, ${payload.args.zoomFactor}]`;
+        console.log(
+          '🚀 ~ file: restServiceManager.ts ~ line 214 ~ RestServiceManager ~ stdinCommand',
+          stdinCommand
+        );
+        break;
+
       case commandsMapping.SET_GODLEY_ICON_RESOURCE:
         stdinCommand = `${payload.command} "${join(
           __dirname,
@@ -219,6 +276,10 @@ export class RestServiceManager {
 
       const res = await HttpManager.handleMinskyCommand(miscCommand);
       await HttpManager.handleMinskyCommand(renderCommand);
+
+      if (miscCommand === commandsMapping.STEP && this.isSimulationOn) {
+        this.handleMinskyProcess({ command: miscCommand });
+      }
 
       return res;
     }
