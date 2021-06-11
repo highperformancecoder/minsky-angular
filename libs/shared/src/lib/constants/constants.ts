@@ -6,11 +6,15 @@ export const backgroundColor = '#c1c1c1';
 export const updateServerUrl = 'https://deployment-server-url.com'; // TODO: insert your update server url here
 
 export const defaultBackgroundColor = '#ffffff';
-export const newLineCharacter = '\n';
 
 export const ZOOM_IN_FACTOR = 1.1;
 export const ZOOM_OUT_FACTOR = 0.91;
 export const RESET_ZOOM_FACTOR = 1;
+
+export const USE_MINSKY_SYSTEM_BINARY = true;
+export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
+export const MINSKY_HTTP_SERVER_PORT = 4444;
+export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;
 
 export const commandsMapping = {
   ADD_BOOKMARK: '/minsky/model/addBookmark',
@@ -261,6 +265,7 @@ export const events = {
   KEY_PRESS: 'key-press',
   TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
   NEW_SYSTEM: 'new-system',
+  AUTO_START_MINSKY_SERVICE: 'auto-start-minsky-service',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup
@@ -279,8 +284,3 @@ export const unExposedTerminalCommands = [
   '/minsky/canvas/itemFocus/rotation',
   '/minsky/canvas/itemFocus/setUnits',
 ];
-
-export const USE_MINSKY_SYSTEM_BINARY = true;
-export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
-export const MINSKY_HTTP_SERVER_PORT = 4444;
-export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;

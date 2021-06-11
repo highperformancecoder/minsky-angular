@@ -82,11 +82,7 @@ export class RestServiceManager {
       payload.command === commandsMapping.START_MINSKY_PROCESS;
 
     if (isStartProcessCommand) {
-      this.startHttpServer(
-        USE_MINSKY_SYSTEM_BINARY
-          ? { ...payload, filePath: MINSKY_SYSTEM_HTTP_SERVER_PATH }
-          : payload
-      );
+      this.startHttpServer(payload);
       return;
     }
 
@@ -301,9 +297,19 @@ export class RestServiceManager {
   }
 
   static async startMinskyService(
-    filePath: string,
-    showServiceStartedDialog = true
+    filePath: string = null,
+    showServiceStartedDialog = false
   ) {
+    if (USE_MINSKY_SYSTEM_BINARY) {
+      filePath = MINSKY_SYSTEM_HTTP_SERVER_PATH;
+    } else {
+      filePath = filePath || StoreManager.store.get('minskyHttpServerPath');
+    }
+
+    if (!filePath) {
+      return;
+    }
+
     const initPayload: MinskyProcessPayload = {
       command: commandsMapping.START_MINSKY_PROCESS,
       filePath,
@@ -328,8 +334,10 @@ export class RestServiceManager {
       await this.handleMinskyProcess(godleyIconPayload);
     };
 
-    await setGodleyIconResource();
-    await setGroupIconResource();
+    setTimeout(async () => {
+      await setGodleyIconResource();
+      await setGroupIconResource();
+    }, 100);
   }
 
   static async toggleMinskyService() {
@@ -359,7 +367,18 @@ export class RestServiceManager {
       this.lastModelMoveToPayload = null;
     }
     try {
-      const { filePath, showServiceStartedDialog = true } = payload;
+      let { filePath } = payload;
+      const { showServiceStartedDialog = true } = payload;
+
+      if (USE_MINSKY_SYSTEM_BINARY) {
+        filePath = MINSKY_SYSTEM_HTTP_SERVER_PATH;
+      } else {
+        filePath = filePath || StoreManager.store.get('minskyHttpServerPath');
+      }
+
+      if (!filePath) {
+        return;
+      }
 
       if (!USE_MINSKY_SYSTEM_BINARY) {
         StoreManager.store.set('minskyHttpServerPath', filePath);

@@ -24,11 +24,13 @@ export class CommunicationService {
   private isSimulationOn: boolean;
   private simulationTimerId: number;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
-  mouseX: number;
-  mouseY: number;
   t = '0';
   deltaT = '0';
 
+  mouseX: number;
+  mouseY: number;
+
+  // TODO: start by getting all the operations and then combining them with their type
   constructor(
     private socket: Socket,
     private electronService: ElectronService,

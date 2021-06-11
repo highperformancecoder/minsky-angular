@@ -35,6 +35,7 @@ const {
   TOGGLE_MINSKY_SERVICE,
   MINSKY_PROCESS_FOR_IPC_MAIN,
   NEW_SYSTEM,
+  AUTO_START_MINSKY_SERVICE,
 } = events;
 
 // Retrieve app version
@@ -87,6 +88,10 @@ ipcMain.handle(KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
 
 ipcMain.on(TOGGLE_MINSKY_SERVICE, async () => {
   await RestServiceManager.toggleMinskyService();
+});
+
+ipcMain.on(AUTO_START_MINSKY_SERVICE, async () => {
+  await RestServiceManager.startMinskyService();
 });
 
 ipcMain.on(NEW_SYSTEM, async () => {

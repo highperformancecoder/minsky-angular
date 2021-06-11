@@ -4,7 +4,7 @@ import {
   ElectronService,
   WindowUtilityService,
 } from '@minsky/core';
-import { availableOperations, commandsMapping } from '@minsky/shared';
+import { availableOperations, commandsMapping, events } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
@@ -36,6 +36,11 @@ export class WiringComponent implements OnInit, OnDestroy {
     const scrollableArea = this.windowUtilityService.getScrollableArea();
 
     this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
+
+    // this starts the http server when the app starts
+    setTimeout(() => {
+      this.electronService.ipcRenderer.send(events.AUTO_START_MINSKY_SERVICE);
+    }, 1);
 
     this.zone.runOutsideAngular(() => {
       if (this.electronService.isElectron) {

@@ -2,10 +2,8 @@ import { startSocketServer } from '@minsky/minsky-server';
 import {
   ActiveWindow,
   green,
-  MINSKY_SYSTEM_HTTP_SERVER_PATH,
   rendererAppName,
   rendererAppURL,
-  USE_MINSKY_SYSTEM_BINARY,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
@@ -16,7 +14,6 @@ import { ContextMenuManager } from './contextMenuManager';
 import { MenuManager } from './menuManager';
 import { startProxyServer } from './proxy';
 import { RecentFilesManager } from './recentFilesManager';
-import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
 
@@ -91,25 +88,6 @@ export default class App {
     console.log('🚀🚀🚀🚀🚀' + green(` WindowId -> ${windowId}`));
 
     startProxyServer();
-
-    setTimeout(async () => {
-      if (USE_MINSKY_SYSTEM_BINARY) {
-        await RestServiceManager.startMinskyService(
-          MINSKY_SYSTEM_HTTP_SERVER_PATH,
-          false
-        );
-      } else {
-        const minskyHttpServerFilePath = StoreManager.store.get(
-          'minskyHttpServerPath'
-        );
-        if (minskyHttpServerFilePath) {
-          await RestServiceManager.startMinskyService(
-            minskyHttpServerFilePath,
-            false
-          );
-        }
-      }
-    }, 4000);
   }
 
   private static initMenu() {
