@@ -66,11 +66,6 @@ export class AppComponent implements AfterViewInit {
     ) as HTMLElement[];
 
     buttons.forEach((b) => {
-      console.log(
-        '🚀 ~ file: app.component.ts ~ line 68 ~ AppComponent ~ document.addEventListener ~ b',
-        b
-      );
-
       b.click();
     });
   }
@@ -89,10 +84,7 @@ export class AppComponent implements AfterViewInit {
         value: { height: event.newHeight, width: event.newWidth },
       };
 
-      this.electronService.ipcRenderer.send(
-        events.ipc.APP_LAYOUT_CHANGED,
-        payload
-      );
+      this.electronService.ipcRenderer.send(events.APP_LAYOUT_CHANGED, payload);
     }
 
     this.cmService.canvasOffsetValues();
@@ -100,13 +92,13 @@ export class AppComponent implements AfterViewInit {
 
   async toggleMinskyService() {
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send(events.ipc.TOGGLE_MINSKY_SERVICE);
+      this.electronService.ipcRenderer.send(events.TOGGLE_MINSKY_SERVICE);
     }
   }
 
   async startTerminal() {
     if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send(events.ipc.CREATE_MENU_POPUP, {
+      this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
         title: 'Terminal',
         url: `${rendererAppURL}/#/headless/terminal`,
         width: 800,

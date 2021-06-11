@@ -24,10 +24,7 @@ export class AddBookmarkComponent {
       command: commandsMapping.BOOKMARK_LIST,
     })) as string[];
 
-    this.electronService.ipcRenderer.send(
-      events.ipc.POPULATE_BOOKMARKS,
-      bookmarks
-    );
+    this.electronService.ipcRenderer.send(events.POPULATE_BOOKMARKS, bookmarks);
 
     this.closeWindow();
   }

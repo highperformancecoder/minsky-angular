@@ -32,7 +32,7 @@ export class VariableComponent {
         default:
           break;
       }
-      this.electronService.ipcRenderer.send(events.ipc.CREATE_MENU_POPUP, {
+      this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
         title: 'Specify variable name',
         url,
         width: 500,

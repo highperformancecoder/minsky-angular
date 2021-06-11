@@ -149,14 +149,6 @@ export class RestServiceManager {
         payload.command = commandsMapping.STEP;
       }
       if (payload.command === commandsMapping.STOP_SIMULATION) {
-        console.log(
-          "🚀 ~ file: restServiceManager.ts ~ line 150 ~ RestServiceManager ~ 'STOP_SIMULATION'",
-          'STOP_SIMULATION'
-        );
-        console.log(
-          '🚀 ~ file: restServiceManager.ts ~ line 169 ~ RestServiceManager ~ this.payloadDataQueue',
-          this.payloadDataQueue
-        );
         this.isSimulationOn = false;
         payload.command = commandsMapping.RESET;
       }
@@ -213,7 +205,7 @@ export class RestServiceManager {
 
         this.currentMinskyModelFilePath = payload.filePath;
 
-        ipcMain.emit(events.ipc.ADD_RECENT_FILE, null, payload.filePath);
+        ipcMain.emit(events.ADD_RECENT_FILE, null, payload.filePath);
         break;
 
       case commandsMapping.SAVE:
@@ -221,7 +213,7 @@ export class RestServiceManager {
 
         this.currentMinskyModelFilePath = payload.filePath;
 
-        ipcMain.emit(events.ipc.ADD_RECENT_FILE, null, payload.filePath);
+        ipcMain.emit(events.ADD_RECENT_FILE, null, payload.filePath);
         break;
 
       case commandsMapping.mousemove:
@@ -242,10 +234,6 @@ export class RestServiceManager {
 
       case commandsMapping.ZOOM_IN:
         stdinCommand = `${payload.command} [${payload.args.x}, ${payload.args.y}, ${payload.args.zoomFactor}]`;
-        console.log(
-          '🚀 ~ file: restServiceManager.ts ~ line 214 ~ RestServiceManager ~ stdinCommand',
-          stdinCommand
-        );
         break;
 
       case commandsMapping.SET_GODLEY_ICON_RESOURCE:
@@ -276,11 +264,13 @@ export class RestServiceManager {
 
       const res = await HttpManager.handleMinskyCommand(miscCommand);
 
-      if((miscCommand !== commandsMapping.T) && (miscCommand !== commandsMapping.DELTA_T)) {
+      if (
+        miscCommand !== commandsMapping.T &&
+        miscCommand !== commandsMapping.DELTA_T
+      ) {
         // TODO:: Main a config of commands for which auto render should be called / not called
         await HttpManager.handleMinskyCommand(renderCommand);
       }
-      
 
       if (miscCommand === commandsMapping.STEP && this.isSimulationOn) {
         setTimeout(() => {

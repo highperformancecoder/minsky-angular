@@ -21,8 +21,8 @@ export class Message {
   providedIn: 'root',
 })
 export class CommunicationService {
-  private isSimulationOn : boolean;
-  private simulationTimerId : number;
+  private isSimulationOn: boolean;
+  private simulationTimerId: number;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
   mouseX: number;
   mouseY: number;
@@ -39,7 +39,7 @@ export class CommunicationService {
 
   setBackgroundColor(color = null) {
     if (this.electronService.isElectron)
-      this.electronService.ipcRenderer.send(events.ipc.SET_BACKGROUND_COLOR, {
+      this.electronService.ipcRenderer.send(events.SET_BACKGROUND_COLOR, {
         color: color,
       });
   }
@@ -118,10 +118,7 @@ export class CommunicationService {
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.STOP_SIMULATION,
             });
-            console.log(
-              "🚀 ~ file: communication.service.ts ~ line 137 ~ CommunicationService ~ sendEvent ~ 'STOP_SIMULATION'",
-              'STOP_SIMULATION'
-            );
+
             await this.updateSimulationTime();
             break;
 
@@ -158,35 +155,20 @@ export class CommunicationService {
     this.clearSimulationTimer();
     this.simulationTimerId = window.setTimeout(async () => {
       await this.updateSimulationTime();
-      if(this.isSimulationOn) {
+      if (this.isSimulationOn) {
         this.triggerUpdateTime();
       }
     }, 10); // TODO:: Should we change the delay?
   }
 
   private async updateSimulationTime() {
-    try {
-      this.t = ((await this.electronService.sendMinskyCommandAndRender({
-        command: commandsMapping.T,
-      })) as number).toFixed(2);
-      console.log(
-        '🚀 ~ file: communication.service.ts ~ line 162 ~ CommunicationService ~ updateSimulationTime ~ this.t',
-        this.t
-      );
+    this.t = ((await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.T,
+    })) as number).toFixed(2);
 
-      this.deltaT = ((await this.electronService.sendMinskyCommandAndRender({
-        command: commandsMapping.DELTA_T,
-      })) as number).toFixed(2);
-      console.log(
-        '🚀 ~ file: communication.service.ts ~ line 167 ~ CommunicationService ~ updateSimulationTime ~ this.deltaT',
-        this.deltaT
-      );
-    } catch (error) {
-      console.error(
-        '🚀 ~ file: communication.service.ts ~ line 180 ~ CommunicationService ~ updateSimulationTime ~ error',
-        error
-      );
-    }
+    this.deltaT = ((await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.DELTA_T,
+    })) as number).toFixed(2);
   }
 
   private async getResetZoomCommand(centerX: number, centerY: number) {
@@ -224,16 +206,8 @@ export class CommunicationService {
   }
 
   private clearSimulationTimer() {
-    console.log(
-      '🚀 ~ file: communication.service.ts ~ line 221 ~ CommunicationService ~ clearStepInterval ~ this.stepIntervalId',
-      this.simulationTimerId
-    );
     if (this.simulationTimerId) {
       window.clearTimeout(this.simulationTimerId);
-      console.log(
-        "🚀 ~ file: communication.service.ts ~ line 219 ~ CommunicationService ~ 'clearStepInterval'",
-        'clearStepInterval'
-      );
     }
     this.simulationTimerId = null;
   }
@@ -276,12 +250,12 @@ export class CommunicationService {
       const offset = this.windowUtilityService.getMinskyCanvasOffset();
 
       if (this.electronService.isElectron) {
-        this.electronService.ipcRenderer.send(events.ipc.APP_LAYOUT_CHANGED, {
+        this.electronService.ipcRenderer.send(events.APP_LAYOUT_CHANGED, {
           type: 'OFFSET',
           value: offset,
         });
 
-        this.electronService.ipcRenderer.send(events.ipc.APP_LAYOUT_CHANGED, {
+        this.electronService.ipcRenderer.send(events.APP_LAYOUT_CHANGED, {
           type: 'CANVAS',
           value: this.windowUtilityService.getDrawableArea(),
         });
@@ -358,7 +332,7 @@ export class CommunicationService {
 
     await this.electronService.sendMinskyCommandAndRender(
       payload,
-      events.ipc.KEY_PRESS
+      events.KEY_PRESS
     );
   }
 }

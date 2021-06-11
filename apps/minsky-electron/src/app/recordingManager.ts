@@ -43,7 +43,7 @@ export class RecordingManager {
         return;
       }
 
-      ipcMain.emit(events.ipc.MINSKY_PROCESS_FOR_IPC_MAIN, null, {
+      ipcMain.emit(events.MINSKY_PROCESS_FOR_IPC_MAIN, null, {
         command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
       });
 
@@ -60,7 +60,7 @@ export class RecordingManager {
   private static async replay(
     replayRecordingDialog: Electron.OpenDialogReturnValue
   ) {
-    ipcMain.emit(events.ipc.NEW_SYSTEM);
+    ipcMain.emit(events.NEW_SYSTEM);
 
     const replayFile = readFileSync(replayRecordingDialog.filePaths[0], {
       encoding: 'utf8',
@@ -71,7 +71,7 @@ export class RecordingManager {
 
     setTimeout(() => {
       for (const line of replayJSON) {
-        ipcMain.emit(events.ipc.MINSKY_PROCESS_FOR_IPC_MAIN, null, {
+        ipcMain.emit(events.MINSKY_PROCESS_FOR_IPC_MAIN, null, {
           command: line.command,
         });
       }

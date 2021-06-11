@@ -249,20 +249,18 @@ export const availableOperations = {
 };
 
 export const events = {
-  ipc: {
-    SET_BACKGROUND_COLOR: 'set-background-color',
-    CREATE_MENU_POPUP: 'create-menu-popup',
-    MINSKY_PROCESS: 'minsky-process',
-    MINSKY_PROCESS_FOR_IPC_MAIN: 'minsky-process-for-ipc-main',
-    APP_LAYOUT_CHANGED: 'app-layout-changed',
-    POPULATE_BOOKMARKS: 'populate-bookmarks',
-    ADD_RECENT_FILE: 'add-recent-file',
-    GET_APP_VERSION: 'get-app-version',
-    MINSKY_PROCESS_REPLY: 'minsky-process-reply',
-    KEY_PRESS: 'key-press',
-    TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
-    NEW_SYSTEM: 'new-system',
-  },
+  SET_BACKGROUND_COLOR: 'set-background-color',
+  CREATE_MENU_POPUP: 'create-menu-popup',
+  MINSKY_PROCESS: 'minsky-process',
+  MINSKY_PROCESS_FOR_IPC_MAIN: 'minsky-process-for-ipc-main',
+  APP_LAYOUT_CHANGED: 'app-layout-changed',
+  POPULATE_BOOKMARKS: 'populate-bookmarks',
+  ADD_RECENT_FILE: 'add-recent-file',
+  GET_APP_VERSION: 'get-app-version',
+  MINSKY_PROCESS_REPLY: 'minsky-process-reply',
+  KEY_PRESS: 'key-press',
+  TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
+  NEW_SYSTEM: 'new-system',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup
@@ -282,7 +280,7 @@ export const unExposedTerminalCommands = [
   '/minsky/canvas/itemFocus/setUnits',
 ];
 
-export const USE_MINSKY_SYSTEM_BINARY = false;
+export const USE_MINSKY_SYSTEM_BINARY = true;
 export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
 export const MINSKY_HTTP_SERVER_PORT = 4444;
 export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;
