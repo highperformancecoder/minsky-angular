@@ -244,8 +244,7 @@ export class CommunicationService {
     const offset = this.windowUtilityService.getMinskyCanvasOffset();
 
     this.mouseX = clientX;
-    // this.mouseY = clientY - offset.electronTop + 68;
-    this.mouseY = clientY - offset.electronTop;
+    this.mouseY = clientY - offset.top;
 
     const clickData = {
       type,
