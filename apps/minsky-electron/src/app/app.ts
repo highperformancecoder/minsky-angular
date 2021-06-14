@@ -14,6 +14,7 @@ import { ContextMenuManager } from './contextMenuManager';
 import { MenuManager } from './menuManager';
 import { startProxyServer } from './proxy';
 import { RecentFilesManager } from './recentFilesManager';
+import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { WindowManager } from './windowManager';
 
@@ -76,17 +77,21 @@ export default class App {
     App.initMainWindow();
     App.loadMainWindow();
 
-    App.initMenu();
-
     ContextMenuManager.initContextMenu();
 
     App.initMinskyService();
+
+    App.initMenu();
+    (async () => {
+      await MenuManager.buildMenuForInsertOperations();
+    })();
   }
 
   private static initMinskyService() {
     const windowId = WindowManager.activeWindows.get(1).windowId;
     console.log('🚀🚀🚀🚀🚀' + green(` WindowId -> ${windowId}`));
 
+    RestServiceManager.startMinskyService();
     startProxyServer();
   }
 

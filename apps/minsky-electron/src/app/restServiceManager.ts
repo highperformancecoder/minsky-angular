@@ -260,11 +260,8 @@ export class RestServiceManager {
 
       const res = await HttpManager.handleMinskyCommand(miscCommand);
 
-      if (
-        miscCommand !== commandsMapping.T &&
-        miscCommand !== commandsMapping.DELTA_T
-      ) {
-        // TODO:: Main a config of commands for which auto render should be called / not called
+      const { render = true } = payload;
+      if (render) {
         await HttpManager.handleMinskyCommand(renderCommand);
       }
 
@@ -314,6 +311,7 @@ export class RestServiceManager {
       command: commandsMapping.START_MINSKY_PROCESS,
       filePath,
       showServiceStartedDialog,
+      render: false,
     };
 
     await this.handleMinskyProcess(initPayload);
@@ -321,6 +319,7 @@ export class RestServiceManager {
     const setGroupIconResource = async () => {
       const groupIconResourcePayload: MinskyProcessPayload = {
         command: commandsMapping.SET_GROUP_ICON_RESOURCE,
+        render: false,
       };
 
       await this.handleMinskyProcess(groupIconResourcePayload);
@@ -329,6 +328,7 @@ export class RestServiceManager {
     const setGodleyIconResource = async () => {
       const godleyIconPayload: MinskyProcessPayload = {
         command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
+        render: false,
       };
 
       await this.handleMinskyProcess(godleyIconPayload);

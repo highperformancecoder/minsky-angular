@@ -1,10 +1,16 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterContentInit,
+  Component,
+  NgZone,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import {
   CommunicationService,
   ElectronService,
   WindowUtilityService,
 } from '@minsky/core';
-import { availableOperations, commandsMapping, events } from '@minsky/shared';
+import { commandsMapping } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
@@ -15,12 +21,11 @@ import { sampleTime } from 'rxjs/operators';
   templateUrl: './wiring.component.html',
   styleUrls: ['./wiring.component.scss'],
 })
-export class WiringComponent implements OnInit, OnDestroy {
+export class WiringComponent implements OnInit, OnDestroy, AfterContentInit {
   mouseMove$: Observable<MouseEvent>;
   offsetTop: string;
 
-  _availableOperations = availableOperations;
-  _commandsMapping = commandsMapping;
+  showTabs = true;
 
   constructor(
     public cmService: CommunicationService,
@@ -28,6 +33,24 @@ export class WiringComponent implements OnInit, OnDestroy {
     private windowUtilityService: WindowUtilityService,
     private zone: NgZone
   ) {}
+  ngAfterContentInit() {
+    (async () => {
+      const availableOperations = (await this.electronService.sendMinskyCommandAndRender(
+        {
+          command: commandsMapping.AVAILABLE_OPERATIONS,
+          render: false,
+        }
+      )) as string[];
+      console.log(
+        '🚀 ~ file: wiring.component.ts ~ line 49 ~ ngAfterViewChecked ~ res',
+        availableOperations
+      );
+
+      await this.electronService.sendMinskyCommandAndRender({
+        command: commandsMapping.CANVAS_REQUEST_REDRAW,
+      });
+    })();
+  }
 
   ngOnInit() {
     const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
@@ -36,11 +59,6 @@ export class WiringComponent implements OnInit, OnDestroy {
     const scrollableArea = this.windowUtilityService.getScrollableArea();
 
     this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
-
-    // this starts the http server when the app starts
-    setTimeout(() => {
-      this.electronService.ipcRenderer.send(events.AUTO_START_MINSKY_SERVICE);
-    }, 1);
 
     this.zone.runOutsideAngular(() => {
       if (this.electronService.isElectron) {

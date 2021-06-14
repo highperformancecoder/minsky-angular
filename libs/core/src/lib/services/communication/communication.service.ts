@@ -166,10 +166,12 @@ export class CommunicationService {
   private async updateSimulationTime() {
     this.t = ((await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.T,
+      render: false,
     })) as number).toFixed(2);
 
     this.deltaT = ((await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.DELTA_T,
+      render: false,
     })) as number).toFixed(2);
   }
 

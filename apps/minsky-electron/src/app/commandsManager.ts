@@ -709,23 +709,69 @@ proc findDefinition {} {
     return;
   }
 
-  // static async setGroupIconResource() {
-  //   const groupIconResourcePayload: MinskyProcessPayload = {
-  //     command: commandsMapping.SET_GROUP_ICON_RESOURCE,
-  //   };
+  static async getAvailableOperationsMapping(): Promise<
+    Record<string, string[]>
+  > {
+    const availableOperations = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.AVAILABLE_OPERATIONS,
+      render: false,
+    })) as string[];
 
-  //   await RestServiceManager.handleMinskyProcess(groupIconResourcePayload);
-  //   return;
-  // }
+    const mapping = {
+      function: [],
+      constop: [],
+      binop: [],
+      reduction: [],
+      scan: [],
+      tensor: [],
+    };
+    for (const operation of availableOperations) {
+      if (operation === 'numOps') {
+        break;
+      }
+      switch (operation) {
+        case 'constant':
+        case 'copy':
+        case 'ravel':
+        case 'integrate':
+        case 'differentiate':
+        case 'time':
+        case 'data':
+          continue;
+        default:
+          break;
+      }
+      const command = `${commandsMapping.CLASSIFY_OPERATION} "${operation}"`;
 
-  // static async setGodleyIconResource() {
-  //   const godleyIconPayload: MinskyProcessPayload = {
-  //     command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
-  //   };
+      const type = (await RestServiceManager.handleMinskyProcess({
+        command,
+        render: false,
+      })) as string;
 
-  //   await RestServiceManager.handleMinskyProcess(godleyIconPayload);
-  //   return;
-  // }
+      switch (type) {
+        case 'function':
+          mapping.function = [...mapping.function, operation];
+          break;
+        case 'constop':
+          mapping.constop = [...mapping.constop, operation];
+          break;
+        case 'binop':
+          mapping.binop = [...mapping.binop, operation];
+          break;
+        case 'reduction':
+          mapping.reduction = [...mapping.reduction, operation];
+          break;
+        case 'scan':
+          mapping.scan = [...mapping.scan, operation];
+          break;
+        case 'tensor':
+          mapping.tensor = [...mapping.tensor, operation];
+          break;
+        default:
+          break;
+      }
+    }
 
-  // static exportItemAsImg() {}
+    return mapping;
+  }
 }
