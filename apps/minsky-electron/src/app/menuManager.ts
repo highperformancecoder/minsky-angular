@@ -324,9 +324,19 @@ export class MenuManager {
           },
           {
             label: 'Recording',
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.RECORD,
+              });
+            },
           },
           {
             label: 'Replay recording',
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.RECORDING_REPLAY,
+              });
+            },
           },
           {
             label: 'Quit',
