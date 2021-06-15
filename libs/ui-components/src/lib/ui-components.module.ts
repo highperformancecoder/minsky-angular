@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { SharedModule } from '@minsky/shared';
 import { CliInputComponent } from './cli-input/cli-input.component';
+import { EditDescriptionComponent } from './edit-description/edit-description.component';
+import { EditGodleyCurrencyComponent } from './edit-godley-currency/edit-godley-currency.component';
+import { EditGodleyTitleComponent } from './edit-godley-title/edit-godley-title.component';
 import { EquationsComponent } from './equations/equations.component';
 import { HeaderComponent } from './header/header.component';
 import { InputModalComponent } from './input-modal/input-modal.component';
@@ -10,17 +13,9 @@ import { ParametersComponent } from './parameters/parameters.component';
 import { RenameAllInstancesComponent } from './rename-all-instances/rename-all-instances.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { VariablesComponent } from './variables/variables.component';
-import { BinaryOperationsComponent } from './wiring/binary-operations/binary-operations.component';
-import { EulerComponent } from './wiring/euler/euler.component';
-import { FunctionsComponent } from './wiring/functions/functions.component';
-import { ReductionsComponent } from './wiring/reductions/reductions.component';
-import { ScansComponent } from './wiring/scans/scans.component';
-import { TensorOperationsComponent } from './wiring/tensor-operations/tensor-operations.component';
+import { AvailableOperationsComponent } from './wiring/available-operations/available-operations.component';
 import { VariableComponent } from './wiring/variable/variable.component';
 import { WiringComponent } from './wiring/wiring.component';
-import { EditDescriptionComponent } from './edit-description/edit-description.component';
-import { EditGodleyTitleComponent } from './edit-godley-title/edit-godley-title.component';
-import { EditGodleyCurrencyComponent } from './edit-godley-currency/edit-godley-currency.component';
 @NgModule({
   declarations: [
     HeaderComponent,
@@ -31,12 +26,7 @@ import { EditGodleyCurrencyComponent } from './edit-godley-currency/edit-godley-
     ParametersComponent,
     VariablesComponent,
     CliInputComponent,
-    EulerComponent,
-    BinaryOperationsComponent,
-    FunctionsComponent,
-    ReductionsComponent,
-    ScansComponent,
-    TensorOperationsComponent,
+    AvailableOperationsComponent,
     VariableComponent,
     RenameAllInstancesComponent,
     InputModalComponent,

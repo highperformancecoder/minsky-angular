@@ -27,6 +27,7 @@
     "httpd",
     "infimum",
     "keysym",
+    "keyvalue",
     "lindex",
     "minimizable",
     "ngcc",

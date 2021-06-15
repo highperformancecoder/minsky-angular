@@ -718,12 +718,12 @@ proc findDefinition {} {
     })) as string[];
 
     const mapping = {
-      function: [],
-      constop: [],
-      binop: [],
-      reduction: [],
-      scan: [],
-      tensor: [],
+      'Fundamental Constants': [],
+      'Binary Ops': [],
+      Functions: [],
+      Reductions: [],
+      Scans: [],
+      'Tensor operations': [],
     };
     for (const operation of availableOperations) {
       if (operation === 'numOps') {
@@ -750,22 +750,28 @@ proc findDefinition {} {
 
       switch (type) {
         case 'function':
-          mapping.function = [...mapping.function, operation];
+          mapping.Functions = [...mapping.Functions, operation];
           break;
         case 'constop':
-          mapping.constop = [...mapping.constop, operation];
+          mapping['Fundamental Constants'] = [
+            ...mapping['Fundamental Constants'],
+            operation,
+          ];
           break;
         case 'binop':
-          mapping.binop = [...mapping.binop, operation];
+          mapping['Binary Ops'] = [...mapping['Binary Ops'], operation];
           break;
         case 'reduction':
-          mapping.reduction = [...mapping.reduction, operation];
+          mapping.Reductions = [...mapping.Reductions, operation];
           break;
         case 'scan':
-          mapping.scan = [...mapping.scan, operation];
+          mapping.Scans = [...mapping.Scans, operation];
           break;
         case 'tensor':
-          mapping.tensor = [...mapping.tensor, operation];
+          mapping['Tensor operations'] = [
+            ...mapping['Tensor operations'],
+            operation,
+          ];
           break;
         default:
           break;

@@ -18,8 +18,7 @@ import { sampleTime } from 'rxjs/operators';
 export class WiringComponent implements OnInit, OnDestroy {
   mouseMove$: Observable<MouseEvent>;
   offsetTop: string;
-
-  showTabs = true;
+  availableOperationsMapping: Record<string, string[]> = {};
 
   constructor(
     public cmService: CommunicationService,
@@ -27,38 +26,22 @@ export class WiringComponent implements OnInit, OnDestroy {
     private windowUtilityService: WindowUtilityService,
     private zone: NgZone
   ) {}
-  // ngAfterViewChecked() {
 
-  //   // (async () => {
-
-  //   // })();
-  // }
-
-  ngOnInit() {
+  async ngOnInit() {
     const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
 
     this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
 
     this.setupEventListenersForCanvas(minskyCanvasContainer);
 
-    setTimeout(async () => {
-      try {
-        const availableOperationsMapping = (await this.electronService.sendMinskyCommandAndRender(
-          {
-            command: commandsMapping.AVAILABLE_OPERATIONS_MAPPING,
-            render: false,
-          }
-        )) as string[];
-        console.log(
-          '🚀 ~ file: wiring.component.ts ~ line 49 ~ ngAfterViewChecked ~ res',
-          availableOperationsMapping
-        );
-      } catch (error) {
-        console.error(
-          '🚀 ~ file: wiring.component.ts ~ line 74 ~ WiringComponent ~ setTimeout ~ error',
-          error
-        );
+    this.availableOperationsMapping = (await this.electronService.sendMinskyCommandAndRender(
+      {
+        command: commandsMapping.AVAILABLE_OPERATIONS_MAPPING,
+        render: false,
       }
+    )) as Record<string, string[]>;
+
+    setTimeout(async () => {
       await this.electronService.sendMinskyCommandAndRender({
         command: commandsMapping.CANVAS_REQUEST_REDRAW,
       });
