@@ -10,70 +10,72 @@
 
     <minsky-variable></minsky-variable>
 
-    <button class="tab" (click)="cmService.addOperation('integrate')">
-      <img
-        src="assets/images/icons/integrate.gif"
-        alt="Integrate"
-        title="Integrate"
-      />
-    </button>
+    <ng-container *ngIf="showTabs">
+      <button class="tab" (click)="cmService.addOperation('integrate')">
+        <img
+          src="assets/images/icons/integrate.gif"
+          alt="Integrate"
+          title="Integrate"
+        />
+      </button>
 
-    <button class="tab" (click)="cmService.addOperation('differentiate')">
-      <img
-        src="assets/images/icons/differentiate.gif"
-        alt="Differentiate"
-        title="Differentiate"
-      />
-    </button>
+      <button class="tab" (click)="cmService.addOperation('differentiate')">
+        <img
+          src="assets/images/icons/differentiate.gif"
+          alt="Differentiate"
+          title="Differentiate"
+        />
+      </button>
 
-    <button class="tab" (click)="cmService.addOperation('time')">
-      <img src="assets/images/icons/time.gif" alt="Time" title="Time" />
-    </button>
+      <button class="tab" (click)="cmService.addOperation('time')">
+        <img src="assets/images/icons/time.gif" alt="Time" title="Time" />
+      </button>
 
-    <minsky-euler></minsky-euler>
+      <minsky-euler></minsky-euler>
 
-    <minsky-binary-operations></minsky-binary-operations>
+      <minsky-binary-operations></minsky-binary-operations>
 
-    <minsky-functions></minsky-functions>
+      <minsky-functions></minsky-functions>
 
-    <minsky-reductions></minsky-reductions>
+      <minsky-reductions></minsky-reductions>
 
-    <minsky-scans></minsky-scans>
+      <minsky-scans></minsky-scans>
 
-    <minsky-tensor-operations></minsky-tensor-operations>
+      <minsky-tensor-operations></minsky-tensor-operations>
 
-    <button class="tab" (click)="cmService.addOperation('data')">
-      <img src="assets/images/icons/data.gif" alt="Data" title="Data" />
-    </button>
+      <button class="tab" (click)="cmService.addOperation('data')">
+        <img src="assets/images/icons/data.gif" alt="Data" title="Data" />
+      </button>
 
-    <button class="tab" (click)="cmService.insertElement('ADD_SWITCH')">
-      <img src="assets/images/icons/switch.gif" alt="Switch" title="Switch" />
-    </button>
+      <button class="tab" (click)="cmService.insertElement('ADD_SWITCH')">
+        <img src="assets/images/icons/switch.gif" alt="Switch" title="Switch" />
+      </button>
 
-    <button class="tab" (click)="cmService.insertElement('ADD_PLOT')">
-      <img
-        src="assets/images/icons/plot.gif"
-        alt="PlotWidget"
-        title="PlotWidget"
-      />
-    </button>
+      <button class="tab" (click)="cmService.insertElement('ADD_PLOT')">
+        <img
+          src="assets/images/icons/plot.gif"
+          alt="PlotWidget"
+          title="PlotWidget"
+        />
+      </button>
 
-    <button class="tab" (click)="cmService.insertElement('ADD_SHEET')">
-      <img src="assets/images/icons/sheet.gif" alt="Sheet" title="Sheet" />
-    </button>
+      <button class="tab" (click)="cmService.insertElement('ADD_SHEET')">
+        <img src="assets/images/icons/sheet.gif" alt="Sheet" title="Sheet" />
+      </button>
 
-    <button
-      class="tab"
-      (click)="
-        cmService.insertElement('ADD_NOTE', 'Enter your note here', 'string')
-      "
-    >
-      <img src="assets/images/icons/note.gif" alt="Note" title="Note" />
-    </button>
+      <button
+        class="tab"
+        (click)="
+          cmService.insertElement('ADD_NOTE', 'Enter your note here', 'string')
+        "
+      >
+        <img src="assets/images/icons/note.gif" alt="Note" title="Note" />
+      </button>
 
-    <button class="tab" (click)="cmService.insertElement('ADD_RAVEL')">
-      <img src="assets/images/icons/ravel.gif" alt="Ravel" title="Ravel" />
-    </button>
+      <button class="tab" (click)="cmService.insertElement('ADD_RAVEL')">
+        <img src="assets/images/icons/ravel.gif" alt="Ravel" title="Ravel" />
+      </button>
+    </ng-container>
   </div>
   <div
     [ngStyle]="{ height: offsetTop ? offsetTop : 'auto' }"

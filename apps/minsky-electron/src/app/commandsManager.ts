@@ -772,6 +772,7 @@ proc findDefinition {} {
       }
     }
 
+    RestServiceManager.availableOperationsMappings = mapping;
     return mapping;
   }
 }

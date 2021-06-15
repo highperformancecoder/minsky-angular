@@ -46,6 +46,7 @@ export class RestServiceManager {
   private static isQueueEnabled = true;
   private static lastZoomPayload: MinskyProcessPayload = null;
   private static isSimulationOn = false;
+  static availableOperationsMappings: Record<string, string[]> = {};
 
   private static async processCommandsInQueueNew(): Promise<unknown> {
     // Should be on a separate thread......? Janak
@@ -180,6 +181,10 @@ export class RestServiceManager {
 
       case commandsMapping.RECORDING_REPLAY:
         await RecordingManager.handleRecordingReplay();
+        break;
+
+      case commandsMapping.AVAILABLE_OPERATIONS_MAPPING:
+        res = this.availableOperationsMappings;
         break;
 
       default:

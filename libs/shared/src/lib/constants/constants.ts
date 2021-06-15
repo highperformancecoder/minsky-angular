@@ -187,6 +187,7 @@ export const commandsMapping = {
   STOP_SIMULATION: 'stopSimulation',
   AVAILABLE_OPERATIONS: '/minsky/availableOperations',
   CLASSIFY_OPERATION: '/minsky/classifyOp',
+  AVAILABLE_OPERATIONS_MAPPING: 'availableOperationsMapping',
 };
 
 export const availableOperations = {

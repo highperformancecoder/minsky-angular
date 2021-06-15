@@ -1,10 +1,4 @@
-import {
-  AfterContentInit,
-  Component,
-  NgZone,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import {
   CommunicationService,
   ElectronService,
@@ -21,7 +15,7 @@ import { sampleTime } from 'rxjs/operators';
   templateUrl: './wiring.component.html',
   styleUrls: ['./wiring.component.scss'],
 })
-export class WiringComponent implements OnInit, OnDestroy, AfterContentInit {
+export class WiringComponent implements OnInit, OnDestroy {
   mouseMove$: Observable<MouseEvent>;
   offsetTop: string;
 
@@ -33,32 +27,47 @@ export class WiringComponent implements OnInit, OnDestroy, AfterContentInit {
     private windowUtilityService: WindowUtilityService,
     private zone: NgZone
   ) {}
-  ngAfterContentInit() {
-    (async () => {
-      const availableOperations = (await this.electronService.sendMinskyCommandAndRender(
-        {
-          command: commandsMapping.AVAILABLE_OPERATIONS,
-          render: false,
-        }
-      )) as string[];
-      console.log(
-        '🚀 ~ file: wiring.component.ts ~ line 49 ~ ngAfterViewChecked ~ res',
-        availableOperations
-      );
+  // ngAfterViewChecked() {
 
-      await this.electronService.sendMinskyCommandAndRender({
-        command: commandsMapping.CANVAS_REQUEST_REDRAW,
-      });
-    })();
-  }
+  //   // (async () => {
+
+  //   // })();
+  // }
 
   ngOnInit() {
     const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
-    const minskyCanvasElement = this.windowUtilityService.getMinskyCanvasElement();
-
-    const scrollableArea = this.windowUtilityService.getScrollableArea();
 
     this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
+
+    this.setupEventListenersForCanvas(minskyCanvasContainer);
+
+    setTimeout(async () => {
+      try {
+        const availableOperationsMapping = (await this.electronService.sendMinskyCommandAndRender(
+          {
+            command: commandsMapping.AVAILABLE_OPERATIONS_MAPPING,
+            render: false,
+          }
+        )) as string[];
+        console.log(
+          '🚀 ~ file: wiring.component.ts ~ line 49 ~ ngAfterViewChecked ~ res',
+          availableOperationsMapping
+        );
+      } catch (error) {
+        console.error(
+          '🚀 ~ file: wiring.component.ts ~ line 74 ~ WiringComponent ~ setTimeout ~ error',
+          error
+        );
+      }
+      await this.electronService.sendMinskyCommandAndRender({
+        command: commandsMapping.CANVAS_REQUEST_REDRAW,
+      });
+    }, 1);
+  }
+
+  private setupEventListenersForCanvas(minskyCanvasContainer: HTMLElement) {
+    const minskyCanvasElement = this.windowUtilityService.getMinskyCanvasElement();
+    const scrollableArea = this.windowUtilityService.getScrollableArea();
 
     this.zone.runOutsideAngular(() => {
       if (this.electronService.isElectron) {

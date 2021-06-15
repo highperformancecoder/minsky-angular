@@ -251,6 +251,7 @@ export class CommunicationService {
       // When the event DOMContentLoaded occurs, it is safe to access the DOM
 
       const offset = this.windowUtilityService.getMinskyCanvasOffset();
+      const drawableArea = this.windowUtilityService.getDrawableArea();
 
       if (this.electronService.isElectron) {
         this.electronService.ipcRenderer.send(events.APP_LAYOUT_CHANGED, {
@@ -260,7 +261,7 @@ export class CommunicationService {
 
         this.electronService.ipcRenderer.send(events.APP_LAYOUT_CHANGED, {
           type: 'CANVAS',
-          value: this.windowUtilityService.getDrawableArea(),
+          value: drawableArea,
         });
       }
     });
