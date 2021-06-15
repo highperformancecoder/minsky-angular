@@ -72,19 +72,16 @@ export default class App {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
 
-    startSocketServer();
-
     App.initMainWindow();
-    App.loadMainWindow();
-
-    ContextMenuManager.initContextMenu();
+    startSocketServer();
 
     App.initMinskyService();
 
     App.initMenu();
-    (async () => {
-      await MenuManager.buildMenuForInsertOperations();
-    })();
+
+    App.loadMainWindow();
+
+    ContextMenuManager.initContextMenu();
   }
 
   private static initMinskyService() {
@@ -103,6 +100,10 @@ export default class App {
     StoreManager.store.onDidChange('recentFiles', () => {
       RecentFilesManager.initRecentFiles();
     });
+
+    (async () => {
+      await MenuManager.buildMenuForInsertOperations();
+    })();
   }
 
   private static onActivate() {
@@ -143,7 +144,7 @@ export default class App {
       icon: __dirname + '/assets/favicon.png',
       resizable: false,
     });
-    App.mainWindow.setMenu(null);
+
     App.mainWindow.center();
 
     if (this.isDevelopmentMode()) {

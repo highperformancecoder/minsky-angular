@@ -93,6 +93,7 @@ export class CreateVariableComponent implements OnDestroy {
       command: `${commandsMapping.ADD_VARIABLE} ["${this.variableName.value}","${this.type.value}"]`,
     });
 
+    // TODO: set init /minsky/canvas/item/init init value
     if (this.units.value) {
       await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${this.units.value}"`,

@@ -11,7 +11,7 @@ export const ZOOM_IN_FACTOR = 1.1;
 export const ZOOM_OUT_FACTOR = 0.91;
 export const RESET_ZOOM_FACTOR = 1;
 
-export const USE_MINSKY_SYSTEM_BINARY = true;
+export const USE_MINSKY_SYSTEM_BINARY = false;
 export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
 export const MINSKY_HTTP_SERVER_PORT = 4444;
 export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;
@@ -152,7 +152,7 @@ export const commandsMapping = {
   SAVE_SELECTION_AS_FILE: '/minsky/saveSelectionAsFile',
   CANVAS_FIND_VARIABLE_DEFINITION: '/minsky/canvas/findVariableDefinition',
   CANVAS_ITEM_INDICATOR: '/minsky/canvas/itemIndicator',
-  CANVAS_ADD_INTEGRAL: '/minsky/canvas/addIntegral',
+  CANVAS_ADD_INTEGRAL: '/minsky/addIntegral',
   CANVAS_ITEM_DEFINED: '/minsky/canvas/item/defined',
   CANVAS_ITEM_TYPE: '/minsky/canvas/item/type',
   CANVAS_ITEM_VAR_TAB_DISPLAY: '/minsky/canvas/item/varTabDisplay',
