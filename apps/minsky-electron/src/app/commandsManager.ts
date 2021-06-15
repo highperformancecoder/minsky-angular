@@ -378,15 +378,9 @@ export class CommandsManager {
 
       const dimsRes = (await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_DIMS,
-      })) as string;
+      })) as Array<number>;
 
-      if (dimsRes === '{}') {
-        return null;
-      }
-
-      const dims = JSON.parse(dimsRes) as Array<number>;
-
-      return dims;
+      return dimsRes;
     } catch (error) {
       console.error(
         '🚀 ~ file: commandsManager.ts ~ line 361 ~ CommandsManager ~ error',

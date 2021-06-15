@@ -97,7 +97,7 @@ export const commandsMapping = {
   C_BOUNDS: '/minsky/model/cBounds',
   X: '/minsky/model/x',
   Y: '/minsky/model/y',
-  ITEM_FOCUS_INIT_VALUE: '/minsky/canvas/itemFocus/initValue',
+  ITEM_FOCUS_INIT: '/minsky/canvas/itemFocus/init',
   ITEM_FOCUS_TOOLTIP: '/minsky/canvas/itemFocus/tooltip',
   ITEM_FOCUS_DETAILED_TEXT: '/minsky/canvas/itemFocus/detailedText',
   ITEM_FOCUS_SLIDER_MAX: '/minsky/canvas/itemFocus/sliderMax',
