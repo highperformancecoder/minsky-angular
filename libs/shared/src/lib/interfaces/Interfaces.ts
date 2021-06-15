@@ -38,6 +38,7 @@ export enum ClassType {
   SwitchIcon = 'SwitchIcon',
   Ravel = 'Ravel',
   Lock = 'Lock',
+  Sheet = 'Sheet',
 }
 
 export interface CanvasItem {

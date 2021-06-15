@@ -182,7 +182,7 @@ export class MenuManager {
                 command: commandsMapping.DIMENSIONAL_ANALYSIS,
               });
 
-              if (res === '{}') {
+              if (JSON.stringify(res) === JSON.stringify({})) {
                 dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
                   type: 'info',
                   title: 'Dimensional Analysis',
