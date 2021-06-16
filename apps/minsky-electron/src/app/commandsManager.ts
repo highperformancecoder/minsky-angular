@@ -348,12 +348,12 @@ export class CommandsManager {
     const tooltip =
       ((await RestServiceManager.handleMinskyProcess({
         command: `/minsky/canvas/${type}/tooltip`,
-      })) as string)?.slice(1, 1) || '';
+      })) as string) || '';
 
     const detailedText =
       ((await RestServiceManager.handleMinskyProcess({
         command: `/minsky/canvas/${type}/detailedText`,
-      })) as string)?.slice(1, 1) || '';
+      })) as string) || '';
 
     WindowManager.createMenuPopUpWithRouting({
       title: `Description`,
