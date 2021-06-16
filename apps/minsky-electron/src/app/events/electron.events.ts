@@ -36,6 +36,8 @@ const {
   MINSKY_PROCESS_FOR_IPC_MAIN,
   NEW_SYSTEM,
   AUTO_START_MINSKY_SERVICE,
+  GET_PREFERENCES,
+  UPDATE_PREFERENCES,
 } = events;
 
 // Retrieve app version
@@ -85,6 +87,18 @@ ipcMain.on(ADD_RECENT_FILE, (event, filePath: string) => {
 ipcMain.handle(KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
   return await KeyBindingManager.handleOnKeyPress(payload);
 });
+
+ipcMain.handle(GET_PREFERENCES, () => {
+  return StoreManager.store.get('preferences');
+});
+
+ipcMain.handle(
+  UPDATE_PREFERENCES,
+  (event, preferences: Record<string, unknown>) => {
+    StoreManager.store.set('preferences', preferences);
+    return;
+  }
+);
 
 ipcMain.on(TOGGLE_MINSKY_SERVICE, async () => {
   await RestServiceManager.toggleMinskyService();

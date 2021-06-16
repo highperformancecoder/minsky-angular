@@ -188,6 +188,7 @@ export const commandsMapping = {
   AVAILABLE_OPERATIONS: '/minsky/availableOperations',
   CLASSIFY_OPERATION: '/minsky/classifyOp',
   AVAILABLE_OPERATIONS_MAPPING: 'availableOperationsMapping',
+  LIST_FONTS: '/minsky/listFonts',
 };
 
 export const availableOperations = {
@@ -270,6 +271,8 @@ export const events = {
   NEW_SYSTEM: 'new-system',
   AUTO_START_MINSKY_SERVICE: 'auto-start-minsky-service',
   RECORDING_STATUS_CHANGED: 'recording-status-changed',
+  GET_PREFERENCES: 'get-preferences',
+  UPDATE_PREFERENCES: 'update-preferences',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup
