@@ -1,8 +1,9 @@
-import { commandsMapping, events } from '@minsky/shared';
+import { commandsMapping, events, RecordingStatus } from '@minsky/shared';
 import { ipcMain } from 'electron';
 import { dialog, MessageBoxSyncOptions } from 'electron/main';
 import { createWriteStream, readFileSync, WriteStream } from 'fs';
 import * as JSONStream from 'JSONStream';
+import { WindowManager } from './windowManager';
 
 export class RecordingManager {
   static isRecording = false;
@@ -21,6 +22,12 @@ export class RecordingManager {
     });
 
     if (replayRecordingDialog.canceled) {
+      WindowManager.getMainWindow().webContents.send(
+        events.RECORDING_STATUS_CHANGED,
+        {
+          status: RecordingStatus.ReplayCanceled,
+        }
+      );
       return;
     }
 
@@ -62,6 +69,13 @@ export class RecordingManager {
   ) {
     ipcMain.emit(events.NEW_SYSTEM);
 
+    WindowManager.getMainWindow().webContents.send(
+      events.RECORDING_STATUS_CHANGED,
+      {
+        status: RecordingStatus.ReplayStarted,
+      }
+    );
+
     const replayFile = readFileSync(replayRecordingDialog.filePaths[0], {
       encoding: 'utf8',
       flag: 'r',
@@ -75,6 +89,12 @@ export class RecordingManager {
           command: line.command,
         });
       }
+      WindowManager.getMainWindow().webContents.send(
+        events.RECORDING_STATUS_CHANGED,
+        {
+          status: RecordingStatus.ReplayStopped,
+        }
+      );
     }, 500);
   }
 
@@ -111,6 +131,13 @@ export class RecordingManager {
       this.recordingWriteStream.close();
       this.recordingWriteStream = null;
     }
+
+    WindowManager.getMainWindow().webContents.send(
+      events.RECORDING_STATUS_CHANGED,
+      {
+        status: RecordingStatus.RecordingStopped,
+      }
+    );
   }
 
   static async handleRecord() {
@@ -125,9 +152,28 @@ export class RecordingManager {
         { extensions: ['json'], name: 'JSON' },
         { extensions: ['*'], name: 'All Files' },
       ],
+      defaultPath: 'recording.json',
     });
+
+    if (saveRecordingDialog.canceled || !saveRecordingDialog.filePath) {
+      WindowManager.getMainWindow().webContents.send(
+        events.RECORDING_STATUS_CHANGED,
+        {
+          status: RecordingStatus.RecordingCanceled,
+        }
+      );
+
+      return;
+    }
+
     this.isRecording = true;
 
     this.recordingFilePath = saveRecordingDialog.filePath;
+    WindowManager.getMainWindow().webContents.send(
+      events.RECORDING_STATUS_CHANGED,
+      {
+        status: RecordingStatus.RecordingStarted,
+      }
+    );
   }
 }

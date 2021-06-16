@@ -1,10 +1,16 @@
 <div class="toolbar-controls">
   <div class="record-controls m-a-0">
-    <button class="btn record-btn" title="Record" (click)="recordButton()">
+    <button
+      class="btn record-btn"
+      [ngClass]="{ focus: isRecordingOn }"
+      title="Record"
+      (click)="recordButton()"
+    >
       <img src="assets/images/icons/record.svg" alt="" class="btn-icon" />
     </button>
     <button
       class="btn replay-btn"
+      [ngClass]="{ focus: isReplayRecordingOn }"
       title="Simulate/Recording Replay"
       (click)="recordingReplyButton()"
     >

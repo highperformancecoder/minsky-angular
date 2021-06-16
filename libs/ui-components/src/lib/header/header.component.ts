@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { HeaderEvent } from '@minsky/shared';
+import { events, HeaderEvent, RecordingStatus } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-header',
@@ -9,11 +9,43 @@ import { HeaderEvent } from '@minsky/shared';
 })
 export class HeaderComponent {
   headerEvent = 'HEADER_EVENT';
+  isRecordingOn = false;
+  isReplayRecordingOn = false;
 
   constructor(
     public commService: CommunicationService,
     private electronService: ElectronService
-  ) {}
+  ) {
+    if (this.electronService.isElectron) {
+      this.electronService.ipcRenderer.on(
+        events.RECORDING_STATUS_CHANGED,
+        (event, { status }) => {
+          switch (status) {
+            case RecordingStatus.RecordingStarted:
+              this.isRecordingOn = true;
+              break;
+
+            case RecordingStatus.RecordingStopped:
+            case RecordingStatus.RecordingCanceled:
+              this.isRecordingOn = false;
+              break;
+
+            case RecordingStatus.ReplayStarted:
+              this.isReplayRecordingOn = true;
+              break;
+
+            case RecordingStatus.ReplayStopped:
+            case RecordingStatus.ReplayCanceled:
+              this.isReplayRecordingOn = false;
+              break;
+
+            default:
+              break;
+          }
+        }
+      );
+    }
+  }
 
   async handleToolbarEvent(event: HeaderEvent) {
     await this.commService.sendEvent(this.headerEvent, event);

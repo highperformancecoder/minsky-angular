@@ -41,6 +41,15 @@ export enum ClassType {
   Sheet = 'Sheet',
 }
 
+export enum RecordingStatus {
+  RecordingCanceled = 'RecordingCanceled',
+  RecordingStarted = 'RecordingStarted',
+  RecordingStopped = 'RecordingStopped',
+  ReplayStarted = 'ReplayStarted',
+  ReplayStopped = 'ReplayStopped',
+  ReplayCanceled = 'ReplayCanceled',
+}
+
 export interface CanvasItem {
   classType: ClassType;
   value: number;
