@@ -269,6 +269,7 @@ export const events = {
   TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
   NEW_SYSTEM: 'new-system',
   AUTO_START_MINSKY_SERVICE: 'auto-start-minsky-service',
+  RECORDING_STATUS_CHANGED: 'recording-status-changed',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup

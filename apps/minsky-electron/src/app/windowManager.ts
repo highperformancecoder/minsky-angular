@@ -61,6 +61,7 @@ export class WindowManager {
         nodeIntegration: true,
         enableRemoteModule: true,
       },
+      icon: __dirname + '/assets/favicon.png',
     });
     menuWindow.setMenu(null);
 
