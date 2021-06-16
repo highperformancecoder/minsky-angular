@@ -24,19 +24,18 @@ export default class ElectronEvents {
 }
 
 const {
-  ipc: {
-    ADD_RECENT_FILE,
-    APP_LAYOUT_CHANGED,
-    CREATE_MENU_POPUP,
-    MINSKY_PROCESS,
-    POPULATE_BOOKMARKS,
-    SET_BACKGROUND_COLOR,
-    GET_APP_VERSION,
-    KEY_PRESS,
-    TOGGLE_MINSKY_SERVICE,
-    MINSKY_PROCESS_FOR_IPC_MAIN,
-    NEW_SYSTEM,
-  },
+  ADD_RECENT_FILE,
+  APP_LAYOUT_CHANGED,
+  CREATE_MENU_POPUP,
+  MINSKY_PROCESS,
+  POPULATE_BOOKMARKS,
+  SET_BACKGROUND_COLOR,
+  GET_APP_VERSION,
+  KEY_PRESS,
+  TOGGLE_MINSKY_SERVICE,
+  MINSKY_PROCESS_FOR_IPC_MAIN,
+  NEW_SYSTEM,
+  AUTO_START_MINSKY_SERVICE,
 } = events;
 
 // Retrieve app version
@@ -89,6 +88,10 @@ ipcMain.handle(KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
 
 ipcMain.on(TOGGLE_MINSKY_SERVICE, async () => {
   await RestServiceManager.toggleMinskyService();
+});
+
+ipcMain.on(AUTO_START_MINSKY_SERVICE, async () => {
+  await RestServiceManager.startMinskyService();
 });
 
 ipcMain.on(NEW_SYSTEM, async () => {

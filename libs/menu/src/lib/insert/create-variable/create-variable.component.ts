@@ -78,13 +78,19 @@ export class CreateVariableComponent implements OnDestroy {
       type: new FormControl(this.variableType, Validators.required),
       value: new FormControl(''),
       units: new FormControl(''),
-      rotation: new FormControl(null),
+      rotation: new FormControl(0),
       shortDescription: new FormControl(''),
       detailedDescription: new FormControl(''),
       sliderBoundsMax: new FormControl(null),
       sliderBoundsMin: new FormControl(null),
       sliderStepSize: new FormControl(null),
       // sliderStepRel: new FormControl(false),
+    });
+
+    this.type.valueChanges.subscribe((type) => {
+      type === 'constant'
+        ? this.variableName.disable()
+        : this.variableName.enable();
     });
   }
 
@@ -96,6 +102,12 @@ export class CreateVariableComponent implements OnDestroy {
     if (this.units.value) {
       await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${this.units.value}"`,
+      });
+    }
+
+    if (this.value.value) {
+      await this.electronService.sendMinskyCommandAndRender({
+        command: `${commandsMapping.ITEM_FOCUS_INIT} "${this.value.value}"`,
       });
     }
 

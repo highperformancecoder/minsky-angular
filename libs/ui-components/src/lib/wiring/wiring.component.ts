@@ -4,7 +4,7 @@ import {
   ElectronService,
   WindowUtilityService,
 } from '@minsky/core';
-import { availableOperations, commandsMapping } from '@minsky/shared';
+import { commandsMapping } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
@@ -18,9 +18,7 @@ import { sampleTime } from 'rxjs/operators';
 export class WiringComponent implements OnInit, OnDestroy {
   mouseMove$: Observable<MouseEvent>;
   offsetTop: string;
-
-  _availableOperations = availableOperations;
-  _commandsMapping = commandsMapping;
+  availableOperationsMapping: Record<string, string[]> = {};
 
   constructor(
     public cmService: CommunicationService,
@@ -29,13 +27,30 @@ export class WiringComponent implements OnInit, OnDestroy {
     private zone: NgZone
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
-    const minskyCanvasElement = this.windowUtilityService.getMinskyCanvasElement();
-
-    const scrollableArea = this.windowUtilityService.getScrollableArea();
 
     this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
+
+    this.setupEventListenersForCanvas(minskyCanvasContainer);
+
+    this.availableOperationsMapping = (await this.electronService.sendMinskyCommandAndRender(
+      {
+        command: commandsMapping.AVAILABLE_OPERATIONS_MAPPING,
+        render: false,
+      }
+    )) as Record<string, string[]>;
+
+    setTimeout(async () => {
+      await this.electronService.sendMinskyCommandAndRender({
+        command: commandsMapping.CANVAS_REQUEST_REDRAW,
+      });
+    }, 1);
+  }
+
+  private setupEventListenersForCanvas(minskyCanvasContainer: HTMLElement) {
+    const minskyCanvasElement = this.windowUtilityService.getMinskyCanvasElement();
+    const scrollableArea = this.windowUtilityService.getScrollableArea();
 
     this.zone.runOutsideAngular(() => {
       if (this.electronService.isElectron) {

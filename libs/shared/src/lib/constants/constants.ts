@@ -6,11 +6,15 @@ export const backgroundColor = '#c1c1c1';
 export const updateServerUrl = 'https://deployment-server-url.com'; // TODO: insert your update server url here
 
 export const defaultBackgroundColor = '#ffffff';
-export const newLineCharacter = '\n';
 
 export const ZOOM_IN_FACTOR = 1.1;
 export const ZOOM_OUT_FACTOR = 0.91;
 export const RESET_ZOOM_FACTOR = 1;
+
+export const USE_MINSKY_SYSTEM_BINARY = false;
+export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
+export const MINSKY_HTTP_SERVER_PORT = 4444;
+export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;
 
 export const commandsMapping = {
   ADD_BOOKMARK: '/minsky/model/addBookmark',
@@ -93,7 +97,7 @@ export const commandsMapping = {
   C_BOUNDS: '/minsky/model/cBounds',
   X: '/minsky/model/x',
   Y: '/minsky/model/y',
-  ITEM_FOCUS_INIT_VALUE: '/minsky/canvas/itemFocus/initValue',
+  ITEM_FOCUS_INIT: '/minsky/canvas/itemFocus/init',
   ITEM_FOCUS_TOOLTIP: '/minsky/canvas/itemFocus/tooltip',
   ITEM_FOCUS_DETAILED_TEXT: '/minsky/canvas/itemFocus/detailedText',
   ITEM_FOCUS_SLIDER_MAX: '/minsky/canvas/itemFocus/sliderMax',
@@ -148,7 +152,7 @@ export const commandsMapping = {
   SAVE_SELECTION_AS_FILE: '/minsky/saveSelectionAsFile',
   CANVAS_FIND_VARIABLE_DEFINITION: '/minsky/canvas/findVariableDefinition',
   CANVAS_ITEM_INDICATOR: '/minsky/canvas/itemIndicator',
-  CANVAS_ADD_INTEGRAL: '/minsky/canvas/addIntegral',
+  CANVAS_ADD_INTEGRAL: '/minsky/addIntegral',
   CANVAS_ITEM_DEFINED: '/minsky/canvas/item/defined',
   CANVAS_ITEM_TYPE: '/minsky/canvas/item/type',
   CANVAS_ITEM_VAR_TAB_DISPLAY: '/minsky/canvas/item/varTabDisplay',
@@ -181,6 +185,9 @@ export const commandsMapping = {
   PAUSE_SIMULATION: 'pauseSimulation',
   START_SIMULATION: 'startSimulation',
   STOP_SIMULATION: 'stopSimulation',
+  AVAILABLE_OPERATIONS: '/minsky/availableOperations',
+  CLASSIFY_OPERATION: '/minsky/classifyOp',
+  AVAILABLE_OPERATIONS_MAPPING: 'availableOperationsMapping',
 };
 
 export const availableOperations = {
@@ -249,20 +256,20 @@ export const availableOperations = {
 };
 
 export const events = {
-  ipc: {
-    SET_BACKGROUND_COLOR: 'set-background-color',
-    CREATE_MENU_POPUP: 'create-menu-popup',
-    MINSKY_PROCESS: 'minsky-process',
-    MINSKY_PROCESS_FOR_IPC_MAIN: 'minsky-process-for-ipc-main',
-    APP_LAYOUT_CHANGED: 'app-layout-changed',
-    POPULATE_BOOKMARKS: 'populate-bookmarks',
-    ADD_RECENT_FILE: 'add-recent-file',
-    GET_APP_VERSION: 'get-app-version',
-    MINSKY_PROCESS_REPLY: 'minsky-process-reply',
-    KEY_PRESS: 'key-press',
-    TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
-    NEW_SYSTEM: 'new-system',
-  },
+  SET_BACKGROUND_COLOR: 'set-background-color',
+  CREATE_MENU_POPUP: 'create-menu-popup',
+  MINSKY_PROCESS: 'minsky-process',
+  MINSKY_PROCESS_FOR_IPC_MAIN: 'minsky-process-for-ipc-main',
+  APP_LAYOUT_CHANGED: 'app-layout-changed',
+  POPULATE_BOOKMARKS: 'populate-bookmarks',
+  ADD_RECENT_FILE: 'add-recent-file',
+  GET_APP_VERSION: 'get-app-version',
+  MINSKY_PROCESS_REPLY: 'minsky-process-reply',
+  KEY_PRESS: 'key-press',
+  TOGGLE_MINSKY_SERVICE: 'toggle-minsky-service',
+  NEW_SYSTEM: 'new-system',
+  AUTO_START_MINSKY_SERVICE: 'auto-start-minsky-service',
+  RECORDING_STATUS_CHANGED: 'recording-status-changed',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup
@@ -281,8 +288,3 @@ export const unExposedTerminalCommands = [
   '/minsky/canvas/itemFocus/rotation',
   '/minsky/canvas/itemFocus/setUnits',
 ];
-
-export const USE_MINSKY_SYSTEM_BINARY = false;
-export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
-export const MINSKY_HTTP_SERVER_PORT = 4444;
-export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;

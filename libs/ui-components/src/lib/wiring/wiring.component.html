@@ -30,17 +30,14 @@
       <img src="assets/images/icons/time.gif" alt="Time" title="Time" />
     </button>
 
-    <minsky-euler></minsky-euler>
-
-    <minsky-binary-operations></minsky-binary-operations>
-
-    <minsky-functions></minsky-functions>
-
-    <minsky-reductions></minsky-reductions>
-
-    <minsky-scans></minsky-scans>
-
-    <minsky-tensor-operations></minsky-tensor-operations>
+    <ng-container
+      *ngFor="let operation of availableOperationsMapping | keyvalue"
+    >
+      <minsky-available-operations
+        [title]="operation.key"
+        [operations]="operation.value"
+      ></minsky-available-operations>
+    </ng-container>
 
     <button class="tab" (click)="cmService.addOperation('data')">
       <img src="assets/images/icons/data.gif" alt="Data" title="Data" />

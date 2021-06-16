@@ -348,12 +348,12 @@ export class CommandsManager {
     const tooltip =
       ((await RestServiceManager.handleMinskyProcess({
         command: `/minsky/canvas/${type}/tooltip`,
-      })) as string)?.slice(1, 1) || '';
+      })) as string) || '';
 
     const detailedText =
       ((await RestServiceManager.handleMinskyProcess({
         command: `/minsky/canvas/${type}/detailedText`,
-      })) as string)?.slice(1, 1) || '';
+      })) as string) || '';
 
     WindowManager.createMenuPopUpWithRouting({
       title: `Description`,
@@ -378,15 +378,9 @@ export class CommandsManager {
 
       const dimsRes = (await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_DIMS,
-      })) as string;
+      })) as Array<number>;
 
-      if (dimsRes === '{}') {
-        return null;
-      }
-
-      const dims = JSON.parse(dimsRes) as Array<number>;
-
-      return dims;
+      return dimsRes;
     } catch (error) {
       console.error(
         '🚀 ~ file: commandsManager.ts ~ line 361 ~ CommandsManager ~ error',
@@ -709,23 +703,76 @@ proc findDefinition {} {
     return;
   }
 
-  // static async setGroupIconResource() {
-  //   const groupIconResourcePayload: MinskyProcessPayload = {
-  //     command: commandsMapping.SET_GROUP_ICON_RESOURCE,
-  //   };
+  static async getAvailableOperationsMapping(): Promise<
+    Record<string, string[]>
+  > {
+    const availableOperations = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.AVAILABLE_OPERATIONS,
+      render: false,
+    })) as string[];
 
-  //   await RestServiceManager.handleMinskyProcess(groupIconResourcePayload);
-  //   return;
-  // }
+    const mapping = {
+      'Fundamental Constants': [],
+      'Binary Ops': [],
+      Functions: [],
+      Reductions: [],
+      Scans: [],
+      'Tensor operations': [],
+    };
+    for (const operation of availableOperations) {
+      if (operation === 'numOps') {
+        break;
+      }
+      switch (operation) {
+        case 'constant':
+        case 'copy':
+        case 'ravel':
+        case 'integrate':
+        case 'differentiate':
+        case 'time':
+        case 'data':
+          continue;
+        default:
+          break;
+      }
+      const command = `${commandsMapping.CLASSIFY_OPERATION} "${operation}"`;
 
-  // static async setGodleyIconResource() {
-  //   const godleyIconPayload: MinskyProcessPayload = {
-  //     command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
-  //   };
+      const type = (await RestServiceManager.handleMinskyProcess({
+        command,
+        render: false,
+      })) as string;
 
-  //   await RestServiceManager.handleMinskyProcess(godleyIconPayload);
-  //   return;
-  // }
+      switch (type) {
+        case 'function':
+          mapping.Functions = [...mapping.Functions, operation];
+          break;
+        case 'constop':
+          mapping['Fundamental Constants'] = [
+            ...mapping['Fundamental Constants'],
+            operation,
+          ];
+          break;
+        case 'binop':
+          mapping['Binary Ops'] = [...mapping['Binary Ops'], operation];
+          break;
+        case 'reduction':
+          mapping.Reductions = [...mapping.Reductions, operation];
+          break;
+        case 'scan':
+          mapping.Scans = [...mapping.Scans, operation];
+          break;
+        case 'tensor':
+          mapping['Tensor operations'] = [
+            ...mapping['Tensor operations'],
+            operation,
+          ];
+          break;
+        default:
+          break;
+      }
+    }
 
-  // static exportItemAsImg() {}
+    RestServiceManager.availableOperationsMappings = mapping;
+    return mapping;
+  }
 }

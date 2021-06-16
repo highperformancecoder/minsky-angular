@@ -1,4 +1,9 @@
-import { ActiveWindow, AppLayoutPayload, rendererAppURL } from '@minsky/shared';
+import {
+  ActiveWindow,
+  AppLayoutPayload,
+  green,
+  rendererAppURL,
+} from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow } from 'electron';
 import * as os from 'os';
@@ -56,6 +61,7 @@ export class WindowManager {
         nodeIntegration: true,
         enableRemoteModule: true,
       },
+      icon: __dirname + '/assets/favicon.png',
     });
     menuWindow.setMenu(null);
 
@@ -146,6 +152,8 @@ export class WindowManager {
   }
 
   static onAppLayoutChanged({ type, value }: AppLayoutPayload) {
+    console.log(green('Initializing the offset and height width of canvas'));
+    console.table({ type, value });
     switch (type) {
       case 'RESIZE':
         if (!WindowManager.mainWindowHeight) {

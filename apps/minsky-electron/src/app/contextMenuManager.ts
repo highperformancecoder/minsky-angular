@@ -94,7 +94,7 @@ export class ContextMenuManager {
 
         return;
       } catch (error) {
-        console.log(
+        console.error(
           '🚀 ~ file: contextMenuManager.ts ~ line 117 ~ ContextMenuManager ~ mainWindow.webContents.on ~ error',
           error
         );

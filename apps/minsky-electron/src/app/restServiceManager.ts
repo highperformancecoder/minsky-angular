@@ -46,6 +46,7 @@ export class RestServiceManager {
   private static isQueueEnabled = true;
   private static lastZoomPayload: MinskyProcessPayload = null;
   private static isSimulationOn = false;
+  static availableOperationsMappings: Record<string, string[]> = {};
 
   private static async processCommandsInQueueNew(): Promise<unknown> {
     // Should be on a separate thread......? Janak
@@ -82,11 +83,7 @@ export class RestServiceManager {
       payload.command === commandsMapping.START_MINSKY_PROCESS;
 
     if (isStartProcessCommand) {
-      this.startHttpServer(
-        USE_MINSKY_SYSTEM_BINARY
-          ? { ...payload, filePath: MINSKY_SYSTEM_HTTP_SERVER_PATH }
-          : payload
-      );
+      this.startHttpServer(payload);
       return;
     }
 
@@ -149,14 +146,6 @@ export class RestServiceManager {
         payload.command = commandsMapping.STEP;
       }
       if (payload.command === commandsMapping.STOP_SIMULATION) {
-        console.log(
-          "🚀 ~ file: restServiceManager.ts ~ line 150 ~ RestServiceManager ~ 'STOP_SIMULATION'",
-          'STOP_SIMULATION'
-        );
-        console.log(
-          '🚀 ~ file: restServiceManager.ts ~ line 169 ~ RestServiceManager ~ this.payloadDataQueue',
-          this.payloadDataQueue
-        );
         this.isSimulationOn = false;
         payload.command = commandsMapping.RESET;
       }
@@ -194,6 +183,10 @@ export class RestServiceManager {
         await RecordingManager.handleRecordingReplay();
         break;
 
+      case commandsMapping.AVAILABLE_OPERATIONS_MAPPING:
+        res = this.availableOperationsMappings;
+        break;
+
       default:
         res = await this.executeCommandOnMinskyServer(payload);
         break;
@@ -213,7 +206,7 @@ export class RestServiceManager {
 
         this.currentMinskyModelFilePath = payload.filePath;
 
-        ipcMain.emit(events.ipc.ADD_RECENT_FILE, null, payload.filePath);
+        ipcMain.emit(events.ADD_RECENT_FILE, null, payload.filePath);
         break;
 
       case commandsMapping.SAVE:
@@ -221,7 +214,7 @@ export class RestServiceManager {
 
         this.currentMinskyModelFilePath = payload.filePath;
 
-        ipcMain.emit(events.ipc.ADD_RECENT_FILE, null, payload.filePath);
+        ipcMain.emit(events.ADD_RECENT_FILE, null, payload.filePath);
         break;
 
       case commandsMapping.mousemove:
@@ -242,10 +235,6 @@ export class RestServiceManager {
 
       case commandsMapping.ZOOM_IN:
         stdinCommand = `${payload.command} [${payload.args.x}, ${payload.args.y}, ${payload.args.zoomFactor}]`;
-        console.log(
-          '🚀 ~ file: restServiceManager.ts ~ line 214 ~ RestServiceManager ~ stdinCommand',
-          stdinCommand
-        );
         break;
 
       case commandsMapping.SET_GODLEY_ICON_RESOURCE:
@@ -276,11 +265,10 @@ export class RestServiceManager {
 
       const res = await HttpManager.handleMinskyCommand(miscCommand);
 
-      if((miscCommand !== commandsMapping.T) && (miscCommand !== commandsMapping.DELTA_T)) {
-        // TODO:: Main a config of commands for which auto render should be called / not called
+      const { render = true } = payload;
+      if (render) {
         await HttpManager.handleMinskyCommand(renderCommand);
       }
-      
 
       if (miscCommand === commandsMapping.STEP && this.isSimulationOn) {
         setTimeout(() => {
@@ -311,13 +299,24 @@ export class RestServiceManager {
   }
 
   static async startMinskyService(
-    filePath: string,
-    showServiceStartedDialog = true
+    filePath: string = null,
+    showServiceStartedDialog = false
   ) {
+    if (USE_MINSKY_SYSTEM_BINARY) {
+      filePath = MINSKY_SYSTEM_HTTP_SERVER_PATH;
+    } else {
+      filePath = filePath || StoreManager.store.get('minskyHttpServerPath');
+    }
+
+    if (!filePath) {
+      return;
+    }
+
     const initPayload: MinskyProcessPayload = {
       command: commandsMapping.START_MINSKY_PROCESS,
       filePath,
       showServiceStartedDialog,
+      render: false,
     };
 
     await this.handleMinskyProcess(initPayload);
@@ -325,6 +324,7 @@ export class RestServiceManager {
     const setGroupIconResource = async () => {
       const groupIconResourcePayload: MinskyProcessPayload = {
         command: commandsMapping.SET_GROUP_ICON_RESOURCE,
+        render: false,
       };
 
       await this.handleMinskyProcess(groupIconResourcePayload);
@@ -333,13 +333,16 @@ export class RestServiceManager {
     const setGodleyIconResource = async () => {
       const godleyIconPayload: MinskyProcessPayload = {
         command: commandsMapping.SET_GODLEY_ICON_RESOURCE,
+        render: false,
       };
 
       await this.handleMinskyProcess(godleyIconPayload);
     };
 
-    await setGodleyIconResource();
-    await setGroupIconResource();
+    setTimeout(async () => {
+      await setGodleyIconResource();
+      await setGroupIconResource();
+    }, 100);
   }
 
   static async toggleMinskyService() {
@@ -369,7 +372,18 @@ export class RestServiceManager {
       this.lastModelMoveToPayload = null;
     }
     try {
-      const { filePath, showServiceStartedDialog = true } = payload;
+      let { filePath } = payload;
+      const { showServiceStartedDialog = true } = payload;
+
+      if (USE_MINSKY_SYSTEM_BINARY) {
+        filePath = MINSKY_SYSTEM_HTTP_SERVER_PATH;
+      } else {
+        filePath = filePath || StoreManager.store.get('minskyHttpServerPath');
+      }
+
+      if (!filePath) {
+        return;
+      }
 
       if (!USE_MINSKY_SYSTEM_BINARY) {
         StoreManager.store.set('minskyHttpServerPath', filePath);

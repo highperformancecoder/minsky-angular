@@ -60,15 +60,27 @@
     .btn-icon {
       max-width: 100%;
     }
-
     &:focus {
       outline: none;
-      border-left: 2px solid $toolbar-border-focus;
-      border-top: 2px solid $toolbar-box;
-      border-bottom: 1px solid $toolbar-bg;
-      border-right: 1px solid $toolbar-bg;
-      background: $white;
     }
+    &:active {
+      outline: none;
+      background: $white;
+
+      transform: scale(0.98);
+      /* Scaling button to 0.98 to its original size */
+      box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+      /* Lowering the shadow */
+    }
+  }
+
+  .focus {
+    outline: none;
+    border-left: 2px solid $toolbar-border-focus;
+    border-top: 2px solid $toolbar-box;
+    border-bottom: 1px solid $toolbar-bg;
+    border-right: 1px solid $toolbar-bg;
+    background: $white;
   }
 
   .m-a-0 {

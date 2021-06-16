@@ -11,6 +11,7 @@ export interface MinskyProcessPayload {
   ctrl?: boolean;
   alt?: boolean;
   args?: Record<string, unknown>;
+  render?: boolean;
 }
 
 export interface AppLayoutPayload {
@@ -37,6 +38,16 @@ export enum ClassType {
   SwitchIcon = 'SwitchIcon',
   Ravel = 'Ravel',
   Lock = 'Lock',
+  Sheet = 'Sheet',
+}
+
+export enum RecordingStatus {
+  RecordingCanceled = 'RecordingCanceled',
+  RecordingStarted = 'RecordingStarted',
+  RecordingStopped = 'RecordingStopped',
+  ReplayStarted = 'ReplayStarted',
+  ReplayStopped = 'ReplayStopped',
+  ReplayCanceled = 'ReplayCanceled',
 }
 
 export interface CanvasItem {

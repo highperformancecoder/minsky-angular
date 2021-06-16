@@ -33,7 +33,7 @@ export class ElectronService {
           });
         }
 
-        return await this.ipcRenderer.invoke(events.ipc.MINSKY_PROCESS, {
+        return await this.ipcRenderer.invoke(events.MINSKY_PROCESS, {
           ...payload,
           command: payload.command.trim(),
         });

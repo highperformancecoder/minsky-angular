@@ -5,7 +5,13 @@ import {
   rendererAppURL,
 } from '@minsky/shared';
 import * as debug from 'debug';
-import { dialog, Menu, shell } from 'electron';
+import {
+  dialog,
+  Menu,
+  MenuItem,
+  MenuItemConstructorOptions,
+  shell,
+} from 'electron';
 import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
@@ -176,7 +182,7 @@ export class MenuManager {
                 command: commandsMapping.DIMENSIONAL_ANALYSIS,
               });
 
-              if (res === '{}') {
+              if (JSON.stringify(res) === JSON.stringify({})) {
                 dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
                   type: 'info',
                   title: 'Dimensional Analysis',
@@ -318,9 +324,19 @@ export class MenuManager {
           },
           {
             label: 'Recording',
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.RECORD,
+              });
+            },
           },
           {
             label: 'Replay recording',
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.RECORDING_REPLAY,
+              });
+            },
           },
           {
             label: 'Quit',
@@ -484,6 +500,7 @@ export class MenuManager {
       },
       {
         label: 'Insert',
+        id: 'insert',
         submenu: [
           {
             label: 'plot',
@@ -502,7 +519,6 @@ export class MenuManager {
             },
           },
           {
-            // TODO:
             label: 'Variable',
             submenu: [
               {
@@ -538,415 +554,6 @@ export class MenuManager {
                     height: 550,
                     title: 'Specify variable name',
                     url: `${rendererAppURL}/#/headless/menu/insert/create-variable/parameter`,
-                  });
-                },
-              },
-            ],
-          },
-          {
-            label: 'Binary Ops',
-            submenu: [
-              {
-                label: 'add',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ADD}"`,
-                  });
-                },
-              },
-              {
-                label: 'subtract',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUBTRACT}"`,
-                  });
-                },
-              },
-              {
-                label: 'multiply',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MULTIPLY}"`,
-                  });
-                },
-              },
-              {
-                label: 'divide',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIVIDE}"`,
-                  });
-                },
-              },
-              {
-                label: 'min',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MIN}"`,
-                  });
-                },
-              },
-              {
-                label: 'max',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.MAX}"`,
-                  });
-                },
-              },
-              {
-                label: 'and',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.AND_}"`,
-                  });
-                },
-              },
-              {
-                label: 'or',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.OR_}"`,
-                  });
-                },
-              },
-              {
-                label: 'log',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LOG}"`,
-                  });
-                },
-              },
-              {
-                label: 'pow',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.POW}"`,
-                  });
-                },
-              },
-              {
-                label: 'polygamma',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.POLYGAMMA}"`,
-                  });
-                },
-              },
-              {
-                label: 'lt',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LT}"`,
-                  });
-                },
-              },
-              {
-                label: 'le',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LE}"`,
-                  });
-                },
-              },
-              {
-                label: 'eq',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.EQ}"`,
-                  });
-                },
-              },
-            ],
-          },
-          {
-            label: 'Functions',
-            submenu: [
-              {
-                label: 'copy',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COPY}"`,
-                  });
-                },
-              },
-              {
-                label: 'sqrt',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SQRT}"`,
-                  });
-                },
-              },
-              {
-                label: 'exp',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.EXP}"`,
-                  });
-                },
-              },
-              {
-                label: 'ln',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.LN}"`,
-                  });
-                },
-              },
-              {
-                label: 'sin',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SIN}"`,
-                  });
-                },
-              },
-              {
-                label: 'cos',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COS}"`,
-                  });
-                },
-              },
-              {
-                label: 'tan',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TAN}"`,
-                  });
-                },
-              },
-              {
-                label: 'asin',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ASIN}"`,
-                  });
-                },
-              },
-              {
-                label: 'acos',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ACOS}"`,
-                  });
-                },
-              },
-              {
-                label: 'atan',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ATAN}"`,
-                  });
-                },
-              },
-              {
-                label: 'sinh',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SINH}"`,
-                  });
-                },
-              },
-              {
-                label: 'cosh',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.COSH}"`,
-                  });
-                },
-              },
-              {
-                label: 'tanh',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.TANH}"`,
-                  });
-                },
-              },
-              {
-                label: 'abs',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ABS}"`,
-                  });
-                },
-              },
-              {
-                label: 'floor',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FLOOR}"`,
-                  });
-                },
-              },
-              {
-                label: 'frac',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FRAC}"`,
-                  });
-                },
-              },
-              {
-                label: 'not',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.NOT_}"`,
-                  });
-                },
-              },
-              {
-                label: 'gamma',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.GAMMA}"`,
-                  });
-                },
-              },
-              {
-                label: 'fact',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.FACT}"`,
-                  });
-                },
-              },
-            ],
-          },
-          {
-            label: 'Reductions',
-            submenu: [
-              {
-                label: 'sum',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUM}"`,
-                  });
-                },
-              },
-              {
-                label: 'product',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.PRODUCT}"`,
-                  });
-                },
-              },
-              {
-                label: 'infimum',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INFIMUM}"`,
-                  });
-                },
-              },
-              {
-                label: 'supremum',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUPREMUM}"`,
-                  });
-                },
-              },
-              {
-                label: 'any',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ANY}"`,
-                  });
-                },
-              },
-              {
-                label: 'all',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.ALL}"`,
-                  });
-                },
-              },
-              {
-                label: 'infIndex',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INF_INDEX}"`,
-                  });
-                },
-              },
-              {
-                label: 'supIndex',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.SUP_INDEX}"`,
-                  });
-                },
-              },
-            ],
-          },
-          {
-            label: 'Scans',
-            submenu: [
-              {
-                label: 'runningSum',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.RUNNING_SUM}"`,
-                  });
-                },
-              },
-              {
-                label: 'runningProduct',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.RUNNING_PRODUCT}"`,
-                  });
-                },
-              },
-              {
-                label: 'difference',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.DIFFERENCE}"`,
-                  });
-                },
-              },
-            ],
-          },
-          {
-            label: 'Tensor operations',
-            submenu: [
-              {
-                label: 'innerProduct',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INNER_PRODUCT}"`,
-                  });
-                },
-              },
-              {
-                label: 'outerProduct',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.OUTER_PRODUCT}"`,
-                  });
-                },
-              },
-              {
-                label: 'index',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.INDEX}"`,
-                  });
-                },
-              },
-              {
-                label: 'gather',
-                async click() {
-                  await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.ADD_OPERATION} "${availableOperations.GATHER}"`,
                   });
                 },
               },
@@ -1053,5 +660,46 @@ export class MenuManager {
     ]);
 
     Menu.setApplicationMenu(menu);
+  }
+
+  private static buildSubmenuForOperations(operations: string[]) {
+    const submenu: MenuItemConstructorOptions[] = [];
+
+    for (const o of operations) {
+      submenu.push(this.addOpMenu(o));
+    }
+    return submenu;
+  }
+
+  private static addOpMenu(operation: string) {
+    return {
+      label: operation,
+      async click() {
+        await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.ADD_OPERATION} "${operation}"`,
+        });
+      },
+    };
+  }
+  static async buildMenuForInsertOperations() {
+    const availableOperationsMapping = await CommandsManager.getAvailableOperationsMapping();
+    let insertOperationsMenu: MenuItem[] = [];
+    for (const key in availableOperationsMapping) {
+      insertOperationsMenu = [
+        ...insertOperationsMenu,
+        new MenuItem({
+          label: key,
+          submenu: this.buildSubmenuForOperations(
+            availableOperationsMapping[key]
+          ),
+        }),
+      ];
+    }
+
+    const insertMenu = Menu.getApplicationMenu().getMenuItemById('insert');
+
+    insertOperationsMenu.forEach((o) => {
+      insertMenu.submenu.append(o);
+    });
   }
 }
