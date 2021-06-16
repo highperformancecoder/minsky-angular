@@ -2,7 +2,9 @@
   <div class="popup-title">
     Create
     {{
-      variableType === 'flow' || variableType === 'integral' ? 'Variable' : type
+      variableType === 'flow' || variableType === 'integral'
+        ? 'Variable'
+        : type.value
     }}
   </div>
 
