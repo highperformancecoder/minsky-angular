@@ -258,7 +258,7 @@ export class ContextMenuManager {
         label: 'Group',
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
-            command: commandsMapping.ADD_GROUP,
+            command: commandsMapping.GROUP_SELECTION,
           });
         },
       }),

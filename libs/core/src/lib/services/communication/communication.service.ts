@@ -115,8 +115,6 @@ export class CommunicationService {
             this.clearSimulationTimer();
             this.showPlayButton$.next(true);
 
-            // await this.electronService.sendMinskyCommandAndRender({ command });
-
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.STOP_SIMULATION,
             });
@@ -216,8 +214,12 @@ export class CommunicationService {
     this.simulationTimerId = null;
   }
 
-  public async mouseEvents(event, message) {
-    const { type, clientX, clientY } = message;
+  public async mouseEvents(event, message: MouseEvent) {
+    const { type, clientX, clientY, button } = message;
+    if (button === 2) {
+      // on right click
+      return;
+    }
 
     const offset = this.windowUtilityService.getMinskyCanvasOffset();
 
