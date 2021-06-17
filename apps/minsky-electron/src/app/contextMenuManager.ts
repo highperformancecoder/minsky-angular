@@ -10,96 +10,89 @@ import { RestServiceManager } from './restServiceManager';
 import { WindowManager } from './windowManager';
 
 export class ContextMenuManager {
-  public static initContextMenu() {
+  public static async initContextMenu(x: number, y: number) {
     const mainWindow = WindowManager.getMainWindow();
 
-    mainWindow.webContents.on('context-menu', async (event, params) => {
-      try {
-        const { x, y } = params;
+    try {
+      const cairoTopOffset = y;
 
-        if (y < WindowManager.topOffset) {
-          return;
-        }
+      const wire = await CommandsManager.getWireAt(x, cairoTopOffset);
 
-        const cairoTopOffset = y - WindowManager.topOffset;
+      const isWirePresent = !isEmptyObject(wire);
 
-        const wire = await CommandsManager.getWireAt(x, cairoTopOffset);
+      const isWireVisible = (await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.CANVAS_WIRE_VISIBLE,
+      })) as boolean;
 
-        const isWirePresent = !isEmptyObject(wire);
-
-        const isWireVisible = (await RestServiceManager.handleMinskyProcess({
-          command: commandsMapping.CANVAS_WIRE_VISIBLE,
-        })) as boolean;
-
-        if (isWirePresent && isWireVisible) {
-          ContextMenuManager.buildAndDisplayContextMenu(
-            ContextMenuManager.wireContextMenu(),
-            mainWindow,
-            x,
-            y
-          );
-          return;
-        }
-
-        const itemInfo = await CommandsManager.getItemInfo(x, cairoTopOffset);
-
-        if (itemInfo?.classType) {
-          switch (itemInfo?.classType) {
-            case ClassType.GodleyIcon:
-              ContextMenuManager.buildAndDisplayContextMenu(
-                await ContextMenuManager.rightMouseGodley(
-                  x,
-                  cairoTopOffset,
-                  itemInfo
-                ),
-                mainWindow,
-                x,
-                y
-              );
-              break;
-
-            case ClassType.Group:
-              ContextMenuManager.buildAndDisplayContextMenu(
-                await ContextMenuManager.rightMouseGroup(
-                  x,
-                  cairoTopOffset,
-                  itemInfo
-                ),
-                mainWindow,
-                x,
-                y
-              );
-              break;
-
-            default:
-              ContextMenuManager.buildAndDisplayContextMenu(
-                await ContextMenuManager.contextMenu(itemInfo),
-                mainWindow,
-                x,
-                y
-              );
-
-              break;
-          }
-
-          return;
-        }
-
+      if (isWirePresent && isWireVisible) {
         ContextMenuManager.buildAndDisplayContextMenu(
-          ContextMenuManager.canvasContext(x, y),
+          ContextMenuManager.wireContextMenu(),
           mainWindow,
           x,
           y
         );
+        return;
+      }
+
+      const itemInfo = await CommandsManager.getItemInfo(x, cairoTopOffset);
+
+      if (itemInfo?.classType) {
+        switch (itemInfo?.classType) {
+          case ClassType.GodleyIcon:
+            ContextMenuManager.buildAndDisplayContextMenu(
+              await ContextMenuManager.rightMouseGodley(
+                x,
+                cairoTopOffset,
+                itemInfo
+              ),
+              mainWindow,
+              x,
+              y
+            );
+            break;
+
+          case ClassType.Group:
+            ContextMenuManager.buildAndDisplayContextMenu(
+              await ContextMenuManager.rightMouseGroup(
+                x,
+                cairoTopOffset,
+                itemInfo
+              ),
+              mainWindow,
+              x,
+              y
+            );
+            break;
+
+          default:
+            ContextMenuManager.buildAndDisplayContextMenu(
+              await ContextMenuManager.contextMenu(itemInfo),
+              mainWindow,
+              x,
+              y
+            );
+
+            break;
+        }
 
         return;
-      } catch (error) {
-        console.error(
-          '🚀 ~ file: contextMenuManager.ts ~ line 117 ~ ContextMenuManager ~ mainWindow.webContents.on ~ error',
-          error
-        );
       }
-    });
+
+      ContextMenuManager.buildAndDisplayContextMenu(
+        ContextMenuManager.canvasContext(x, y),
+        mainWindow,
+        x,
+        y
+      );
+
+      return;
+    } catch (error) {
+      console.error(
+        '🚀 ~ file: contextMenuManager.ts ~ line 117 ~ ContextMenuManager ~ mainWindow.webContents.on ~ error',
+        error
+      );
+    }
+    // });
   }
 
   private static async rightMouseGodley(
@@ -293,7 +286,11 @@ export class ContextMenuManager {
     if (menuItems.length) {
       const menu = Menu.buildFromTemplate(menuItems);
 
-      menu.popup({ window: mainWindow, x, y });
+      menu.popup({
+        window: mainWindow,
+        x,
+        y: y + WindowManager.electronTopOffset,
+      });
     }
   }
 
@@ -715,7 +712,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Flip',
         click: async () => {
-          await CommandsManager.flip();
+          await CommandsManager.flipSwitch();
         },
       }),
     ];

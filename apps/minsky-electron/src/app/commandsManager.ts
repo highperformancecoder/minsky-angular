@@ -191,6 +191,18 @@ export class CommandsManager {
     return selectVar as boolean;
   }
 
+  static async flipSwitch(): Promise<void> {
+    const flipped = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.CANVAS_ITEM_FLIPPED,
+    })) as boolean;
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CANVAS_ITEM_FLIPPED} ${!flipped}`,
+    });
+
+    return;
+  }
+
   static async flip(): Promise<void> {
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_ITEM_FLIP}`,

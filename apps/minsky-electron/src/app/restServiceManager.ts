@@ -47,6 +47,7 @@ export class RestServiceManager {
   private static lastZoomPayload: MinskyProcessPayload = null;
   private static isSimulationOn = false;
   static availableOperationsMappings: Record<string, string[]> = {};
+  static delay = 0;
 
   private static async processCommandsInQueueNew(): Promise<unknown> {
     // Should be on a separate thread......? Janak
@@ -151,6 +152,10 @@ export class RestServiceManager {
       }
       if (payload.command === commandsMapping.PAUSE_SIMULATION) {
         this.isSimulationOn = false;
+        queueItem = null;
+      }
+      if (payload.command === commandsMapping.UPDATE_SIMULATION_SPEED) {
+        this.delay = payload.args.delay as number;
         queueItem = null;
       }
 
@@ -273,8 +278,7 @@ export class RestServiceManager {
       if (miscCommand === commandsMapping.STEP && this.isSimulationOn) {
         setTimeout(() => {
           this.handleMinskyProcess({ command: miscCommand });
-        }, 1); // This needs to be done in a setTimeout in order to release control Loop for other events from UI / frontend
-        // TODO:: Make the delay configurable
+        }, 1 + this.delay); // This needs to be done in a setTimeout in order to release control Loop for other events from UI / frontend
       }
 
       return res;

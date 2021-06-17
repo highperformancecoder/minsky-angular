@@ -31,6 +31,10 @@ export class WiringComponent implements OnInit, OnDestroy {
     const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
 
     this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
+    console.log(
+      '🚀 ~ file: wiring.component.ts ~ line 34 ~ WiringComponent ~ ngOnInit ~ this.offsetTop',
+      this.offsetTop
+    );
 
     this.setupEventListenersForCanvas(minskyCanvasContainer);
 
@@ -74,7 +78,11 @@ export class WiringComponent implements OnInit, OnDestroy {
         minskyCanvasContainer.onwheel = this.cmService.onMouseWheelZoom;
 
         minskyCanvasContainer.addEventListener('keydown', async (event) => {
-          await this.cmService.handleKeyPress(event);
+          await this.cmService.handleKeyDown(event);
+        });
+
+        minskyCanvasContainer.addEventListener('keyup', async (event) => {
+          await this.cmService.handleKeyUp(event);
         });
 
         this.mouseMove$ = fromEvent<MouseEvent>(
@@ -90,6 +98,13 @@ export class WiringComponent implements OnInit, OnDestroy {
           'mousedown',
           async (event: MouseEvent) => {
             await this.cmService.mouseEvents('CANVAS_EVENT', event);
+          }
+        );
+
+        minskyCanvasElement.addEventListener(
+          'contextmenu',
+          async (event: MouseEvent) => {
+            await this.cmService.mouseEvents('contextmenu', event);
           }
         );
 

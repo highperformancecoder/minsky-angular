@@ -9,6 +9,7 @@ import { ipcMain } from 'electron';
 import { environment } from '../../environments/environment';
 import { BookmarkManager } from '../bookmarkManager';
 import { CommandsManager } from '../commandsManager';
+import { ContextMenuManager } from '../contextMenuManager';
 import { KeyBindingManager } from '../keyBindingManager';
 import { RecentFilesManager } from '../recentFilesManager';
 import { RestServiceManager } from '../restServiceManager';
@@ -38,6 +39,7 @@ const {
   AUTO_START_MINSKY_SERVICE,
   GET_PREFERENCES,
   UPDATE_PREFERENCES,
+  CONTEXT_MENU,
 } = events;
 
 // Retrieve app version
@@ -110,4 +112,8 @@ ipcMain.on(AUTO_START_MINSKY_SERVICE, async () => {
 
 ipcMain.on(NEW_SYSTEM, async () => {
   await CommandsManager.createNewSystem();
+});
+
+ipcMain.on(CONTEXT_MENU, async (event, { x, y }) => {
+  await ContextMenuManager.initContextMenu(x, y);
 });

@@ -66,7 +66,6 @@ export const commandsMapping = {
   SAVE: '/minsky/save',
   SET_GODLEY_ICON_RESOURCE: '/minsky/setGodleyIconResource',
   SET_GROUP_ICON_RESOURCE: '/minsky/setGroupIconResource',
-  SIMULATION_SPEED: '/minsky/nSteps',
   START_MINSKY_PROCESS: 'startMinskyProcess',
   STEP_MAX: '/minsky/stepMax',
   STEP_MIN: '/minsky/stepMin',
@@ -185,10 +184,15 @@ export const commandsMapping = {
   PAUSE_SIMULATION: 'pauseSimulation',
   START_SIMULATION: 'startSimulation',
   STOP_SIMULATION: 'stopSimulation',
+  UPDATE_SIMULATION_SPEED: 'updateSimulationSpeed',
+  SIMULATION_SPEED: '/minsky/nSteps',
   AVAILABLE_OPERATIONS: '/minsky/availableOperations',
   CLASSIFY_OPERATION: '/minsky/classifyOp',
   AVAILABLE_OPERATIONS_MAPPING: 'availableOperationsMapping',
   LIST_FONTS: '/minsky/listFonts',
+  STOP_REPLAY: 'stopReplay',
+  CANVAS_ITEM_FLIPPED: '/minsky/canvas/item/flipped',
+  DEFAULT_EXTENSION: '/minsky/model/defaultExtension',
 };
 
 export const availableOperations = {
@@ -273,6 +277,7 @@ export const events = {
   RECORDING_STATUS_CHANGED: 'recording-status-changed',
   GET_PREFERENCES: 'get-preferences',
   UPDATE_PREFERENCES: 'update-preferences',
+  CONTEXT_MENU: 'context-menu',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup
