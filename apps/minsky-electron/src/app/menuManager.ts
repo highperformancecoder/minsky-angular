@@ -134,14 +134,21 @@ export class MenuManager {
             label: 'SaveAs',
             accelerator: 'CmdOrCtrl + Shift + S',
             async click() {
+              const defaultExtension = (await RestServiceManager.handleMinskyProcess(
+                { command: commandsMapping.DEFAULT_EXTENSION }
+              )) as string;
+
               const saveDialog = await dialog.showSaveDialog({
                 filters: [
-                  { name: 'Minsky', extensions: ['mky'] },
-                  { name: 'Ravel', extensions: ['rvl'] },
+                  {
+                    name: defaultExtension,
+                    extensions: [defaultExtension.slice(1)],
+                  },
                   { name: 'All', extensions: ['*'] },
                 ],
                 defaultPath:
-                  RestServiceManager.currentMinskyModelFilePath || '',
+                  RestServiceManager.currentMinskyModelFilePath ||
+                  `model${defaultExtension}`,
                 properties: ['showOverwriteConfirmation'],
               });
 
