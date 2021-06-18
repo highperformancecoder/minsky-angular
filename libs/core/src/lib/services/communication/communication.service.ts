@@ -33,8 +33,8 @@ export class CommunicationService {
 
   isShiftPressed = false;
   drag = false;
+  showDragCursor$ = new BehaviorSubject(false);
 
-  // TODO: start by getting all the operations and then combining them with their type
   constructor(
     private socket: Socket,
     private electronService: ElectronService,
@@ -282,7 +282,6 @@ export class CommunicationService {
 
       if (command === commandsMapping.mousedown && this.isShiftPressed) {
         this.drag = true;
-
         return;
       }
 
@@ -391,6 +390,7 @@ export class CommunicationService {
     if (!event.shiftKey) {
       this.isShiftPressed = false;
       this.drag = false;
+      this.showDragCursor$.next(false);
     }
     return;
   }
@@ -409,6 +409,7 @@ export class CommunicationService {
 
     if (event.shiftKey) {
       this.isShiftPressed = true;
+      this.showDragCursor$.next(true);
     }
 
     console.table(payload);
