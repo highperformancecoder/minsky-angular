@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { Injectable } from '@angular/core';
 import {
   commandsMapping,
@@ -29,6 +30,9 @@ export class CommunicationService {
 
   mouseX: number;
   mouseY: number;
+
+  isShiftPressed = false;
+  drag = false;
 
   // TODO: start by getting all the operations and then combining them with their type
   constructor(
@@ -84,7 +88,18 @@ export class CommunicationService {
             break;
 
           case 'SIMULATION_SPEED':
-            command = `${command} ${message.value}`;
+            autoHandleMinskyProcess = false;
+            const speed = message.value as number;
+
+            const currentDelay: number = 12 - (speed * 12) / (150 - 0);
+
+            const delay = Math.round(Math.pow(10, currentDelay / 4));
+
+            await this.electronService.sendMinskyCommandAndRender({
+              command: commandsMapping.UPDATE_SIMULATION_SPEED,
+              args: { delay },
+            });
+
             break;
 
           case 'PLAY':
@@ -100,28 +115,15 @@ export class CommunicationService {
 
           case 'PAUSE':
             autoHandleMinskyProcess = false;
-            this.isSimulationOn = false;
-            this.clearSimulationTimer();
 
-            await this.electronService.sendMinskyCommandAndRender({
-              command: commandsMapping.PAUSE_SIMULATION,
-            });
+            await this.pauseSimulation();
 
             break;
 
           case 'RESET':
             autoHandleMinskyProcess = false;
-            this.isSimulationOn = false;
-            this.clearSimulationTimer();
-            this.showPlayButton$.next(true);
 
-            // await this.electronService.sendMinskyCommandAndRender({ command });
-
-            await this.electronService.sendMinskyCommandAndRender({
-              command: commandsMapping.STOP_SIMULATION,
-            });
-
-            await this.updateSimulationTime();
+            await this.stopSimulation();
             break;
 
           case 'STEP':
@@ -153,6 +155,27 @@ export class CommunicationService {
     }
   }
 
+  private async pauseSimulation() {
+    this.isSimulationOn = false;
+    this.clearSimulationTimer();
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.PAUSE_SIMULATION,
+    });
+  }
+
+  private async stopSimulation() {
+    this.isSimulationOn = false;
+    this.clearSimulationTimer();
+    this.showPlayButton$.next(true);
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.STOP_SIMULATION,
+    });
+
+    await this.updateSimulationTime();
+  }
+
   private triggerUpdateTime() {
     this.clearSimulationTimer();
     this.simulationTimerId = window.setTimeout(async () => {
@@ -164,6 +187,13 @@ export class CommunicationService {
   }
 
   private async updateSimulationTime() {
+    const runUntilTime = (await this.electronService.sendMinskyCommandAndRender(
+      {
+        command: commandsMapping.T_MAX,
+        render: false,
+      }
+    )) as number;
+
     this.t = ((await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.T,
       render: false,
@@ -173,6 +203,10 @@ export class CommunicationService {
       command: commandsMapping.DELTA_T,
       render: false,
     })) as number).toFixed(2);
+
+    if (Number(this.t) >= runUntilTime) {
+      this.pauseSimulation();
+    }
   }
 
   private async getResetZoomCommand(centerX: number, centerY: number) {
@@ -216,13 +250,13 @@ export class CommunicationService {
     this.simulationTimerId = null;
   }
 
-  public async mouseEvents(event, message) {
-    const { type, clientX, clientY } = message;
+  public async mouseEvents(event, message: MouseEvent) {
+    const { type, clientX, clientY, button } = message;
 
     const offset = this.windowUtilityService.getMinskyCanvasOffset();
 
     this.mouseX = clientX;
-    this.mouseY = clientY - offset.top;
+    this.mouseY = clientY - Math.round(offset.top);
 
     const clickData = {
       type,
@@ -230,8 +264,41 @@ export class CommunicationService {
       clientY,
     };
 
+    if (event === 'contextmenu') {
+      this.electronService.ipcRenderer.send(events.CONTEXT_MENU, {
+        x: this.mouseX,
+        y: this.mouseY,
+      });
+      return;
+    }
+
+    if (button === 2) {
+      // on right click
+      return;
+    }
+
     if (this.electronService.isElectron) {
       const command = commandsMapping[type];
+
+      if (command === commandsMapping.mousedown && this.isShiftPressed) {
+        this.drag = true;
+
+        return;
+      }
+
+      if (command === commandsMapping.mouseup && this.drag) {
+        this.drag = false;
+        return;
+      }
+
+      if (command === commandsMapping.mousemove && this.drag) {
+        this.windowUtilityService.getMinskyContainerElement().scrollTop -=
+          message.movementY;
+        this.windowUtilityService.getMinskyContainerElement().scrollLeft -=
+          message.movementX;
+
+        return;
+      }
 
       if (command) {
         await this.electronService.sendMinskyCommandAndRender({
@@ -320,7 +387,15 @@ export class CommunicationService {
     });
   };
 
-  async handleKeyPress(event: KeyboardEvent) {
+  async handleKeyUp(event: KeyboardEvent) {
+    if (!event.shiftKey) {
+      this.isShiftPressed = false;
+      this.drag = false;
+    }
+    return;
+  }
+
+  async handleKeyDown(event: KeyboardEvent) {
     const payload: MinskyProcessPayload = {
       command: commandsMapping.KEY_PRESS,
       key: event.key,
@@ -331,6 +406,10 @@ export class CommunicationService {
       mouseX: this.mouseX,
       mouseY: this.mouseY,
     };
+
+    if (event.shiftKey) {
+      this.isShiftPressed = true;
+    }
 
     console.table(payload);
 

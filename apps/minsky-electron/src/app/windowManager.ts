@@ -5,7 +5,7 @@ import {
   rendererAppURL,
 } from '@minsky/shared';
 import * as debug from 'debug';
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, screen } from 'electron';
 import * as os from 'os';
 import { StoreManager } from './storeManager';
 
@@ -167,15 +167,19 @@ export class WindowManager {
 
       case 'OFFSET':
         if (!WindowManager.topOffset) {
-          WindowManager.topOffset = value.top;
+          WindowManager.topOffset = Math.round(value.top);
         }
 
         if (!WindowManager.electronTopOffset) {
-          WindowManager.electronTopOffset = value.electronTop;
+          const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
+
+          WindowManager.electronTopOffset = Math.round(
+            value.electronMenuBarHeight * scaleFactor + value.top
+          );
         }
 
         if (!WindowManager.leftOffset) {
-          WindowManager.leftOffset = value.left;
+          WindowManager.leftOffset = Math.round(value.left);
         }
         break;
 

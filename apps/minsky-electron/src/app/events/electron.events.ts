@@ -9,6 +9,7 @@ import { ipcMain } from 'electron';
 import { environment } from '../../environments/environment';
 import { BookmarkManager } from '../bookmarkManager';
 import { CommandsManager } from '../commandsManager';
+import { ContextMenuManager } from '../contextMenuManager';
 import { KeyBindingManager } from '../keyBindingManager';
 import { RecentFilesManager } from '../recentFilesManager';
 import { RestServiceManager } from '../restServiceManager';
@@ -36,6 +37,9 @@ const {
   MINSKY_PROCESS_FOR_IPC_MAIN,
   NEW_SYSTEM,
   AUTO_START_MINSKY_SERVICE,
+  GET_PREFERENCES,
+  UPDATE_PREFERENCES,
+  CONTEXT_MENU,
 } = events;
 
 // Retrieve app version
@@ -86,6 +90,18 @@ ipcMain.handle(KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
   return await KeyBindingManager.handleOnKeyPress(payload);
 });
 
+ipcMain.handle(GET_PREFERENCES, () => {
+  return StoreManager.store.get('preferences');
+});
+
+ipcMain.handle(
+  UPDATE_PREFERENCES,
+  (event, preferences: Record<string, unknown>) => {
+    StoreManager.store.set('preferences', preferences);
+    return;
+  }
+);
+
 ipcMain.on(TOGGLE_MINSKY_SERVICE, async () => {
   await RestServiceManager.toggleMinskyService();
 });
@@ -96,4 +112,8 @@ ipcMain.on(AUTO_START_MINSKY_SERVICE, async () => {
 
 ipcMain.on(NEW_SYSTEM, async () => {
   await CommandsManager.createNewSystem();
+});
+
+ipcMain.on(CONTEXT_MENU, async (event, { x, y }) => {
+  await ContextMenuManager.initContextMenu(x, y);
 });

@@ -17,22 +17,24 @@
         <label>Godley Table Output Style</label>
         <span class="radio-wrapper">
           <input
-            formControlName="godleyStyleRadioGroup"
+            formControlName="godleyTableOutputStyle"
             type="radio"
             class="dr-cr-radio"
             id="drCrRadio"
-            name="godleyStyleRadioGroup"
+            name="godleyTableOutputStyle"
+            value="dr/cr"
           />
           <label for="drCrRadio">DR/CR</label>
         </span>
 
         <span class="radio-wrapper">
           <input
-            formControlName="godleyStyleRadioGroup"
+            formControlName="godleyTableOutputStyle"
             type="radio"
             class="plus-minus-radio"
             id="plusMinusRadio"
-            name="godleyStyleRadioGroup"
+            name="godleyTableOutputStyle"
+            value="+/-"
           />
           <label for="plusMinusRadio">+/-</label>
         </span>
@@ -88,9 +90,9 @@
       <div class="form-control">
         <label for="font">Font</label>
         <select formControlName="font" name="font" id="font">
-          <option value="arial">Arial</option>
-          <option value="arialUnicode">Arial Unicode</option>
-          <option value="timesNewRoman">Times New Roman</option>
+          <ng-container *ngFor="let font of availableFonts">
+            <option value="{{ font }}">{{ font }}</option>
+          </ng-container>
         </select>
       </div>
 

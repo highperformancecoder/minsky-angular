@@ -10,7 +10,6 @@ import { BrowserWindow, dialog, screen, shell } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { environment } from '../environments/environment';
-import { ContextMenuManager } from './contextMenuManager';
 import { MenuManager } from './menuManager';
 import { startProxyServer } from './proxy';
 import { RecentFilesManager } from './recentFilesManager';
@@ -80,8 +79,6 @@ export default class App {
     App.initMenu();
 
     App.loadMainWindow();
-
-    ContextMenuManager.initContextMenu();
   }
 
   private static initMinskyService() {

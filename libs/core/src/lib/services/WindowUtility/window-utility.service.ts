@@ -4,7 +4,7 @@ import { ElectronService } from '../electron/electron.service';
 interface Offset {
   left: number;
   top: number;
-  electronTop: number;
+  electronMenuBarHeight: number;
 }
 
 @Injectable({
@@ -15,7 +15,7 @@ export class WindowUtilityService {
   private minskyCanvasContainer: HTMLElement = null;
   private leftOffset = 0;
   private topOffset = 0;
-  private electronTopOffset = 0;
+  private electronMenuBarHeight = 0;
   private drawableWidth = 0;
   private drawableHeight = 0;
   private containerWidth = 0;
@@ -49,16 +49,15 @@ export class WindowUtilityService {
 
         const clientRect = this.minskyCanvasContainer.getBoundingClientRect();
 
-        this.leftOffset = Math.ceil(clientRect.left);
-        this.topOffset = Math.ceil(clientRect.top);
+        this.leftOffset = clientRect.left;
+        this.topOffset = clientRect.top;
 
         const currentWindow = this.electronService.remote.getCurrentWindow();
         const currentWindowSize = currentWindow.getSize()[1];
         const currentWindowContentSize = currentWindow.getContentSize()[1];
         const electronMenuBarHeight =
           currentWindowSize - currentWindowContentSize;
-
-        this.electronTopOffset = this.topOffset + electronMenuBarHeight;
+        this.electronMenuBarHeight = electronMenuBarHeight;
       }
     }
   }
@@ -75,7 +74,7 @@ export class WindowUtilityService {
     return {
       left: this.leftOffset,
       top: this.topOffset,
-      electronTop: this.electronTopOffset,
+      electronMenuBarHeight: this.electronMenuBarHeight,
     };
   }
 
