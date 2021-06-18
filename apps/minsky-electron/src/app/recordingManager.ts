@@ -22,12 +22,6 @@ export class RecordingManager {
     });
 
     if (replayRecordingDialog.canceled) {
-      WindowManager.getMainWindow().webContents.send(
-        events.RECORDING_STATUS_CHANGED,
-        {
-          status: RecordingStatus.ReplayCanceled,
-        }
-      );
       return;
     }
 
@@ -67,15 +61,6 @@ export class RecordingManager {
   private static async replay(
     replayRecordingDialog: Electron.OpenDialogReturnValue
   ) {
-    ipcMain.emit(events.NEW_SYSTEM);
-
-    WindowManager.getMainWindow().webContents.send(
-      events.RECORDING_STATUS_CHANGED,
-      {
-        status: RecordingStatus.ReplayStarted,
-      }
-    );
-
     const replayFile = readFileSync(replayRecordingDialog.filePaths[0], {
       encoding: 'utf8',
       flag: 'r',
@@ -83,19 +68,9 @@ export class RecordingManager {
 
     const replayJSON = JSON.parse(replayFile);
 
-    setTimeout(() => {
-      for (const line of replayJSON) {
-        ipcMain.emit(events.MINSKY_PROCESS_FOR_IPC_MAIN, null, {
-          command: line.command,
-        });
-      }
-      WindowManager.getMainWindow().webContents.send(
-        events.RECORDING_STATUS_CHANGED,
-        {
-          status: RecordingStatus.ReplayStopped,
-        }
-      );
-    }, 500);
+    WindowManager.getMainWindow().webContents.send(events.REPLAY_RECORDING, {
+      json: replayJSON,
+    });
   }
 
   static record(command: string) {

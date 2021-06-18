@@ -278,6 +278,7 @@ export const events = {
   GET_PREFERENCES: 'get-preferences',
   UPDATE_PREFERENCES: 'update-preferences',
   CONTEXT_MENU: 'context-menu',
+  REPLAY_RECORDING: 'replay-recording',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup

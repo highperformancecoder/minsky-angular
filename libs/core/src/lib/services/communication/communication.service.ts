@@ -1,10 +1,10 @@
-/* eslint-disable no-case-declarations */
 import { Injectable } from '@angular/core';
 import {
   commandsMapping,
   events,
   HeaderEvent,
   MinskyProcessPayload,
+  ReplayRecordingStatus,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
@@ -16,6 +16,11 @@ import { ElectronService } from './../electron/electron.service';
 export class Message {
   id: string;
   body: string;
+}
+
+interface ReplayJSON {
+  command: string;
+  executedAt: number;
 }
 
 @Injectable({
@@ -34,6 +39,12 @@ export class CommunicationService {
   isShiftPressed = false;
   drag = false;
   showDragCursor$ = new BehaviorSubject(false);
+  currentReplayJSON: ReplayJSON[] = [];
+  isReplayOn = false;
+
+  ReplayRecordingStatus$: BehaviorSubject<ReplayRecordingStatus> = new BehaviorSubject(
+    ReplayRecordingStatus.ReplayStopped
+  );
 
   constructor(
     private socket: Socket,
@@ -41,6 +52,77 @@ export class CommunicationService {
     private windowUtilityService: WindowUtilityService
   ) {
     this.isSimulationOn = false;
+
+    this.initReplay();
+  }
+
+  private initReplay() {
+    if (this.electronService.isElectron) {
+      this.electronService.ipcRenderer.on(
+        events.REPLAY_RECORDING,
+        async (event, { json }) => {
+          this.isReplayOn = true;
+          this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStarted);
+          this.currentReplayJSON = json;
+          this.showPlayButton$.next(false);
+
+          await this.electronService.ipcRenderer.invoke(events.NEW_SYSTEM);
+          this.startReplay();
+        }
+      );
+    }
+  }
+
+  startReplay() {
+    setTimeout(async () => {
+      if (!this.currentReplayJSON.length) {
+        this.isReplayOn = false;
+        this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStopped);
+        this.showPlayButton$.next(true);
+        return;
+      }
+
+      const { command } = this.currentReplayJSON.shift();
+
+      await this.electronService.sendMinskyCommandAndRender({
+        command: command,
+      });
+
+      if (this.isReplayOn) {
+        this.startReplay();
+      }
+    }, 1);
+  }
+
+  stopReplay() {
+    this.currentReplayJSON = [];
+    this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStopped);
+    this.isReplayOn = false;
+  }
+
+  pauseReplay() {
+    this.isReplayOn = false;
+  }
+
+  continueReplay() {
+    this.isReplayOn = true;
+    this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStarted);
+    this.startReplay();
+  }
+
+  async stepReplay() {
+    if (!this.currentReplayJSON.length) {
+      return;
+    }
+    this.isReplayOn = true;
+
+    const { command } = this.currentReplayJSON.shift();
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: command,
+    });
+
+    this.isReplayOn = false;
   }
 
   setBackgroundColor(color = null) {
@@ -89,47 +171,43 @@ export class CommunicationService {
 
           case 'SIMULATION_SPEED':
             autoHandleMinskyProcess = false;
-            const speed = message.value as number;
-
-            const currentDelay: number = 12 - (speed * 12) / (150 - 0);
-
-            const delay = Math.round(Math.pow(10, currentDelay / 4));
-
-            await this.electronService.sendMinskyCommandAndRender({
-              command: commandsMapping.UPDATE_SIMULATION_SPEED,
-              args: { delay },
-            });
+            await this.updateSimulationSpeed(message);
 
             break;
 
           case 'PLAY':
             autoHandleMinskyProcess = false;
-            this.isSimulationOn = true;
-            await this.electronService.sendMinskyCommandAndRender({
-              command: commandsMapping.START_SIMULATION,
-            });
 
-            this.triggerUpdateTime();
+            this.currentReplayJSON.length
+              ? this.continueReplay()
+              : await this.startSimulation();
 
             break;
 
           case 'PAUSE':
             autoHandleMinskyProcess = false;
 
-            await this.pauseSimulation();
+            this.currentReplayJSON.length
+              ? this.pauseReplay()
+              : await this.pauseSimulation();
 
             break;
 
           case 'RESET':
             autoHandleMinskyProcess = false;
 
-            await this.stopSimulation();
+            this.showPlayButton$.next(true);
+            this.currentReplayJSON.length
+              ? this.stopReplay()
+              : await this.stopSimulation();
+
             break;
 
           case 'STEP':
             autoHandleMinskyProcess = false;
-            await this.electronService.sendMinskyCommandAndRender({ command });
-            await this.updateSimulationTime();
+            this.currentReplayJSON.length
+              ? this.stepReplay()
+              : await this.stepSimulation(command);
 
             break;
 
@@ -155,6 +233,33 @@ export class CommunicationService {
     }
   }
 
+  private async updateSimulationSpeed(message: HeaderEvent) {
+    const speed = message.value as number;
+
+    const currentDelay: number = 12 - (speed * 12) / (150 - 0);
+
+    const delay = Math.round(Math.pow(10, currentDelay / 4));
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.UPDATE_SIMULATION_SPEED,
+      args: { delay },
+    });
+  }
+
+  private async stepSimulation(command: string) {
+    await this.electronService.sendMinskyCommandAndRender({ command });
+    await this.updateSimulationTime();
+  }
+
+  private async startSimulation() {
+    this.isSimulationOn = true;
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.START_SIMULATION,
+    });
+
+    this.triggerUpdateTime();
+  }
+
   private async pauseSimulation() {
     this.isSimulationOn = false;
     this.clearSimulationTimer();
@@ -167,7 +272,6 @@ export class CommunicationService {
   private async stopSimulation() {
     this.isSimulationOn = false;
     this.clearSimulationTimer();
-    this.showPlayButton$.next(true);
 
     await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.STOP_SIMULATION,

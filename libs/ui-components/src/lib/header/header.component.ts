@@ -1,13 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { events, HeaderEvent, RecordingStatus } from '@minsky/shared';
+import {
+  events,
+  HeaderEvent,
+  RecordingStatus,
+  ReplayRecordingStatus,
+} from '@minsky/shared';
+import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
+@AutoUnsubscribe()
 @Component({
   selector: 'minsky-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnDestroy {
   headerEvent = 'HEADER_EVENT';
   isRecordingOn = false;
   isReplayRecordingOn = false;
@@ -30,12 +37,20 @@ export class HeaderComponent {
               this.isRecordingOn = false;
               break;
 
-            case RecordingStatus.ReplayStarted:
+            default:
+              break;
+          }
+        }
+      );
+
+      this.commService.ReplayRecordingStatus$.subscribe(
+        (status: ReplayRecordingStatus) => {
+          switch (status) {
+            case ReplayRecordingStatus.ReplayStarted:
               this.isReplayRecordingOn = true;
               break;
 
-            case RecordingStatus.ReplayStopped:
-            case RecordingStatus.ReplayCanceled:
+            case ReplayRecordingStatus.ReplayStopped:
               this.isReplayRecordingOn = false;
               break;
 
@@ -72,4 +87,7 @@ export class HeaderComponent {
       value: event.target.checked,
     });
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
+  ngOnDestroy() {}
 }
