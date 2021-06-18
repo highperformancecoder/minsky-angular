@@ -40,7 +40,6 @@ export class CommunicationService {
   drag = false;
   showDragCursor$ = new BehaviorSubject(false);
   currentReplayJSON: ReplayJSON[] = [];
-  isReplayOn = false;
 
   ReplayRecordingStatus$: BehaviorSubject<ReplayRecordingStatus> = new BehaviorSubject(
     ReplayRecordingStatus.ReplayStopped
@@ -61,7 +60,6 @@ export class CommunicationService {
       this.electronService.ipcRenderer.on(
         events.REPLAY_RECORDING,
         async (event, { json }) => {
-          this.isReplayOn = true;
           this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStarted);
           this.currentReplayJSON = json;
           this.showPlayButton$.next(false);
@@ -76,7 +74,6 @@ export class CommunicationService {
   startReplay() {
     setTimeout(async () => {
       if (!this.currentReplayJSON.length) {
-        this.isReplayOn = false;
         this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStopped);
         this.showPlayButton$.next(true);
         return;
@@ -88,7 +85,10 @@ export class CommunicationService {
         command: command,
       });
 
-      if (this.isReplayOn) {
+      if (
+        this.ReplayRecordingStatus$.value ===
+        ReplayRecordingStatus.ReplayStarted
+      ) {
         this.startReplay();
       }
     }, 1);
@@ -97,15 +97,13 @@ export class CommunicationService {
   stopReplay() {
     this.currentReplayJSON = [];
     this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStopped);
-    this.isReplayOn = false;
   }
 
   pauseReplay() {
-    this.isReplayOn = false;
+    this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayPaused);
   }
 
   continueReplay() {
-    this.isReplayOn = true;
     this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStarted);
     this.startReplay();
   }
@@ -114,15 +112,12 @@ export class CommunicationService {
     if (!this.currentReplayJSON.length) {
       return;
     }
-    this.isReplayOn = true;
 
     const { command } = this.currentReplayJSON.shift();
 
     await this.electronService.sendMinskyCommandAndRender({
       command: command,
     });
-
-    this.isReplayOn = false;
   }
 
   setBackgroundColor(color = null) {
