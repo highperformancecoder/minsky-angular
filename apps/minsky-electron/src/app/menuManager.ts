@@ -366,17 +366,6 @@ export class MenuManager {
             },
           },
           {
-            label: 'Object Browser',
-            click() {
-              WindowManager.createMenuPopUpWithRouting({
-                width: 400,
-                height: 230,
-                title: '',
-                url: `${rendererAppURL}/#/headless/menu/file/object-browser`,
-              });
-            },
-          },
-          {
             label: 'Select items',
             click() {
               WindowManager.createMenuPopUpWithRouting({

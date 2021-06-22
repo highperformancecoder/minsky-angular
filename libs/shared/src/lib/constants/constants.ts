@@ -181,10 +181,6 @@ export const commandsMapping = {
   RAVEL_VERSION: '/minsky/ravelVersion',
   MATLAB: '/minsky/matlab',
   LATEX: '/minsky/latex',
-  PAUSE_SIMULATION: 'pauseSimulation',
-  START_SIMULATION: 'startSimulation',
-  STOP_SIMULATION: 'stopSimulation',
-  UPDATE_SIMULATION_SPEED: 'updateSimulationSpeed',
   SIMULATION_SPEED: '/minsky/nSteps',
   AVAILABLE_OPERATIONS: '/minsky/availableOperations',
   CLASSIFY_OPERATION: '/minsky/classifyOp',
@@ -278,6 +274,7 @@ export const events = {
   GET_PREFERENCES: 'get-preferences',
   UPDATE_PREFERENCES: 'update-preferences',
   CONTEXT_MENU: 'context-menu',
+  REPLAY_RECORDING: 'replay-recording',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup

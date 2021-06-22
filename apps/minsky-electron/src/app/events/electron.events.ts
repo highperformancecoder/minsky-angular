@@ -110,8 +110,9 @@ ipcMain.on(AUTO_START_MINSKY_SERVICE, async () => {
   await RestServiceManager.startMinskyService();
 });
 
-ipcMain.on(NEW_SYSTEM, async () => {
+ipcMain.handle(NEW_SYSTEM, async () => {
   await CommandsManager.createNewSystem();
+  return;
 });
 
 ipcMain.on(CONTEXT_MENU, async (event, { x, y }) => {

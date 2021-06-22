@@ -3,7 +3,7 @@
     <button class="btn play-btn" title="Play/Stop" (click)="playButton()">
       <img
         src="{{
-          this.communicationService.showPlayButton$.value
+          this.showPlayButton
             ? 'assets/images/icons/play.svg'
             : 'assets/images/icons/pause.svg'
         }}"

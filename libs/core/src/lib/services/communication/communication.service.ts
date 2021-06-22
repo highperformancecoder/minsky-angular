@@ -1,10 +1,10 @@
-/* eslint-disable no-case-declarations */
 import { Injectable } from '@angular/core';
 import {
   commandsMapping,
   events,
   HeaderEvent,
   MinskyProcessPayload,
+  ReplayRecordingStatus,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
@@ -16,6 +16,11 @@ import { ElectronService } from './../electron/electron.service';
 export class Message {
   id: string;
   body: string;
+}
+
+interface ReplayJSON {
+  command: string;
+  executedAt: number;
 }
 
 @Injectable({
@@ -34,6 +39,14 @@ export class CommunicationService {
   isShiftPressed = false;
   drag = false;
   showDragCursor$ = new BehaviorSubject(false);
+  currentReplayJSON: ReplayJSON[] = [];
+
+  ReplayRecordingStatus$: BehaviorSubject<ReplayRecordingStatus> = new BehaviorSubject(
+    ReplayRecordingStatus.ReplayStopped
+  );
+
+  delay = 0;
+  runUntilTime: number;
 
   constructor(
     private socket: Socket,
@@ -41,6 +54,80 @@ export class CommunicationService {
     private windowUtilityService: WindowUtilityService
   ) {
     this.isSimulationOn = false;
+
+    this.initReplay();
+  }
+
+  async syncRunUntilTime() {
+    this.runUntilTime = (await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.T_MAX,
+      render: false,
+    })) as number;
+  }
+
+  private initReplay() {
+    if (this.electronService.isElectron) {
+      this.electronService.ipcRenderer.on(
+        events.REPLAY_RECORDING,
+        async (event, { json }) => {
+          this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStarted);
+          this.currentReplayJSON = json;
+          this.showPlayButton$.next(false);
+
+          await this.electronService.ipcRenderer.invoke(events.NEW_SYSTEM);
+          this.startReplay();
+        }
+      );
+    }
+  }
+
+  startReplay() {
+    setTimeout(async () => {
+      if (!this.currentReplayJSON.length) {
+        this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStopped);
+        this.showPlayButton$.next(true);
+        return;
+      }
+
+      const { command } = this.currentReplayJSON.shift();
+
+      await this.electronService.sendMinskyCommandAndRender({
+        command: command,
+      });
+
+      if (
+        this.ReplayRecordingStatus$.value ===
+        ReplayRecordingStatus.ReplayStarted
+      ) {
+        this.startReplay();
+      }
+    }, this.delay || 1);
+  }
+
+  stopReplay() {
+    this.currentReplayJSON = [];
+    this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStopped);
+  }
+
+  pauseReplay() {
+    this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayPaused);
+  }
+
+  continueReplay() {
+    this.ReplayRecordingStatus$.next(ReplayRecordingStatus.ReplayStarted);
+    this.startReplay();
+  }
+
+  async stepReplay() {
+    if (!this.currentReplayJSON.length) {
+      return;
+    }
+
+    const { command } = this.currentReplayJSON.shift();
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: command,
+    });
   }
 
   setBackgroundColor(color = null) {
@@ -89,47 +176,43 @@ export class CommunicationService {
 
           case 'SIMULATION_SPEED':
             autoHandleMinskyProcess = false;
-            const speed = message.value as number;
-
-            const currentDelay: number = 12 - (speed * 12) / (150 - 0);
-
-            const delay = Math.round(Math.pow(10, currentDelay / 4));
-
-            await this.electronService.sendMinskyCommandAndRender({
-              command: commandsMapping.UPDATE_SIMULATION_SPEED,
-              args: { delay },
-            });
+            await this.updateSimulationSpeed(message);
 
             break;
 
           case 'PLAY':
             autoHandleMinskyProcess = false;
-            this.isSimulationOn = true;
-            await this.electronService.sendMinskyCommandAndRender({
-              command: commandsMapping.START_SIMULATION,
-            });
 
-            this.triggerUpdateTime();
+            this.currentReplayJSON.length
+              ? this.continueReplay()
+              : this.initSimulation();
 
             break;
 
           case 'PAUSE':
             autoHandleMinskyProcess = false;
 
-            await this.pauseSimulation();
+            this.currentReplayJSON.length
+              ? this.pauseReplay()
+              : await this.pauseSimulation();
 
             break;
 
           case 'RESET':
             autoHandleMinskyProcess = false;
 
-            await this.stopSimulation();
+            this.showPlayButton$.next(true);
+            this.currentReplayJSON.length
+              ? this.stopReplay()
+              : await this.stopSimulation();
+
             break;
 
           case 'STEP':
             autoHandleMinskyProcess = false;
-            await this.electronService.sendMinskyCommandAndRender({ command });
-            await this.updateSimulationTime();
+            this.currentReplayJSON.length
+              ? this.stepReplay()
+              : await this.stepSimulation();
 
             break;
 
@@ -155,56 +238,79 @@ export class CommunicationService {
     }
   }
 
+  private async updateSimulationSpeed(message: HeaderEvent) {
+    const speed = message.value as number;
+
+    const currentDelay: number = 12 - (speed * 12) / (150 - 0);
+
+    this.delay = Math.round(Math.pow(10, currentDelay / 4));
+  }
+
+  private async stepSimulation() {
+    const [t, deltaT] = (await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.STEP,
+    })) as number[];
+
+    this.updateSimulationTime(t, deltaT);
+  }
+
+  private async initSimulation() {
+    this.isSimulationOn = true;
+
+    this.startSimulation();
+  }
+
+  private startSimulation() {
+    setTimeout(async () => {
+      if (this.isSimulationOn) {
+        const [
+          t,
+          deltaT,
+        ] = (await this.electronService.sendMinskyCommandAndRender({
+          command: commandsMapping.STEP,
+        })) as number[];
+
+        this.updateSimulationTime(t, deltaT);
+
+        this.startSimulation();
+      }
+    }, this.delay || 1);
+  }
+
   private async pauseSimulation() {
     this.isSimulationOn = false;
-    this.clearSimulationTimer();
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: commandsMapping.PAUSE_SIMULATION,
-    });
   }
 
   private async stopSimulation() {
     this.isSimulationOn = false;
-    this.clearSimulationTimer();
-    this.showPlayButton$.next(true);
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: commandsMapping.STOP_SIMULATION,
+      command: commandsMapping.RESET,
     });
 
-    await this.updateSimulationTime();
-  }
-
-  private triggerUpdateTime() {
-    this.clearSimulationTimer();
-    this.simulationTimerId = window.setTimeout(async () => {
-      await this.updateSimulationTime();
-      if (this.isSimulationOn) {
-        this.triggerUpdateTime();
-      }
-    }, 10); // TODO:: Should we change the delay?
-  }
-
-  private async updateSimulationTime() {
-    const runUntilTime = (await this.electronService.sendMinskyCommandAndRender(
-      {
-        command: commandsMapping.T_MAX,
-        render: false,
-      }
-    )) as number;
-
-    this.t = ((await this.electronService.sendMinskyCommandAndRender({
+    const t = (await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.T,
       render: false,
-    })) as number).toFixed(2);
+    })) as number;
 
-    this.deltaT = ((await this.electronService.sendMinskyCommandAndRender({
+    const deltaT = (await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.DELTA_T,
       render: false,
-    })) as number).toFixed(2);
+    })) as number;
 
-    if (Number(this.t) >= runUntilTime) {
+    this.updateSimulationTime(t, deltaT);
+  }
+
+  private updateSimulationTime(t: number, deltaT: number) {
+    if (!this.runUntilTime) {
+      this.syncRunUntilTime();
+    }
+
+    this.t = t.toFixed(2);
+
+    this.deltaT = deltaT.toFixed(2);
+
+    if (Number(this.t) >= this.runUntilTime) {
       this.pauseSimulation();
     }
   }
@@ -241,13 +347,6 @@ export class CommunicationService {
     const y = 0.5 * (cBounds[3] + cBounds[1]);
 
     return [x, y, zoomFactor].toString();
-  }
-
-  private clearSimulationTimer() {
-    if (this.simulationTimerId) {
-      window.clearTimeout(this.simulationTimerId);
-    }
-    this.simulationTimerId = null;
   }
 
   public async mouseEvents(event, message: MouseEvent) {

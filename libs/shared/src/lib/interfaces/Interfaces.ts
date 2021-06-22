@@ -45,9 +45,12 @@ export enum RecordingStatus {
   RecordingCanceled = 'RecordingCanceled',
   RecordingStarted = 'RecordingStarted',
   RecordingStopped = 'RecordingStopped',
+}
+
+export enum ReplayRecordingStatus {
   ReplayStarted = 'ReplayStarted',
   ReplayStopped = 'ReplayStopped',
-  ReplayCanceled = 'ReplayCanceled',
+  ReplayPaused = 'ReplayPaused',
 }
 
 export interface CanvasItem {
