@@ -45,9 +45,7 @@ export class RestServiceManager {
   private static runningCommand = false;
   private static isQueueEnabled = true;
   private static lastZoomPayload: MinskyProcessPayload = null;
-  private static isSimulationOn = false;
   static availableOperationsMappings: Record<string, string[]> = {};
-  static delay = 0;
 
   private static async processCommandsInQueueNew(): Promise<unknown> {
     // Should be on a separate thread......? Janak
@@ -141,23 +139,6 @@ export class RestServiceManager {
       this.lastMouseMovePayload = null;
       this.lastModelMoveToPayload = null;
       this.lastZoomPayload = null;
-
-      if (payload.command === commandsMapping.START_SIMULATION) {
-        this.isSimulationOn = true;
-        payload.command = commandsMapping.STEP;
-      }
-      if (payload.command === commandsMapping.STOP_SIMULATION) {
-        this.isSimulationOn = false;
-        payload.command = commandsMapping.RESET;
-      }
-      if (payload.command === commandsMapping.PAUSE_SIMULATION) {
-        this.isSimulationOn = false;
-        queueItem = null;
-      }
-      if (payload.command === commandsMapping.UPDATE_SIMULATION_SPEED) {
-        this.delay = payload.args.delay as number;
-        queueItem = null;
-      }
 
       if (queueItem) {
         this.payloadDataQueue.push(queueItem);
@@ -273,12 +254,6 @@ export class RestServiceManager {
       const { render = true } = payload;
       if (render) {
         await HttpManager.handleMinskyCommand(renderCommand);
-      }
-
-      if (miscCommand === commandsMapping.STEP && this.isSimulationOn) {
-        setTimeout(() => {
-          this.handleMinskyProcess({ command: miscCommand });
-        }, 1 + this.delay); // This needs to be done in a setTimeout in order to release control Loop for other events from UI / frontend
       }
 
       return res;

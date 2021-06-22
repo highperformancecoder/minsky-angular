@@ -1,21 +1,42 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { CommunicationService } from '@minsky/core';
 import { HeaderEvent } from '@minsky/shared';
+import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
+@AutoUnsubscribe()
 @Component({
   selector: 'minsky-toolbar',
   templateUrl: './toolbar.component.html',
   styleUrls: ['./toolbar.component.scss'],
 })
-export class ToolbarComponent {
+export class ToolbarComponent implements OnInit, OnDestroy {
   @Output() toolbarEvent = new EventEmitter<HeaderEvent>();
 
   headerEvent = 'HEADER_EVENT';
 
-  constructor(public communicationService: CommunicationService) {}
+  constructor(
+    public communicationService: CommunicationService,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {}
+
+  showPlayButton = false;
+
+  ngOnInit(): void {
+    this.communicationService.showPlayButton$.subscribe((showPlayButton) => {
+      this.showPlayButton = showPlayButton;
+      this.changeDetectorRef.detectChanges();
+    });
+  }
 
   playButton() {
-    if (this.communicationService.showPlayButton$.value) {
+    if (this.showPlayButton) {
       this.toolbarEvent.emit({
         action: 'CLICKED',
         target: 'PLAY',
@@ -81,4 +102,7 @@ export class ToolbarComponent {
       target: 'ZOOM_TO_FIT',
     });
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
+  ngOnDestroy() {}
 }

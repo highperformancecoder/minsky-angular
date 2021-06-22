@@ -45,6 +45,9 @@ export class CommunicationService {
     ReplayRecordingStatus.ReplayStopped
   );
 
+  delay = 0;
+  runUntilTime: number;
+
   constructor(
     private socket: Socket,
     private electronService: ElectronService,
@@ -53,6 +56,13 @@ export class CommunicationService {
     this.isSimulationOn = false;
 
     this.initReplay();
+  }
+
+  async syncRunUntilTime() {
+    this.runUntilTime = (await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.T_MAX,
+      render: false,
+    })) as number;
   }
 
   private initReplay() {
@@ -91,7 +101,7 @@ export class CommunicationService {
       ) {
         this.startReplay();
       }
-    }, 1);
+    }, this.delay || 1);
   }
 
   stopReplay() {
@@ -175,7 +185,7 @@ export class CommunicationService {
 
             this.currentReplayJSON.length
               ? this.continueReplay()
-              : await this.startSimulation();
+              : this.initSimulation();
 
             break;
 
@@ -202,7 +212,7 @@ export class CommunicationService {
             autoHandleMinskyProcess = false;
             this.currentReplayJSON.length
               ? this.stepReplay()
-              : await this.stepSimulation(command);
+              : await this.stepSimulation();
 
             break;
 
@@ -233,77 +243,74 @@ export class CommunicationService {
 
     const currentDelay: number = 12 - (speed * 12) / (150 - 0);
 
-    const delay = Math.round(Math.pow(10, currentDelay / 4));
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: commandsMapping.UPDATE_SIMULATION_SPEED,
-      args: { delay },
-    });
+    this.delay = Math.round(Math.pow(10, currentDelay / 4));
   }
 
-  private async stepSimulation(command: string) {
-    await this.electronService.sendMinskyCommandAndRender({ command });
-    await this.updateSimulationTime();
+  private async stepSimulation() {
+    const [t, deltaT] = (await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.STEP,
+    })) as number[];
+
+    this.updateSimulationTime(t, deltaT);
   }
 
-  private async startSimulation() {
+  private async initSimulation() {
     this.isSimulationOn = true;
-    await this.electronService.sendMinskyCommandAndRender({
-      command: commandsMapping.START_SIMULATION,
-    });
 
-    this.triggerUpdateTime();
+    this.startSimulation();
+  }
+
+  private startSimulation() {
+    setTimeout(async () => {
+      if (this.isSimulationOn) {
+        const [
+          t,
+          deltaT,
+        ] = (await this.electronService.sendMinskyCommandAndRender({
+          command: commandsMapping.STEP,
+        })) as number[];
+
+        this.updateSimulationTime(t, deltaT);
+
+        this.startSimulation();
+      }
+    }, this.delay || 1);
   }
 
   private async pauseSimulation() {
     this.isSimulationOn = false;
-    this.clearSimulationTimer();
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: commandsMapping.PAUSE_SIMULATION,
-    });
   }
 
   private async stopSimulation() {
     this.isSimulationOn = false;
-    this.clearSimulationTimer();
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: commandsMapping.STOP_SIMULATION,
+      command: commandsMapping.RESET,
     });
 
-    await this.updateSimulationTime();
-  }
-
-  private triggerUpdateTime() {
-    this.clearSimulationTimer();
-    this.simulationTimerId = window.setTimeout(async () => {
-      await this.updateSimulationTime();
-      if (this.isSimulationOn) {
-        this.triggerUpdateTime();
-      }
-    }, 10); // TODO:: Should we change the delay?
-  }
-
-  private async updateSimulationTime() {
-    const runUntilTime = (await this.electronService.sendMinskyCommandAndRender(
-      {
-        command: commandsMapping.T_MAX,
-        render: false,
-      }
-    )) as number;
-
-    this.t = ((await this.electronService.sendMinskyCommandAndRender({
+    const t = (await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.T,
       render: false,
-    })) as number).toFixed(2);
+    })) as number;
 
-    this.deltaT = ((await this.electronService.sendMinskyCommandAndRender({
+    const deltaT = (await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.DELTA_T,
       render: false,
-    })) as number).toFixed(2);
+    })) as number;
 
-    if (Number(this.t) >= runUntilTime) {
+    this.updateSimulationTime(t, deltaT);
+  }
+
+  private updateSimulationTime(t: number, deltaT: number) {
+    if (!this.runUntilTime) {
+      this.syncRunUntilTime();
+    }
+
+    this.t = t.toFixed(2);
+
+    this.deltaT = deltaT.toFixed(2);
+
+    if (Number(this.t) >= this.runUntilTime) {
       this.pauseSimulation();
     }
   }
@@ -340,13 +347,6 @@ export class CommunicationService {
     const y = 0.5 * (cBounds[3] + cBounds[1]);
 
     return [x, y, zoomFactor].toString();
-  }
-
-  private clearSimulationTimer() {
-    if (this.simulationTimerId) {
-      window.clearTimeout(this.simulationTimerId);
-    }
-    this.simulationTimerId = null;
   }
 
   public async mouseEvents(event, message: MouseEvent) {

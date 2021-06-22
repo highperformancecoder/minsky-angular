@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommunicationService, ElectronService } from '@minsky/core';
 import {
   events,
@@ -14,15 +14,17 @@ import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnDestroy {
+export class HeaderComponent implements OnInit, OnDestroy {
   headerEvent = 'HEADER_EVENT';
   isRecordingOn = false;
   isReplayRecordingOn = false;
 
   constructor(
     public commService: CommunicationService,
-    private electronService: ElectronService
-  ) {
+    private electronService: ElectronService,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {}
+  ngOnInit() {
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.on(
         events.RECORDING_STATUS_CHANGED,
@@ -30,11 +32,13 @@ export class HeaderComponent implements OnDestroy {
           switch (status) {
             case RecordingStatus.RecordingStarted:
               this.isRecordingOn = true;
+              this.changeDetectorRef.detectChanges();
               break;
 
             case RecordingStatus.RecordingStopped:
             case RecordingStatus.RecordingCanceled:
               this.isRecordingOn = false;
+              this.changeDetectorRef.detectChanges();
               break;
 
             default:
@@ -48,10 +52,12 @@ export class HeaderComponent implements OnDestroy {
           switch (status) {
             case ReplayRecordingStatus.ReplayStarted:
               this.isReplayRecordingOn = true;
+              this.changeDetectorRef.detectChanges();
               break;
 
             case ReplayRecordingStatus.ReplayStopped:
               this.isReplayRecordingOn = false;
+              this.changeDetectorRef.detectChanges();
               break;
 
             default:
