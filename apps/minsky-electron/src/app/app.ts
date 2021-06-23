@@ -9,12 +9,12 @@ import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
-import { environment } from '../environments/environment';
 import { MenuManager } from './menuManager';
 import { startProxyServer } from './proxy';
 import { RecentFilesManager } from './recentFilesManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
+import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
 const logWindows = debug('minsky:electron_windows');
@@ -25,14 +25,6 @@ export default class App {
   static mainWindow: Electron.BrowserWindow;
   static application: Electron.App;
   static BrowserWindow;
-
-  public static isDevelopmentMode() {
-    const isEnvironmentSet: boolean = 'ELECTRON_IS_DEV' in process.env;
-    const getFromEnvironment: boolean =
-      parseInt(process.env.ELECTRON_IS_DEV, 10) === 1;
-
-    return isEnvironmentSet ? getFromEnvironment : !environment.production;
-  }
 
   private static onWindowAllClosed() {
     if (process.platform !== 'darwin') {
@@ -144,7 +136,7 @@ export default class App {
 
     App.mainWindow.center();
 
-    if (this.isDevelopmentMode()) {
+    if (Utility.isDevelopmentMode()) {
       App.mainWindow.webContents.openDevTools({
         mode: 'detach',
       });

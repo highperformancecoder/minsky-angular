@@ -2,7 +2,6 @@ import {
   ActiveWindow,
   AppLayoutPayload,
   green,
-  isPackaged,
   rendererAppName,
   rendererAppURL,
 } from '@minsky/shared';
@@ -12,6 +11,7 @@ import * as os from 'os';
 import { join } from 'path';
 import { format } from 'url';
 import { StoreManager } from './storeManager';
+import { Utility } from './utility';
 
 const logWindows = debug('minsky:electron_windows');
 
@@ -69,7 +69,7 @@ export class WindowManager {
     });
     menuWindow.setMenu(null);
 
-    if (!isPackaged()) {
+    if (!Utility.isPackaged()) {
       menuWindow.loadURL(url ? rendererAppURL + url : rendererAppURL);
     } else {
       const initialURL = format({
