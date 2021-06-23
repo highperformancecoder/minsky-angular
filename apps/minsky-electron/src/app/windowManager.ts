@@ -2,11 +2,15 @@ import {
   ActiveWindow,
   AppLayoutPayload,
   green,
+  isPackaged,
+  rendererAppName,
   rendererAppURL,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, screen } from 'electron';
 import * as os from 'os';
+import { join } from 'path';
+import { format } from 'url';
 import { StoreManager } from './storeManager';
 
 const logWindows = debug('minsky:electron_windows');
@@ -42,7 +46,7 @@ export class WindowManager {
     height = 500,
     title,
     backgroundColor = StoreManager.store.get('backgroundColor'),
-    url = rendererAppURL,
+    url = null,
     modal = true,
   }) {
     const window = WindowManager.getMainWindow();
@@ -64,6 +68,18 @@ export class WindowManager {
       icon: __dirname + '/assets/favicon.png',
     });
     menuWindow.setMenu(null);
+
+    if (!isPackaged()) {
+      menuWindow.loadURL(url ? rendererAppURL + url : rendererAppURL);
+    } else {
+      const initialURL = format({
+        pathname: join(__dirname, '..', rendererAppName, 'index.html'),
+        protocol: 'file:',
+        slashes: true,
+      });
+
+      menuWindow.loadURL(initialURL + (url || '#/'));
+    }
 
     menuWindow.loadURL(url);
 

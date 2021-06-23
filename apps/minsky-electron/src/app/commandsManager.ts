@@ -4,7 +4,6 @@ import {
   commandsMapping,
   green,
   isEmptyObject,
-  rendererAppURL,
 } from '@minsky/shared';
 import { dialog } from 'electron';
 import { RestServiceManager } from './restServiceManager';
@@ -324,9 +323,7 @@ export class CommandsManager {
   private static openRenameInstancesDialog(name: string) {
     WindowManager.createMenuPopUpWithRouting({
       title: `Rename ${name}`,
-      url: `${rendererAppURL}/#/headless/rename-all-instances?name=${
-        name?.slice(1, 1) || ''
-      }`,
+      url: `#/headless/rename-all-instances?name=${name?.slice(1, 1) || ''}`,
       height: 100,
       width: 400,
     });
@@ -339,9 +336,7 @@ export class CommandsManager {
 
     WindowManager.createMenuPopUpWithRouting({
       title: `Edit godley title`,
-      url: `${rendererAppURL}/#/headless/edit-godley-title?title=${
-        title?.slice(1, 1) || ''
-      }`,
+      url: `#/headless/edit-godley-title?title=${title?.slice(1, 1) || ''}`,
       height: 100,
       width: 400,
     });
@@ -350,7 +345,7 @@ export class CommandsManager {
   static async setGodleyCurrency(): Promise<void> {
     WindowManager.createMenuPopUpWithRouting({
       title: `Edit godley currency`,
-      url: `${rendererAppURL}/#/headless/edit-godley-currency`,
+      url: `#/headless/edit-godley-currency`,
       height: 100,
       width: 400,
     });
@@ -369,7 +364,7 @@ export class CommandsManager {
 
     WindowManager.createMenuPopUpWithRouting({
       title: `Description`,
-      url: `${rendererAppURL}/#/headless/edit-description?type=${type}&tooltip=${tooltip}&detailedText=${detailedText}`,
+      url: `#/headless/edit-description?type=${type}&tooltip=${tooltip}&detailedText=${detailedText}`,
     });
   }
 
@@ -464,7 +459,7 @@ export class CommandsManager {
       width: 420,
       height: 250,
       title: 'Bookmarks',
-      url: `${rendererAppURL}/#/headless/menu/bookmarks/add-bookmark`,
+      url: `#/headless/menu/bookmarks/add-bookmark`,
     });
 
     return;

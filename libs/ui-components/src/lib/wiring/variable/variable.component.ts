@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { events, rendererAppURL } from '@minsky/shared';
+import { events } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-variable',
@@ -18,15 +18,15 @@ export class VariableComponent {
       let url = '';
       switch (type) {
         case 'flow':
-          url = `${rendererAppURL}/#/headless/menu/insert/create-variable/flow`;
+          url = `#/headless/menu/insert/create-variable/flow`;
           break;
 
         case 'constant':
-          url = `${rendererAppURL}/#/headless/menu/insert/create-variable/constant`;
+          url = `#/headless/menu/insert/create-variable/constant`;
           break;
 
         case 'parameter':
-          url = `${rendererAppURL}/#/headless/menu/insert/create-variable/parameter`;
+          url = `#/headless/menu/insert/create-variable/parameter`;
           break;
 
         default:
