@@ -784,4 +784,32 @@ export class CommandsManager {
     RestServiceManager.availableOperationsMappings = mapping;
     return mapping;
   }
+
+  static async saveGroupAsFile(): Promise<void> {
+    const defaultExtension = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.DEFAULT_EXTENSION,
+    })) as string;
+
+    const saveDialog = await dialog.showSaveDialog({
+      filters: [
+        {
+          name: defaultExtension,
+          extensions: [defaultExtension.slice(1)],
+        },
+        { name: 'All', extensions: ['*'] },
+      ],
+      defaultPath: `group${defaultExtension}`,
+      properties: ['showOverwriteConfirmation'],
+    });
+
+    if (saveDialog.canceled || !saveDialog.filePath) {
+      return;
+    }
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.SAVE_CANVAS_ITEM_AS_FILE} "${saveDialog.filePath}"`,
+    });
+
+    return;
+  }
 }

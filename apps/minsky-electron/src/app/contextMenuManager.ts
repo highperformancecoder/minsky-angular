@@ -626,10 +626,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Save group as',
         click: async () => {
-          // TODO:
-          await RestServiceManager.handleMinskyProcess({
-            command: `${commandsMapping.CANVAS_SAVE_GROUP_AS_FILE} "${__dirname}/aaa.txt"`,
-          });
+          await CommandsManager.saveGroupAsFile();
         },
       }),
       new MenuItem({
@@ -770,7 +767,6 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Find definition',
         click: async () => {
-          // TODO:
           await CommandsManager.findDefinition();
         },
       }),
