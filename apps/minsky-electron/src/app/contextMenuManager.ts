@@ -534,9 +534,6 @@ export class ContextMenuManager {
           },
         })
       );
-
-      // TODO:
-      menuItems.push(new MenuItem({ label: 'Initialize Random' }));
     }
 
     menuItems = [
@@ -835,7 +832,6 @@ export class ContextMenuManager {
 
     if ((await CommandsManager.getItemType()) === 'parameter') {
       menuItems.push(new MenuItem({ label: 'Import CSV' }));
-      menuItems.push(new MenuItem({ label: 'Display CSV values on tab' }));
     }
 
     menuItems.push(
