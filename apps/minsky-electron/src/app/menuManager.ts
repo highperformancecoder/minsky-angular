@@ -364,20 +364,6 @@ export class MenuManager {
               });
             },
           },
-          {
-            label: 'Select items',
-            click() {
-              WindowManager.createMenuPopUpWithRouting({
-                width: 290,
-                height: 153,
-                title: '',
-                url: `#/headless/menu/file/select-items`,
-              });
-            },
-          },
-          {
-            label: 'Command',
-          },
         ],
       },
       {
