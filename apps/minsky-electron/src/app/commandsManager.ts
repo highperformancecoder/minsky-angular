@@ -529,45 +529,47 @@ export class CommandsManager {
 
     return;
   }
-  /*
-proc findDefinition {} {
-    set cwidth [.wiring.canvas cget -width]
-    set cheight [.wiring.canvas cget -height]
-    if [findVariableDefinition] {
-        if {abs([minsky.canvas.item.x]-0.5*$cwidth)>0.5*$cwidth ||
-            abs([minsky.canvas.item.y]-0.5*$cheight)>0.5*$cheight} {
-            # recentre found item
-            set offsX [expr [minsky.canvas.model.x]-[minsky.canvas.item.x]+0.5*$cwidth]
-            set offsY [expr [minsky.canvas.model.y]-[minsky.canvas.item.y]+0.5*$cheight]
-            panCanvas $offsX $offsY
-            // TODO: what is panCanvas
-        }
-        canvas.itemIndicator 1
-    } else {
-        tk_messageBox -message "Definition not found"
-    }
-}
- */
+
   static async findDefinition(): Promise<void> {
-    // TODO:
-    const findVariableDefinition = await RestServiceManager.handleMinskyProcess(
+    const findVariableDefinition = (await RestServiceManager.handleMinskyProcess(
       {
         command: commandsMapping.CANVAS_FIND_VARIABLE_DEFINITION,
       }
-    );
+    )) as boolean;
 
     if (findVariableDefinition) {
-      // if ((Math.abs(itemX - 0.5 * WindowManager.canvasWidth) > 0.5 * WindowManager.canvasWidth ||
-      //   (Math.abs(itemY - 0.5 * WindowManager.canvasHeight) > 0.5 * WindowManager.canvasHeight
-      //   ){
-      //   // recenter found item
-      // }
+      const itemX = (await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.X,
+      })) as number;
+
+      const itemY = (await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.Y,
+      })) as number;
+
+      const { canvasHeight, canvasWidth } = WindowManager;
+
+      if (
+        Math.abs(itemX - 0.5 * canvasWidth) > 0.5 * canvasWidth ||
+        Math.abs(itemY - 0.5 * canvasHeight) > 0.5 * canvasHeight
+      ) {
+        const posX = itemX - itemX + 0.5 * canvasWidth;
+        const posY = itemY - itemY + 0.5 * canvasHeight;
+
+        await RestServiceManager.handleMinskyProcess({
+          command: commandsMapping.MOVE_TO,
+          mouseX: posX,
+          mouseY: posY,
+        });
+      }
 
       await RestServiceManager.handleMinskyProcess({
         command: `${commandsMapping.CANVAS_ITEM_INDICATOR} 1`,
       });
     } else {
-      //TODO: start here -> tk_messageBox -message "Definition not found"
+      dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+        type: 'info',
+        message: 'Definition not found',
+      });
     }
 
     return;
