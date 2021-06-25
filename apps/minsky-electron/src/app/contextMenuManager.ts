@@ -496,7 +496,23 @@ export class ContextMenuManager {
           });
         },
       }),
-      new MenuItem({ label: 'Export to file' }),
+      new MenuItem({
+        label: 'Export as',
+        submenu: [
+          {
+            label: 'CSV',
+            click: async () => {
+              await CommandsManager.exportGodleyAs('csv');
+            },
+          },
+          {
+            label: 'LaTeX',
+            click: async () => {
+              await CommandsManager.exportGodleyAs('tex');
+            },
+          },
+        ],
+      }),
     ];
     return menuItems;
   }

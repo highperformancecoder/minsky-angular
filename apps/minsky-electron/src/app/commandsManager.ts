@@ -812,4 +812,41 @@ export class CommandsManager {
 
     return;
   }
+
+  static async exportGodleyAs(ext: string): Promise<void> {
+    const saveDialog = await dialog.showSaveDialog({
+      filters: [
+        {
+          name: '.' + ext,
+          extensions: [ext],
+        },
+        { name: 'All', extensions: ['*'] },
+      ],
+      defaultPath: `godley.${ext}`,
+      properties: ['showOverwriteConfirmation'],
+    });
+
+    if (saveDialog.canceled || !saveDialog.filePath) {
+      return;
+    }
+
+    switch (ext) {
+      case 'csv':
+        await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.EXPORT_GODLEY_TO_CSV} "${saveDialog.filePath}"`,
+        });
+        break;
+
+      case 'tex':
+        await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.EXPORT_GODLEY_TO_LATEX} "${saveDialog.filePath}"`,
+        });
+        break;
+
+      default:
+        break;
+    }
+
+    return;
+  }
 }
