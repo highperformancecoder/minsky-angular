@@ -58,7 +58,7 @@ export class CommunicationService {
     this.initReplay();
   }
 
-  async syncRunUntilTime() {
+  private async syncRunUntilTime() {
     this.runUntilTime = (await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.T_MAX,
       render: false,
@@ -279,6 +279,7 @@ export class CommunicationService {
 
   private async pauseSimulation() {
     this.isSimulationOn = false;
+    this.showPlayButton$.next(true);
   }
 
   private async stopSimulation() {
@@ -302,9 +303,7 @@ export class CommunicationService {
   }
 
   private updateSimulationTime(t: number, deltaT: number) {
-    if (!this.runUntilTime) {
-      this.syncRunUntilTime();
-    }
+    this.syncRunUntilTime();
 
     this.t = t.toFixed(2);
 

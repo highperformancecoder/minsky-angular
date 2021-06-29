@@ -137,8 +137,6 @@ export class SimulationParametersComponent implements OnInit {
               command: `${commandsMapping.T_MAX} ${arg}`,
             });
 
-            await this.communicationService.syncRunUntilTime();
-
             break;
 
           case 'absoluteError':
