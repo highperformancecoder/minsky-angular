@@ -415,7 +415,17 @@ export class ContextMenuManager {
         },
       }),
       new MenuItem({ label: 'Options' }),
-      new MenuItem({ label: 'Pen Styles' }),
+      new MenuItem({
+        label: 'Pen Styles',
+        click: () => {
+          WindowManager.createMenuPopUpWithRouting({
+            title: `Pen Styles`,
+            url: `#/headless/menu/context-menu/pen-styles`,
+            height: 500,
+            width: 350,
+          });
+        },
+      }),
       new MenuItem({
         label: 'Display plot on tab',
         click: async () => {
