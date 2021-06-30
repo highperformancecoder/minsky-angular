@@ -42,6 +42,10 @@ export class RecentFilesManager {
                 command: commandsMapping.LOAD,
                 filePath,
               });
+
+              await RestServiceManager.handleMinskyProcess({
+                command: commandsMapping.RECENTER,
+              });
             },
           })
         );

@@ -67,11 +67,14 @@ export class MenuManager {
                 });
 
                 const loadPayload: MinskyProcessPayload = {
-                  command: '/minsky/load',
+                  command: commandsMapping.LOAD,
                   filePath: _dialog.filePaths[0].toString(),
                 };
 
                 await RestServiceManager.handleMinskyProcess(loadPayload);
+                await RestServiceManager.handleMinskyProcess({
+                  command: commandsMapping.RECENTER,
+                });
               } catch (error) {
                 logError(error);
               }
