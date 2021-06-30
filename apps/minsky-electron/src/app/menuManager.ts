@@ -1,8 +1,4 @@
-import {
-  availableOperations,
-  commandsMapping,
-  MinskyProcessPayload,
-} from '@minsky/shared';
+import { availableOperations, commandsMapping } from '@minsky/shared';
 import * as debug from 'debug';
 import {
   dialog,
@@ -66,15 +62,13 @@ export class MenuManager {
                   ],
                 });
 
-                const loadPayload: MinskyProcessPayload = {
-                  command: commandsMapping.LOAD,
-                  filePath: _dialog.filePaths[0].toString(),
-                };
+                if (_dialog.canceled || !_dialog.filePaths) {
+                  return;
+                }
 
-                await RestServiceManager.handleMinskyProcess(loadPayload);
-                await RestServiceManager.handleMinskyProcess({
-                  command: commandsMapping.RECENTER,
-                });
+                await CommandsManager.openNamedFile(
+                  _dialog.filePaths[0].toString()
+                );
               } catch (error) {
                 logError(error);
               }

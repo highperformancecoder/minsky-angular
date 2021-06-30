@@ -1,8 +1,6 @@
-import { commandsMapping } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
-import { RestServiceManager } from './restServiceManager';
+import { CommandsManager } from './commandsManager';
 import { StoreManager } from './storeManager';
-import { WindowManager } from './windowManager';
 
 export class RecentFilesManager {
   static addFileToRecentFiles(filepath: string) {
@@ -36,16 +34,7 @@ export class RecentFilesManager {
           new MenuItem({
             label: filePath,
             click: async () => {
-              WindowManager.scrollToCenter(); // TODO:: Same needs to be added on normal file load .. perhaps better to do this as a callback / in ipc listeners
-
-              await RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.LOAD,
-                filePath,
-              });
-
-              await RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.RECENTER,
-              });
+              await CommandsManager.openNamedFile(filePath);
             },
           })
         );
