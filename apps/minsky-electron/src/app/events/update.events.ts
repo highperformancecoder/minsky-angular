@@ -1,8 +1,8 @@
+import { updateServerUrl } from '@minsky/shared';
 import * as debug from 'debug';
 import { app, autoUpdater, dialog } from 'electron';
 import { arch, platform } from 'os';
-import App from '../app';
-import { updateServerUrl } from '../constants';
+import { Utility } from '../utility';
 
 const logError = debug('minsky:electron_error');
 const logUpdateEvent = debug('minsky:electron_update_event');
@@ -17,7 +17,7 @@ export default class UpdateEvents {
       url: `${updateServerUrl}/update/${platform_arch}/${version}`,
     };
 
-    if (!App.isDevelopmentMode()) {
+    if (!Utility.isDevelopmentMode()) {
       logUpdateEvent('Initializing auto update service...\n');
 
       autoUpdater.setFeedURL(feed);
@@ -27,7 +27,7 @@ export default class UpdateEvents {
 
   // check for updates - most be invoked after initAutoUpdateService() and only in production
   static checkForUpdates() {
-    if (!App.isDevelopmentMode() && autoUpdater.getFeedURL() !== '') {
+    if (!Utility.isDevelopmentMode() && autoUpdater.getFeedURL() !== '') {
       autoUpdater.checkForUpdates();
     }
   }

@@ -243,7 +243,10 @@ export class MenuManager {
                   );
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.LATEX} "${filePath}"`,
+                    command: `${commandsMapping.LATEX} ["${filePath}",${
+                      StoreManager.store.get('preferences')
+                        .wrapLongEquationsInLatexExport
+                    }]`,
                   });
                 },
               },

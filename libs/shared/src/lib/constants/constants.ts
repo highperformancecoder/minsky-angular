@@ -195,6 +195,9 @@ export const commandsMapping = {
   CANVAS_PLOT_PALETTE: '/minsky/canvas/item/palette',
   SET_AUTO_SAVE_FILE: '/minsky/setAutoSaveFile',
   DIMENSIONS: '/minsky/dimensions',
+  DEFAULT_FONT: '/minsky/defaultFont',
+  MULTIPLE_EQUITIES: '/minsky/multipleEquities',
+  SET_GODLEY_DISPLAY_VALUE: '/minsky/setGodleyDisplayValue',
 };
 
 export const availableOperations = {

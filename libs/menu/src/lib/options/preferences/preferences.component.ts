@@ -19,7 +19,7 @@ export class PreferencesComponent implements OnInit {
       enableMultipleEquityColumns: new FormControl(null),
       numberOfRecentFilesToDisplay: new FormControl(null),
       wrapLongEquationsInLatexExport: new FormControl(null),
-      focusFollowsMouse: new FormControl(null),
+      // focusFollowsMouse: new FormControl(null),
       font: new FormControl(null),
     });
   }
@@ -38,7 +38,7 @@ export class PreferencesComponent implements OnInit {
   }
 
   async handleSubmit() {
-    const { font, ...preferences } = this.form.value;
+    const preferences = this.form.value;
 
     if (this.electronService.isElectron) {
       await this.electronService.ipcRenderer.invoke(
