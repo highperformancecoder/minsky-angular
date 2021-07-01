@@ -1,15 +1,11 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { EditRoutingModule } from './edit-routing.module';
+import { NgModule } from '@angular/core';
+import { SharedModule } from '@minsky/shared';
 import { DimensionsComponent } from './dimensions/dimensions.component';
-
+import { EditRoutingModule } from './edit-routing.module';
 
 @NgModule({
   declarations: [DimensionsComponent],
-  imports: [
-    CommonModule,
-    EditRoutingModule
-  ]
+  imports: [CommonModule, EditRoutingModule, SharedModule],
 })
-export class EditModule { }
+export class EditModule {}

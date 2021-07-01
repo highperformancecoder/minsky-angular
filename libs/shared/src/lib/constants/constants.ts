@@ -194,6 +194,7 @@ export const commandsMapping = {
   EXPORT_GODLEY_TO_CSV: '/minsky/canvas/item/table/exportToCSV',
   CANVAS_PLOT_PALETTE: '/minsky/canvas/item/palette',
   SET_AUTO_SAVE_FILE: '/minsky/setAutoSaveFile',
+  DIMENSIONS: '/minsky/dimensions',
 };
 
 export const availableOperations = {

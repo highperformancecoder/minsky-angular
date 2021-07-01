@@ -425,8 +425,8 @@ export class MenuManager {
             label: 'Dimensions',
             click() {
               WindowManager.createMenuPopUpWithRouting({
-                width: 420,
-                height: 250,
+                width: 700,
+                height: 500,
                 title: 'Dimensions',
                 url: `#/headless/menu/edit/dimensions`,
               });

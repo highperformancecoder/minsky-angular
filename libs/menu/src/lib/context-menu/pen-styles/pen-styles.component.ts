@@ -44,7 +44,7 @@ export class PenStylesComponent implements OnInit {
     });
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     (async () => {
       if (this.electronService.isElectron) {
         this.palette = (await this.electronService.sendMinskyCommandAndRender({
@@ -90,11 +90,6 @@ export class PenStylesComponent implements OnInit {
         colour: this.convertColorStringToRgba(p.colour as string),
       };
     });
-
-    console.log(
-      '🚀 ~ file: pen-styles.component.ts ~ line 98 ~ PenStylesComponent ~ palette ~ palette',
-      palette
-    );
 
     await this.electronService.sendMinskyCommandAndRender({
       command: `${commandsMapping.CANVAS_PLOT_PALETTE} ${JSON.stringify(
