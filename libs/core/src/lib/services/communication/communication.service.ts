@@ -58,7 +58,7 @@ export class CommunicationService {
     this.initReplay();
   }
 
-  async syncRunUntilTime() {
+  private async syncRunUntilTime() {
     this.runUntilTime = (await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.T_MAX,
       render: false,
@@ -161,17 +161,13 @@ export class CommunicationService {
             }, ${ZOOM_IN_FACTOR}]`;
             break;
           case 'RESET_ZOOM':
-            command = `${await this.getResetZoomCommand(
-              canvasWidth / 2,
-              canvasHeight / 2
-            )}`;
+            autoHandleMinskyProcess = false;
+            await this.resetZoom(canvasWidth / 2, canvasHeight / 2);
 
             break;
           case 'ZOOM_TO_FIT':
-            command = `${command} [${await this.getZoomToFitArgs(
-              canvasWidth,
-              canvasHeight
-            )}]`;
+            autoHandleMinskyProcess = false;
+            await this.zoomToFit(canvasWidth, canvasHeight);
             break;
 
           case 'SIMULATION_SPEED':
@@ -279,6 +275,7 @@ export class CommunicationService {
 
   private async pauseSimulation() {
     this.isSimulationOn = false;
+    this.showPlayButton$.next(true);
   }
 
   private async stopSimulation() {
@@ -302,9 +299,7 @@ export class CommunicationService {
   }
 
   private updateSimulationTime(t: number, deltaT: number) {
-    if (!this.runUntilTime) {
-      this.syncRunUntilTime();
-    }
+    this.syncRunUntilTime();
 
     this.t = t.toFixed(2);
 
@@ -315,7 +310,8 @@ export class CommunicationService {
     }
   }
 
-  private async getResetZoomCommand(centerX: number, centerY: number) {
+  private async resetZoom(centerX: number, centerY: number) {
+    let command = '';
     const zoomFactor = (await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.ZOOM_FACTOR,
     })) as number;
@@ -326,15 +322,21 @@ export class CommunicationService {
       })) as number;
 
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
-      return `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
+      command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
         1 / (relZoom || 1)
       }]`;
     } else {
-      return `${commandsMapping.SET_ZOOM} 1`;
+      command = `${commandsMapping.SET_ZOOM} 1`;
     }
+
+    await this.electronService.sendMinskyCommandAndRender({ command });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.RECENTER,
+    });
   }
 
-  private async getZoomToFitArgs(canvasWidth: number, canvasHeight: number) {
+  private async zoomToFit(canvasWidth: number, canvasHeight: number) {
     const cBounds = (await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.C_BOUNDS,
     })) as number[];
@@ -346,7 +348,12 @@ export class CommunicationService {
     const x = 0.5 * (cBounds[2] + cBounds[0]);
     const y = 0.5 * (cBounds[3] + cBounds[1]);
 
-    return [x, y, zoomFactor].toString();
+    const command = `${commandsMapping.ZOOM_IN} [${x},${y},${zoomFactor}]`;
+
+    await this.electronService.sendMinskyCommandAndRender({ command });
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.RECENTER,
+    });
   }
 
   public async mouseEvents(event, message: MouseEvent) {

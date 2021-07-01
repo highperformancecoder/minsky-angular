@@ -415,7 +415,17 @@ export class ContextMenuManager {
         },
       }),
       new MenuItem({ label: 'Options' }),
-      new MenuItem({ label: 'Pen Styles' }),
+      new MenuItem({
+        label: 'Pen Styles',
+        click: () => {
+          WindowManager.createMenuPopUpWithRouting({
+            title: `Pen Styles`,
+            url: `#/headless/menu/context-menu/pen-styles`,
+            height: 500,
+            width: 350,
+          });
+        },
+      }),
       new MenuItem({
         label: 'Display plot on tab',
         click: async () => {
@@ -496,7 +506,23 @@ export class ContextMenuManager {
           });
         },
       }),
-      new MenuItem({ label: 'Export to file' }),
+      new MenuItem({
+        label: 'Export as',
+        submenu: [
+          {
+            label: 'CSV',
+            click: async () => {
+              await CommandsManager.exportGodleyAs('csv');
+            },
+          },
+          {
+            label: 'LaTeX',
+            click: async () => {
+              await CommandsManager.exportGodleyAs('tex');
+            },
+          },
+        ],
+      }),
     ];
     return menuItems;
   }
@@ -534,9 +560,6 @@ export class ContextMenuManager {
           },
         })
       );
-
-      // TODO:
-      menuItems.push(new MenuItem({ label: 'Initialize Random' }));
     }
 
     menuItems = [
@@ -629,10 +652,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Save group as',
         click: async () => {
-          // TODO:
-          await RestServiceManager.handleMinskyProcess({
-            command: `${commandsMapping.CANVAS_SAVE_GROUP_AS_FILE} "${__dirname}/aaa.txt"`,
-          });
+          await CommandsManager.saveGroupAsFile();
         },
       }),
       new MenuItem({
@@ -773,7 +793,6 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Find definition',
         click: async () => {
-          // TODO:
           await CommandsManager.findDefinition();
         },
       }),
@@ -835,7 +854,6 @@ export class ContextMenuManager {
 
     if ((await CommandsManager.getItemType()) === 'parameter') {
       menuItems.push(new MenuItem({ label: 'Import CSV' }));
-      menuItems.push(new MenuItem({ label: 'Display CSV values on tab' }));
     }
 
     menuItems.push(

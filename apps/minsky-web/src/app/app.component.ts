@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { events, rendererAppURL } from '@minsky/shared';
+import { events } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
@@ -100,7 +100,7 @@ export class AppComponent implements AfterViewInit {
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
         title: 'Terminal',
-        url: `${rendererAppURL}/#/headless/terminal`,
+        url: `#/headless/terminal`,
         width: 800,
         height: 668,
         modal: false,
