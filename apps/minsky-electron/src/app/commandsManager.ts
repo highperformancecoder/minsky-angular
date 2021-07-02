@@ -4,7 +4,6 @@ import {
   commandsMapping,
   green,
   isEmptyObject,
-  rendererAppURL,
 } from '@minsky/shared';
 import { dialog } from 'electron';
 import { RestServiceManager } from './restServiceManager';
@@ -324,9 +323,7 @@ export class CommandsManager {
   private static openRenameInstancesDialog(name: string) {
     WindowManager.createMenuPopUpWithRouting({
       title: `Rename ${name}`,
-      url: `${rendererAppURL}/#/headless/rename-all-instances?name=${
-        name?.slice(1, 1) || ''
-      }`,
+      url: `#/headless/rename-all-instances?name=${name?.slice(1, 1) || ''}`,
       height: 100,
       width: 400,
     });
@@ -339,9 +336,7 @@ export class CommandsManager {
 
     WindowManager.createMenuPopUpWithRouting({
       title: `Edit godley title`,
-      url: `${rendererAppURL}/#/headless/edit-godley-title?title=${
-        title?.slice(1, 1) || ''
-      }`,
+      url: `#/headless/edit-godley-title?title=${title?.slice(1, 1) || ''}`,
       height: 100,
       width: 400,
     });
@@ -350,7 +345,7 @@ export class CommandsManager {
   static async setGodleyCurrency(): Promise<void> {
     WindowManager.createMenuPopUpWithRouting({
       title: `Edit godley currency`,
-      url: `${rendererAppURL}/#/headless/edit-godley-currency`,
+      url: `#/headless/edit-godley-currency`,
       height: 100,
       width: 400,
     });
@@ -369,7 +364,7 @@ export class CommandsManager {
 
     WindowManager.createMenuPopUpWithRouting({
       title: `Description`,
-      url: `${rendererAppURL}/#/headless/edit-description?type=${type}&tooltip=${tooltip}&detailedText=${detailedText}`,
+      url: `#/headless/edit-description?type=${type}&tooltip=${tooltip}&detailedText=${detailedText}`,
     });
   }
 
@@ -464,7 +459,7 @@ export class CommandsManager {
       width: 420,
       height: 250,
       title: 'Bookmarks',
-      url: `${rendererAppURL}/#/headless/menu/bookmarks/add-bookmark`,
+      url: `#/headless/menu/bookmarks/add-bookmark`,
     });
 
     return;
@@ -534,45 +529,47 @@ export class CommandsManager {
 
     return;
   }
-  /*
-proc findDefinition {} {
-    set cwidth [.wiring.canvas cget -width]
-    set cheight [.wiring.canvas cget -height]
-    if [findVariableDefinition] {
-        if {abs([minsky.canvas.item.x]-0.5*$cwidth)>0.5*$cwidth ||
-            abs([minsky.canvas.item.y]-0.5*$cheight)>0.5*$cheight} {
-            # recentre found item
-            set offsX [expr [minsky.canvas.model.x]-[minsky.canvas.item.x]+0.5*$cwidth]
-            set offsY [expr [minsky.canvas.model.y]-[minsky.canvas.item.y]+0.5*$cheight]
-            panCanvas $offsX $offsY
-            // TODO: what is panCanvas
-        }
-        canvas.itemIndicator 1
-    } else {
-        tk_messageBox -message "Definition not found"
-    }
-}
- */
+
   static async findDefinition(): Promise<void> {
-    // TODO:
-    const findVariableDefinition = await RestServiceManager.handleMinskyProcess(
+    const findVariableDefinition = (await RestServiceManager.handleMinskyProcess(
       {
         command: commandsMapping.CANVAS_FIND_VARIABLE_DEFINITION,
       }
-    );
+    )) as boolean;
 
     if (findVariableDefinition) {
-      // if ((Math.abs(itemX - 0.5 * WindowManager.canvasWidth) > 0.5 * WindowManager.canvasWidth ||
-      //   (Math.abs(itemY - 0.5 * WindowManager.canvasHeight) > 0.5 * WindowManager.canvasHeight
-      //   ){
-      //   // recenter found item
-      // }
+      const itemX = (await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.X,
+      })) as number;
+
+      const itemY = (await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.Y,
+      })) as number;
+
+      const { canvasHeight, canvasWidth } = WindowManager;
+
+      if (
+        Math.abs(itemX - 0.5 * canvasWidth) > 0.5 * canvasWidth ||
+        Math.abs(itemY - 0.5 * canvasHeight) > 0.5 * canvasHeight
+      ) {
+        const posX = itemX - itemX + 0.5 * canvasWidth;
+        const posY = itemY - itemY + 0.5 * canvasHeight;
+
+        await RestServiceManager.handleMinskyProcess({
+          command: commandsMapping.MOVE_TO,
+          mouseX: posX,
+          mouseY: posY,
+        });
+      }
 
       await RestServiceManager.handleMinskyProcess({
         command: `${commandsMapping.CANVAS_ITEM_INDICATOR} 1`,
       });
     } else {
-      //TODO: start here -> tk_messageBox -message "Definition not found"
+      dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+        type: 'info',
+        message: 'Definition not found',
+      });
     }
 
     return;
@@ -786,5 +783,70 @@ proc findDefinition {} {
 
     RestServiceManager.availableOperationsMappings = mapping;
     return mapping;
+  }
+
+  static async saveGroupAsFile(): Promise<void> {
+    const defaultExtension = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.DEFAULT_EXTENSION,
+    })) as string;
+
+    const saveDialog = await dialog.showSaveDialog({
+      filters: [
+        {
+          name: defaultExtension,
+          extensions: [defaultExtension.slice(1)],
+        },
+        { name: 'All', extensions: ['*'] },
+      ],
+      defaultPath: `group${defaultExtension}`,
+      properties: ['showOverwriteConfirmation'],
+    });
+
+    if (saveDialog.canceled || !saveDialog.filePath) {
+      return;
+    }
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.SAVE_CANVAS_ITEM_AS_FILE} "${saveDialog.filePath}"`,
+    });
+
+    return;
+  }
+
+  static async exportGodleyAs(ext: string): Promise<void> {
+    const saveDialog = await dialog.showSaveDialog({
+      filters: [
+        {
+          name: '.' + ext,
+          extensions: [ext],
+        },
+        { name: 'All', extensions: ['*'] },
+      ],
+      defaultPath: `godley.${ext}`,
+      properties: ['showOverwriteConfirmation'],
+    });
+
+    if (saveDialog.canceled || !saveDialog.filePath) {
+      return;
+    }
+
+    switch (ext) {
+      case 'csv':
+        await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.EXPORT_GODLEY_TO_CSV} "${saveDialog.filePath}"`,
+        });
+        break;
+
+      case 'tex':
+        await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.EXPORT_GODLEY_TO_LATEX} "${saveDialog.filePath}"`,
+        });
+        break;
+
+      default:
+        break;
+    }
+
+    return;
   }
 }

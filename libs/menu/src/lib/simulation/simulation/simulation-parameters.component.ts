@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ElectronService } from '@minsky/core';
+import { CommunicationService, ElectronService } from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 
 @Component({
@@ -11,7 +11,10 @@ import { commandsMapping } from '@minsky/shared';
 export class SimulationParametersComponent implements OnInit {
   form: FormGroup;
 
-  constructor(private electronService: ElectronService) {
+  constructor(
+    private electronService: ElectronService,
+    private communicationService: CommunicationService
+  ) {
     this.form = new FormGroup({
       timeUnit: new FormControl(null),
       minStepSize: new FormControl(null),
@@ -133,6 +136,7 @@ export class SimulationParametersComponent implements OnInit {
             await this.electronService.sendMinskyCommandAndRender({
               command: `${commandsMapping.T_MAX} ${arg}`,
             });
+
             break;
 
           case 'absoluteError':

@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import App from './app/app';
 import ElectronEvents from './app/events/electron.events';
 import SquirrelEvents from './app/events/squirrel.events';
+import { Utility } from './app/utility';
 
 export default class Main {
   static initialize() {
@@ -19,7 +20,7 @@ export default class Main {
     ElectronEvents.bootstrapElectronEvents();
 
     // initialize auto updater service
-    if (!App.isDevelopmentMode()) {
+    if (!Utility.isDevelopmentMode()) {
       // UpdateEvents.initAutoUpdateService();
     }
   }

@@ -78,6 +78,9 @@
     id="minsky-canvas-container"
     tabindex="0"
   >
-    <canvas id="main-minsky-canvas"></canvas>
+    <canvas
+      [ngStyle]="{ cursor: showDragCursor ? 'grabbing' : 'default' }"
+      id="main-minsky-canvas"
+    ></canvas>
   </div>
 </div>

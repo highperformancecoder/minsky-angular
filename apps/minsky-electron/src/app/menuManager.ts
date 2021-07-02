@@ -2,7 +2,6 @@ import {
   availableOperations,
   commandsMapping,
   MinskyProcessPayload,
-  rendererAppURL,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import {
@@ -32,7 +31,7 @@ export class MenuManager {
                 width: 420,
                 height: 440,
                 title: '',
-                url: `${rendererAppURL}/#/headless/menu/file/about`,
+                url: `#/headless/menu/file/about`,
               });
 
               shell.beep();
@@ -325,7 +324,7 @@ export class MenuManager {
                 width: 250,
                 height: 500,
                 title: 'Log simulation',
-                url: `${rendererAppURL}/#/headless/menu/file/log-simulation`,
+                url: `#/headless/menu/file/log-simulation`,
               });
             },
           },
@@ -364,31 +363,6 @@ export class MenuManager {
                 command: commandsMapping.REDRAW,
               });
             },
-          },
-          {
-            label: 'Object Browser',
-            click() {
-              WindowManager.createMenuPopUpWithRouting({
-                width: 400,
-                height: 230,
-                title: '',
-                url: `${rendererAppURL}/#/headless/menu/file/object-browser`,
-              });
-            },
-          },
-          {
-            label: 'Select items',
-            click() {
-              WindowManager.createMenuPopUpWithRouting({
-                width: 290,
-                height: 153,
-                title: '',
-                url: `${rendererAppURL}/#/headless/menu/file/select-items`,
-              });
-            },
-          },
-          {
-            label: 'Command',
           },
         ],
       },
@@ -457,7 +431,7 @@ export class MenuManager {
                 width: 420,
                 height: 250,
                 title: 'Dimensions',
-                url: `${rendererAppURL}/#/headless/menu/edit/dimensions`,
+                url: `#/headless/menu/edit/dimensions`,
               });
             },
           },
@@ -538,7 +512,7 @@ export class MenuManager {
                     width: 500,
                     height: 550,
                     title: 'Specify variable name',
-                    url: `${rendererAppURL}/#/headless/menu/insert/create-variable/flow`,
+                    url: `#/headless/menu/insert/create-variable/flow`,
                   });
                 },
               },
@@ -549,7 +523,7 @@ export class MenuManager {
                     width: 500,
                     height: 550,
                     title: 'Specify variable name',
-                    url: `${rendererAppURL}/#/headless/menu/insert/create-variable/constant`,
+                    url: `#/headless/menu/insert/create-variable/constant`,
                   });
                 },
               },
@@ -560,7 +534,7 @@ export class MenuManager {
                     width: 500,
                     height: 550,
                     title: 'Specify variable name',
-                    url: `${rendererAppURL}/#/headless/menu/insert/create-variable/parameter`,
+                    url: `#/headless/menu/insert/create-variable/parameter`,
                   });
                 },
               },
@@ -618,7 +592,7 @@ export class MenuManager {
                 width: 500,
                 height: 450,
                 title: 'Preferences',
-                url: `${rendererAppURL}/#/headless/menu/options/preferences`,
+                url: `#/headless/menu/options/preferences`,
               });
             },
           },
@@ -629,7 +603,7 @@ export class MenuManager {
                 width: 450,
                 height: 320,
                 title: 'Background Colour',
-                url: `${rendererAppURL}/#/headless/menu/options/background-color`,
+                url: `#/headless/menu/options/background-color`,
               });
             },
           },
@@ -645,7 +619,7 @@ export class MenuManager {
                 width: 550,
                 height: 550,
                 title: 'Simulation',
-                url: `${rendererAppURL}/#/headless/menu/simulation/simulation-parameters`,
+                url: `#/headless/menu/simulation/simulation-parameters`,
               });
             },
           },

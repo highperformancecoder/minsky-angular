@@ -1,4 +1,10 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  NgZone,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import {
   CommunicationService,
   ElectronService,
@@ -19,23 +25,24 @@ export class WiringComponent implements OnInit, OnDestroy {
   mouseMove$: Observable<MouseEvent>;
   offsetTop: string;
   availableOperationsMapping: Record<string, string[]> = {};
-
+  showDragCursor = false;
   constructor(
     public cmService: CommunicationService,
     private electronService: ElectronService,
     private windowUtilityService: WindowUtilityService,
-    private zone: NgZone
+    private zone: NgZone,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
     const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
 
     this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
-    console.log(
-      '🚀 ~ file: wiring.component.ts ~ line 34 ~ WiringComponent ~ ngOnInit ~ this.offsetTop',
-      this.offsetTop
-    );
 
+    this.cmService.showDragCursor$.subscribe((showDragCursor) => {
+      this.showDragCursor = showDragCursor;
+      this.changeDetectorRef.detectChanges();
+    });
     this.setupEventListenersForCanvas(minskyCanvasContainer);
 
     this.availableOperationsMapping = (await this.electronService.sendMinskyCommandAndRender(

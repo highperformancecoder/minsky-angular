@@ -40,3 +40,5 @@ minsky-RESTService*
 Thumbs.db
 libs/shared/src/lib/constants/run.sh
 minsky-httpd*
+TODO.md
+recording.json
