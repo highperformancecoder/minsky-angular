@@ -4,8 +4,11 @@ import * as path from 'path';
 abstract class HelpFilesManager {
   private static topicNodeMap: Record<string, unknown> = {};
 
-  public static getTopicNodesMap() {
-    return this.topicNodeMap;
+  public static getHelpFileForType(type : string) {
+    if(type in this.topicNodeMap) {
+      return this.topicNodeMap[type];
+    }
+    return null;
   }
 
   public static async initialize(directory: string) {
