@@ -120,7 +120,7 @@ ipcMain.handle(
     });
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.DEFAULT_FONT} ${font}`,
+      command: `${commandsMapping.DEFAULT_FONT} "${font}"`,
     });
 
     RecentFilesManager.updateNumberOfRecentFilesToDisplay();
