@@ -33,6 +33,7 @@ export class PenStylesComponent implements OnInit {
   palette: Palette[];
 
   dashStyles = ['solid', 'dash', 'dot', 'dashDot'];
+  rgbMaxValue = 255;
 
   public get pens(): FormArray {
     return this.form.get('pens') as FormArray;
@@ -68,17 +69,20 @@ export class PenStylesComponent implements OnInit {
 
   public getColor(colour: Colour) {
     const { r, g, b, a } = colour;
-    const rgbaString = `rgba(${r},${g},${b},${a})`;
+    const rgbaString = `rgba(${r * this.rgbMaxValue},${g * this.rgbMaxValue},${
+      b * this.rgbMaxValue
+    },${a})`;
 
     return rgbaString;
   }
 
   convertColorStringToRgba(colorString: string) {
     const [r, g, b, a] = colorString.slice(0, -1).split('(')[1].split(',');
+
     return {
-      r: Number(r),
-      g: Number(g),
-      b: Number(b),
+      r: Number(r) / this.rgbMaxValue,
+      g: Number(g) / this.rgbMaxValue,
+      b: Number(b) / this.rgbMaxValue,
       a: Number(a),
     };
   }
