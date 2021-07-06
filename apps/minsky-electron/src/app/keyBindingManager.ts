@@ -132,7 +132,7 @@ export class KeyBindingManager {
           title: 'Text Input',
           url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
           width: 300,
-          height: 150,
+          height: 130,
         });
 
         this.isMultipleKeyModalOpen = true;

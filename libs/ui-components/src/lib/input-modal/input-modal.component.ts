@@ -9,6 +9,7 @@ import { ElectronService } from '@minsky/core';
 })
 export class InputModalComponent implements OnInit {
   @Input() input: string;
+  @Input() positiveActionLabel = 'Save';
   @Output() saveInput = new EventEmitter<string>();
 
   nameControl: FormControl;
