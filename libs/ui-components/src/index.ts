@@ -5,6 +5,7 @@ export * from './lib/edit-godley-title/edit-godley-title.component';
 export * from './lib/equations/equations.component';
 export * from './lib/header/header.component';
 export * from './lib/input-modal/input-modal.component';
+export * from './lib/multiple-key-operation/multiple-key-operation.component';
 export * from './lib/page-not-found/page-not-found.component';
 export * from './lib/parameters/parameters.component';
 export * from './lib/rename-all-instances/rename-all-instances.component';

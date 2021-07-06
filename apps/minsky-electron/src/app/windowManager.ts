@@ -48,7 +48,7 @@ export class WindowManager {
     backgroundColor = StoreManager.store.get('backgroundColor'),
     url = null,
     modal = true,
-  }) {
+  }): BrowserWindow {
     const window = WindowManager.getMainWindow();
 
     let menuWindow = new BrowserWindow({
@@ -109,6 +109,8 @@ export class WindowManager {
     menuWindow.on('closed', () => {
       menuWindow = null;
     });
+
+    return menuWindow;
   }
 
   public static scrollToCenter() {
