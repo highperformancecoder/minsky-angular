@@ -123,6 +123,11 @@ export class KeyBindingManager {
         break;
     }
 
+    if (payload.ctrl) {
+      // avoiding conflict with shortCuts (electron accelerators)
+      return;
+    }
+
     const asciiRegex = /[ -~]/;
 
     if (!executed && key.length === 1 && key.match(asciiRegex)) {
