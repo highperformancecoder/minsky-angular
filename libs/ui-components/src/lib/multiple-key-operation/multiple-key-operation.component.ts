@@ -20,7 +20,7 @@ export class MultipleKeyOperationComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
-      this.multipleKeyString = params['input'];
+      this.multipleKeyString = decodeURIComponent(params['input'] as string);
       this.changeDetectorRef.detectChanges();
     });
   }
@@ -32,7 +32,7 @@ export class MultipleKeyOperationComponent implements OnInit {
       }
 
       if (string.charAt(0) === '#') {
-        const note = string.slice(1);
+        const note = string;
 
         this.communicationService.insertElement('ADD_NOTE', note, 'string');
         return;

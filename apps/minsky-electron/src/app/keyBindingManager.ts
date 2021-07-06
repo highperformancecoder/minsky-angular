@@ -146,7 +146,9 @@ export class KeyBindingManager {
 
       if (this.multipleKeyWindow) {
         this.multipleKeyWindow.loadURL(
-          `${rendererAppURL}#/headless/multiple-key-operation?input=${this.multipleKeyString}`
+          `${rendererAppURL}#/headless/multiple-key-operation?input=${encodeURIComponent(
+            this.multipleKeyString
+          )}`
         );
       }
     }
