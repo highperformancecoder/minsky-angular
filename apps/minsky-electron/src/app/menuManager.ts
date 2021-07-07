@@ -388,7 +388,7 @@ export class MenuManager {
             label: 'Undo',
             accelerator: 'CmdOrCtrl + Z',
             async click() {
-              const numberOfTimes = -1;
+              const numberOfTimes = 1;
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.UNDO} ${numberOfTimes}`,
               });
@@ -398,7 +398,7 @@ export class MenuManager {
             label: 'Redo',
             accelerator: 'CmdOrCtrl + Y',
             async click() {
-              const numberOfTimes = 1;
+              const numberOfTimes = -1;
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.REDO} ${numberOfTimes}`,
               });
