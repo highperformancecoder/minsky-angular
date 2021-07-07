@@ -58,7 +58,7 @@ ipcMain.on(SET_BACKGROUND_COLOR, (event, { color }) => {
   if (color) {
     StoreManager.store.set('backgroundColor', color);
   }
-  WindowManager.checkBackgroundAndApplyTextColor(
+  WindowManager.changeWindowBackgroundColor(
     StoreManager.store.get('backgroundColor')
   );
 });
