@@ -385,6 +385,14 @@ export class CommunicationService {
     if (this.electronService.isElectron) {
       const command = commandsMapping[type];
 
+      if (command === commandsMapping.mousedown && message.altKey) {
+        this.electronService.ipcRenderer.send(
+          events.DISPLAY_MOUSE_COORDINATES,
+          { mouseX: this.mouseX, mouseY: this.mouseY }
+        );
+
+        return;
+      }
       if (command === commandsMapping.mousedown && this.isShiftPressed) {
         this.drag = true;
         return;

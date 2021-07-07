@@ -7,7 +7,7 @@ import {
   rendererAppURL,
 } from '@minsky/shared';
 import * as debug from 'debug';
-import { BrowserWindow, screen } from 'electron';
+import { BrowserWindow, dialog, screen } from 'electron';
 import * as os from 'os';
 import { join } from 'path';
 import { format } from 'url';
@@ -180,5 +180,13 @@ export class WindowManager {
       default:
         break;
     }
+  }
+
+  static showMouseCoordinateWindow({ mouseX, mouseY }) {
+    dialog.showMessageBox(WindowManager.getMainWindow(), {
+      message: `MouseX: ${mouseX}, MouseY: ${mouseY}`,
+      title: 'Mouse Coordinates',
+      type: 'info',
+    });
   }
 }

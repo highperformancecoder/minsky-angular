@@ -45,6 +45,7 @@ const {
   GET_PREFERENCES,
   UPDATE_PREFERENCES,
   CONTEXT_MENU,
+  DISPLAY_MOUSE_COORDINATES,
 } = events;
 
 // Retrieve app version
@@ -143,4 +144,8 @@ ipcMain.handle(NEW_SYSTEM, async () => {
 
 ipcMain.on(CONTEXT_MENU, async (event, { x, y }) => {
   await ContextMenuManager.initContextMenu(x, y);
+});
+
+ipcMain.on(DISPLAY_MOUSE_COORDINATES, async (event, { mouseX, mouseY }) => {
+  WindowManager.showMouseCoordinateWindow({ mouseX, mouseY });
 });
