@@ -86,6 +86,11 @@ export class WindowManager {
     menuWindow.once('ready-to-show', () => {
       menuWindow.show();
     });
+
+    menuWindow.once('page-title-updated', (event) => {
+      event.preventDefault();
+    });
+
     menuWindow.webContents.openDevTools({ mode: 'detach' }); // command to inspect popup
 
     const windowId = WindowManager.getWindowId(menuWindow);

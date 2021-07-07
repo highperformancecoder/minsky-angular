@@ -922,5 +922,7 @@ export class CommandsManager {
     await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_REQUEST_REDRAW,
     });
+
+    WindowManager.getMainWindow().setTitle(filePath);
   }
 }
