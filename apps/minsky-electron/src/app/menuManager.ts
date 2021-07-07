@@ -601,7 +601,7 @@ export class MenuManager {
             click() {
               WindowManager.createMenuPopUpWithRouting({
                 width: 450,
-                height: 320,
+                height: 620,
                 title: 'Background Colour',
                 url: `#/headless/menu/options/background-color`,
               });
