@@ -393,6 +393,9 @@ export class CommunicationService {
 
         return;
       }
+
+      // TODO:: Should the drag logic be in this branch or else? isElectron / FE?
+
       if (command === commandsMapping.mousedown && this.isShiftPressed) {
         this.drag = true;
         return;
