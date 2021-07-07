@@ -15,6 +15,7 @@ import { join } from 'path';
 import { HttpManager } from './httpManager';
 import { RecordingManager } from './recordingManager';
 import { StoreManager } from './storeManager';
+import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
 interface QueueItem {
@@ -224,17 +225,22 @@ export class RestServiceManager {
         break;
 
       case commandsMapping.SET_GODLEY_ICON_RESOURCE:
-        stdinCommand = `${payload.command} "${join(
-          __dirname,
-          'assets/godley.svg'
-        )}"`;
+        stdinCommand = Utility.isDevelopmentMode()
+          ? `${payload.command} "${join(__dirname, 'assets/godley.svg')}"`
+          : `${payload.command} "${join(
+              process.resourcesPath,
+              'assets/godley.svg'
+            )}"`;
+
         break;
 
       case commandsMapping.SET_GROUP_ICON_RESOURCE:
-        stdinCommand = `${payload.command} "${join(
-          __dirname,
-          'assets/group.svg'
-        )}"`;
+        stdinCommand = Utility.isDevelopmentMode()
+          ? `${payload.command} "${join(__dirname, 'assets/group.svg')}"`
+          : `${payload.command} "${join(
+              process.resourcesPath,
+              'assets/group.svg'
+            )}"`;
         break;
 
       default:

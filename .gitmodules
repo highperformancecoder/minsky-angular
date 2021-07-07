@@ -1,0 +1,4 @@
+[submodule "minsky-docs"]
+	path = minsky-docs
+	url = git@gitlab.com:digiperfect/active/minsky-docs.git
+	branch = main

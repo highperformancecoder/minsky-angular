@@ -189,6 +189,10 @@ export const commandsMapping = {
   STOP_REPLAY: 'stopReplay',
   CANVAS_ITEM_FLIPPED: '/minsky/canvas/item/flipped',
   DEFAULT_EXTENSION: '/minsky/model/defaultExtension',
+  SAVE_CANVAS_ITEM_AS_FILE: '/minsky/saveCanvasItemAsFile',
+  EXPORT_GODLEY_TO_LATEX: '/minsky/canvas/item/table/exportToLaTeX',
+  EXPORT_GODLEY_TO_CSV: '/minsky/canvas/item/table/exportToCSV',
+  CANVAS_PLOT_PALETTE: '/minsky/canvas/item/palette',
 };
 
 export const availableOperations = {

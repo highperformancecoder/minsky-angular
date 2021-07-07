@@ -30,6 +30,13 @@ const menuRoutes: Route[] = [
     loadChildren: () =>
       import('./simulation/simulation.module').then((m) => m.SimulationModule),
   },
+  {
+    path: 'context-menu',
+    loadChildren: () =>
+      import('./context-menu/context-menu.module').then(
+        (m) => m.ContextMenuModule
+      ),
+  },
 ];
 
 @NgModule({
