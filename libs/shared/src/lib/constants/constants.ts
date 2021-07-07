@@ -284,6 +284,7 @@ export const events = {
   UPDATE_PREFERENCES: 'update-preferences',
   CONTEXT_MENU: 'context-menu',
   REPLAY_RECORDING: 'replay-recording',
+  DISPLAY_MOUSE_COORDINATES: 'display-mouse-coordinates',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup
