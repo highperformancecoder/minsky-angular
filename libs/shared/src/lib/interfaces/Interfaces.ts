@@ -57,3 +57,12 @@ export interface CanvasItem {
   classType: ClassType;
   value: number;
 }
+
+export interface CreateWindowPayload {
+  width?: number;
+  height?: number;
+  title: string;
+  modal?: boolean;
+  backgroundColor?: string;
+  url?: string;
+}

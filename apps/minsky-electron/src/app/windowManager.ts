@@ -1,6 +1,7 @@
 import {
   ActiveWindow,
   AppLayoutPayload,
+  CreateWindowPayload,
   getBackgroundStyle,
   green,
   rendererAppName,
@@ -11,7 +12,6 @@ import { BrowserWindow, dialog, screen } from 'electron';
 import * as os from 'os';
 import { join } from 'path';
 import { format } from 'url';
-import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 
 const logWindows = debug('minsky:electron_windows');
@@ -42,14 +42,58 @@ export class WindowManager {
     return this.activeWindows.get(1).context;
   }
 
-  static createMenuPopUpWithRouting({
-    width = 500,
-    height = 500,
-    title,
-    backgroundColor = StoreManager.store.get('backgroundColor'),
-    url = null,
-    modal = true,
-  }): BrowserWindow {
+  static createMenuPopUpWithRouting(
+    payload: CreateWindowPayload
+  ): BrowserWindow {
+    console.log(
+      '🚀 ~ file: windowManager.ts ~ line 78 ~ WindowManager ~ __dirname',
+      __dirname
+    );
+    const window = WindowManager.createWindow(payload);
+
+    if (!Utility.isPackaged()) {
+      const initialURL = payload.url
+        ? rendererAppURL + payload.url
+        : rendererAppURL;
+
+      window.loadURL(initialURL);
+      return window;
+    }
+
+    const path = format({
+      pathname: join(__dirname, '..', rendererAppName, 'index.html'),
+      protocol: 'file:',
+      slashes: true,
+    });
+
+    const initialURL = path + (payload.url || '#/');
+
+    window.loadURL(initialURL);
+    return window;
+  }
+
+  static createMenuPopUpAndLoadFile(
+    payload: CreateWindowPayload
+  ): BrowserWindow {
+    const window = WindowManager.createWindow(payload);
+
+    const filePath = format({
+      pathname: payload.url,
+      protocol: 'file:',
+      slashes: true,
+    });
+    console.log(
+      '🚀 ~ file: windowManager.ts ~ line 85 ~ WindowManager ~ filePath',
+      filePath
+    );
+
+    window.loadURL(filePath);
+    return window;
+  }
+
+  private static createWindow(payload: CreateWindowPayload) {
+    const { width, height, title, modal, backgroundColor } = payload;
+
     const window = WindowManager.getMainWindow();
 
     let menuWindow = new BrowserWindow({
@@ -69,20 +113,6 @@ export class WindowManager {
       icon: __dirname + '/assets/favicon.png',
     });
     menuWindow.setMenu(null);
-
-    if (!Utility.isPackaged()) {
-      menuWindow.loadURL(url ? rendererAppURL + url : rendererAppURL);
-    } else {
-      const initialURL = format({
-        pathname: join(__dirname, '..', rendererAppName, 'index.html'),
-        protocol: 'file:',
-        slashes: true,
-      });
-
-      menuWindow.loadURL(initialURL + (url || '#/'));
-    }
-
-    menuWindow.loadURL(url);
 
     menuWindow.once('ready-to-show', () => {
       menuWindow.show();

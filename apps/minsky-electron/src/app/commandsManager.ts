@@ -8,7 +8,10 @@ import {
 } from '@minsky/shared';
 import { dialog, ipcMain } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
+import { join } from 'path';
+import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './restServiceManager';
+import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
 export class CommandsManager {
@@ -30,8 +33,9 @@ export class CommandsManager {
   private static async getItemClassType(
     x: number = null,
     y: number = null,
-    reInvokeGetItemAt = false
-  ): Promise<ClassType> {
+    reInvokeGetItemAt = false,
+    raw = false
+  ): Promise<ClassType | string> {
     if (reInvokeGetItemAt) {
       if (!x && !y) {
         throw new Error('Please provide x and y when reInvokeGetItemAt=true');
@@ -44,6 +48,10 @@ export class CommandsManager {
     const classTypeRes = (await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_CLASS_TYPE,
     })) as string;
+
+    if (raw && classTypeRes) {
+      return classTypeRes;
+    }
 
     const classType = classTypeRes.includes(':')
       ? classTypeRes.split(':')[0]
@@ -134,7 +142,7 @@ export class CommandsManager {
       return null;
     }
 
-    const classType = await this.getItemClassType(x, y);
+    const classType = (await this.getItemClassType(x, y)) as ClassType;
 
     const value = await this.getItemValue(x, y);
 
@@ -924,5 +932,46 @@ export class CommandsManager {
     });
 
     WindowManager.getMainWindow().setTitle(filePath);
+  }
+
+  static async help(x: number, y: number) {
+    let classType = (await this.getItemClassType(x, y, false, true)) as string;
+
+    if (isEmptyObject(classType)) {
+      const wire = await CommandsManager.getWireAt(x, y);
+
+      const isWirePresent = !isEmptyObject(wire);
+
+      classType = isWirePresent ? 'Wires' : 'DesignCanvas';
+    }
+
+    if (!classType) {
+      return;
+    }
+
+    const fileName = HelpFilesManager.getHelpFileForType(classType);
+
+    const path = !Utility.isPackaged()
+      ? `${join(__dirname, '../../../', `minsky-docs/minsky/${fileName}`)}`
+      : `${join(process.resourcesPath, `minsky-docs/minsky/${fileName}`)}`;
+
+    console.log(
+      '🚀 ~ file: commandsManager.ts ~ line 961 ~ CommandsManager ~ help ~ process.resourcesPath',
+      process.resourcesPath
+    );
+    console.log(
+      '🚀 ~ file: commandsManager.ts ~ line 945 ~ CommandsManager ~ help ~ path',
+      path
+    );
+
+    WindowManager.createMenuPopUpAndLoadFile({
+      title: `Help: ${classType}`,
+      height: 800,
+      width: 1000,
+      modal: true,
+      url: path,
+    });
+
+    return;
   }
 }
