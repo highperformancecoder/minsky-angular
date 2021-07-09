@@ -1,8 +1,6 @@
-import { commandsMapping } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
-import { RestServiceManager } from './restServiceManager';
+import { CommandsManager } from './commandsManager';
 import { StoreManager } from './storeManager';
-import { WindowManager } from './windowManager';
 
 export class RecentFilesManager {
   static addFileToRecentFiles(filepath: string) {
@@ -11,6 +9,7 @@ export class RecentFilesManager {
     const exists = Boolean(recentFiles.find((f) => f === filepath));
     if (!exists) {
       recentFiles.push(filepath);
+
       StoreManager.store.set('recentFiles', recentFiles);
     }
   }
@@ -18,34 +17,74 @@ export class RecentFilesManager {
   static initRecentFiles() {
     const recentFiles = StoreManager.store.get('recentFiles');
 
+    const newRecentFiles = this.getRecentFilesThatMatchesRecentFilesToDisplay(
+      recentFiles
+    );
+
+    if (recentFiles.length !== newRecentFiles.length) {
+      StoreManager.store.set('recentFiles', newRecentFiles);
+    }
+
+    this.updateRecentFilesMenu(newRecentFiles);
+  }
+
+  private static updateRecentFilesMenu(newRecentFiles: string[]) {
     const openRecentMenu = Menu.getApplicationMenu().getMenuItemById(
       'openRecent'
     );
 
-    recentFiles.forEach((filePath) => {
-      const menuItem = openRecentMenu.submenu.items.find(
-        (f) => f.label === filePath
-      );
-
-      if (menuItem && !menuItem.enabled) {
-        menuItem.enabled = true;
-      } else {
-        const position = 0;
-        openRecentMenu.submenu.insert(
-          position,
-          new MenuItem({
-            label: filePath,
-            click: async () => {
-              WindowManager.scrollToCenter(); // TODO:: Same needs to be added on normal file load .. perhaps better to do this as a callback / in ipc listeners
-
-              await RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.LOAD,
-                filePath,
-              });
-            },
-          })
-        );
+    openRecentMenu.submenu.items.forEach((f) => {
+      if (f.id !== 'clearRecent') {
+        f.visible = false;
       }
     });
+
+    newRecentFiles.forEach((filePath) => {
+      const position = 0;
+      openRecentMenu.submenu.insert(
+        position,
+        new MenuItem({
+          label: filePath,
+          click: async () => {
+            await CommandsManager.openNamedFile(filePath);
+          },
+        })
+      );
+    });
+  }
+
+  private static getRecentFilesThatMatchesRecentFilesToDisplay(
+    recentFiles: string[]
+  ) {
+    const numberOfRecentFiles = recentFiles.length;
+
+    const numberOfRecentFilesToDisplay = StoreManager.store.get('preferences')
+      .numberOfRecentFilesToDisplay;
+
+    if (
+      numberOfRecentFiles &&
+      numberOfRecentFiles > numberOfRecentFilesToDisplay
+    ) {
+      const numberOfItemsToBeRemoved =
+        numberOfRecentFiles - numberOfRecentFilesToDisplay;
+
+      if (numberOfItemsToBeRemoved > 0) {
+        const newRecentFiles = recentFiles.slice(numberOfItemsToBeRemoved);
+
+        return newRecentFiles;
+      }
+    }
+
+    return recentFiles;
+  }
+
+  static updateNumberOfRecentFilesToDisplay() {
+    const recentFiles = StoreManager.store.get('recentFiles');
+
+    const newRecentFiles = this.getRecentFilesThatMatchesRecentFilesToDisplay(
+      recentFiles
+    );
+
+    StoreManager.store.set('recentFiles', newRecentFiles);
   }
 }

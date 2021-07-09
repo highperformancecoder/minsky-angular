@@ -1,8 +1,4 @@
-import {
-  availableOperations,
-  commandsMapping,
-  MinskyProcessPayload,
-} from '@minsky/shared';
+import { availableOperations, commandsMapping } from '@minsky/shared';
 import * as debug from 'debug';
 import {
   dialog,
@@ -66,12 +62,13 @@ export class MenuManager {
                   ],
                 });
 
-                const loadPayload: MinskyProcessPayload = {
-                  command: '/minsky/load',
-                  filePath: _dialog.filePaths[0].toString(),
-                };
+                if (_dialog.canceled || !_dialog.filePaths) {
+                  return;
+                }
 
-                await RestServiceManager.handleMinskyProcess(loadPayload);
+                await CommandsManager.openNamedFile(
+                  _dialog.filePaths[0].toString()
+                );
               } catch (error) {
                 logError(error);
               }
@@ -246,7 +243,10 @@ export class MenuManager {
                   );
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.LATEX} "${filePath}"`,
+                    command: `${commandsMapping.LATEX} ["${filePath}",${
+                      StoreManager.store.get('preferences')
+                        .wrapLongEquationsInLatexExport
+                    }]`,
                   });
                 },
               },
@@ -428,8 +428,8 @@ export class MenuManager {
             label: 'Dimensions',
             click() {
               WindowManager.createMenuPopUpWithRouting({
-                width: 420,
-                height: 250,
+                width: 700,
+                height: 500,
                 title: 'Dimensions',
                 url: `#/headless/menu/edit/dimensions`,
               });
@@ -601,7 +601,7 @@ export class MenuManager {
             click() {
               WindowManager.createMenuPopUpWithRouting({
                 width: 450,
-                height: 320,
+                height: 620,
                 title: 'Background Colour',
                 url: `#/headless/menu/options/background-color`,
               });

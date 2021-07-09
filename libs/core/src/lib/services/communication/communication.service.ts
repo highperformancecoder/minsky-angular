@@ -28,7 +28,6 @@ interface ReplayJSON {
 })
 export class CommunicationService {
   private isSimulationOn: boolean;
-  private simulationTimerId: number;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
   t = '0';
   deltaT = '0';
@@ -51,7 +50,7 @@ export class CommunicationService {
   constructor(
     private socket: Socket,
     private electronService: ElectronService,
-    private windowUtilityService: WindowUtilityService
+    private windowUtilityService: WindowUtilityService // private dialog: MatDialog
   ) {
     this.isSimulationOn = false;
 
@@ -386,6 +385,14 @@ export class CommunicationService {
     if (this.electronService.isElectron) {
       const command = commandsMapping[type];
 
+      if (command === commandsMapping.mousedown && message.altKey) {
+        this.electronService.ipcRenderer.send(
+          events.DISPLAY_MOUSE_COORDINATES,
+          { mouseX: this.mouseX, mouseY: this.mouseY }
+        );
+
+        return;
+      }
 
       // TODO:: Should the drag logic be in this branch or else? isElectron / FE?
 

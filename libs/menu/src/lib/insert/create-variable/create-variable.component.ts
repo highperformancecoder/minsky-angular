@@ -18,6 +18,7 @@ import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 })
 export class CreateVariableComponent implements OnDestroy {
   variableType: string;
+  _name: string;
 
   form: FormGroup;
 
@@ -71,10 +72,11 @@ export class CreateVariableComponent implements OnDestroy {
   ) {
     this.route.params.subscribe((params) => {
       this.variableType = params.type;
+      this._name = params?.name || '';
     });
 
     this.form = new FormGroup({
-      variableName: new FormControl('', Validators.required),
+      variableName: new FormControl(this._name, Validators.required),
       type: new FormControl(this.variableType, Validators.required),
       value: new FormControl(''),
       units: new FormControl(''),

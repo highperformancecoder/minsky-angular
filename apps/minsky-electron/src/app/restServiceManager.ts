@@ -191,9 +191,6 @@ export class RestServiceManager {
       case commandsMapping.LOAD:
         stdinCommand = `${payload.command} "${payload.filePath}"`;
 
-        this.currentMinskyModelFilePath = payload.filePath;
-
-        ipcMain.emit(events.ADD_RECENT_FILE, null, payload.filePath);
         break;
 
       case commandsMapping.SAVE:

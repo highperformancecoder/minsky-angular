@@ -3,7 +3,12 @@
  * between the frontend to the electron backend.
  */
 
-import { AppLayoutPayload, events, MinskyProcessPayload } from '@minsky/shared';
+import {
+  AppLayoutPayload,
+  commandsMapping,
+  events,
+  MinskyProcessPayload,
+} from '@minsky/shared';
 import * as debug from 'debug';
 import { ipcMain } from 'electron';
 import { environment } from '../../environments/environment';
@@ -40,6 +45,7 @@ const {
   GET_PREFERENCES,
   UPDATE_PREFERENCES,
   CONTEXT_MENU,
+  DISPLAY_MOUSE_COORDINATES,
 } = events;
 
 // Retrieve app version
@@ -53,7 +59,7 @@ ipcMain.on(SET_BACKGROUND_COLOR, (event, { color }) => {
   if (color) {
     StoreManager.store.set('backgroundColor', color);
   }
-  WindowManager.checkBackgroundAndApplyTextColor(
+  WindowManager.changeWindowBackgroundColor(
     StoreManager.store.get('backgroundColor')
   );
 });
@@ -96,8 +102,29 @@ ipcMain.handle(GET_PREFERENCES, () => {
 
 ipcMain.handle(
   UPDATE_PREFERENCES,
-  (event, preferences: Record<string, unknown>) => {
+  async (event, preferencesPayload: Record<string, unknown>) => {
+    const { font, ...preferences } = preferencesPayload;
+    const {
+      enableMultipleEquityColumns,
+      godleyTableShowValues,
+      godleyTableOutputStyle,
+    } = preferences;
+
     StoreManager.store.set('preferences', preferences);
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"}]`,
+    });
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.MULTIPLE_EQUITIES} ${enableMultipleEquityColumns}`,
+    });
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.DEFAULT_FONT} "${font}"`,
+    });
+
+    RecentFilesManager.updateNumberOfRecentFilesToDisplay();
     return;
   }
 );
@@ -117,4 +144,8 @@ ipcMain.handle(NEW_SYSTEM, async () => {
 
 ipcMain.on(CONTEXT_MENU, async (event, { x, y }) => {
   await ContextMenuManager.initContextMenu(x, y);
+});
+
+ipcMain.on(DISPLAY_MOUSE_COORDINATES, async (event, { mouseX, mouseY }) => {
+  WindowManager.showMouseCoordinateWindow({ mouseX, mouseY });
 });

@@ -7,7 +7,7 @@ interface Preferences {
   enableMultipleEquityColumns: boolean;
   numberOfRecentFilesToDisplay: number;
   wrapLongEquationsInLatexExport: boolean;
-  focusFollowsMouse: boolean;
+  // focusFollowsMouse: boolean;
 }
 interface MinskyStore {
   recentFiles: Array<string>;
@@ -24,11 +24,11 @@ export class StoreManager {
       minskyHttpServerPath: '',
       preferences: {
         godleyTableShowValues: false,
-        godleyTableOutputStyle: '+/-',
+        godleyTableOutputStyle: 'sign',
         enableMultipleEquityColumns: false,
         numberOfRecentFilesToDisplay: 10,
         wrapLongEquationsInLatexExport: false,
-        focusFollowsMouse: false,
+        // focusFollowsMouse: false,
       },
     },
   });

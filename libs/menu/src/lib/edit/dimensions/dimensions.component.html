@@ -1,32 +1,70 @@
-<div class="popup-wrapper text-center">
+<div class="popup-wrapper">
   <div class="form-wrapper">
-    <form action="">
-      <div class="form-control">
-        <label for="dimension">Dimension</label>
-        <input type="text" class="dimension input-width" id="dimension" />
-      </div>
+    <div class="form-buttons">
+      <button type="button" mat-raised-button (click)="closeWindow()">
+        Cancel
+      </button>
 
-      <div class="form-control">
-        <label for="type">Type</label>
-        <select name="type" id="type" class="input-width">
-          <option value="string">string</option>
-          <option value="value">value</option>
-          <option value="time">time</option>
-        </select>
+      <button
+        type="submit"
+        class="submit"
+        mat-raised-button
+        (click)="handleSubmit()"
+      >
+        OK
+      </button>
+    </div>
+    <form [formGroup]="form">
+      <div class="align">
+        <span class="form-control dimension">Dimension</span>
+        <span class="form-control type">Type</span>
+        <span class="form-control autocomplete">Units/Format</span>
       </div>
+      <ng-container
+        formArrayName="dimensions"
+        *ngFor="let control of dimensions.controls; let i = index"
+      >
+        <div *ngIf="dimensions.value.length" [formGroupName]="i" class="align">
+          <input
+            class="form-control dimension"
+            formControlName="first"
+            type="text"
+          />
+          <ng-container formGroupName="second">
+            <select
+              class="form-control type"
+              name="i"
+              id="i"
+              formControlName="type"
+            >
+              <option *ngFor="let type of types" [value]="type">
+                {{ type }}
+              </option>
+            </select>
 
-      <div class="form-control">
-        <label for="unitsFormat">Units/Format</label>
-        <select
-          name="units-format"
-          id="unitsFormat"
-          class="input-width"
-        ></select>
-      </div>
-
-      <div class="form-control form-buttons">
-        <button class="btn ok-btn" (click)="closeWindow()">OK</button>
-      </div>
+            <input
+              type="text"
+              formControlName="units"
+              [matAutocomplete]="auto"
+              class="form-control autocomplete"
+            />
+            <mat-autocomplete #auto="matAutocomplete">
+              <ng-container
+                *ngIf="
+                  dimensions.controls[i].get('second.type').value === 'time'
+                "
+              >
+                <mat-option
+                  *ngFor="let tfs of timeFormatStrings"
+                  [value]="tfs.value"
+                >
+                  {{ tfs.label }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </ng-container>
+        </div>
+      </ng-container>
     </form>
   </div>
 </div>

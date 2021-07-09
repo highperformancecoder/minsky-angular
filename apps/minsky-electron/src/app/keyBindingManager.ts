@@ -3,15 +3,22 @@ import {
   commandsMapping,
   isEmptyObject,
   MinskyProcessPayload,
+  rendererAppURL,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
+import { BrowserWindow } from 'electron';
 import * as keysym from 'keysym';
 import * as utf8 from 'utf8';
 import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
+import { WindowManager } from './windowManager';
 
 export class KeyBindingManager {
+  static multipleKeyString = '';
+  static multipleKeyWindow: BrowserWindow = null;
+  static isMultipleKeyModalOpen = false;
+
   static async handleOnKeyPress(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
@@ -58,7 +65,10 @@ export class KeyBindingManager {
   }
 
   private static async handleOnKeyPressFallback(payload: MinskyProcessPayload) {
-    switch (payload.key) {
+    let executed = true;
+    const { key } = payload;
+
+    switch (key) {
       case 'Backspace':
       case 'Delete':
         await this.deleteKey(payload);
@@ -109,8 +119,46 @@ export class KeyBindingManager {
         break;
 
       default:
+        executed = false;
         break;
     }
+
+    if (payload.ctrl) {
+      // avoiding conflict with shortCuts (electron accelerators)
+      return;
+    }
+
+    const asciiRegex = /[ -~]/;
+
+    if (!executed && key.length === 1 && key.match(asciiRegex)) {
+      this.multipleKeyString += key;
+      if (!this.isMultipleKeyModalOpen) {
+        this.multipleKeyWindow = WindowManager.createMenuPopUpWithRouting({
+          title: 'Text Input',
+          url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
+          width: 300,
+          height: 130,
+        });
+
+        this.isMultipleKeyModalOpen = true;
+
+        this.multipleKeyWindow.on('close', () => {
+          this.isMultipleKeyModalOpen = false;
+          this.multipleKeyString = '';
+          this.multipleKeyWindow = null;
+        });
+      }
+
+      if (this.multipleKeyWindow) {
+        this.multipleKeyWindow.loadURL(
+          `${rendererAppURL}#/headless/multiple-key-operation?input=${encodeURIComponent(
+            this.multipleKeyString
+          )}`
+        );
+      }
+    }
+
+    return executed;
   }
 
   private static async handlePlusKey(payload: MinskyProcessPayload) {

@@ -193,6 +193,11 @@ export const commandsMapping = {
   EXPORT_GODLEY_TO_LATEX: '/minsky/canvas/item/table/exportToLaTeX',
   EXPORT_GODLEY_TO_CSV: '/minsky/canvas/item/table/exportToCSV',
   CANVAS_PLOT_PALETTE: '/minsky/canvas/item/palette',
+  SET_AUTO_SAVE_FILE: '/minsky/setAutoSaveFile',
+  DIMENSIONS: '/minsky/dimensions',
+  DEFAULT_FONT: '/minsky/defaultFont',
+  MULTIPLE_EQUITIES: '/minsky/multipleEquities',
+  SET_GODLEY_DISPLAY_VALUE: '/minsky/setGodleyDisplayValue',
 };
 
 export const availableOperations = {
@@ -279,6 +284,7 @@ export const events = {
   UPDATE_PREFERENCES: 'update-preferences',
   CONTEXT_MENU: 'context-menu',
   REPLAY_RECORDING: 'replay-recording',
+  DISPLAY_MOUSE_COORDINATES: 'display-mouse-coordinates',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup

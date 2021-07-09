@@ -8,6 +8,7 @@ import { EditGodleyTitleComponent } from './edit-godley-title/edit-godley-title.
 import { EquationsComponent } from './equations/equations.component';
 import { HeaderComponent } from './header/header.component';
 import { InputModalComponent } from './input-modal/input-modal.component';
+import { MultipleKeyOperationComponent } from './multiple-key-operation/multiple-key-operation.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ParametersComponent } from './parameters/parameters.component';
 import { RenameAllInstancesComponent } from './rename-all-instances/rename-all-instances.component';
@@ -33,6 +34,7 @@ import { WiringComponent } from './wiring/wiring.component';
     EditDescriptionComponent,
     EditGodleyTitleComponent,
     EditGodleyCurrencyComponent,
+    MultipleKeyOperationComponent,
   ],
   imports: [CommonModule, SharedModule],
   exports: [
@@ -49,6 +51,7 @@ import { WiringComponent } from './wiring/wiring.component';
     EditDescriptionComponent,
     EditGodleyTitleComponent,
     EditGodleyCurrencyComponent,
+    MultipleKeyOperationComponent,
   ],
 })
 export class UiComponentsModule {}

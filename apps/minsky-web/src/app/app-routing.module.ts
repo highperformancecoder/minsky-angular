@@ -6,6 +6,7 @@ import {
   EditGodleyCurrencyComponent,
   EditGodleyTitleComponent,
   EquationsComponent,
+  MultipleKeyOperationComponent,
   PageNotFoundComponent,
   ParametersComponent,
   RenameAllInstancesComponent,
@@ -42,6 +43,10 @@ const routes: Routes = [
   {
     path: 'headless/rename-all-instances',
     component: RenameAllInstancesComponent,
+  },
+  {
+    path: 'headless/multiple-key-operation',
+    component: MultipleKeyOperationComponent,
   },
   {
     path: 'headless/edit-godley-title',
