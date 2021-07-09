@@ -15,6 +15,7 @@
     "export:package:windows": "npm run build:web && npm run build:electron && nx run minsky-electron:make --platform windows",
     "export:package:linux": "npm run build:web && npm run build:electron && nx run minsky-electron:make --platform linux --arch x64 --publishPolicy never",
     "export:package:mac": "npm run build:web && npm run build:electron && nx run minsky-electron:make --platform mac",
+    "doc": "npx compodoc -p tsconfig.compodoc.json -n \"Minsky\"",
     "test": "ng test",
     "lint": "nx workspace-lint && ng lint",
     "e2e": "ng e2e",
