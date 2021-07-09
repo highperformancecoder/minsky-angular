@@ -5,6 +5,11 @@
       "from": "apps/minsky-electron/src/assets",
       "to": "assets",
       "filter": ["**/*.svg"]
+    },
+    {
+      "from": "minsky-docs",
+      "to": "minsky-docs",
+      "filter": ["**/*.*"]
     }
   ]
 }

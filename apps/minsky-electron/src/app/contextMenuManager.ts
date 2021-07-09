@@ -158,7 +158,6 @@ export class ContextMenuManager {
 
   private static wireContextMenu(): MenuItem[] {
     const menuItems = [
-      new MenuItem({ label: 'Help' }),
       new MenuItem({
         label: 'Description',
         click: () => {
@@ -188,7 +187,6 @@ export class ContextMenuManager {
 
   private static canvasContext(x: number, y: number): MenuItem[] {
     const menuItems = [
-      new MenuItem({ label: 'Help' }),
       new MenuItem({
         label: 'Cut',
         click: async () => {
@@ -284,7 +282,15 @@ export class ContextMenuManager {
     y: number
   ) {
     if (menuItems.length) {
-      const menu = Menu.buildFromTemplate(menuItems);
+      const menu = Menu.buildFromTemplate([
+        new MenuItem({
+          label: 'Help',
+          click: async () => {
+            await CommandsManager.help(x, y);
+          },
+        }),
+        ...menuItems,
+      ]);
 
       menu.popup({
         window: mainWindow,
@@ -296,7 +302,6 @@ export class ContextMenuManager {
 
   private static async contextMenu(itemInfo: CanvasItem) {
     let menuItems: MenuItem[] = [
-      new MenuItem({ label: 'Help' }),
       new MenuItem({
         label: 'Description',
         click: () => {

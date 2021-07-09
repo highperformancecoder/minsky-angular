@@ -1,11 +1,12 @@
+import { green } from '@minsky/shared';
 import { promises as fsPromises } from 'fs';
 import * as path from 'path';
 
 abstract class HelpFilesManager {
-  private static topicNodeMap: Record<string, unknown> = {};
+  private static topicNodeMap: Record<string, string> = {};
 
-  public static getHelpFileForType(type : string) {
-    if(type in this.topicNodeMap) {
+  public static getHelpFileForType(type: string): string {
+    if (type in this.topicNodeMap) {
       return this.topicNodeMap[type];
     }
     return null;
@@ -13,44 +14,45 @@ abstract class HelpFilesManager {
 
   public static async initialize(directory: string) {
     await this.processFileOrDirectory(directory);
+    console.log(green(JSON.stringify(this.topicNodeMap, null, 4)));
   }
 
-  private static async processFileOrDirectory(fname: string) {
+  private static async processFileOrDirectory(fName: string) {
     let stat = null;
     try {
-      stat = await fsPromises.lstat(fname);
-    } catch(error) {
+      stat = await fsPromises.lstat(fName);
+    } catch (error) {
       console.warn(error);
     }
 
-    if(!stat) {
+    if (!stat) {
       return;
     }
 
     if (stat.isFile()) {
-      if (fname.endsWith(".html")) {
-        await this.processDocumentFile(fname);
+      if (fName.endsWith('.html')) {
+        await this.processDocumentFile(fName);
       }
     } else {
-      const files = await fsPromises.readdir(fname);
+      const files = await fsPromises.readdir(fName);
       const promises = [];
       files.forEach(async (fileName) => {
-        promises.push(this.processFileOrDirectory(fname + "/" + fileName));
+        promises.push(this.processFileOrDirectory(fName + '/' + fileName));
       });
       await Promise.all(promises);
     }
   }
 
-  private static async processDocumentFile(fname : string) {
-    const buffer = await fsPromises.readFile(fname);
-    if(buffer) {
+  private static async processDocumentFile(fName: string) {
+    const buffer = await fsPromises.readFile(fName);
+    if (buffer) {
       const contents = buffer.toString();
       const matches = contents.matchAll(/<A[ \t]+ID="([^"]*)"/g);
       for (const match of matches) {
-        this.topicNodeMap[match[1]]=path.basename(fname);
+        this.topicNodeMap[match[1]] = path.basename(fName);
       }
     }
   }
 }
 
-export { HelpFilesManager }
+export { HelpFilesManager };

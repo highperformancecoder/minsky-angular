@@ -9,6 +9,7 @@ import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
+import { HelpFilesManager } from './HelpFilesManager';
 import { MenuManager } from './menuManager';
 import { startProxyServer } from './proxy';
 import { RecentFilesManager } from './recentFilesManager';
@@ -16,7 +17,6 @@ import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
-import { HelpFilesManager } from './HelpFilesManager';
 
 const logWindows = debug('minsky:electron_windows');
 
@@ -63,7 +63,13 @@ export default class App {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
-    await HelpFilesManager.initialize(__dirname + "/../../../minsky-docs/");
+
+    Utility.isPackaged
+      ? await HelpFilesManager.initialize(
+          join(process.resourcesPath, 'minsky-docs')
+        )
+      : await HelpFilesManager.initialize(__dirname + '/../../../minsky-docs/');
+
     App.initMainWindow();
     startSocketServer();
 
