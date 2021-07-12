@@ -682,19 +682,32 @@ export class CommandsManager {
     });
 
     if (isCanvasEdited) {
-      const saveModelDialog = await dialog.showSaveDialog({
-        title: 'Save Model?',
-        properties: ['showOverwriteConfirmation', 'createDirectory'],
+      const choice = dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+        type: 'question',
+        buttons: ['Yes', 'No', 'Cancel'],
+        title: 'Confirm',
+        message: 'Save?',
       });
 
-      const { canceled, filePath } = saveModelDialog;
-      if (canceled || !filePath) {
-        return;
+      if (choice === 0) {
+        const saveModelDialog = await dialog.showSaveDialog({
+          title: 'Save Model?',
+          properties: ['showOverwriteConfirmation', 'createDirectory'],
+        });
+
+        const { canceled, filePath } = saveModelDialog;
+        if (canceled || !filePath) {
+          return;
+        }
+
+        await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.SAVE} "${filePath}"`,
+        });
       }
 
-      await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.SAVE} "${filePath}"`,
-      });
+      if (choice === 2) {
+        return;
+      }
     }
 
     WindowManager.activeWindows.forEach((window) => {
