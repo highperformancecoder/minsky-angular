@@ -365,6 +365,20 @@ export class MenuManager {
               });
             },
           },
+          {
+            label: 'Generate Signature',
+            click: async () => {
+              await CommandsManager.generateSignature();
+            },
+            visible: Utility.isDevelopmentMode() && !Utility.isPackaged(),
+          },
+          {
+            label: 'Check Signature',
+            click: async () => {
+              await CommandsManager.checkSignature();
+            },
+            visible: Utility.isDevelopmentMode() && !Utility.isPackaged(),
+          },
         ],
       },
       {
@@ -626,24 +640,7 @@ export class MenuManager {
           },
         ],
       },
-      {
-        label: 'Dev Tools',
-        submenu: [
-          {
-            label: 'Generate Signature',
-            click: async () => {
-              await CommandsManager.generateSignature();
-            },
-          },
-          {
-            label: 'Check Signature',
-            click: async () => {
-              await CommandsManager.checkSignature();
-            },
-          },
-        ],
-        visible: Utility.isDevelopmentMode() && !Utility.isPackaged,
-      },
+
       {
         role: 'help',
         submenu: [
