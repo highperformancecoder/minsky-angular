@@ -10,6 +10,7 @@ import {
 import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
+import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
 const logError = debug('minsky:electron_error');
@@ -624,6 +625,24 @@ export class MenuManager {
             },
           },
         ],
+      },
+      {
+        label: 'Dev Tools',
+        submenu: [
+          {
+            label: 'Generate Signature',
+            click: async () => {
+              await CommandsManager.generateSignature();
+            },
+          },
+          {
+            label: 'Check Signature',
+            click: async () => {
+              await CommandsManager.checkSignature();
+            },
+          },
+        ],
+        visible: Utility.isDevelopmentMode() && !Utility.isPackaged,
       },
       {
         role: 'help',

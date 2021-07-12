@@ -2,6 +2,7 @@ import { startSocketServer } from '@minsky/minsky-server';
 import {
   ActiveWindow,
   green,
+  red,
   rendererAppName,
   rendererAppURL,
 } from '@minsky/shared';
@@ -216,5 +217,13 @@ export default class App {
     App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
     App.application.on('ready', App.onReady); // App is ready to load data
     App.application.on('activate', App.onActivate); // App is activated
+
+    process.on('uncaughtException', (err) => {
+      console.error(
+        red(
+          `🚀 ~ file: app.ts ~ line 265 ~ App ~ process.on('uncaughtException') ~ err: ${err}`
+        )
+      );
+    });
   }
 }
