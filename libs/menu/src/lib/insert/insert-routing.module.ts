@@ -4,6 +4,7 @@ import { CreateVariableComponent } from './create-variable/create-variable.compo
 
 const routes: Routes = [
   { path: 'create-variable/:type/:name', component: CreateVariableComponent },
+  { path: 'create-variable/:type', component: CreateVariableComponent },
 ];
 
 @NgModule({
