@@ -10,13 +10,17 @@ import { RestServiceManager } from './restServiceManager';
 import { WindowManager } from './windowManager';
 
 export class ContextMenuManager {
+  private static x: number = null;
+  private static y: number = null;
+
   public static async initContextMenu(x: number, y: number) {
     const mainWindow = WindowManager.getMainWindow();
 
     try {
-      const cairoTopOffset = y;
+      this.x = x;
+      this.y = y;
 
-      const wire = await CommandsManager.getWireAt(x, cairoTopOffset);
+      const wire = await CommandsManager.getWireAt(this.x, this.y);
 
       const isWirePresent = !isEmptyObject(wire);
 
@@ -27,49 +31,33 @@ export class ContextMenuManager {
       if (isWirePresent && isWireVisible) {
         ContextMenuManager.buildAndDisplayContextMenu(
           ContextMenuManager.wireContextMenu(),
-          mainWindow,
-          x,
-          y
+          mainWindow
         );
         return;
       }
 
-      const itemInfo = await CommandsManager.getItemInfo(x, cairoTopOffset);
+      const itemInfo = await CommandsManager.getItemInfo(this.x, this.y);
 
       if (itemInfo?.classType) {
         switch (itemInfo?.classType) {
           case ClassType.GodleyIcon:
             ContextMenuManager.buildAndDisplayContextMenu(
-              await ContextMenuManager.rightMouseGodley(
-                x,
-                cairoTopOffset,
-                itemInfo
-              ),
-              mainWindow,
-              x,
-              y
+              await ContextMenuManager.rightMouseGodley(itemInfo),
+              mainWindow
             );
             break;
 
           case ClassType.Group:
             ContextMenuManager.buildAndDisplayContextMenu(
-              await ContextMenuManager.rightMouseGroup(
-                x,
-                cairoTopOffset,
-                itemInfo
-              ),
-              mainWindow,
-              x,
-              y
+              await ContextMenuManager.rightMouseGroup(itemInfo),
+              mainWindow
             );
             break;
 
           default:
             ContextMenuManager.buildAndDisplayContextMenu(
               await ContextMenuManager.contextMenu(itemInfo),
-              mainWindow,
-              x,
-              y
+              mainWindow
             );
 
             break;
@@ -79,10 +67,8 @@ export class ContextMenuManager {
       }
 
       ContextMenuManager.buildAndDisplayContextMenu(
-        ContextMenuManager.canvasContext(x, y),
-        mainWindow,
-        x,
-        y
+        ContextMenuManager.canvasContext(),
+        mainWindow
       );
 
       return;
@@ -92,15 +78,12 @@ export class ContextMenuManager {
         error
       );
     }
-    // });
   }
 
   private static async rightMouseGodley(
-    x: number,
-    y: number,
     itemInfo: CanvasItem
   ): Promise<MenuItem[]> {
-    if (await CommandsManager.selectVar(x, y)) {
+    if (await CommandsManager.selectVar(this.x, this.y)) {
       const menuItems: MenuItem[] = [
         new MenuItem({
           label: 'Copy',
@@ -125,11 +108,9 @@ export class ContextMenuManager {
   }
 
   private static async rightMouseGroup(
-    x: number,
-    y: number,
     itemInfo: CanvasItem
   ): Promise<MenuItem[]> {
-    if (await CommandsManager.selectVar(x, y)) {
+    if (await CommandsManager.selectVar(this.x, this.y)) {
       const menuItems = [
         new MenuItem({ label: 'Edit' }),
         new MenuItem({
@@ -185,7 +166,7 @@ export class ContextMenuManager {
     return menuItems;
   }
 
-  private static canvasContext(x: number, y: number): MenuItem[] {
+  private static canvasContext(): MenuItem[] {
     const menuItems = [
       new MenuItem({
         label: 'Cut',
@@ -212,7 +193,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Paste selection',
         click: () => {
-          CommandsManager.pasteAt(x, y);
+          CommandsManager.pasteAt(this.x, this.y);
         },
       }),
       new MenuItem({
@@ -242,7 +223,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Bookmark here',
         click: async () => {
-          await CommandsManager.bookmarkAt(x, y);
+          await CommandsManager.bookmarkAt(this.x, this.y);
         },
       }),
       new MenuItem({
@@ -277,16 +258,14 @@ export class ContextMenuManager {
 
   private static buildAndDisplayContextMenu(
     menuItems: MenuItem[],
-    mainWindow: Electron.BrowserWindow,
-    x: number,
-    y: number
+    mainWindow: Electron.BrowserWindow
   ) {
     if (menuItems.length) {
       const menu = Menu.buildFromTemplate([
         new MenuItem({
           label: 'Help',
           click: async () => {
-            await CommandsManager.help(x, y);
+            await CommandsManager.help(this.x, this.y);
           },
         }),
         ...menuItems,
@@ -294,8 +273,8 @@ export class ContextMenuManager {
 
       menu.popup({
         window: mainWindow,
-        x,
-        y: y + WindowManager.electronTopOffset,
+        x: this.x,
+        y: this.y + WindowManager.electronTopOffset,
       });
     }
   }
@@ -816,7 +795,12 @@ export class ContextMenuManager {
           await CommandsManager.renameAllInstances(itemInfo);
         },
       }),
-      new MenuItem({ label: 'Edit' }),
+      new MenuItem({
+        label: 'Edit',
+        click: async () => {
+          await CommandsManager.editVar(this.x, this.y);
+        },
+      }),
       new MenuItem({
         label: 'Copy item',
         click: async () => {

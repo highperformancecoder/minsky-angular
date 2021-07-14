@@ -596,9 +596,7 @@ export class CommandsManager {
   static async getItemType(): Promise<string> {
     const type = ((await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_TYPE,
-    })) as string)
-      .slice(1, -1)
-      .trim();
+    })) as string).trim();
 
     return type;
   }
@@ -1063,5 +1061,23 @@ export class CommandsManager {
       message: 'No Change In Signature.',
     });
     return;
+  }
+
+  static async editVar() {
+    const itemName = await this.getItemName();
+    const itemType = await this.getItemType();
+    console.log(
+      '🚀 ~ file: commandsManager.ts ~ line 1072 ~ CommandsManager ~ editVar ~ itemType',
+      itemType
+    );
+
+    WindowManager.createMenuPopUpWithRouting({
+      width: 500,
+      height: 650,
+      title: `Edit ${itemName || ''}`,
+      url: `#/headless/menu/insert/create-variable/${itemType}/${
+        itemName || ''
+      }/true`,
+    });
   }
 }

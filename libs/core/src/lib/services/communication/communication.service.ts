@@ -528,8 +528,6 @@ export class CommunicationService {
       this.showDragCursor$.next(true);
     }
 
-    console.table(payload);
-
     await this.electronService.sendMinskyCommandAndRender(
       payload,
       events.KEY_PRESS

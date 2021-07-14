@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -16,9 +16,11 @@ import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
   templateUrl: './create-variable.component.html',
   styleUrls: ['./create-variable.component.scss'],
 })
-export class CreateVariableComponent implements OnDestroy {
+export class CreateVariableComponent implements OnInit, OnDestroy {
   variableType: string;
   _name: string;
+
+  isEditMode = false;
 
   form: FormGroup;
 
@@ -62,9 +64,9 @@ export class CreateVariableComponent implements OnDestroy {
     return this.form.get('sliderStepSize');
   }
 
-  // public get sliderStepRel(): AbstractControl {
-  //   return this.form.get('sliderStepRel');
-  // }
+  public get sliderStepRel(): AbstractControl {
+    return this.form.get('sliderStepRel');
+  }
 
   constructor(
     private electronService: ElectronService,
@@ -73,6 +75,7 @@ export class CreateVariableComponent implements OnDestroy {
     this.route.params.subscribe((params) => {
       this.variableType = params.type;
       this._name = params?.name || '';
+      this.isEditMode = params?.isEditMode || false;
     });
 
     this.form = new FormGroup({
@@ -86,7 +89,7 @@ export class CreateVariableComponent implements OnDestroy {
       sliderBoundsMax: new FormControl(null),
       sliderBoundsMin: new FormControl(null),
       sliderStepSize: new FormControl(null),
-      // sliderStepRel: new FormControl(false),
+      sliderStepRel: new FormControl(false),
     });
 
     this.type.valueChanges.subscribe((type) => {
@@ -96,64 +99,173 @@ export class CreateVariableComponent implements OnDestroy {
     });
   }
 
+  ngOnInit() {
+    if (this.isEditMode) {
+      (async () => {
+        await this.updateFormValues();
+      })();
+    }
+  }
+
+  async updateFormValues() {
+    const init = await this.electronService.sendMinskyCommandAndRender({
+      command: '/minsky/canvas/item/init',
+    });
+
+    // TODO: units
+    const units = await this.electronService.sendMinskyCommandAndRender({
+      command: '/minsky/canvas/item/value/units/str',
+    });
+    console.log(
+      '🚀 ~ file: create-variable.component.ts ~ line 117 ~ CreateVariableComponent ~ updateFormValues ~ units',
+      units
+    );
+    const rotation = await this.electronService.sendMinskyCommandAndRender({
+      command: '/minsky/canvas/item/rotation',
+    });
+    const tooltip = await this.electronService.sendMinskyCommandAndRender({
+      command: '/minsky/canvas/item/tooltip',
+    });
+    const detailedText = await this.electronService.sendMinskyCommandAndRender({
+      command: '/minsky/canvas/item/detailedText',
+    });
+    const sliderMax = await this.electronService.sendMinskyCommandAndRender({
+      command: '/minsky/canvas/item/sliderMax',
+    });
+    const sliderMin = await this.electronService.sendMinskyCommandAndRender({
+      command: '/minsky/canvas/item/sliderMin',
+    });
+    const sliderStep = await this.electronService.sendMinskyCommandAndRender({
+      command: '/minsky/canvas/item/sliderStep',
+    });
+    const sliderStepRel = await this.electronService.sendMinskyCommandAndRender(
+      {
+        command: '/minsky/canvas/item/sliderStepRel',
+      }
+    );
+
+    this.value.setValue(init);
+    this.units.setValue(units);
+    this.rotation.setValue(rotation);
+    this.shortDescription.setValue(tooltip);
+    this.detailedDescription.setValue(detailedText);
+    this.sliderBoundsMax.setValue(sliderMax);
+    this.sliderBoundsMin.setValue(sliderMin);
+    this.sliderStepSize.setValue(sliderStep);
+    this.sliderStepRel.setValue(sliderStepRel);
+  }
+
+  async handleSubmit() {
+    if (this.isEditMode) {
+      await this.editVariable();
+      return;
+    }
+
+    this.createVariable();
+  }
+
+  async editVariable() {
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.RENAME_ITEM} "${this.variableName.value}"`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.CANVAS_ITEM_RETYPE} "${this.type.value}"`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.CANVAS_ITEM_SET_UNITS} "${
+        this.units.value || ''
+      }"`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.CANVAS_ITEM_INIT} "${this.value.value}"`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.CANVAS_ITEM_ROTATION} ${
+        this.rotation.value || 0
+      }`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.CANVAS_ITEM_TOOLTIP} "${this.shortDescription.value}"`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.CANVAS_ITEM_DETAILED_TEXT} "${this.detailedDescription.value}"`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.CANVAS_ITEM_SLIDER_MAX} ${
+        this.sliderBoundsMax.value || 0
+      }`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.CANVAS_ITEM_SLIDER_MIN} ${
+        this.sliderBoundsMin.value || 0
+      }`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.CANVAS_ITEM_SLIDER_STEP} ${
+        this.sliderStepSize.value || 0
+      }`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.CANVAS_ITEM_SLIDER_STEP_REL} ${this.sliderStepRel.value}`,
+    });
+  }
+
   async createVariable() {
     await this.electronService.sendMinskyCommandAndRender({
       command: `${commandsMapping.ADD_VARIABLE} ["${this.variableName.value}","${this.type.value}"]`,
     });
 
-    if (this.units.value) {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${this.units.value}"`,
-      });
-    }
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${
+        this.units.value || ''
+      } "`,
+    });
 
-    if (this.value.value) {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.ITEM_FOCUS_INIT} "${this.value.value}"`,
-      });
-    }
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_INIT} "${this.value.value}"`,
+    });
 
-    if (this.rotation.value) {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.ITEM_FOCUS_ROTATION} ${this.rotation.value}`,
-      });
-    }
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_ROTATION} ${
+        this.rotation.value || 0
+      }`,
+    });
 
-    if (this.shortDescription.value) {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.ITEM_FOCUS_TOOLTIP} "${this.shortDescription.value}"`,
-      });
-    }
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_TOOLTIP} "${this.shortDescription.value}"`,
+    });
 
-    if (this.detailedDescription.value) {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.ITEM_FOCUS_DETAILED_TEXT} "${this.detailedDescription.value}"`,
-      });
-    }
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_DETAILED_TEXT} "${this.detailedDescription.value}"`,
+    });
 
-    if (this.sliderBoundsMax.value) {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.ITEM_FOCUS_SLIDER_MAX} ${this.sliderBoundsMax.value}`,
-      });
-    }
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MAX} ${
+        this.sliderBoundsMax.value || 0
+      }`,
+    });
 
-    if (this.sliderBoundsMin.value) {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.ITEM_FOCUS_SLIDER_MIN} ${this.sliderBoundsMin.value}`,
-      });
-    }
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MIN} ${
+        this.sliderBoundsMin.value || 0
+      }`,
+    });
 
-    if (this.sliderStepSize.value) {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP} ${this.sliderStepSize.value}`,
-      });
-    }
-
-    // if (this.sliderStepRel.value) {
-    //   await this.electronService.sendMinskyCommandAndRender({
-    //     command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP_REL} ${this.sliderStepRel.value}`,
-    //   });
-    // }
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP} ${
+        this.sliderStepSize.value || 0
+      }`,
+    });
 
     this.closeWindow();
   }

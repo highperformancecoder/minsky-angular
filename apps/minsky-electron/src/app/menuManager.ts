@@ -525,7 +525,7 @@ export class MenuManager {
                 click() {
                   WindowManager.createMenuPopUpWithRouting({
                     width: 500,
-                    height: 550,
+                    height: 650,
                     title: 'Specify variable name',
                     url: `#/headless/menu/insert/create-variable/flow`,
                   });
@@ -536,7 +536,7 @@ export class MenuManager {
                 click() {
                   WindowManager.createMenuPopUpWithRouting({
                     width: 500,
-                    height: 550,
+                    height: 650,
                     title: 'Specify variable name',
                     url: `#/headless/menu/insert/create-variable/constant`,
                   });
@@ -547,7 +547,7 @@ export class MenuManager {
                 click() {
                   WindowManager.createMenuPopUpWithRouting({
                     width: 500,
-                    height: 550,
+                    height: 650,
                     title: 'Specify variable name',
                     url: `#/headless/menu/insert/create-variable/parameter`,
                   });

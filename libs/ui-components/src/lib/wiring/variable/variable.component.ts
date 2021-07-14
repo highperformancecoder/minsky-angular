@@ -36,7 +36,7 @@ export class VariableComponent {
         title: 'Specify variable name',
         url,
         width: 500,
-        height: 550,
+        height: 650,
       });
     }
   }
