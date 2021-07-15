@@ -2,6 +2,7 @@ export * from './lib/cli-input/cli-input.component';
 export * from './lib/edit-description/edit-description.component';
 export * from './lib/edit-godley-currency/edit-godley-currency.component';
 export * from './lib/edit-godley-title/edit-godley-title.component';
+export * from './lib/edit-item/edit-item.component';
 export * from './lib/equations/equations.component';
 export * from './lib/header/header.component';
 export * from './lib/input-modal/input-modal.component';

@@ -1080,4 +1080,19 @@ export class CommandsManager {
       }/true`,
     });
   }
+
+  static async editItem() {
+    const classType = await this.getItemClassType();
+
+    const itemType = await this.getItemType();
+
+    WindowManager.createMenuPopUpWithRouting({
+      width: 500,
+      height: 400,
+      title: `Edit ${classType || ''}`,
+      url: `#/headless/edit-item?classType=${classType || ''}&type=${
+        itemType || ''
+      }`,
+    });
+  }
 }

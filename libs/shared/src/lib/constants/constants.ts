@@ -294,6 +294,7 @@ export const events = {
   CONTEXT_MENU: 'context-menu',
   REPLAY_RECORDING: 'replay-recording',
   DISPLAY_MOUSE_COORDINATES: 'display-mouse-coordinates',
+  DOUBLE_CLICK: 'double-click',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup

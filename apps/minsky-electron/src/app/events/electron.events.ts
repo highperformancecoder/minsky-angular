@@ -5,6 +5,7 @@
 
 import {
   AppLayoutPayload,
+  ClassType,
   commandsMapping,
   events,
   MinskyProcessPayload,
@@ -46,6 +47,7 @@ const {
   UPDATE_PREFERENCES,
   CONTEXT_MENU,
   DISPLAY_MOUSE_COORDINATES,
+  DOUBLE_CLICK,
 } = events;
 
 // Retrieve app version
@@ -148,4 +150,40 @@ ipcMain.on(CONTEXT_MENU, async (event, { x, y }) => {
 
 ipcMain.on(DISPLAY_MOUSE_COORDINATES, async (event, { mouseX, mouseY }) => {
   WindowManager.showMouseCoordinateWindow({ mouseX, mouseY });
+});
+
+ipcMain.on(DOUBLE_CLICK, async (event, { mouseX, mouseY }) => {
+  const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
+
+  if (itemInfo?.classType) {
+    switch (itemInfo?.classType) {
+      case ClassType.GodleyIcon:
+        WindowManager.createMenuPopUpWithRouting({
+          title: ClassType.GodleyIcon,
+        });
+        break;
+
+      case ClassType.PlotWidget:
+        WindowManager.createMenuPopUpWithRouting({
+          title: ClassType.PlotWidget,
+        });
+        break;
+
+      case ClassType.Variable:
+      case ClassType.VarConstant:
+        await CommandsManager.editVar();
+        break;
+
+      case ClassType.Operation:
+      case ClassType.IntOp:
+      case ClassType.DataOp:
+      case ClassType.UserFunction:
+      case ClassType.Group:
+        await CommandsManager.editItem();
+        break;
+
+      default:
+        break;
+    }
+  }
 });

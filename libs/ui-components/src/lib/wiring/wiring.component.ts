@@ -121,6 +121,10 @@ export class WiringComponent implements OnInit, OnDestroy {
             await this.cmService.mouseEvents('CANVAS_EVENT', event);
           }
         );
+
+        minskyCanvasElement.addEventListener('dblclick', () => {
+          this.cmService.handleDblClick();
+        });
       }
     });
   }

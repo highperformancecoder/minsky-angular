@@ -17,6 +17,7 @@ import { VariablesComponent } from './variables/variables.component';
 import { AvailableOperationsComponent } from './wiring/available-operations/available-operations.component';
 import { VariableComponent } from './wiring/variable/variable.component';
 import { WiringComponent } from './wiring/wiring.component';
+import { EditItemComponent } from './edit-item/edit-item.component';
 @NgModule({
   declarations: [
     HeaderComponent,
@@ -35,6 +36,7 @@ import { WiringComponent } from './wiring/wiring.component';
     EditGodleyTitleComponent,
     EditGodleyCurrencyComponent,
     MultipleKeyOperationComponent,
+    EditItemComponent,
   ],
   imports: [CommonModule, SharedModule],
   exports: [
@@ -52,6 +54,7 @@ import { WiringComponent } from './wiring/wiring.component';
     EditGodleyTitleComponent,
     EditGodleyCurrencyComponent,
     MultipleKeyOperationComponent,
+    EditItemComponent,
   ],
 })
 export class UiComponentsModule {}

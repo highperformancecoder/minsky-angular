@@ -112,7 +112,12 @@ export class ContextMenuManager {
   ): Promise<MenuItem[]> {
     if (await CommandsManager.selectVar(this.x, this.y)) {
       const menuItems = [
-        new MenuItem({ label: 'Edit' }),
+        new MenuItem({
+          label: 'Edit',
+          click: async () => {
+            await CommandsManager.editItem();
+          },
+        }),
         new MenuItem({
           label: 'Copy',
           click: async () => {
@@ -301,6 +306,7 @@ export class ContextMenuManager {
       case ClassType.Operation:
       case ClassType.IntOp:
       case ClassType.DataOp:
+      case ClassType.UserFunction:
         menuItems = [
           ...menuItems,
           ...(await ContextMenuManager.buildContextMenuForOperations(itemInfo)),
@@ -526,7 +532,12 @@ export class ContextMenuManager {
 
     let menuItems = [
       new MenuItem({ label: `Port values ${portValues}}` }),
-      new MenuItem({ label: 'Edit' }),
+      new MenuItem({
+        label: 'Edit',
+        click: async () => {
+          await CommandsManager.editItem();
+        },
+      }),
     ];
 
     if ((await CommandsManager.getItemType()) === 'data') {
@@ -600,7 +611,12 @@ export class ContextMenuManager {
 
   private static async buildContextMenuForGroup(): Promise<MenuItem[]> {
     const menuItems = [
-      new MenuItem({ label: 'Edit' }),
+      new MenuItem({
+        label: 'Edit',
+        click: async () => {
+          await CommandsManager.editItem();
+        },
+      }),
       new MenuItem({
         label: 'Open in canvas',
         click: async () => {
@@ -798,7 +814,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Edit',
         click: async () => {
-          await CommandsManager.editVar(this.x, this.y);
+          await CommandsManager.editVar();
         },
       }),
       new MenuItem({

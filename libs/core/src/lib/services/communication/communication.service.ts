@@ -533,4 +533,11 @@ export class CommunicationService {
       events.KEY_PRESS
     );
   }
+
+  handleDblClick() {
+    this.electronService.ipcRenderer.send(events.DOUBLE_CLICK, {
+      mouseX: this.mouseX,
+      mouseY: this.mouseY,
+    });
+  }
 }
