@@ -269,7 +269,14 @@ export class ContextMenuManager {
           });
         },
       }),
-      new MenuItem({ label: 'Open master group' }),
+      new MenuItem({
+        label: 'Open master group',
+        click: async () => {
+          await RestServiceManager.handleMinskyProcess({
+            command: commandsMapping.CANVAS_OPEN_MODEL_IN_CANVAS,
+          });
+        },
+      }),
     ];
 
     return menuItems;
