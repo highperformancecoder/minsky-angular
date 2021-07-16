@@ -72,7 +72,7 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
     private electronService: ElectronService,
     private route: ActivatedRoute
   ) {
-    this.route.params.subscribe((params) => {
+    this.route.queryParams.subscribe((params) => {
       this.variableType = params.type;
       this._name = params?.name || '';
       this.isEditMode = params?.isEditMode || false;

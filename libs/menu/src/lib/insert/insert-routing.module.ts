@@ -3,15 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CreateVariableComponent } from './create-variable/create-variable.component';
 
 const routes: Routes = [
-  { path: 'create-variable/:type', component: CreateVariableComponent },
-  {
-    path: 'create-variable/:type/:name',
-    component: CreateVariableComponent,
-  },
-  {
-    path: 'create-variable/:type/:name/:isEditMode',
-    component: CreateVariableComponent,
-  },
+  { path: 'create-variable', component: CreateVariableComponent },
 ];
 
 @NgModule({

@@ -1075,9 +1075,9 @@ export class CommandsManager {
       width: 500,
       height: 650,
       title: `Edit ${itemName || ''}`,
-      url: `#/headless/menu/insert/create-variable/${itemType}/${
+      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
         itemName || ''
-      }/true`,
+      }&isEditMode=true`,
     });
   }
 

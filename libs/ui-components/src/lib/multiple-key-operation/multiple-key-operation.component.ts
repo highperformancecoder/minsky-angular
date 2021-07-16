@@ -58,7 +58,7 @@ export class MultipleKeyOperationComponent implements OnInit {
         width: 500,
         height: 650,
         title: 'Specify variable name',
-        url: `#/headless/menu/insert/create-variable/flow/${string}`,
+        url: `#/headless/menu/insert/create-variable?type=flow&name=${string}`,
       });
 
       return;

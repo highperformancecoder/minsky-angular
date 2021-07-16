@@ -18,15 +18,15 @@ export class VariableComponent {
       let url = '';
       switch (type) {
         case 'flow':
-          url = `#/headless/menu/insert/create-variable/flow`;
+          url = `#/headless/menu/insert/create-variable?type=flow`;
           break;
 
         case 'constant':
-          url = `#/headless/menu/insert/create-variable/constant`;
+          url = `#/headless/menu/insert/create-variable?type=constant`;
           break;
 
         case 'parameter':
-          url = `#/headless/menu/insert/create-variable/parameter`;
+          url = `#/headless/menu/insert/create-variable?type=parameter`;
           break;
 
         default:

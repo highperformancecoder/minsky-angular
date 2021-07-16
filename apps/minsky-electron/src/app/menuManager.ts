@@ -527,7 +527,7 @@ export class MenuManager {
                     width: 500,
                     height: 650,
                     title: 'Specify variable name',
-                    url: `#/headless/menu/insert/create-variable/flow`,
+                    url: `#/headless/menu/insert/create-variable?type=flow`,
                   });
                 },
               },
@@ -538,7 +538,7 @@ export class MenuManager {
                     width: 500,
                     height: 650,
                     title: 'Specify variable name',
-                    url: `#/headless/menu/insert/create-variable/constant`,
+                    url: `#/headless/menu/insert/create-variable?type=constant`,
                   });
                 },
               },
@@ -549,7 +549,7 @@ export class MenuManager {
                     width: 500,
                     height: 650,
                     title: 'Specify variable name',
-                    url: `#/headless/menu/insert/create-variable/parameter`,
+                    url: `#/headless/menu/insert/create-variable?type=parameter`,
                   });
                 },
               },
