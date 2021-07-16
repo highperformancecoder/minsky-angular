@@ -5,6 +5,10 @@ import { CliInputComponent } from './cli-input/cli-input.component';
 import { EditDescriptionComponent } from './edit-description/edit-description.component';
 import { EditGodleyCurrencyComponent } from './edit-godley-currency/edit-godley-currency.component';
 import { EditGodleyTitleComponent } from './edit-godley-title/edit-godley-title.component';
+import { EditGroupComponent } from './edit-group/edit-group.component';
+import { EditIntegralComponent } from './edit-integral/edit-integral.component';
+import { EditOperationComponent } from './edit-operation/edit-operation.component';
+import { EditUserFunctionComponent } from './edit-user-function/edit-user-function.component';
 import { EquationsComponent } from './equations/equations.component';
 import { HeaderComponent } from './header/header.component';
 import { InputModalComponent } from './input-modal/input-modal.component';
@@ -17,7 +21,6 @@ import { VariablesComponent } from './variables/variables.component';
 import { AvailableOperationsComponent } from './wiring/available-operations/available-operations.component';
 import { VariableComponent } from './wiring/variable/variable.component';
 import { WiringComponent } from './wiring/wiring.component';
-import { EditItemComponent } from './edit-item/edit-item.component';
 @NgModule({
   declarations: [
     HeaderComponent,
@@ -36,7 +39,10 @@ import { EditItemComponent } from './edit-item/edit-item.component';
     EditGodleyTitleComponent,
     EditGodleyCurrencyComponent,
     MultipleKeyOperationComponent,
-    EditItemComponent,
+    EditOperationComponent,
+    EditIntegralComponent,
+    EditGroupComponent,
+    EditUserFunctionComponent,
   ],
   imports: [CommonModule, SharedModule],
   exports: [
@@ -54,7 +60,10 @@ import { EditItemComponent } from './edit-item/edit-item.component';
     EditGodleyTitleComponent,
     EditGodleyCurrencyComponent,
     MultipleKeyOperationComponent,
-    EditItemComponent,
+    EditOperationComponent,
+    EditIntegralComponent,
+    EditGroupComponent,
+    EditUserFunctionComponent,
   ],
 })
 export class UiComponentsModule {}

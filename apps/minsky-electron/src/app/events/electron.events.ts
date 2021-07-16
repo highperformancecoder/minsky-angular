@@ -175,11 +175,23 @@ ipcMain.on(DOUBLE_CLICK, async (event, { mouseX, mouseY }) => {
         break;
 
       case ClassType.Operation:
+        await CommandsManager.editItem(ClassType.Operation);
+
+        break;
+
       case ClassType.IntOp:
       case ClassType.DataOp:
+        await CommandsManager.editItem(ClassType.IntOp);
+
+        break;
+
       case ClassType.UserFunction:
+        await CommandsManager.editItem(ClassType.UserFunction);
+
+        break;
+
       case ClassType.Group:
-        await CommandsManager.editItem();
+        await CommandsManager.editItem(ClassType.Group);
         break;
 
       default:

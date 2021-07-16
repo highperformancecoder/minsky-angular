@@ -3,17 +3,17 @@
 
   <form [formGroup]="form">
     <div class="form-control">
-      <span>{{ itemType }}</span>
+      <span>{{ itemName }}</span>
     </div>
 
     <br />
 
-    <div *ngIf="isUserFunction || isIntegral" class="form-control">
+    <div class="form-control">
       <label for="name">Name</label>
       <input type="text" class="name" id="name" formControlName="name" />
     </div>
 
-    <div *ngIf="isIntegral" class="form-control">
+    <div class="form-control">
       <label for="initialValue">Initial Value</label>
       <input
         type="text"
@@ -23,15 +23,12 @@
       />
     </div>
 
-    <div *ngIf="isIntegral" class="form-control">
+    <div class="form-control">
       <label for="units">Units</label>
       <input type="text" class="units" id="units" formControlName="units" />
     </div>
 
-    <div
-      *ngIf="isIntegral || isUserFunction || isOperation"
-      class="form-control"
-    >
+    <div class="form-control">
       <label for="rotation">Rotation</label>
       <input
         type="text"
@@ -41,32 +38,7 @@
       />
     </div>
 
-    <div *ngIf="isOperation" class="form-control">
-      <label for="axis">Axis</label>
-      <input type="text" class="axis" id="axis" formControlName="axis" />
-    </div>
-
-    <div *ngIf="isOperation" class="form-control">
-      <label for="argument">Argument</label>
-      <input
-        type="text"
-        class="argument"
-        id="argument"
-        formControlName="argument"
-      />
-    </div>
-
-    <div *ngIf="isUserFunction" class="form-control">
-      <label for="expression">Expression</label>
-      <input
-        type="text"
-        class="expression"
-        id="expression"
-        formControlName="expression"
-      />
-    </div>
-
-    <div *ngIf="isIntegral || isUserFunction" class="form-control">
+    <div class="form-control">
       <label for="relative">Relative</label>
       <input
         type="checkbox"

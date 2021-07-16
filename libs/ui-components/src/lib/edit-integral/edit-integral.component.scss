@@ -11,8 +11,8 @@ button {
 .form-control {
   span {
     min-width: 250px;
-    display: inline-block;
-    text-align: right;
-    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }

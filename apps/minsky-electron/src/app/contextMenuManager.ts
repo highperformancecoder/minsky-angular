@@ -115,7 +115,7 @@ export class ContextMenuManager {
         new MenuItem({
           label: 'Edit',
           click: async () => {
-            await CommandsManager.editItem();
+            await CommandsManager.editItem(itemInfo.classType);
           },
         }),
         new MenuItem({
@@ -535,7 +535,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Edit',
         click: async () => {
-          await CommandsManager.editItem();
+          await CommandsManager.editItem(itemInfo.classType);
         },
       }),
     ];
@@ -614,7 +614,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Edit',
         click: async () => {
-          await CommandsManager.editItem();
+          await CommandsManager.editItem(ClassType.Group);
         },
       }),
       new MenuItem({

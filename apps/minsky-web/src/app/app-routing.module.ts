@@ -5,7 +5,10 @@ import {
   EditDescriptionComponent,
   EditGodleyCurrencyComponent,
   EditGodleyTitleComponent,
-  EditItemComponent,
+  EditGroupComponent,
+  EditIntegralComponent,
+  EditOperationComponent,
+  EditUserFunctionComponent,
   EquationsComponent,
   MultipleKeyOperationComponent,
   PageNotFoundComponent,
@@ -46,8 +49,20 @@ const routes: Routes = [
     component: RenameAllInstancesComponent,
   },
   {
-    path: 'headless/edit-item',
-    component: EditItemComponent,
+    path: 'headless/edit-operation',
+    component: EditOperationComponent,
+  },
+  {
+    path: 'headless/edit-userfunction',
+    component: EditUserFunctionComponent,
+  },
+  {
+    path: 'headless/edit-intop',
+    component: EditIntegralComponent,
+  },
+  {
+    path: 'headless/edit-group',
+    component: EditGroupComponent,
   },
   {
     path: 'headless/multiple-key-operation',

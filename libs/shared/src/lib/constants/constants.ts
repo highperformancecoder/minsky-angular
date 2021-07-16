@@ -207,6 +207,10 @@ export const commandsMapping = {
   ITEM_FOCUS_SLIDER_STEP_REL: '/minsky/canvas/itemFocus/sliderStepRel',
   ITEM_FOCUS_ROTATION: '/minsky/canvas/itemFocus/rotation',
   ITEM_FOCUS_SET_UNITS: '/minsky/canvas/itemFocus/setUnits',
+  CANVAS_ITEM_TITLE: '/minsky/canvas/item/title',
+  CANVAS_ITEM_AXIS: '/minsky/canvas/item/axis',
+  CANVAS_ITEM_ARG: '/minsky/canvas/item/arg',
+  CANVAS_ITEM_EXPRESSION: '/minsky/canvas/item/expression',
 };
 
 export const availableOperations = {

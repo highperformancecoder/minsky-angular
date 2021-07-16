@@ -1081,18 +1081,28 @@ export class CommandsManager {
     });
   }
 
-  static async editItem() {
-    const classType = await this.getItemClassType();
+  static async editItem(classType: string) {
+    let height;
+    switch (classType) {
+      case ClassType.Group:
+        height = 240;
+        break;
+      case ClassType.Operation:
+        height = 330;
+        break;
+      case ClassType.UserFunction:
+        height = 370;
+        break;
 
-    const itemType = await this.getItemType();
-
+      default:
+        height = 410;
+        break;
+    }
     WindowManager.createMenuPopUpWithRouting({
       width: 500,
-      height: 400,
+      height,
       title: `Edit ${classType || ''}`,
-      url: `#/headless/edit-item?classType=${classType || ''}&type=${
-        itemType || ''
-      }`,
+      url: `#/headless/edit-${classType.toLowerCase()}`,
     });
   }
 }

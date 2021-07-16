@@ -29,6 +29,7 @@
     "exitzero",
     "httpd",
     "infimum",
+    "intop",
     "keysym",
     "keyvalue",
     "lindex",
@@ -41,6 +42,7 @@
     "supremum",
     "tmax",
     "ungroup",
+    "userfunction",
     "winfo"
   ]
 }
