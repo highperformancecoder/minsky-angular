@@ -5,7 +5,6 @@
 
 import {
   AppLayoutPayload,
-  ClassType,
   commandsMapping,
   events,
   MinskyProcessPayload,
@@ -152,50 +151,6 @@ ipcMain.on(DISPLAY_MOUSE_COORDINATES, async (event, { mouseX, mouseY }) => {
   WindowManager.showMouseCoordinateWindow({ mouseX, mouseY });
 });
 
-ipcMain.on(DOUBLE_CLICK, async (event, { mouseX, mouseY }) => {
-  const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
-
-  if (itemInfo?.classType) {
-    switch (itemInfo?.classType) {
-      case ClassType.GodleyIcon:
-        WindowManager.createMenuPopUpWithRouting({
-          title: ClassType.GodleyIcon,
-        });
-        break;
-
-      case ClassType.PlotWidget:
-        WindowManager.createMenuPopUpWithRouting({
-          title: ClassType.PlotWidget,
-        });
-        break;
-
-      case ClassType.Variable:
-      case ClassType.VarConstant:
-        await CommandsManager.editVar();
-        break;
-
-      case ClassType.Operation:
-        await CommandsManager.editItem(ClassType.Operation);
-
-        break;
-
-      case ClassType.IntOp:
-      case ClassType.DataOp:
-        await CommandsManager.editItem(ClassType.IntOp);
-
-        break;
-
-      case ClassType.UserFunction:
-        await CommandsManager.editItem(ClassType.UserFunction);
-
-        break;
-
-      case ClassType.Group:
-        await CommandsManager.editItem(ClassType.Group);
-        break;
-
-      default:
-        break;
-    }
-  }
+ipcMain.on(DOUBLE_CLICK, async (event, payload) => {
+  await CommandsManager.handleDoubleClick(payload);
 });

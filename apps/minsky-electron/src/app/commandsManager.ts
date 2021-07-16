@@ -1105,4 +1105,56 @@ export class CommandsManager {
       url: `#/headless/edit-${classType.toLowerCase()}`,
     });
   }
+
+  static async handleDoubleClick({ mouseX, mouseY }) {
+    const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
+
+    if (itemInfo?.classType) {
+      switch (itemInfo?.classType) {
+        case ClassType.GodleyIcon:
+          WindowManager.createMenuPopUpWithRouting({
+            title: ClassType.GodleyIcon,
+          });
+          break;
+
+        case ClassType.PlotWidget:
+          WindowManager.createMenuPopUpWithRouting({
+            title: ClassType.PlotWidget,
+          });
+          break;
+
+        case ClassType.Variable:
+        case ClassType.VarConstant:
+          await CommandsManager.editVar();
+          break;
+
+        case ClassType.Operation:
+          await CommandsManager.editItem(ClassType.Operation);
+
+          break;
+
+        case ClassType.IntOp:
+        case ClassType.DataOp:
+          await CommandsManager.editItem(ClassType.IntOp);
+
+          break;
+
+        case ClassType.UserFunction:
+          await CommandsManager.editItem(ClassType.UserFunction);
+
+          break;
+
+        case ClassType.Group:
+          await CommandsManager.editItem(ClassType.Group);
+          break;
+
+        case ClassType.Item:
+          await CommandsManager.postNote('item');
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
 }
