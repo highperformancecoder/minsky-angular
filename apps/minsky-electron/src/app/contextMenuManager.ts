@@ -175,11 +175,11 @@ export class ContextMenuManager {
     const menuItems = [
       new MenuItem({
         label: 'Cut',
-        click: async () => {
-          await RestServiceManager.handleMinskyProcess({
-            command: commandsMapping.CUT,
-          });
-        },
+        // click: async () => {
+        //   await RestServiceManager.handleMinskyProcess({
+        //     command: commandsMapping.CUT,
+        //   });
+        // },
       }),
       new MenuItem({
         label: 'Copy selection',
