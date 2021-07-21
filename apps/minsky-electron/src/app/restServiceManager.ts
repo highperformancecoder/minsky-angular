@@ -45,6 +45,7 @@ export class RestServiceManager {
   private static payloadDataQueue: Array<QueueItem> = [];
   private static runningCommand = false;
   private static isQueueEnabled = true;
+  private static render=true;
   private static lastZoomPayload: MinskyProcessPayload = null;
   static availableOperationsMappings: Record<string, string[]> = {};
 
@@ -190,7 +191,7 @@ export class RestServiceManager {
     switch (payload.command) {
       case commandsMapping.LOAD:
         stdinCommand = `${payload.command} "${payload.filePath}"`;
-
+        this.render=true;
         break;
 
       case commandsMapping.SAVE:
@@ -240,6 +241,10 @@ export class RestServiceManager {
             )}"`;
         break;
 
+    case commandsMapping.REDRAW:
+        stdinCommand= this.getRenderCommand();
+        break;
+
       default:
         stdinCommand = payload.command;
         break;
@@ -254,11 +259,21 @@ export class RestServiceManager {
 
       const res = await HttpManager.handleMinskyCommand(miscCommand);
 
-      const { render = true } = payload;
-      if (render) {
-        await HttpManager.handleMinskyCommand(renderCommand);
-      }
-
+        if (this.render) {
+            const {
+                leftOffset,
+                canvasWidth,
+                canvasHeight,
+                activeWindows,
+                electronTopOffset,
+            } = WindowManager;
+            if (canvasWidth>0 && canvasHeight>0)
+            {
+                this.render=false;
+                await HttpManager.handleMinskyCommand(renderCommand);
+            }
+        }
+        
       return res;
     }
     console.error('Command was null or undefined');
