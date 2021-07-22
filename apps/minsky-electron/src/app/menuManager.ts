@@ -461,9 +461,15 @@ export class MenuManager {
           {
             label: 'Auto Layout',
             async click() {
+              WindowManager.getMainWindow().webContents.insertCSS(
+                `body { cursor: wait; }`
+              );
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.AUTO_LAYOUT}`,
               });
+              WindowManager.getMainWindow().webContents.insertCSS(
+                `body { cursor: default; }`
+              );
             },
           },
           {
