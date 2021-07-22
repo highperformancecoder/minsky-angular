@@ -7,6 +7,7 @@ export * from './lib/edit-integral/edit-integral.component';
 export * from './lib/edit-operation/edit-operation.component';
 export * from './lib/edit-user-function/edit-user-function.component';
 export * from './lib/equations/equations.component';
+export * from './lib/find-all-instances/find-all-instances.component';
 export * from './lib/header/header.component';
 export * from './lib/input-modal/input-modal.component';
 export * from './lib/multiple-key-operation/multiple-key-operation.component';

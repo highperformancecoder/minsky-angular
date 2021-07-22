@@ -188,6 +188,10 @@ export const commandsMapping = {
   DEFAULT_FONT: '/minsky/defaultFont',
   MULTIPLE_EQUITIES: '/minsky/multipleEquities',
   SET_GODLEY_DISPLAY_VALUE: '/minsky/setGodleyDisplayValue',
+  LIST_ALL_INSTANCES: '/minsky/listAllInstances',
+  VARIABLE_INSTANCE_LIST_NAMES: '/minsky/variableInstanceList/names',
+  VARIABLE_INSTANCE_LIST_GOTO_INSTANCE:
+    '/minsky/variableInstanceList/gotoInstance',
   CANVAS_ITEM_RETYPE: '/minsky/canvas/item/retype',
   RENAME_ITEM: '/minsky/renameItem',
   CANVAS_ITEM_INIT: '/minsky/canvas/item/init',

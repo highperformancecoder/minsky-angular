@@ -10,6 +10,7 @@ import { EditIntegralComponent } from './edit-integral/edit-integral.component';
 import { EditOperationComponent } from './edit-operation/edit-operation.component';
 import { EditUserFunctionComponent } from './edit-user-function/edit-user-function.component';
 import { EquationsComponent } from './equations/equations.component';
+import { FindAllInstancesComponent } from './find-all-instances/find-all-instances.component';
 import { HeaderComponent } from './header/header.component';
 import { InputModalComponent } from './input-modal/input-modal.component';
 import { MultipleKeyOperationComponent } from './multiple-key-operation/multiple-key-operation.component';
@@ -39,6 +40,7 @@ import { WiringComponent } from './wiring/wiring.component';
     EditGodleyTitleComponent,
     EditGodleyCurrencyComponent,
     MultipleKeyOperationComponent,
+    FindAllInstancesComponent,
     EditOperationComponent,
     EditIntegralComponent,
     EditGroupComponent,
@@ -60,6 +62,7 @@ import { WiringComponent } from './wiring/wiring.component';
     EditGodleyTitleComponent,
     EditGodleyCurrencyComponent,
     MultipleKeyOperationComponent,
+    FindAllInstancesComponent,
     EditOperationComponent,
     EditIntegralComponent,
     EditGroupComponent,
