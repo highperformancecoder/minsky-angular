@@ -7,9 +7,11 @@ interface Second {
   type: string;
   units: string;
 }
+
 interface Dimension {
-  first: string;
-  second: Second;
+  dimension: string;
+  type: Second;
+  units: Second;
 }
 @Component({
   selector: 'minsky-dimensions',
@@ -66,26 +68,20 @@ export class DimensionsComponent implements OnInit {
           {
             command: commandsMapping.DIMENSIONS,
           }
-        )) as Dimension[];
-        // console.log(
-        //   '🚀 ~ file: dimensions.component.ts ~ line 38 ~ DimensionsComponent ~ dimensions',
-        //   dimensions
-        // );
+        )) as Record<string, Second>;
 
-        dimensions.forEach((d) => {
-          this.dimensions.push(this.createDimension(d));
-        });
+        for (const [key, args] of Object.entries(dimensions)) {
+          this.dimensions.push(this.createDimension(key, args));
+        }
       }
     })();
   }
 
-  createDimension(dimension: Dimension) {
+  createDimension(key: string, args: Second) {
     return new FormGroup({
-      first: new FormControl(dimension.first),
-      second: new FormGroup({
-        type: new FormControl(dimension.second.type),
-        units: new FormControl(dimension.second.units),
-      }),
+      dimension: new FormControl(key),
+      type: new FormControl(args.type),
+      units: new FormControl(args.units),
     });
   }
 
@@ -95,16 +91,24 @@ export class DimensionsComponent implements OnInit {
     }
   }
 
+  getDimensions() {
+    const dimensions = this.form.value.dimensions as Dimension[];
+
+    return dimensions.map((d) => {
+      return {
+        [d.dimension]: {
+          type: d.type,
+          units: d.units,
+        },
+      };
+    });
+  }
+
   async handleSubmit() {
-    // console.log(
-    //   '🚀 ~ file: dimensions.component.ts ~ line 67 ~ DimensionsComponent ~ handleSubmit ~ this.form.value',
-    //   this.form.value
-    // );
+    const dimensions = this.getDimensions();
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.DIMENSIONS} ${JSON.stringify(
-        this.form.value.dimensions
-      )}`,
+      command: `${commandsMapping.DIMENSIONS} ${JSON.stringify(dimensions)}`,
     });
 
     this.closeWindow();

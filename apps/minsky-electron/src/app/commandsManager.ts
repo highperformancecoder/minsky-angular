@@ -596,9 +596,7 @@ export class CommandsManager {
   static async getItemType(): Promise<string> {
     const type = ((await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_TYPE,
-    })) as string)
-      .slice(1, -1)
-      .trim();
+    })) as string).trim();
 
     return type;
   }
@@ -1063,5 +1061,100 @@ export class CommandsManager {
       message: 'No Change In Signature.',
     });
     return;
+  }
+
+  static async editVar() {
+    const itemName = await this.getItemName();
+    const itemType = await this.getItemType();
+    console.log(
+      '🚀 ~ file: commandsManager.ts ~ line 1072 ~ CommandsManager ~ editVar ~ itemType',
+      itemType
+    );
+
+    WindowManager.createMenuPopUpWithRouting({
+      width: 500,
+      height: 650,
+      title: `Edit ${itemName || ''}`,
+      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
+        itemName || ''
+      }&isEditMode=true`,
+    });
+  }
+
+  static async editItem(classType: string) {
+    let height;
+    switch (classType) {
+      case ClassType.Group:
+        height = 240;
+        break;
+      case ClassType.Operation:
+        height = 330;
+        break;
+      case ClassType.UserFunction:
+        height = 370;
+        break;
+
+      default:
+        height = 410;
+        break;
+    }
+    WindowManager.createMenuPopUpWithRouting({
+      width: 500,
+      height,
+      title: `Edit ${classType || ''}`,
+      url: `#/headless/edit-${classType.toLowerCase()}`,
+    });
+  }
+
+  static async handleDoubleClick({ mouseX, mouseY }) {
+    const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
+
+    if (itemInfo?.classType) {
+      switch (itemInfo?.classType) {
+        case ClassType.GodleyIcon:
+          WindowManager.createMenuPopUpWithRouting({
+            title: ClassType.GodleyIcon,
+          });
+          break;
+
+        case ClassType.PlotWidget:
+          WindowManager.createMenuPopUpWithRouting({
+            title: ClassType.PlotWidget,
+          });
+          break;
+
+        case ClassType.Variable:
+        case ClassType.VarConstant:
+          await CommandsManager.editVar();
+          break;
+
+        case ClassType.Operation:
+          await CommandsManager.editItem(ClassType.Operation);
+
+          break;
+
+        case ClassType.IntOp:
+        case ClassType.DataOp:
+          await CommandsManager.editItem(ClassType.IntOp);
+
+          break;
+
+        case ClassType.UserFunction:
+          await CommandsManager.editItem(ClassType.UserFunction);
+
+          break;
+
+        case ClassType.Group:
+          await CommandsManager.editItem(ClassType.Group);
+          break;
+
+        case ClassType.Item:
+          await CommandsManager.postNote('item');
+          break;
+
+        default:
+          break;
+      }
+    }
   }
 }

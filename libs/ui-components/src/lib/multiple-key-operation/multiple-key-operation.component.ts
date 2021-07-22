@@ -56,9 +56,9 @@ export class MultipleKeyOperationComponent implements OnInit {
 
       this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
         width: 500,
-        height: 550,
+        height: 650,
         title: 'Specify variable name',
-        url: `#/headless/menu/insert/create-variable/flow/${string}`,
+        url: `#/headless/menu/insert/create-variable?type=flow&name=${string}`,
       });
 
       return;

@@ -39,6 +39,7 @@ export enum ClassType {
   Ravel = 'Ravel',
   Lock = 'Lock',
   Sheet = 'Sheet',
+  UserFunction = 'UserFunction',
 }
 
 export enum RecordingStatus {

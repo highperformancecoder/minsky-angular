@@ -525,9 +525,9 @@ export class MenuManager {
                 click() {
                   WindowManager.createMenuPopUpWithRouting({
                     width: 500,
-                    height: 550,
+                    height: 650,
                     title: 'Specify variable name',
-                    url: `#/headless/menu/insert/create-variable/flow`,
+                    url: `#/headless/menu/insert/create-variable?type=flow`,
                   });
                 },
               },
@@ -536,9 +536,9 @@ export class MenuManager {
                 click() {
                   WindowManager.createMenuPopUpWithRouting({
                     width: 500,
-                    height: 550,
+                    height: 650,
                     title: 'Specify variable name',
-                    url: `#/headless/menu/insert/create-variable/constant`,
+                    url: `#/headless/menu/insert/create-variable?type=constant`,
                   });
                 },
               },
@@ -547,9 +547,9 @@ export class MenuManager {
                 click() {
                   WindowManager.createMenuPopUpWithRouting({
                     width: 500,
-                    height: 550,
+                    height: 650,
                     title: 'Specify variable name',
-                    url: `#/headless/menu/insert/create-variable/parameter`,
+                    url: `#/headless/menu/insert/create-variable?type=parameter`,
                   });
                 },
               },
