@@ -27,42 +27,38 @@
         <div *ngIf="dimensions.value.length" [formGroupName]="i" class="align">
           <input
             class="form-control dimension"
-            formControlName="first"
+            formControlName="dimension"
             type="text"
           />
-          <ng-container formGroupName="second">
-            <select
-              class="form-control type"
-              name="i"
-              id="i"
-              formControlName="type"
-            >
-              <option *ngFor="let type of types" [value]="type">
-                {{ type }}
-              </option>
-            </select>
+          <select
+            class="form-control type"
+            name="i"
+            id="i"
+            formControlName="type"
+          >
+            <option *ngFor="let type of types" [value]="type">
+              {{ type }}
+            </option>
+          </select>
 
-            <input
-              type="text"
-              formControlName="units"
-              [matAutocomplete]="auto"
-              class="form-control autocomplete"
-            />
-            <mat-autocomplete #auto="matAutocomplete">
-              <ng-container
-                *ngIf="
-                  dimensions.controls[i].get('second.type').value === 'time'
-                "
+          <input
+            type="text"
+            formControlName="units"
+            [matAutocomplete]="auto"
+            class="form-control autocomplete"
+          />
+          <mat-autocomplete #auto="matAutocomplete">
+            <ng-container
+              *ngIf="dimensions.controls[i].get('type').value === 'time'"
+            >
+              <mat-option
+                *ngFor="let tfs of timeFormatStrings"
+                [value]="tfs.value"
               >
-                <mat-option
-                  *ngFor="let tfs of timeFormatStrings"
-                  [value]="tfs.value"
-                >
-                  {{ tfs.label }}
-                </mat-option>
-              </ng-container>
-            </mat-autocomplete>
-          </ng-container>
+                {{ tfs.label }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
         </div>
       </ng-container>
     </form>

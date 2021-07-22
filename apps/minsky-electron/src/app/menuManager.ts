@@ -10,6 +10,7 @@ import {
 import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
+import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
 const logError = debug('minsky:electron_error');
@@ -364,6 +365,20 @@ export class MenuManager {
               });
             },
           },
+          {
+            label: 'Generate Signature',
+            click: async () => {
+              await CommandsManager.generateSignature();
+            },
+            visible: Utility.isDevelopmentMode() && !Utility.isPackaged(),
+          },
+          {
+            label: 'Check Signature',
+            click: async () => {
+              await CommandsManager.checkSignature();
+            },
+            visible: Utility.isDevelopmentMode() && !Utility.isPackaged(),
+          },
         ],
       },
       {
@@ -510,9 +525,9 @@ export class MenuManager {
                 click() {
                   WindowManager.createMenuPopUpWithRouting({
                     width: 500,
-                    height: 550,
+                    height: 650,
                     title: 'Specify variable name',
-                    url: `#/headless/menu/insert/create-variable/flow`,
+                    url: `#/headless/menu/insert/create-variable?type=flow`,
                   });
                 },
               },
@@ -521,9 +536,9 @@ export class MenuManager {
                 click() {
                   WindowManager.createMenuPopUpWithRouting({
                     width: 500,
-                    height: 550,
+                    height: 650,
                     title: 'Specify variable name',
-                    url: `#/headless/menu/insert/create-variable/constant`,
+                    url: `#/headless/menu/insert/create-variable?type=constant`,
                   });
                 },
               },
@@ -532,9 +547,9 @@ export class MenuManager {
                 click() {
                   WindowManager.createMenuPopUpWithRouting({
                     width: 500,
-                    height: 550,
+                    height: 650,
                     title: 'Specify variable name',
-                    url: `#/headless/menu/insert/create-variable/parameter`,
+                    url: `#/headless/menu/insert/create-variable?type=parameter`,
                   });
                 },
               },
@@ -625,6 +640,7 @@ export class MenuManager {
           },
         ],
       },
+
       {
         role: 'help',
         submenu: [

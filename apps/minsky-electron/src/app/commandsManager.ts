@@ -7,7 +7,7 @@ import {
   isEmptyObject,
 } from '@minsky/shared';
 import { dialog, ipcMain } from 'electron';
-import { existsSync, unlinkSync } from 'fs';
+import { existsSync, promises, unlinkSync } from 'fs';
 import { join } from 'path';
 import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './restServiceManager';
@@ -596,9 +596,7 @@ export class CommandsManager {
   static async getItemType(): Promise<string> {
     const type = ((await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_TYPE,
-    })) as string)
-      .slice(1, -1)
-      .trim();
+    })) as string).trim();
 
     return type;
   }
@@ -682,19 +680,32 @@ export class CommandsManager {
     });
 
     if (isCanvasEdited) {
-      const saveModelDialog = await dialog.showSaveDialog({
-        title: 'Save Model?',
-        properties: ['showOverwriteConfirmation', 'createDirectory'],
+      const choice = dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+        type: 'question',
+        buttons: ['Yes', 'No', 'Cancel'],
+        title: 'Confirm',
+        message: 'Save?',
       });
 
-      const { canceled, filePath } = saveModelDialog;
-      if (canceled || !filePath) {
-        return;
+      if (choice === 0) {
+        const saveModelDialog = await dialog.showSaveDialog({
+          title: 'Save Model?',
+          properties: ['showOverwriteConfirmation', 'createDirectory'],
+        });
+
+        const { canceled, filePath } = saveModelDialog;
+        if (canceled || !filePath) {
+          return;
+        }
+
+        await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.SAVE} "${filePath}"`,
+        });
       }
 
-      await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.SAVE} "${filePath}"`,
-      });
+      if (choice === 2) {
+        return;
+      }
     }
 
     WindowManager.activeWindows.forEach((window) => {
@@ -995,5 +1006,176 @@ export class CommandsManager {
       modal: true,
       url: `#/headless/find-all-instances`,
     });
+  }
+  static async generateSignature() {
+    if (!RestServiceManager.minskyHttpServer) {
+      dialog.showMessageBox(WindowManager.getMainWindow(), {
+        type: 'info',
+        message: 'Please Start Http Server First.',
+      });
+    }
+
+    const listSignatures = {};
+
+    const list = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.LIST_V2,
+      render: false,
+    })) as string[];
+
+    for (const l of list) {
+      const signature = (await RestServiceManager.handleMinskyProcess({
+        command: `/minsky${l}/@signature`,
+        render: false,
+      })) as Record<string, unknown>;
+
+      listSignatures[l] = signature;
+    }
+
+    await promises.writeFile(
+      'signature.json',
+      JSON.stringify(listSignatures, null, 4)
+    );
+
+    dialog.showMessageBox(WindowManager.getMainWindow(), {
+      type: 'info',
+      message: 'New Signature File Generated.',
+    });
+
+    return;
+  }
+  static async checkSignature() {
+    if (!RestServiceManager.minskyHttpServer) {
+      dialog.showMessageBox(WindowManager.getMainWindow(), {
+        type: 'info',
+        message: 'Please Start Http Server First.',
+      });
+    }
+
+    const list = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.LIST_V2,
+      render: false,
+    })) as string[];
+
+    const _signature = JSON.parse(
+      (await promises.readFile('signature.json')).toString()
+    );
+
+    for (const l of list) {
+      const signature = (await RestServiceManager.handleMinskyProcess({
+        command: `/minsky${l}/@signature`,
+        render: false,
+      })) as Record<string, unknown>;
+
+      if (
+        !_signature[l] ||
+        JSON.stringify(_signature[l]) !== JSON.stringify(signature)
+      ) {
+        dialog.showMessageBox(WindowManager.getMainWindow(), {
+          type: 'info',
+          message: `Signature changed for /minsky${l}`,
+        });
+        return;
+      }
+    }
+    dialog.showMessageBox(WindowManager.getMainWindow(), {
+      type: 'info',
+      message: 'No Change In Signature.',
+    });
+    return;
+  }
+
+  static async editVar() {
+    const itemName = await this.getItemName();
+    const itemType = await this.getItemType();
+    console.log(
+      '🚀 ~ file: commandsManager.ts ~ line 1072 ~ CommandsManager ~ editVar ~ itemType',
+      itemType
+    );
+
+    WindowManager.createMenuPopUpWithRouting({
+      width: 500,
+      height: 650,
+      title: `Edit ${itemName || ''}`,
+      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
+        itemName || ''
+      }&isEditMode=true`,
+    });
+  }
+
+  static async editItem(classType: string) {
+    let height;
+    switch (classType) {
+      case ClassType.Group:
+        height = 240;
+        break;
+      case ClassType.Operation:
+        height = 330;
+        break;
+      case ClassType.UserFunction:
+        height = 370;
+        break;
+
+      default:
+        height = 410;
+        break;
+    }
+    WindowManager.createMenuPopUpWithRouting({
+      width: 500,
+      height,
+      title: `Edit ${classType || ''}`,
+      url: `#/headless/edit-${classType.toLowerCase()}`,
+    });
+  }
+
+  static async handleDoubleClick({ mouseX, mouseY }) {
+    const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
+
+    if (itemInfo?.classType) {
+      switch (itemInfo?.classType) {
+        case ClassType.GodleyIcon:
+          WindowManager.createMenuPopUpWithRouting({
+            title: ClassType.GodleyIcon,
+          });
+          break;
+
+        case ClassType.PlotWidget:
+          WindowManager.createMenuPopUpWithRouting({
+            title: ClassType.PlotWidget,
+          });
+          break;
+
+        case ClassType.Variable:
+        case ClassType.VarConstant:
+          await CommandsManager.editVar();
+          break;
+
+        case ClassType.Operation:
+          await CommandsManager.editItem(ClassType.Operation);
+
+          break;
+
+        case ClassType.IntOp:
+        case ClassType.DataOp:
+          await CommandsManager.editItem(ClassType.IntOp);
+
+          break;
+
+        case ClassType.UserFunction:
+          await CommandsManager.editItem(ClassType.UserFunction);
+
+          break;
+
+        case ClassType.Group:
+          await CommandsManager.editItem(ClassType.Group);
+          break;
+
+        case ClassType.Item:
+          await CommandsManager.postNote('item');
+          break;
+
+        default:
+          break;
+      }
+    }
   }
 }
