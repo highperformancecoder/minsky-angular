@@ -7,7 +7,7 @@ import {
   isEmptyObject,
 } from '@minsky/shared';
 import { dialog, ipcMain } from 'electron';
-import { existsSync, unlinkSync } from 'fs';
+import { existsSync, promises, unlinkSync } from 'fs';
 import { join } from 'path';
 import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './restServiceManager';
@@ -682,19 +682,32 @@ export class CommandsManager {
     });
 
     if (isCanvasEdited) {
-      const saveModelDialog = await dialog.showSaveDialog({
-        title: 'Save Model?',
-        properties: ['showOverwriteConfirmation', 'createDirectory'],
+      const choice = dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+        type: 'question',
+        buttons: ['Yes', 'No', 'Cancel'],
+        title: 'Confirm',
+        message: 'Save?',
       });
 
-      const { canceled, filePath } = saveModelDialog;
-      if (canceled || !filePath) {
-        return;
+      if (choice === 0) {
+        const saveModelDialog = await dialog.showSaveDialog({
+          title: 'Save Model?',
+          properties: ['showOverwriteConfirmation', 'createDirectory'],
+        });
+
+        const { canceled, filePath } = saveModelDialog;
+        if (canceled || !filePath) {
+          return;
+        }
+
+        await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.SAVE} "${filePath}"`,
+        });
       }
 
-      await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.SAVE} "${filePath}"`,
-      });
+      if (choice === 2) {
+        return;
+      }
     }
 
     WindowManager.activeWindows.forEach((window) => {
@@ -972,6 +985,83 @@ export class CommandsManager {
       url: path,
     });
 
+    return;
+  }
+
+  static async generateSignature() {
+    if (!RestServiceManager.minskyHttpServer) {
+      dialog.showMessageBox(WindowManager.getMainWindow(), {
+        type: 'info',
+        message: 'Please Start Http Server First.',
+      });
+    }
+
+    const listSignatures = {};
+
+    const list = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.LIST_V2,
+      render: false,
+    })) as string[];
+
+    for (const l of list) {
+      const signature = (await RestServiceManager.handleMinskyProcess({
+        command: `/minsky${l}/@signature`,
+        render: false,
+      })) as Record<string, unknown>;
+
+      listSignatures[l] = signature;
+    }
+
+    await promises.writeFile(
+      'signature.json',
+      JSON.stringify(listSignatures, null, 4)
+    );
+
+    dialog.showMessageBox(WindowManager.getMainWindow(), {
+      type: 'info',
+      message: 'New Signature File Generated.',
+    });
+
+    return;
+  }
+  static async checkSignature() {
+    if (!RestServiceManager.minskyHttpServer) {
+      dialog.showMessageBox(WindowManager.getMainWindow(), {
+        type: 'info',
+        message: 'Please Start Http Server First.',
+      });
+    }
+
+    const list = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.LIST_V2,
+      render: false,
+    })) as string[];
+
+    const _signature = JSON.parse(
+      (await promises.readFile('signature.json')).toString()
+    );
+
+    for (const l of list) {
+      const signature = (await RestServiceManager.handleMinskyProcess({
+        command: `/minsky${l}/@signature`,
+        render: false,
+      })) as Record<string, unknown>;
+
+      if (
+        !_signature[l] ||
+        JSON.stringify(_signature[l]) !== JSON.stringify(signature)
+      ) {
+        dialog.showMessageBox(WindowManager.getMainWindow(), {
+          type: 'info',
+          message: `Signature changed for /minsky${l}`,
+        });
+        return;
+      }
+    }
+    dialog.showMessageBox(WindowManager.getMainWindow(), {
+      type: 'info',
+      message: 'No Change In Signature.',
+    });
     return;
   }
 }

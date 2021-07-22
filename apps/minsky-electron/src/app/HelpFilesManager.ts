@@ -1,4 +1,3 @@
-import { green } from '@minsky/shared';
 import { promises as fsPromises } from 'fs';
 import * as path from 'path';
 
@@ -14,7 +13,6 @@ abstract class HelpFilesManager {
 
   public static async initialize(directory: string) {
     await this.processFileOrDirectory(directory);
-    console.log(green(JSON.stringify(this.topicNodeMap, null, 4)));
   }
 
   private static async processFileOrDirectory(fName: string) {
