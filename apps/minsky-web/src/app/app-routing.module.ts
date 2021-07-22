@@ -6,6 +6,7 @@ import {
   EditGodleyCurrencyComponent,
   EditGodleyTitleComponent,
   EquationsComponent,
+  FindAllInstancesComponent,
   MultipleKeyOperationComponent,
   PageNotFoundComponent,
   ParametersComponent,
@@ -59,6 +60,10 @@ const routes: Routes = [
   {
     path: 'headless/edit-description',
     component: EditDescriptionComponent,
+  },
+  {
+    path: 'headless/find-all-instances',
+    component: FindAllInstancesComponent,
   },
   {
     path: 'headless/terminal',

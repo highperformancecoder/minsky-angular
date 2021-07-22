@@ -974,4 +974,26 @@ export class CommandsManager {
 
     return;
   }
+
+  static async findAllInstances() {
+    await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.LIST_ALL_INSTANCES,
+    });
+
+    const instances = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.VARIABLE_INSTANCE_LIST_NAMES,
+    })) as string[];
+
+    if (!instances.length) {
+      return;
+    }
+
+    WindowManager.createMenuPopUpWithRouting({
+      title: `Instances`,
+      height: 500,
+      width: 300,
+      modal: true,
+      url: `#/headless/find-all-instances`,
+    });
+  }
 }

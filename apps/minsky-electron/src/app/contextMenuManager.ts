@@ -816,7 +816,12 @@ export class ContextMenuManager {
           });
         },
       }),
-      new MenuItem({ label: 'Find all instances' }),
+      new MenuItem({
+        label: 'Find all instances',
+        click: async () => {
+          await CommandsManager.findAllInstances();
+        },
+      }),
       new MenuItem({
         label: 'Rename all instances',
         click: async () => {

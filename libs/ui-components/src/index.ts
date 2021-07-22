@@ -3,6 +3,7 @@ export * from './lib/edit-description/edit-description.component';
 export * from './lib/edit-godley-currency/edit-godley-currency.component';
 export * from './lib/edit-godley-title/edit-godley-title.component';
 export * from './lib/equations/equations.component';
+export * from './lib/find-all-instances/find-all-instances.component';
 export * from './lib/header/header.component';
 export * from './lib/input-modal/input-modal.component';
 export * from './lib/multiple-key-operation/multiple-key-operation.component';
