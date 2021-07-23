@@ -1105,6 +1105,8 @@ export class CommandsManager {
 
   static async handleDoubleClick({ mouseX, mouseY }) {
     const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
+    // TODO:: When opening a new popup for plot / godley or closing it,
+    // notify the backend
 
     if (itemInfo?.classType) {
       switch (itemInfo?.classType) {
