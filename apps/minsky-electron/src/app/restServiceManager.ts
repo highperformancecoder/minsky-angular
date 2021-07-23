@@ -259,8 +259,8 @@ export class RestServiceManager {
       }
 
       const res = await HttpManager.handleMinskyCommand(miscCommand);
-
-      if (USE_FRONTEND_DRIVEN_RENDERING || (
+      const { render = true } = payload;
+      if ((USE_FRONTEND_DRIVEN_RENDERING && render) || (
         this.render &&
         WindowManager.canvasHeight &&
         WindowManager.canvasWidth
