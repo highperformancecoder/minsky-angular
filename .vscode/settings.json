@@ -20,13 +20,16 @@
     "Godley",
     "Janak",
     "Panopticon",
+    "binop",
     "cget",
     "cheight",
+    "constop",
     "cwidth",
     "devkit",
     "exitzero",
     "httpd",
     "infimum",
+    "intop",
     "keysym",
     "keyvalue",
     "lindex",
@@ -39,6 +42,7 @@
     "supremum",
     "tmax",
     "ungroup",
+    "userfunction",
     "winfo"
   ]
 }

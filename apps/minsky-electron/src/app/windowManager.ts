@@ -45,10 +45,6 @@ export class WindowManager {
   static createMenuPopUpWithRouting(
     payload: CreateWindowPayload
   ): BrowserWindow {
-    console.log(
-      '🚀 ~ file: windowManager.ts ~ line 78 ~ WindowManager ~ __dirname',
-      __dirname
-    );
     const window = WindowManager.createWindow(payload);
 
     if (!Utility.isPackaged()) {
@@ -82,10 +78,6 @@ export class WindowManager {
       protocol: 'file:',
       slashes: true,
     });
-    console.log(
-      '🚀 ~ file: windowManager.ts ~ line 85 ~ WindowManager ~ filePath',
-      filePath
-    );
 
     window.loadURL(filePath);
     return window;

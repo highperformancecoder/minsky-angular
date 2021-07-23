@@ -1,6 +1,6 @@
 <div class="popup-wrapper">
   <div class="popup-title">
-    Create
+    {{ isEditMode ? 'Edit' : 'Create' }}
     {{
       variableType === 'flow' || variableType === 'integral'
         ? 'Variable'
@@ -120,7 +120,7 @@
         />
       </div>
 
-      <!-- <div class="form-control">
+      <div *ngIf="isEditMode" class="form-control">
         <label for="sliderStepSizeRel">Relative</label>
         <input
           type="checkbox"
@@ -128,7 +128,7 @@
           id="sliderStepRel"
           formControlName="sliderStepRel"
         />
-      </div> -->
+      </div>
 
       <div class="form-buttons">
         <button
@@ -143,7 +143,7 @@
           mat-raised-button
           class="btn ok-btn submit"
           type="submit"
-          (click)="createVariable()"
+          (click)="handleSubmit()"
         >
           OK
         </button>

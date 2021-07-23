@@ -528,11 +528,16 @@ export class CommunicationService {
       this.showDragCursor$.next(true);
     }
 
-    console.table(payload);
-
     await this.electronService.sendMinskyCommandAndRender(
       payload,
       events.KEY_PRESS
     );
+  }
+
+  handleDblClick() {
+    this.electronService.ipcRenderer.send(events.DOUBLE_CLICK, {
+      mouseX: this.mouseX,
+      mouseY: this.mouseY,
+    });
   }
 }

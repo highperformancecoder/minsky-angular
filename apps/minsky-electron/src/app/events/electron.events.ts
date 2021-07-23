@@ -46,6 +46,7 @@ const {
   UPDATE_PREFERENCES,
   CONTEXT_MENU,
   DISPLAY_MOUSE_COORDINATES,
+  DOUBLE_CLICK,
 } = events;
 
 // Retrieve app version
@@ -148,4 +149,8 @@ ipcMain.on(CONTEXT_MENU, async (event, { x, y }) => {
 
 ipcMain.on(DISPLAY_MOUSE_COORDINATES, async (event, { mouseX, mouseY }) => {
   WindowManager.showMouseCoordinateWindow({ mouseX, mouseY });
+});
+
+ipcMain.on(DOUBLE_CLICK, async (event, payload) => {
+  await CommandsManager.handleDoubleClick(payload);
 });
