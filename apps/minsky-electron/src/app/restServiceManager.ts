@@ -283,7 +283,7 @@ export class RestServiceManager {
       electronTopOffset,
     } = WindowManager;
 
-    const mainWindowId = activeWindows.get(1).windowId;
+    const mainWindowId = activeWindows.get(1).systemWindowId;
 
     const renderCommand = `${commandsMapping.RENDER_FRAME} [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}]`;
 

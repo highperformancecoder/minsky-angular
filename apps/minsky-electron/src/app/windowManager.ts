@@ -27,8 +27,9 @@ export class WindowManager {
   static mainWindowWidth: number;
 
   static activeWindows = new Map<number, ActiveWindow>();
+  private static uidToWindowMap = new Map<number, BrowserWindow>();
 
-  static getWindowId(menuWindow: BrowserWindow) {
+  static getSystemWindowId(menuWindow: BrowserWindow) {
     const offset = 0;
     const windowId =
       os.endianness() == 'LE'
@@ -40,6 +41,17 @@ export class WindowManager {
 
   static getMainWindow(): BrowserWindow {
     return this.activeWindows.get(1).context;
+  }
+
+  static focusIfWindowIsPresent(uid : number) {
+    console.log("Trying to focus on " + uid);
+    console.log(this.uidToWindowMap.entries);
+    const window = this.uidToWindowMap.get(uid);
+    if (window) {
+      window.focus();
+      return true;
+    }
+    return false;
   }
 
   static createMenuPopUpWithRouting(
@@ -68,6 +80,14 @@ export class WindowManager {
     return window;
   }
 
+  static closeWindowByUid(uid : number) {
+    const window = this.uidToWindowMap.get(uid);
+    if (window) {
+      this.uidToWindowMap.delete(uid);
+      window.close();
+    }
+  }
+
   static createMenuPopUpAndLoadFile(
     payload: CreateWindowPayload
   ): BrowserWindow {
@@ -86,16 +106,16 @@ export class WindowManager {
   private static createWindow(payload: CreateWindowPayload) {
     const { width, height, title, modal, backgroundColor } = payload;
 
-    const window = WindowManager.getMainWindow();
+    const mainWindow = WindowManager.getMainWindow();
 
-    let menuWindow = new BrowserWindow({
+    let childWindow = new BrowserWindow({
       width,
       height,
       title,
       resizable: false,
       minimizable: false,
       show: false,
-      parent: window,
+      parent: mainWindow,
       modal,
       backgroundColor,
       webPreferences: {
@@ -104,41 +124,50 @@ export class WindowManager {
       },
       icon: __dirname + '/assets/favicon.png',
     });
-    menuWindow.setMenu(null);
 
-    menuWindow.once('ready-to-show', () => {
-      menuWindow.show();
+    if (payload.uid) {
+      console.log("Adding to map :: ", payload.uid);
+      this.uidToWindowMap.set(payload.uid, childWindow);
+    }
+
+    childWindow.setMenu(null);
+
+    childWindow.once('ready-to-show', () => {
+      childWindow.show();
     });
 
-    menuWindow.once('page-title-updated', (event) => {
+    childWindow.once('page-title-updated', (event) => {
       event.preventDefault();
     });
 
-    menuWindow.webContents.openDevTools({ mode: 'detach' }); // command to inspect popup
+    childWindow.webContents.openDevTools({ mode: 'detach' }); // command to inspect popup
 
-    const windowId = WindowManager.getWindowId(menuWindow);
+    const windowId = WindowManager.getSystemWindowId(childWindow);
 
-    const menuWindowDetails: ActiveWindow = {
-      id: menuWindow.id,
-      size: menuWindow.getSize(),
+    const childWindowDetails: ActiveWindow = {
+      id: childWindow.id,
+      size: childWindow.getSize(),
       isMainWindow: false,
-      context: menuWindow,
-      windowId,
+      context: childWindow,
+      systemWindowId: windowId,
     };
 
-    WindowManager.activeWindows.set(menuWindow.id, menuWindowDetails);
+    WindowManager.activeWindows.set(childWindow.id, childWindowDetails);
 
     logWindows(WindowManager.activeWindows);
 
-    menuWindow.on('close', () => {
-      WindowManager.activeWindows.delete(menuWindow.id);
+    childWindow.on('close', () => {
+      if (payload.uid) {
+        this.uidToWindowMap.delete(payload.uid);
+      }
+      WindowManager.activeWindows.delete(childWindow.id);
     });
 
-    menuWindow.on('closed', () => {
-      menuWindow = null;
+    childWindow.on('closed', () => {
+      childWindow = null;
     });
 
-    return menuWindow;
+    return childWindow;
   }
 
   public static scrollToCenter() {

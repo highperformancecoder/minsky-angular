@@ -390,6 +390,9 @@ export class ContextMenuManager {
       new MenuItem({
         label: `Delete ${itemInfo.classType}`,
         click: async () => {
+          if (itemInfo.id) {
+            WindowManager.closeWindowByUid(itemInfo.id);
+          }
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_DELETE_ITEM,
           });

@@ -26,35 +26,35 @@ export class CommandsManager {
     return item as Record<string, unknown>;
   }
 
-  private static async populateItemPointer(x : number, y : number) {
+  private static async populateItemPointer(x: number, y: number) {
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
     });
   }
 
-  private static async getItemClassType(x : number, y: number, raw = false) : Promise<ClassType | string> {
+  private static async getItemClassType(x: number, y: number, raw = false): Promise<ClassType | string> {
     await this.populateItemPointer(x, y);
     return this.getCurrentItemClassType(raw);
   }
 
 
-  private static async getItemValue(x : number, y: number): Promise<number> {
+  private static async getItemValue(x: number, y: number): Promise<number> {
     await this.populateItemPointer(x, y);
     return this.getCurrentItemValue();
   }
 
-  private static async getItemName(x : number, y: number): Promise<string> {
+  private static async getItemName(x: number, y: number): Promise<string> {
     await this.populateItemPointer(x, y);
     return this.getCurrentItemName();
   }
 
-  private static async getItemDescription(x : number, y: number): Promise<string> {
+  private static async getItemDescription(x: number, y: number): Promise<string> {
     await this.populateItemPointer(x, y);
     return this.getCurrentItemDescription();
   }
 
 
-  private static async getItemId(x : number, y: number): Promise<string> {
+  private static async getItemId(x: number, y: number): Promise<number> {
     await this.populateItemPointer(x, y);
     return this.getCurrentItemId();
   }
@@ -106,8 +106,8 @@ export class CommandsManager {
   }
 
 
-  private static async getCurrentItemId(): Promise<string> {
-    const idResponse = String(await RestServiceManager.handleMinskyProcess({
+  public static async getCurrentItemId(): Promise<number> {
+    const idResponse = Number(await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_ID,
     }));
     return idResponse;
@@ -422,7 +422,7 @@ export class CommandsManager {
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
         numCases + delta
-      }`,
+        }`,
     });
 
     CommandsManager.requestRedraw();
@@ -1074,7 +1074,7 @@ export class CommandsManager {
       title: `Edit ${itemName || ''}`,
       url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
         itemName || ''
-      }&isEditMode=true`,
+        }&isEditMode=true`,
     });
   }
 
@@ -1105,21 +1105,29 @@ export class CommandsManager {
 
   static async handleDoubleClick({ mouseX, mouseY }) {
     const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
+    // TODO:: When opening a new popup for plot / godley or closing it,
+    // notify the backend
 
     if (itemInfo?.classType) {
       switch (itemInfo?.classType) {
         case ClassType.GodleyIcon:
-          WindowManager.createMenuPopUpWithRouting({
-            title: ClassType.GodleyIcon + " : " + itemInfo.id,
-            url: `#/headless/godley-table-view`
-          });
+          if (!WindowManager.focusIfWindowIsPresent(itemInfo.id)) {
+            WindowManager.createMenuPopUpWithRouting({
+              title: ClassType.GodleyIcon + " : " + itemInfo.id,
+              url: `#/headless/godley-table-view`,
+              uid : itemInfo.id
+            });
+          }
           break;
 
         case ClassType.PlotWidget:
-          WindowManager.createMenuPopUpWithRouting({
-            title: ClassType.PlotWidget + " : " + itemInfo.id,
-            url: `#/headless/plot-widget-view`
-          });
+          if (!WindowManager.focusIfWindowIsPresent(itemInfo.id)) {
+            WindowManager.createMenuPopUpWithRouting({
+              title: ClassType.PlotWidget + " : " + itemInfo.id,
+              url: `#/headless/plot-widget-view`,
+              uid : itemInfo.id
+            });
+          }
           break;
 
         case ClassType.Variable:

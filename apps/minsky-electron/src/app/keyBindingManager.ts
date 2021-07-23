@@ -229,6 +229,10 @@ export class KeyBindingManager {
     const item = await CommandsManager.getItemAt(mouseX, mouseY);
 
     if (!isEmptyObject(item)) {
+      const itemId = await CommandsManager.getCurrentItemId();
+      if (itemId) {
+        WindowManager.closeWindowByUid(itemId);
+      }
       await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_DELETE_ITEM,
       });
