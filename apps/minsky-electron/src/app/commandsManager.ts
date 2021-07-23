@@ -1135,12 +1135,14 @@ export class CommandsManager {
         case ClassType.GodleyIcon:
           WindowManager.createMenuPopUpWithRouting({
             title: ClassType.GodleyIcon,
+            url: `#/headless/godley-table-view`
           });
           break;
 
         case ClassType.PlotWidget:
           WindowManager.createMenuPopUpWithRouting({
             title: ClassType.PlotWidget,
+            url: `#/headless/plot-widget-view`
           });
           break;
 
