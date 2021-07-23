@@ -33,29 +33,29 @@ export class CommandsManager {
   }
 
   private static async getItemClassType(x : number, y: number, raw = false) : Promise<ClassType | string> {
-    this.populateItemPointer(x, y);
+    await this.populateItemPointer(x, y);
     return this.getCurrentItemClassType(raw);
   }
 
 
   private static async getItemValue(x : number, y: number): Promise<number> {
-    this.populateItemPointer(x, y);
+    await this.populateItemPointer(x, y);
     return this.getCurrentItemValue();
   }
 
   private static async getItemName(x : number, y: number): Promise<string> {
-    this.populateItemPointer(x, y);
+    await this.populateItemPointer(x, y);
     return this.getCurrentItemName();
   }
 
   private static async getItemDescription(x : number, y: number): Promise<string> {
-    this.populateItemPointer(x, y);
+    await this.populateItemPointer(x, y);
     return this.getCurrentItemDescription();
   }
 
 
   private static async getItemId(x : number, y: number): Promise<string> {
-    this.populateItemPointer(x, y);
+    await this.populateItemPointer(x, y);
     return this.getCurrentItemId();
   }
 
