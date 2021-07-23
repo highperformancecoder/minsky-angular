@@ -32,11 +32,14 @@ export class CommandsManager {
     });
   }
 
-  private static async getItemClassType(x: number, y: number, raw = false): Promise<ClassType | string> {
+  private static async getItemClassType(
+    x: number,
+    y: number,
+    raw = false
+  ): Promise<ClassType | string> {
     await this.populateItemPointer(x, y);
     return this.getCurrentItemClassType(raw);
   }
-
 
   private static async getItemValue(x: number, y: number): Promise<number> {
     await this.populateItemPointer(x, y);
@@ -48,18 +51,22 @@ export class CommandsManager {
     return this.getCurrentItemName();
   }
 
-  private static async getItemDescription(x: number, y: number): Promise<string> {
+  private static async getItemDescription(
+    x: number,
+    y: number
+  ): Promise<string> {
     await this.populateItemPointer(x, y);
     return this.getCurrentItemDescription();
   }
-
 
   private static async getItemId(x: number, y: number): Promise<number> {
     await this.populateItemPointer(x, y);
     return this.getCurrentItemId();
   }
 
-  private static async getCurrentItemClassType(raw = false): Promise<ClassType | string> {
+  private static async getCurrentItemClassType(
+    raw = false
+  ): Promise<ClassType | string> {
     const classTypeRes = (await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_CLASS_TYPE,
     })) as string;
@@ -105,11 +112,12 @@ export class CommandsManager {
     return description;
   }
 
-
   public static async getCurrentItemId(): Promise<number> {
-    const idResponse = Number(await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.CANVAS_ITEM_ID,
-    }));
+    const idResponse = Number(
+      await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.CANVAS_ITEM_ID,
+      })
+    );
     return idResponse;
   }
 
@@ -120,12 +128,12 @@ export class CommandsManager {
       return null;
     }
 
-    const classType = (await this.getCurrentItemClassType(x, y)) as ClassType;
+    const classType = (await this.getCurrentItemClassType()) as ClassType;
     const value = await this.getCurrentItemValue();
     const id = await this.getCurrentItemId();
 
     const itemInfo: CanvasItem = { classType, value, id };
-    //console.log(green(JSON.stringify(itemInfo)));
+    console.log(green(JSON.stringify(itemInfo)));
     return itemInfo;
   }
 
@@ -286,7 +294,9 @@ export class CommandsManager {
     switch (itemInfo.classType) {
       case ClassType.Variable:
       case ClassType.VarConstant:
-        CommandsManager.openRenameInstancesDialog(await this.getCurrentItemName());
+        CommandsManager.openRenameInstancesDialog(
+          await this.getCurrentItemName()
+        );
         break;
 
       case ClassType.Operation:
@@ -298,7 +308,9 @@ export class CommandsManager {
         break;
 
       case ClassType.GodleyIcon:
-        CommandsManager.openRenameInstancesDialog(await this.getCurrentItemName());
+        CommandsManager.openRenameInstancesDialog(
+          await this.getCurrentItemName()
+        );
         break;
 
       default:
@@ -422,7 +434,7 @@ export class CommandsManager {
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
         numCases + delta
-        }`,
+      }`,
     });
 
     CommandsManager.requestRedraw();
@@ -1074,7 +1086,7 @@ export class CommandsManager {
       title: `Edit ${itemName || ''}`,
       url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
         itemName || ''
-        }&isEditMode=true`,
+      }&isEditMode=true`,
     });
   }
 
@@ -1111,21 +1123,21 @@ export class CommandsManager {
     if (itemInfo?.classType) {
       switch (itemInfo?.classType) {
         case ClassType.GodleyIcon:
-          if (!WindowManager.focusIfWindowIsPresent(itemInfo.id)) {
+          if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
             WindowManager.createMenuPopUpWithRouting({
-              title: ClassType.GodleyIcon + " : " + itemInfo.id,
+              title: ClassType.GodleyIcon + ' : ' + itemInfo.id,
               url: `#/headless/godley-table-view`,
-              uid : itemInfo.id
+              uid: itemInfo.id,
             });
           }
           break;
 
         case ClassType.PlotWidget:
-          if (!WindowManager.focusIfWindowIsPresent(itemInfo.id)) {
+          if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
             WindowManager.createMenuPopUpWithRouting({
-              title: ClassType.PlotWidget + " : " + itemInfo.id,
+              title: ClassType.PlotWidget + ' : ' + itemInfo.id,
               url: `#/headless/plot-widget-view`,
-              uid : itemInfo.id
+              uid: itemInfo.id,
             });
           }
           break;
@@ -1163,5 +1175,55 @@ export class CommandsManager {
           break;
       }
     }
+  }
+
+  static async logSimulation(selectedItems: string[]) {
+    if (!Array.isArray(selectedItems) || !selectedItems.length) {
+      return;
+    }
+
+    const logSimulation = await dialog.showSaveDialog({
+      title: 'Save As',
+      defaultPath: 'log_simulation.csv',
+      properties: ['showOverwriteConfirmation', 'createDirectory'],
+      filters: [{ extensions: ['csv'], name: 'CSV' }],
+    });
+
+    const { canceled, filePath } = logSimulation;
+    if (canceled || !filePath) {
+      return;
+    }
+
+    const logVarList = (await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.LOG_VAR_LIST,
+    })) as string[];
+
+    if (logVarList && logVarList.length) {
+      const itemsNotInSelectedItems = logVarList.filter(
+        (l) => !selectedItems.includes(l)
+      );
+
+      for (const i of itemsNotInSelectedItems) {
+        await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.LOG_VAR_LIST_ERASE} "${i}"`,
+        });
+      }
+    }
+
+    const itemsNotInLogVarList = selectedItems.filter(
+      (i) => !logVarList.includes(i)
+    );
+
+    for (const i of itemsNotInLogVarList) {
+      await RestServiceManager.handleMinskyProcess({
+        command: `${commandsMapping.LOG_VAR_LIST_INSERT} "${i}"`,
+      });
+    }
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.OPEN_LOG_FILE} "${filePath}"`,
+    });
+
+    return;
   }
 }

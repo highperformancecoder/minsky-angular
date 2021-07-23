@@ -43,8 +43,8 @@ export class WindowManager {
     return this.activeWindows.get(1).context;
   }
 
-  static focusIfWindowIsPresent(uid : number) {
-    console.log("Trying to focus on " + uid);
+  static focusIfWindowIsPresent(uid: number) {
+    console.log('Trying to focus on ' + uid);
     console.log(this.uidToWindowMap.entries);
     const window = this.uidToWindowMap.get(uid);
     if (window) {
@@ -80,7 +80,7 @@ export class WindowManager {
     return window;
   }
 
-  static closeWindowByUid(uid : number) {
+  static closeWindowByUid(uid: number) {
     const window = this.uidToWindowMap.get(uid);
     if (window) {
       this.uidToWindowMap.delete(uid);
@@ -126,7 +126,7 @@ export class WindowManager {
     });
 
     if (payload.uid) {
-      console.log("Adding to map :: ", payload.uid);
+      console.log('Adding to map :: ', payload.uid);
       this.uidToWindowMap.set(payload.uid, childWindow);
     }
 
