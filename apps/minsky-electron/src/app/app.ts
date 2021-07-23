@@ -82,7 +82,7 @@ export default class App {
   }
 
   private static initMinskyService() {
-    const windowId = WindowManager.activeWindows.get(1).windowId;
+    const windowId = WindowManager.activeWindows.get(1).systemWindowId;
     console.log('🚀🚀🚀🚀🚀' + green(` WindowId -> ${windowId}`));
 
     RestServiceManager.startMinskyService();
@@ -168,7 +168,7 @@ export default class App {
       size: App.mainWindow.getSize(),
       isMainWindow: true,
       context: App.mainWindow,
-      windowId: WindowManager.getWindowId(this.mainWindow),
+      systemWindowId: WindowManager.getSystemWindowId(this.mainWindow),
     };
 
     WindowManager.activeWindows.set(App.mainWindow.id, mainWindowDetails);

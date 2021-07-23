@@ -57,10 +57,11 @@ export enum ReplayRecordingStatus {
 export interface CanvasItem {
   classType: ClassType;
   value: number;
-  id : number | string;
+  id : number;
 }
 
 export interface CreateWindowPayload {
+  uid? : number;
   width?: number;
   height?: number;
   title: string;
