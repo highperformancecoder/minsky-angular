@@ -19,32 +19,47 @@ export class CommandsManager {
     x: number,
     y: number
   ): Promise<Record<string, unknown>> {
-    await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
-    });
-
+    await this.populateItemPointer(x, y);
     const item = await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM,
     });
-
     return item as Record<string, unknown>;
   }
 
-  private static async getItemClassType(
-    x: number = null,
-    y: number = null,
-    reInvokeGetItemAt = false,
-    raw = false
-  ): Promise<ClassType | string> {
-    if (reInvokeGetItemAt) {
-      if (!x && !y) {
-        throw new Error('Please provide x and y when reInvokeGetItemAt=true');
-      }
-      await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
-      });
-    }
+  private static async populateItemPointer(x : number, y : number) {
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
+    });
+  }
 
+  private static async getItemClassType(x : number, y: number, raw = false) : Promise<ClassType | string> {
+    this.populateItemPointer(x, y);
+    return this.getCurrentItemClassType(raw);
+  }
+
+
+  private static async getItemValue(x : number, y: number): Promise<number> {
+    this.populateItemPointer(x, y);
+    return this.getCurrentItemValue();
+  }
+
+  private static async getItemName(x : number, y: number): Promise<string> {
+    this.populateItemPointer(x, y);
+    return this.getCurrentItemName();
+  }
+
+  private static async getItemDescription(x : number, y: number): Promise<string> {
+    this.populateItemPointer(x, y);
+    return this.getCurrentItemDescription();
+  }
+
+
+  private static async getItemId(x : number, y: number): Promise<string> {
+    this.populateItemPointer(x, y);
+    return this.getCurrentItemId();
+  }
+
+  private static async getCurrentItemClassType(raw = false): Promise<ClassType | string> {
     const classTypeRes = (await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_CLASS_TYPE,
     })) as string;
@@ -60,79 +75,42 @@ export class CommandsManager {
     if (!classType) {
       return;
     }
-
     return ClassType[classType];
   }
 
-  private static async getItemValue(
-    x: number = null,
-    y: number = null,
-    reInvokeGetItemAt = false
-  ): Promise<number> {
-    if (reInvokeGetItemAt) {
-      if (!x && !y) {
-        throw new Error('Please provide x and y when reInvokeGetItemAt=true');
-      }
-      await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
-      });
-    }
-
+  private static async getCurrentItemValue(): Promise<number> {
     const value = Number(
       await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_VALUE,
       })
     );
-
     return value;
   }
 
-  private static async getItemName(
-    x: number = null,
-    y: number = null,
-    reInvokeGetItemAt = false
-  ): Promise<string> {
-    if (reInvokeGetItemAt) {
-      if (!x && !y) {
-        throw new Error('Please provide x and y when reInvokeGetItemAt=true');
-      }
-
-      await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
-      });
-    }
-
+  private static async getCurrentItemName(): Promise<string> {
     const name = String(
       await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_NAME,
       })
     );
-
     return name;
   }
 
-  private static async getItemDescription(
-    x: number = null,
-    y: number = null,
-    reInvokeGetItemAt = false
-  ): Promise<string> {
-    if (reInvokeGetItemAt) {
-      if (!x && !y) {
-        throw new Error('Please provide x and y when reInvokeGetItemAt=true');
-      }
-
-      await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.CANVAS_GET_ITEM_AT} [${x},${y}]`,
-      });
-    }
-
+  private static async getCurrentItemDescription(): Promise<string> {
     const description = String(
       await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_DESCRIPTION,
       })
     );
-
     return description;
+  }
+
+
+  private static async getCurrentItemId(): Promise<string> {
+    const idResponse = String(await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.CANVAS_ITEM_ID,
+    }));
+    return idResponse;
   }
 
   static async getItemInfo(x: number, y: number): Promise<CanvasItem> {
@@ -142,14 +120,12 @@ export class CommandsManager {
       return null;
     }
 
-    const classType = (await this.getItemClassType(x, y)) as ClassType;
+    const classType = (await this.getCurrentItemClassType(x, y)) as ClassType;
+    const value = await this.getCurrentItemValue();
+    const id = await this.getCurrentItemId();
 
-    const value = await this.getItemValue(x, y);
-
-    const itemInfo: CanvasItem = { classType, value };
-
-    console.log(green(JSON.stringify(itemInfo)));
-
+    const itemInfo: CanvasItem = { classType, value, id };
+    //console.log(green(JSON.stringify(itemInfo)));
     return itemInfo;
   }
 
@@ -310,19 +286,19 @@ export class CommandsManager {
     switch (itemInfo.classType) {
       case ClassType.Variable:
       case ClassType.VarConstant:
-        CommandsManager.openRenameInstancesDialog(await this.getItemName());
+        CommandsManager.openRenameInstancesDialog(await this.getCurrentItemName());
         break;
 
       case ClassType.Operation:
       case ClassType.IntOp:
       case ClassType.DataOp:
         CommandsManager.openRenameInstancesDialog(
-          await this.getItemDescription()
+          await this.getCurrentItemDescription()
         );
         break;
 
       case ClassType.GodleyIcon:
-        CommandsManager.openRenameInstancesDialog(await this.getItemName());
+        CommandsManager.openRenameInstancesDialog(await this.getCurrentItemName());
         break;
 
       default:
@@ -946,7 +922,7 @@ export class CommandsManager {
   }
 
   static async help(x: number, y: number) {
-    let classType = (await this.getItemClassType(x, y, false, true)) as string;
+    let classType = (await this.getCurrentItemClassType(true)) as string;
 
     if (isEmptyObject(classType)) {
       const wire = await CommandsManager.getWireAt(x, y);
@@ -1085,7 +1061,7 @@ export class CommandsManager {
   }
 
   static async editVar() {
-    const itemName = await this.getItemName();
+    const itemName = await this.getCurrentItemName();
     const itemType = await this.getItemType();
     console.log(
       '🚀 ~ file: commandsManager.ts ~ line 1072 ~ CommandsManager ~ editVar ~ itemType',
@@ -1134,14 +1110,14 @@ export class CommandsManager {
       switch (itemInfo?.classType) {
         case ClassType.GodleyIcon:
           WindowManager.createMenuPopUpWithRouting({
-            title: ClassType.GodleyIcon,
+            title: ClassType.GodleyIcon + " : " + itemInfo.id,
             url: `#/headless/godley-table-view`
           });
           break;
 
         case ClassType.PlotWidget:
           WindowManager.createMenuPopUpWithRouting({
-            title: ClassType.PlotWidget,
+            title: ClassType.PlotWidget + " : " + itemInfo.id,
             url: `#/headless/plot-widget-view`
           });
           break;

@@ -107,6 +107,7 @@ export const commandsMapping = {
   CANVAS_ITEM: '/minsky/canvas/item',
   CANVAS_WIRE: '/minsky/canvas/wire',
   CANVAS_REQUEST_REDRAW: '/minsky/canvas/requestRedraw',
+  CANVAS_ITEM_ID: '/minsky/canvas/item/id',
   CANVAS_ITEM_CLASS_TYPE: '/minsky/canvas/item/classType',
   CANVAS_SELECT_VAR: '/minsky/canvas/selectVar',
   CANVAS_PUSH_DEFINING_VARS_TO_TAB: '/minsky/canvas/pushDefiningVarsToTab',
