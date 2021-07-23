@@ -1,14 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ElectronService } from '@minsky/core';
 import { commandsMapping, events } from '@minsky/shared';
+import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
+@AutoUnsubscribe()
 @Component({
   selector: 'minsky-log-simulation',
   templateUrl: './log-simulation.component.html',
   styleUrls: ['./log-simulation.component.scss'],
 })
-export class LogSimulationComponent {
+export class LogSimulationComponent implements OnDestroy {
   form = new FormGroup({
     all: new FormControl(false),
     keys: new FormArray([]),
@@ -78,4 +80,7 @@ export class LogSimulationComponent {
 
     this.closeWindow();
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
+  ngOnDestroy() {}
 }
