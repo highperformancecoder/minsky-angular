@@ -11,7 +11,9 @@ export const ZOOM_IN_FACTOR = 1.1;
 export const ZOOM_OUT_FACTOR = 0.91;
 export const RESET_ZOOM_FACTOR = 1;
 
-export const USE_MINSKY_SYSTEM_BINARY = true;
+export const USE_MINSKY_SYSTEM_BINARY = false;
+export const USE_FRONTEND_DRIVEN_RENDERING = false;
+
 export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
 export const MINSKY_HTTP_SERVER_PORT = 4444;
 export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;

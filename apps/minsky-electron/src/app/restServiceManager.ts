@@ -7,6 +7,7 @@ import {
   MINSKY_SYSTEM_HTTP_SERVER_PATH,
   red,
   USE_MINSKY_SYSTEM_BINARY,
+  USE_FRONTEND_DRIVEN_RENDERING
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import { dialog, ipcMain } from 'electron';
@@ -45,6 +46,7 @@ export class RestServiceManager {
   private static payloadDataQueue: Array<QueueItem> = [];
   private static runningCommand = false;
   private static isQueueEnabled = true;
+  private static render = true;
   private static lastZoomPayload: MinskyProcessPayload = null;
   static availableOperationsMappings: Record<string, string[]> = {};
 
@@ -190,7 +192,7 @@ export class RestServiceManager {
     switch (payload.command) {
       case commandsMapping.LOAD:
         stdinCommand = `${payload.command} "${payload.filePath}"`;
-
+        this.render = true;
         break;
 
       case commandsMapping.SAVE:
@@ -225,9 +227,9 @@ export class RestServiceManager {
         stdinCommand = Utility.isDevelopmentMode()
           ? `${payload.command} "${join(__dirname, 'assets/godley.svg')}"`
           : `${payload.command} "${join(
-              process.resourcesPath,
-              'assets/godley.svg'
-            )}"`;
+            process.resourcesPath,
+            'assets/godley.svg'
+          )}"`;
 
         break;
 
@@ -235,9 +237,13 @@ export class RestServiceManager {
         stdinCommand = Utility.isDevelopmentMode()
           ? `${payload.command} "${join(__dirname, 'assets/group.svg')}"`
           : `${payload.command} "${join(
-              process.resourcesPath,
-              'assets/group.svg'
-            )}"`;
+            process.resourcesPath,
+            'assets/group.svg'
+          )}"`;
+        break;
+
+      case commandsMapping.REDRAW:
+        stdinCommand = this.getRenderCommand();
         break;
 
       default:
@@ -253,9 +259,13 @@ export class RestServiceManager {
       }
 
       const res = await HttpManager.handleMinskyCommand(miscCommand);
-
       const { render = true } = payload;
-      if (render) {
+      if ((USE_FRONTEND_DRIVEN_RENDERING && render) || (
+        this.render &&
+        WindowManager.canvasHeight &&
+        WindowManager.canvasWidth
+      )) {
+        this.render = false;
         await HttpManager.handleMinskyCommand(renderCommand);
       }
 
