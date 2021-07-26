@@ -11,9 +11,12 @@ import {
   EditUserFunctionComponent,
   EquationsComponent,
   FindAllInstancesComponent,
+  GodleyWidgetViewComponent,
   MultipleKeyOperationComponent,
   PageNotFoundComponent,
   ParametersComponent,
+  PlotWidgetOptionsComponent,
+  PlotWidgetViewComponent,
   RenameAllInstancesComponent,
   VariablesComponent,
   WiringComponent,
@@ -84,6 +87,18 @@ const routes: Routes = [
   {
     path: 'headless/find-all-instances',
     component: FindAllInstancesComponent,
+  },
+  {
+    path: 'headless/plot-widget-view',
+    component: PlotWidgetViewComponent,
+  },
+  {
+    path: 'headless/godley-widget-view',
+    component: GodleyWidgetViewComponent,
+  },
+  {
+    path: 'headless/plot-widget-options',
+    component: PlotWidgetOptionsComponent,
   },
   {
     path: 'headless/terminal',

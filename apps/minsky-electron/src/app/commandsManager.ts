@@ -6,7 +6,7 @@ import {
   green,
   isEmptyObject,
 } from '@minsky/shared';
-import { dialog, ipcMain } from 'electron';
+import { dialog, ipcMain, Menu, MenuItem } from 'electron';
 import { existsSync, promises, unlinkSync } from 'fs';
 import { join } from 'path';
 import { HelpFilesManager } from './HelpFilesManager';
@@ -1126,7 +1126,7 @@ export class CommandsManager {
           if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
             WindowManager.createMenuPopUpWithRouting({
               title: ClassType.GodleyIcon + ' : ' + itemInfo.id,
-              url: `#/headless/godley-table-view`,
+              url: `#/headless/godley-widget-view`,
               uid: itemInfo.id,
             });
           }
@@ -1134,11 +1134,28 @@ export class CommandsManager {
 
         case ClassType.PlotWidget:
           if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
-            WindowManager.createMenuPopUpWithRouting({
+            const window = WindowManager.createMenuPopUpWithRouting({
               title: ClassType.PlotWidget + ' : ' + itemInfo.id,
               url: `#/headless/plot-widget-view`,
               uid: itemInfo.id,
             });
+
+            window.setMenu(
+              Menu.buildFromTemplate([
+                new MenuItem({
+                  label: 'Options',
+                  click: () => {
+                    WindowManager.createMenuPopUpWithRouting({
+                      title: 'Plot Window Options',
+                      url: `#/headless/plot-widget-options`,
+                      uid: itemInfo.id,
+                      height: 500,
+                      width: 500,
+                    });
+                  },
+                }),
+              ])
+            );
           }
           break;
 
