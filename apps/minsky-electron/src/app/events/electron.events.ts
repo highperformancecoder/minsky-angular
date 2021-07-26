@@ -47,6 +47,7 @@ const {
   CONTEXT_MENU,
   DISPLAY_MOUSE_COORDINATES,
   DOUBLE_CLICK,
+  LOG_SIMULATION,
 } = events;
 
 // Retrieve app version
@@ -153,4 +154,8 @@ ipcMain.on(DISPLAY_MOUSE_COORDINATES, async (event, { mouseX, mouseY }) => {
 
 ipcMain.on(DOUBLE_CLICK, async (event, payload) => {
   await CommandsManager.handleDoubleClick(payload);
+});
+
+ipcMain.on(LOG_SIMULATION, async (event, selectedItems: string[]) => {
+  await CommandsManager.logSimulation(selectedItems);
 });

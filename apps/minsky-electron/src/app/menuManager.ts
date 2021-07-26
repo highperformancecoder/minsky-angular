@@ -323,7 +323,7 @@ export class MenuManager {
             click() {
               WindowManager.createMenuPopUpWithRouting({
                 width: 250,
-                height: 500,
+                height: 600,
                 title: 'Log simulation',
                 url: `#/headless/menu/file/log-simulation`,
               });

@@ -71,21 +71,23 @@ export class EditIntegralComponent implements OnInit {
     });
     this.rotation.setValue(rotation);
 
-    // TODO:
-    // const initialValue = await this.electronService.sendMinskyCommandAndRender({
-    //   render: false,
-    //   command: '/intVar/init',
-    // });
+    const initialValue = await this.electronService.sendMinskyCommandAndRender({
+      render: false,
+      command: commandsMapping.CANVAS_ITEM_INT_VAR_INIT,
+    });
+    this.initialValue.setValue(initialValue);
 
-    // const units = await this.electronService.sendMinskyCommandAndRender({
-    //   render: false,
-    //   command: '[$item.intVar.unitsStr]',
-    // });
+    const units = await this.electronService.sendMinskyCommandAndRender({
+      render: false,
+      command: commandsMapping.CANVAS_ITEM_INT_VAR_UNITS_STR,
+    });
+    this.units.setValue(units);
 
-    // const relative = await this.electronService.sendMinskyCommandAndRender({
-    //   render: false,
-    //   command: '',
-    // });
+    const relative = await this.electronService.sendMinskyCommandAndRender({
+      render: false,
+      command: commandsMapping.CANVAS_ITEM_INT_VAR_SLIDER_STEP_REL,
+    });
+    this.relative.setValue(relative);
   }
 
   async handleSave() {
@@ -98,18 +100,17 @@ export class EditIntegralComponent implements OnInit {
         command: `${commandsMapping.CANVAS_ITEM_ROTATION} ${this.rotation.value}`,
       });
 
-      // TODO:
-      // await this.electronService.sendMinskyCommandAndRender({
-      //   command: `${commandsMapping.CANVAS_ITEM_ROTATION} ${this.rotation.value}`,
-      // });
+      await this.electronService.sendMinskyCommandAndRender({
+        command: `${commandsMapping.CANVAS_ITEM_INT_VAR_INIT} "${this.initialValue.value}"`,
+      });
 
-      // await this.electronService.sendMinskyCommandAndRender({
-      //   command: `${commandsMapping.CANVAS_ITEM_ROTATION} ${this.rotation.value}`,
-      // });
+      await this.electronService.sendMinskyCommandAndRender({
+        command: `${commandsMapping.CANVAS_ITEM_INT_VAR_SET_UNITS} "${this.units.value}"`,
+      });
 
-      // await this.electronService.sendMinskyCommandAndRender({
-      //   command: `${commandsMapping.CANVAS_ITEM_ROTATION} ${this.rotation.value}`,
-      // });
+      await this.electronService.sendMinskyCommandAndRender({
+        command: `${commandsMapping.CANVAS_ITEM_INT_VAR_SLIDER_STEP_REL} ${this.relative.value}`,
+      });
     }
 
     this.closeWindow();

@@ -11,7 +11,7 @@ export const ZOOM_IN_FACTOR = 1.1;
 export const ZOOM_OUT_FACTOR = 0.91;
 export const RESET_ZOOM_FACTOR = 1;
 
-export const USE_MINSKY_SYSTEM_BINARY = false;
+export const USE_MINSKY_SYSTEM_BINARY = true;
 export const USE_FRONTEND_DRIVEN_RENDERING = false;
 
 export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
@@ -219,6 +219,17 @@ export const commandsMapping = {
   CANVAS_ITEM_AXIS: '/minsky/canvas/item/axis',
   CANVAS_ITEM_ARG: '/minsky/canvas/item/arg',
   CANVAS_ITEM_EXPRESSION: '/minsky/canvas/item/expression',
+  VARIABLE_VALUES_KEYS: '/minsky/variableValues/@keys',
+  OPEN_LOG_FILE: '/minsky/openLogFile',
+  LOG_VAR_LIST: '/minsky/logVarList',
+  LOG_VAR_LIST_INSERT: '/minsky/logVarList/@insert',
+  LOG_VAR_LIST_ERASE: '/minsky/logVarList/@erase',
+  CANVAS_ITEM_INT_VAR_INIT: '/minsky/canvas/item/intVar/init',
+  CANVAS_ITEM_INT_VAR_SET_UNITS: '/minsky/canvas/item/intVar/setUnits',
+  CANVAS_ITEM_INT_VAR_UNITS_STR: '/minsky/canvas/item/intVar/unitsStr',
+  CANVAS_ITEM_UNITS_STR: '/minsky/canvas/item/unitsStr',
+  CANVAS_ITEM_INT_VAR_SLIDER_STEP_REL:
+    '/minsky/canvas/item/intVar/sliderStepRel',
 };
 
 export const availableOperations = {
@@ -307,6 +318,7 @@ export const events = {
   REPLAY_RECORDING: 'replay-recording',
   DISPLAY_MOUSE_COORDINATES: 'display-mouse-coordinates',
   DOUBLE_CLICK: 'double-click',
+  LOG_SIMULATION: 'log-simulation',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup

@@ -94,14 +94,13 @@ export class DimensionsComponent implements OnInit {
   getDimensions() {
     const dimensions = this.form.value.dimensions as Dimension[];
 
-    return dimensions.map((d) => {
-      return {
-        [d.dimension]: {
-          type: d.type,
-          units: d.units,
-        },
+    return dimensions.reduce((acc, curr) => {
+      acc[curr.dimension] = {
+        type: curr.type,
+        units: curr.units,
       };
-    });
+      return acc;
+    }, {});
   }
 
   async handleSubmit() {
