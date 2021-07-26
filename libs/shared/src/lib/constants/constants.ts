@@ -224,6 +224,11 @@ export const commandsMapping = {
   LOG_VAR_LIST: '/minsky/logVarList',
   LOG_VAR_LIST_INSERT: '/minsky/logVarList/@insert',
   LOG_VAR_LIST_ERASE: '/minsky/logVarList/@erase',
+  CANVAS_ITEM_INT_VAR_INIT: '/minsky/canvas/item/intVar/init',
+  CANVAS_ITEM_INT_VAR_SET_UNITS: '/minsky/canvas/item/intVar/setUnits',
+  CANVAS_ITEM_INT_VAR_UNITS_STR: '/minsky/canvas/item/intVar/unitsStr',
+  CANVAS_ITEM_INT_VAR_SLIDER_STEP_REL:
+    '/minsky/canvas/item/intVar/sliderStepRel',
 };
 
 export const availableOperations = {
