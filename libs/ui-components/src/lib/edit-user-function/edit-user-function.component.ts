@@ -24,9 +24,6 @@ export class EditUserFunctionComponent implements OnInit {
   public get expression(): AbstractControl {
     return this.form.get('expression');
   }
-  public get relative(): AbstractControl {
-    return this.form.get('relative');
-  }
 
   constructor(
     private electronService: ElectronService,
@@ -36,7 +33,6 @@ export class EditUserFunctionComponent implements OnInit {
       name: new FormControl(''),
       rotation: new FormControl(0),
       expression: new FormControl(''),
-      relative: new FormControl(false),
     });
     this.route.queryParams.subscribe((params) => {
       this.classType = params.classType;
@@ -72,12 +68,6 @@ export class EditUserFunctionComponent implements OnInit {
       command: commandsMapping.CANVAS_ITEM_EXPRESSION,
     })) as string;
     this.expression.setValue(expression);
-
-    // TODO: relative
-    // const initialValue = await this.electronService.sendMinskyCommandAndRender({
-    //   render: false,
-    //   command: '/intVar/init',
-    // });
   }
 
   async handleSave() {
@@ -93,11 +83,6 @@ export class EditUserFunctionComponent implements OnInit {
       await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.CANVAS_ITEM_EXPRESSION} "${this.expression.value}"`,
       });
-
-      // TODO: Relative
-      // await this.electronService.sendMinskyCommandAndRender({
-      //   command: `${commandsMapping.CANVAS_ITEM_ROTATION} ${this.rotation.value}`,
-      // });
     }
 
     this.closeWindow();
