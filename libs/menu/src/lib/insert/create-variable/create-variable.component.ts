@@ -109,38 +109,34 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
 
   async updateFormValues() {
     const init = await this.electronService.sendMinskyCommandAndRender({
-      command: '/minsky/canvas/item/init',
+      command: commandsMapping.CANVAS_ITEM_INIT,
     });
 
-    // TODO: units
     const units = await this.electronService.sendMinskyCommandAndRender({
-      command: '/minsky/canvas/item/value/units/str',
+      command: commandsMapping.CANVAS_ITEM_UNITS_STR,
     });
-    console.log(
-      '🚀 ~ file: create-variable.component.ts ~ line 117 ~ CreateVariableComponent ~ updateFormValues ~ units',
-      units
-    );
+
     const rotation = await this.electronService.sendMinskyCommandAndRender({
-      command: '/minsky/canvas/item/rotation',
+      command: commandsMapping.CANVAS_ITEM_ROTATION,
     });
     const tooltip = await this.electronService.sendMinskyCommandAndRender({
-      command: '/minsky/canvas/item/tooltip',
+      command: commandsMapping.CANVAS_ITEM_TOOLTIP,
     });
     const detailedText = await this.electronService.sendMinskyCommandAndRender({
-      command: '/minsky/canvas/item/detailedText',
+      command: commandsMapping.CANVAS_ITEM_DETAILED_TEXT,
     });
     const sliderMax = await this.electronService.sendMinskyCommandAndRender({
-      command: '/minsky/canvas/item/sliderMax',
+      command: commandsMapping.CANVAS_ITEM_SLIDER_MAX,
     });
     const sliderMin = await this.electronService.sendMinskyCommandAndRender({
-      command: '/minsky/canvas/item/sliderMin',
+      command: commandsMapping.CANVAS_ITEM_SLIDER_MIN,
     });
     const sliderStep = await this.electronService.sendMinskyCommandAndRender({
-      command: '/minsky/canvas/item/sliderStep',
+      command: commandsMapping.CANVAS_ITEM_SLIDER_STEP,
     });
     const sliderStepRel = await this.electronService.sendMinskyCommandAndRender(
       {
-        command: '/minsky/canvas/item/sliderStepRel',
+        command: commandsMapping.CANVAS_ITEM_SLIDER_STEP_REL,
       }
     );
 
@@ -218,6 +214,8 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
     await this.electronService.sendMinskyCommandAndRender({
       command: `${commandsMapping.CANVAS_ITEM_SLIDER_STEP_REL} ${this.sliderStepRel.value}`,
     });
+
+    this.closeWindow();
   }
 
   async createVariable() {

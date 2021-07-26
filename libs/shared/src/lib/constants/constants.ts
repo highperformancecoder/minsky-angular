@@ -227,6 +227,7 @@ export const commandsMapping = {
   CANVAS_ITEM_INT_VAR_INIT: '/minsky/canvas/item/intVar/init',
   CANVAS_ITEM_INT_VAR_SET_UNITS: '/minsky/canvas/item/intVar/setUnits',
   CANVAS_ITEM_INT_VAR_UNITS_STR: '/minsky/canvas/item/intVar/unitsStr',
+  CANVAS_ITEM_UNITS_STR: '/minsky/canvas/item/unitsStr',
   CANVAS_ITEM_INT_VAR_SLIDER_STEP_REL:
     '/minsky/canvas/item/intVar/sliderStepRel',
 };
