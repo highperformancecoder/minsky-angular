@@ -73,7 +73,7 @@ export class RestServiceManager {
     return;
   }
 
-  private static async onQuit() {
+  public static async onQuit() {
     console.log("Please complete onQuit Actions!");
     //TODO:
     // 1. Flush commands queue
