@@ -1124,11 +1124,48 @@ export class CommandsManager {
       switch (itemInfo?.classType) {
         case ClassType.GodleyIcon:
           if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
-            WindowManager.createMenuPopUpWithRouting({
+            const window = WindowManager.createMenuPopUpWithRouting({
               title: ClassType.GodleyIcon + ' : ' + itemInfo.id,
               url: `#/headless/godley-widget-view`,
               uid: itemInfo.id,
             });
+
+            window.setMenu(
+              Menu.buildFromTemplate([
+                new MenuItem({
+                  label: 'File',
+                  submenu: [{ label: 'Export' }],
+                }),
+                new MenuItem({
+                  label: 'Edit',
+                  submenu: [
+                    { label: 'Undo' },
+                    { label: 'Redo' },
+                    { label: 'Title' },
+                    { label: 'Cut' },
+                    { label: 'Copy' },
+                    { label: 'Paste' },
+                  ],
+                }),
+                new MenuItem({
+                  label: 'View',
+                  submenu: [
+                    { label: 'Zoom In' },
+                    { label: 'Zoom Out' },
+                    { label: 'Reset Zoom' },
+                  ],
+                }),
+                new MenuItem({
+                  label: 'Options',
+                  submenu: [
+                    { label: 'Show Values' },
+                    { label: 'DR/CR Style' },
+                    { label: 'Enable Multiple Equity Column' },
+                  ],
+                }),
+                new MenuItem({ label: 'Help' }),
+              ])
+            );
           }
           break;
 
