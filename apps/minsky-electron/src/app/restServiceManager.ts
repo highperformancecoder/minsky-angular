@@ -274,6 +274,17 @@ export class RestServiceManager {
     console.error('Command was null or undefined');
   }
 
+
+  public static getRenderCommandForPopupWindows(uid : number) {
+    const systemWindowId = WindowManager.getSystemWindowIdFromUid(uid);
+    if(systemWindowId) {
+      // TODO:: Get the proper offsets
+      return `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/renderFrame [ ${systemWindowId}, 0, 0, 100, 100 ]`
+    }
+    return null;
+  }
+
+
   private static getRenderCommand() {
     const {
       leftOffset,

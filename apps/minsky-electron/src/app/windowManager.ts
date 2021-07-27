@@ -27,7 +27,16 @@ export class WindowManager {
   static mainWindowWidth: number;
 
   static activeWindows = new Map<number, ActiveWindow>();
-  private static uidToWindowMap = new Map<number, BrowserWindow>();
+  private static uidToWindowMap = new Map<number, ActiveWindow>();
+
+
+  static getSystemWindowIdFromUid(uid : number) {
+    const window = this.uidToWindowMap.get(uid);
+    if(window) {
+      return window.systemWindowId;
+    }
+    return null;
+  }
 
   static getSystemWindowId(menuWindow: BrowserWindow) {
     const offset = 0;
@@ -46,9 +55,9 @@ export class WindowManager {
   static focusIfWindowIsPresent(uid: number) {
     console.log('Trying to focus on ' + uid);
     console.log(this.uidToWindowMap.entries);
-    const window = this.uidToWindowMap.get(uid);
-    if (window) {
-      window.focus();
+    const windowDetails = this.uidToWindowMap.get(uid);
+    if (windowDetails) {
+      windowDetails.context.focus();
       return true;
     }
     return false;
@@ -81,10 +90,10 @@ export class WindowManager {
   }
 
   static closeWindowByUid(uid: number) {
-    const window = this.uidToWindowMap.get(uid);
-    if (window) {
+    const windowDetails = this.uidToWindowMap.get(uid);
+    if (windowDetails) {
       this.uidToWindowMap.delete(uid);
-      window.close();
+      windowDetails.context.close();
     }
   }
 
@@ -125,10 +134,7 @@ export class WindowManager {
       icon: __dirname + '/assets/favicon.png',
     });
 
-    if (payload.uid) {
-      console.log('Adding to map :: ', payload.uid);
-      this.uidToWindowMap.set(payload.uid, childWindow);
-    }
+   
 
     childWindow.setMenu(null);
 
@@ -152,7 +158,12 @@ export class WindowManager {
       systemWindowId: windowId,
     };
 
-    WindowManager.activeWindows.set(childWindow.id, childWindowDetails);
+    if (payload.uid) {
+      console.log('Adding to map :: ', payload.uid);
+      this.uidToWindowMap.set(payload.uid, childWindowDetails);
+    }
+
+    this.activeWindows.set(childWindow.id, childWindowDetails);
 
     logWindows(WindowManager.activeWindows);
 
@@ -160,7 +171,7 @@ export class WindowManager {
       if (payload.uid) {
         this.uidToWindowMap.delete(payload.uid);
       }
-      WindowManager.activeWindows.delete(childWindow.id);
+      this.activeWindows.delete(childWindow.id);
     });
 
     childWindow.on('closed', () => {

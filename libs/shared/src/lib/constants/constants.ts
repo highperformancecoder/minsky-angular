@@ -228,8 +228,10 @@ export const commandsMapping = {
   CANVAS_ITEM_INT_VAR_SET_UNITS: '/minsky/canvas/item/intVar/setUnits',
   CANVAS_ITEM_INT_VAR_UNITS_STR: '/minsky/canvas/item/intVar/unitsStr',
   CANVAS_ITEM_UNITS_STR: '/minsky/canvas/item/unitsStr',
-  CANVAS_ITEM_INT_VAR_SLIDER_STEP_REL:
-    '/minsky/canvas/item/intVar/sliderStepRel',
+  CANVAS_ITEM_INT_VAR_SLIDER_STEP_REL: '/minsky/canvas/item/intVar/sliderStepRel',
+  ADD_ENTRY_TO_NAMED_ITEMS_MAP : '/minsky/nameCurrentItem',
+  REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP : '/minsky/namedItems/@erase', // TODO:: Check syntax, call when any item is deleted
+  GET_NAMED_ITEM: '/minsky/namedItems/@elem'
 };
 
 export const availableOperations = {

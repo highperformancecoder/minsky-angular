@@ -11,6 +11,7 @@ import { existsSync, promises, unlinkSync } from 'fs';
 import { join } from 'path';
 import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './restServiceManager';
+import { HttpManager } from './httpManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
@@ -24,6 +25,21 @@ export class CommandsManager {
       command: commandsMapping.CANVAS_ITEM,
     });
     return item as Record<string, unknown>;
+  }
+
+
+  static async deleteCurrentItemHavingId(itemId: number) {
+    // TODO:: Ideally -- change flow to get the current item here..
+    // to ensure that we cannot mismatch itemId and currentItemId
+    if (itemId) {
+      WindowManager.closeWindowByUid(itemId);
+      await RestServiceManager.handleMinskyProcess({
+        command: `${commandsMapping.REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP}/${itemId}`
+      });
+      await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.CANVAS_DELETE_ITEM,
+      });
+    }
   }
 
   private static async populateItemPointer(x: number, y: number) {
@@ -434,7 +450,7 @@ export class CommandsManager {
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
         numCases + delta
-      }`,
+        }`,
     });
 
     CommandsManager.requestRedraw();
@@ -1086,7 +1102,7 @@ export class CommandsManager {
       title: `Edit ${itemName || ''}`,
       url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
         itemName || ''
-      }&isEditMode=true`,
+        }&isEditMode=true`,
     });
   }
 
@@ -1115,6 +1131,24 @@ export class CommandsManager {
     });
   }
 
+  private static async initializePopupWindow(itemInfo: CanvasItem, url: string): Promise<Electron.BrowserWindow> {
+    // Push current item to namedItems map
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.ADD_ENTRY_TO_NAMED_ITEMS_MAP} "${itemInfo.id}"`
+    });
+
+    const window = WindowManager.createMenuPopUpWithRouting({
+      title: itemInfo.classType + ' : ' + itemInfo.id,
+      url: url,
+      uid: itemInfo.id,
+    });
+
+    await HttpManager.handleMinskyCommand(RestServiceManager.getRenderCommandForPopupWindows(itemInfo.id));
+
+    return window;
+
+  }
+
   static async handleDoubleClick({ mouseX, mouseY }) {
     const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
     // TODO:: When opening a new popup for plot / godley or closing it,
@@ -1124,11 +1158,7 @@ export class CommandsManager {
       switch (itemInfo?.classType) {
         case ClassType.GodleyIcon:
           if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
-            const window = WindowManager.createMenuPopUpWithRouting({
-              title: ClassType.GodleyIcon + ' : ' + itemInfo.id,
-              url: `#/headless/godley-widget-view`,
-              uid: itemInfo.id,
-            });
+            const window = await this.initializePopupWindow(itemInfo, `#/headless/godley-widget-view`);
 
             window.setMenu(
               Menu.buildFromTemplate([
@@ -1171,11 +1201,7 @@ export class CommandsManager {
 
         case ClassType.PlotWidget:
           if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
-            const window = WindowManager.createMenuPopUpWithRouting({
-              title: ClassType.PlotWidget + ' : ' + itemInfo.id,
-              url: `#/headless/plot-widget-view`,
-              uid: itemInfo.id,
-            });
+            const window = await this.initializePopupWindow(itemInfo, `#/headless/plot-widget-view`);
 
             window.setMenu(
               Menu.buildFromTemplate([
