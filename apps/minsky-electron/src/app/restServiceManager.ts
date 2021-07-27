@@ -73,6 +73,13 @@ export class RestServiceManager {
     return;
   }
 
+  private static async onQuit() {
+    console.log("Please complete onQuit Actions!");
+    //TODO:
+    // 1. Flush commands queue
+    // 2. Kill  Minsky process (wait for it to be killed)
+  }
+
   private static async resumeQueueProcessing(): Promise<unknown> {
     this.runningCommand = false;
     return await this.processCommandsInQueueNew();

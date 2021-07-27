@@ -104,8 +104,7 @@ export default class App {
   }
 
   private static async onQuit() {
-    //await for http-service and anything else to be killed
-    //console.log("QUITTING APP");
+    await RestServiceManager.onQuit();
   }
 
   private static onActivate() {
