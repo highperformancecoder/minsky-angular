@@ -50,7 +50,7 @@ export class HttpManager {
       return response;
     } catch (error) {
       log.error(red(`Command failed: ${command}`));
-      log.error(red(error.response.data));
+      log.error(red(error));
     }
   }
 }
