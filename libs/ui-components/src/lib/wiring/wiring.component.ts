@@ -54,7 +54,7 @@ export class WiringComponent implements OnInit, OnDestroy {
 
     setTimeout(async () => {
       await this.electronService.sendMinskyCommandAndRender({
-        command: commandsMapping.CANVAS_REQUEST_REDRAW,
+        command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
       });
     }, 1);
   }
@@ -104,6 +104,7 @@ export class WiringComponent implements OnInit, OnDestroy {
         minskyCanvasElement.addEventListener(
           'mousedown',
           async (event: MouseEvent) => {
+            
             await this.cmService.mouseEvents('CANVAS_EVENT', event);
           }
         );
