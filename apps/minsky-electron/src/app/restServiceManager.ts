@@ -301,11 +301,11 @@ export class RestServiceManager {
   }
 
 
-  public static getRenderCommandForPopupWindows(uid : number) {
-    const systemWindowId = WindowManager.getSystemWindowIdFromUid(uid);
-    if(systemWindowId) {
+  public static getRenderCommandForPopupWindows(uid : number, itemAccessor : string) {
+    const window = WindowManager.getWindowByUid(uid);
+    if(window) {
       // TODO:: Get the proper offsets
-      return `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/renderFrame [ ${systemWindowId}, 0, 0, 100, 100 ]`
+      return `${commandsMapping.GET_NAMED_ITEM}/${uid}/second${itemAccessor}/renderFrame [ ${window.systemWindowId}, 0, 0, ${window.size[0]}, ${window.size[1]} ]`
     }
     return null;
   }

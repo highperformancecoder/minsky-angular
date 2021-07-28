@@ -30,12 +30,8 @@ export class WindowManager {
   private static uidToWindowMap = new Map<number, ActiveWindow>();
 
 
-  static getSystemWindowIdFromUid(uid : number) {
-    const window = this.uidToWindowMap.get(uid);
-    if(window) {
-      return window.systemWindowId;
-    }
-    return null;
+  static getWindowByUid(uid : number) : ActiveWindow {
+    return this.uidToWindowMap.get(uid);
   }
 
   static getSystemWindowId(menuWindow: BrowserWindow) {
@@ -53,8 +49,6 @@ export class WindowManager {
   }
 
   static focusIfWindowIsPresent(uid: number) {
-    console.log('Trying to focus on ' + uid);
-    console.log(this.uidToWindowMap.entries);
     const windowDetails = this.uidToWindowMap.get(uid);
     if (windowDetails) {
       windowDetails.context.focus();

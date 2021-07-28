@@ -1142,10 +1142,9 @@ export class CommandsManager {
       uid: itemInfo.id,
     });
 
-    await HttpManager.handleMinskyCommand(RestServiceManager.getRenderCommandForPopupWindows(itemInfo.id));
-
+    const itemAccessor = (itemInfo.classType === ClassType.GodleyIcon)? "/godleyT" : "";
+    await HttpManager.handleMinskyCommand(RestServiceManager.getRenderCommandForPopupWindows(itemInfo.id, itemAccessor));
     return window;
-
   }
 
   static async handleDoubleClick({ mouseX, mouseY }) {
