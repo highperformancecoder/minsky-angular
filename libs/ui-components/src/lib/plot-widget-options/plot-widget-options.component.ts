@@ -107,10 +107,6 @@ export class PlotWidgetOptionsComponent implements OnInit, OnDestroy {
       const plotType = await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/plotType`,
       });
-      console.log(
-        '🚀 ~ file: plot-widget-options.component.ts ~ line 117 ~ PlotWidgetOptionsComponent ~ updateFormValues ~ plotType',
-        plotType
-      );
       this.plotType.setValue(plotType);
 
       const numberOfXTicks = await this.electronService.sendMinskyCommandAndRender(
@@ -151,10 +147,6 @@ export class PlotWidgetOptionsComponent implements OnInit, OnDestroy {
         command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/logy`,
       });
       this.yLogScale.setValue(yLogScale);
-
-      // percent;
-      // xtickAngle;
-      // exp_threshold;
     }
   }
   async handleSave() {

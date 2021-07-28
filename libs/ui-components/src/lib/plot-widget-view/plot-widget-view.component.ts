@@ -16,7 +16,6 @@ export class PlotWidgetViewComponent implements OnInit, OnDestroy {
 
   itemId: number;
   systemWindowId: number;
-  // heightInPx: string;
 
   leftOffset = 0;
   topOffset: number;
@@ -40,8 +39,6 @@ export class PlotWidgetViewComponent implements OnInit, OnDestroy {
 
     this.leftOffset = Math.round(clientRect.left);
     this.topOffset = Math.round(clientRect.top);
-
-    // this.heightInPx = `calc(100vh - ${this.topOffset}px)`;
 
     this.height = Math.round(plotCanvasContainer.clientHeight);
     this.width = Math.round(plotCanvasContainer.clientWidth);
