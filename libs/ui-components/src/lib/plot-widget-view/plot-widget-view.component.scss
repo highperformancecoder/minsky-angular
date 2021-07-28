@@ -2,6 +2,10 @@
 
 .plot-cairo-canvas {
   height: calc(100vh - 22px);
-  width: 100%;
+  width: 100vw;
   border: 1px solid $toolbar-box;
+}
+
+.options-title-bar {
+  height: 22px;
 }

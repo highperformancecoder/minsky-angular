@@ -1164,14 +1164,37 @@ export class CommandsManager {
               Menu.buildFromTemplate([
                 new MenuItem({
                   label: 'File',
-                  submenu: [{ label: 'Export' }],
+                  submenu: [
+                    {
+                      label: 'Export as',
+                      submenu: [
+                        {
+                          label: 'CSV',
+                          click: async () => {
+                            await CommandsManager.exportGodleyAs('csv');
+                          },
+                        },
+                        {
+                          label: 'LaTeX',
+                          click: async () => {
+                            await CommandsManager.exportGodleyAs('tex');
+                          },
+                        },
+                      ],
+                    },
+                  ],
                 }),
                 new MenuItem({
                   label: 'Edit',
                   submenu: [
                     { label: 'Undo' },
                     { label: 'Redo' },
-                    { label: 'Title' },
+                    {
+                      label: 'Title',
+                      click: () => {
+                        CommandsManager.editGodleyTitle();
+                      },
+                    },
                     { label: 'Cut' },
                     { label: 'Copy' },
                     { label: 'Paste' },
@@ -1220,15 +1243,20 @@ export class CommandsManager {
             //   Menu.buildFromTemplate([
             //     new MenuItem({
             //       label: 'Options',
-            //       click: () => {
-            //         WindowManager.createMenuPopUpWithRouting({
-            //           title: 'Plot Window Options',
-            //           url: `#/headless/plot-widget-options`,
-            //           uid: itemInfo.id,
-            //           height: 500,
-            //           width: 500,
-            //         });
-            //       },
+            //       submenu: [
+            //         {
+            //           label: 'Options',
+            //           click: () => {
+            //             WindowManager.createMenuPopUpWithRouting({
+            //               title: 'Plot Window Options',
+            //               url: `#/headless/plot-widget-options?itemId=${itemInfo.id}`,
+            //               uid: itemInfo.id,
+            //               height: 500,
+            //               width: 500,
+            //             });
+            //           },
+            //         },
+            //       ],
             //     }),
             //   ])
             // );
