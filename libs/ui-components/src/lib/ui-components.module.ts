@@ -22,6 +22,9 @@ import { VariablesComponent } from './variables/variables.component';
 import { AvailableOperationsComponent } from './wiring/available-operations/available-operations.component';
 import { VariableComponent } from './wiring/variable/variable.component';
 import { WiringComponent } from './wiring/wiring.component';
+import { PlotWidgetViewComponent } from './plot-widget-view/plot-widget-view.component';
+import { GodleyWidgetViewComponent } from './godley-widget-view/godley-widget-view.component';
+import { PlotWidgetOptionsComponent } from './plot-widget-options/plot-widget-options.component';
 @NgModule({
   declarations: [
     HeaderComponent,
@@ -45,6 +48,9 @@ import { WiringComponent } from './wiring/wiring.component';
     EditIntegralComponent,
     EditGroupComponent,
     EditUserFunctionComponent,
+    PlotWidgetViewComponent,
+    GodleyWidgetViewComponent,
+    PlotWidgetOptionsComponent,
   ],
   imports: [CommonModule, SharedModule],
   exports: [
@@ -67,6 +73,9 @@ import { WiringComponent } from './wiring/wiring.component';
     EditIntegralComponent,
     EditGroupComponent,
     EditUserFunctionComponent,
+    PlotWidgetViewComponent,
+    GodleyWidgetViewComponent,
+    PlotWidgetOptionsComponent,
   ],
 })
 export class UiComponentsModule {}

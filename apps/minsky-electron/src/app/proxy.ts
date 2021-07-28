@@ -19,17 +19,16 @@ app.get('*', async (req, res) => {
 
     res.status(200).json(_res.data);
   } catch (error) {
-    res.status(500).json(error.response.data);
+    res.status(500).json(error?.response?.data);
   }
 });
 
 app.put('*', async (req, res) => {
   try {
     const _res = await axios.put(`${SERVER_URL}${req.url}`, req.body.arg);
-
     res.status(200).json(_res.data);
   } catch (error) {
-    res.status(500).json(error.response.data);
+    res.status(500).json(error?.response?.data);
   }
 });
 

@@ -361,7 +361,7 @@ export class MenuManager {
             label: 'Redraw',
             async click() {
               await RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.REDRAW,
+                command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
               });
             },
           },

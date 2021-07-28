@@ -357,7 +357,6 @@ export class CommunicationService {
 
   public async mouseEvents(event, message: MouseEvent) {
     const { type, clientX, clientY, button } = message;
-
     const offset = this.windowUtilityService.getMinskyCanvasOffset();
 
     this.mouseX = clientX;
@@ -383,30 +382,36 @@ export class CommunicationService {
     }
 
     if (this.electronService.isElectron) {
-      const command = commandsMapping[type];
+      let command = null;
+      if(type === 'mousemove') {
+        command = commandsMapping.MOUSEMOVE_SUBCOMMAND;
+      } else if(type === 'mousedown') {
+        command = commandsMapping.MOUSEDOWN_SUBCOMMAND;
+      } else if(type === 'mouseup') {
+        command = commandsMapping.MOUSEUP_SUBCOMMAND;
+      }
 
-      if (command === commandsMapping.mousedown && message.altKey) {
+      if (command === commandsMapping.MOUSEDOWN_SUBCOMMAND && message.altKey) {
         this.electronService.ipcRenderer.send(
           events.DISPLAY_MOUSE_COORDINATES,
           { mouseX: this.mouseX, mouseY: this.mouseY }
         );
-
         return;
       }
 
       // TODO:: Should the drag logic be in this branch or else? isElectron / FE?
 
-      if (command === commandsMapping.mousedown && this.isShiftPressed) {
+      if (command === commandsMapping.MOUSEDOWN_SUBCOMMAND && this.isShiftPressed) {
         this.drag = true;
         return;
       }
 
-      if (command === commandsMapping.mouseup && this.drag) {
+      if (command === commandsMapping.MOUSEUP_SUBCOMMAND && this.drag) {
         this.drag = false;
         return;
       }
 
-      if (command === commandsMapping.mousemove && this.drag) {
+      if (command === commandsMapping.MOUSEMOVE_SUBCOMMAND && this.drag) {
         this.windowUtilityService.getMinskyContainerElement().scrollTop -=
           message.movementY;
         this.windowUtilityService.getMinskyContainerElement().scrollLeft -=

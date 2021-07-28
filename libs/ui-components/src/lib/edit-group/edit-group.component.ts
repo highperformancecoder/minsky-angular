@@ -69,7 +69,7 @@ export class EditGroupComponent implements OnInit {
       });
 
       await this.electronService.sendMinskyCommandAndRender({
-        command: commandsMapping.CANVAS_REQUEST_REDRAW,
+        command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
       });
     }
 

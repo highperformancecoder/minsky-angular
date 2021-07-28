@@ -28,7 +28,7 @@ export class EditGodleyTitleComponent implements OnInit {
       });
 
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.CANVAS_REQUEST_REDRAW}"`,
+        command: `${commandsMapping.REQUEST_REDRAW_SUBCOMMAND}"`,
       });
 
       this.electronService.remote.getCurrentWindow().close();

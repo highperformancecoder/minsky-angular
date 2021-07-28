@@ -6,7 +6,7 @@ import {
   green,
   isEmptyObject,
 } from '@minsky/shared';
-import { dialog, ipcMain } from 'electron';
+import { dialog, ipcMain, Menu, MenuItem } from 'electron';
 import { existsSync, promises, unlinkSync } from 'fs';
 import { join } from 'path';
 import { HelpFilesManager } from './HelpFilesManager';
@@ -24,6 +24,20 @@ export class CommandsManager {
       command: commandsMapping.CANVAS_ITEM,
     });
     return item as Record<string, unknown>;
+  }
+
+  static async deleteCurrentItemHavingId(itemId: number) {
+    // TODO:: Ideally -- change flow to get the current item here..
+    // to ensure that we cannot mismatch itemId and currentItemId
+    if (itemId) {
+      WindowManager.closeWindowByUid(itemId);
+      await RestServiceManager.handleMinskyProcess({
+        command: `${commandsMapping.REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP}/${itemId}`,
+      });
+      await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.CANVAS_DELETE_ITEM,
+      });
+    }
   }
 
   private static async populateItemPointer(x: number, y: number) {
@@ -506,7 +520,7 @@ export class CommandsManager {
     });
 
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.mousemove,
+      command: commandsMapping.MOUSEMOVE_SUBCOMMAND,
       mouseX: x,
       mouseY: y,
     });
@@ -626,7 +640,7 @@ export class CommandsManager {
 
   static async mouseDown(mouseX: number, mouseY: number): Promise<void> {
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.mousedown,
+      command: commandsMapping.MOUSEDOWN_SUBCOMMAND,
       mouseX,
       mouseY,
     });
@@ -636,7 +650,7 @@ export class CommandsManager {
 
   static async mouseUp(mouseX: number, mouseY: number): Promise<void> {
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.mouseup,
+      command: commandsMapping.MOUSEUP_SUBCOMMAND,
       mouseX,
       mouseY,
     });
@@ -646,7 +660,7 @@ export class CommandsManager {
 
   static async mouseMove(mouseX: number, mouseY: number): Promise<void> {
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.mousemove,
+      command: commandsMapping.MOUSEMOVE_SUBCOMMAND,
       mouseX,
       mouseY,
     });
@@ -656,9 +670,8 @@ export class CommandsManager {
 
   static async requestRedraw(): Promise<void> {
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.CANVAS_REQUEST_REDRAW,
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
     });
-
     return;
   }
 
@@ -927,7 +940,7 @@ export class CommandsManager {
     });
 
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.CANVAS_REQUEST_REDRAW,
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
     });
 
     WindowManager.getMainWindow().setTitle(filePath);
@@ -1115,6 +1128,24 @@ export class CommandsManager {
     });
   }
 
+  private static async initializePopupWindow(
+    itemInfo: CanvasItem,
+    url: string
+  ): Promise<Electron.BrowserWindow> {
+    // Pushing the current item to namedItems map
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.ADD_ENTRY_TO_NAMED_ITEMS_MAP} "${itemInfo.id}"`,
+    });
+
+    const window = WindowManager.createMenuPopUpWithRouting({
+      title: itemInfo.classType + ' : ' + itemInfo.id,
+      url: url,
+      uid: itemInfo.id,
+    });
+
+    return window;
+  }
+
   static async handleDoubleClick({ mouseX, mouseY }) {
     const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
     // TODO:: When opening a new popup for plot / godley or closing it,
@@ -1124,21 +1155,111 @@ export class CommandsManager {
       switch (itemInfo?.classType) {
         case ClassType.GodleyIcon:
           if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
-            WindowManager.createMenuPopUpWithRouting({
-              title: ClassType.GodleyIcon + ' : ' + itemInfo.id,
-              url: `#/headless/godley-table-view`,
-              uid: itemInfo.id,
-            });
+            const window = await this.initializePopupWindow(
+              itemInfo,
+              `#/headless/godley-widget-view`
+            );
+
+            window.setMenu(
+              Menu.buildFromTemplate([
+                new MenuItem({
+                  label: 'File',
+                  submenu: [
+                    {
+                      label: 'Export as',
+                      submenu: [
+                        {
+                          label: 'CSV',
+                          click: async () => {
+                            await CommandsManager.exportGodleyAs('csv');
+                          },
+                        },
+                        {
+                          label: 'LaTeX',
+                          click: async () => {
+                            await CommandsManager.exportGodleyAs('tex');
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                }),
+                new MenuItem({
+                  label: 'Edit',
+                  submenu: [
+                    { label: 'Undo' },
+                    { label: 'Redo' },
+                    {
+                      label: 'Title',
+                      click: () => {
+                        CommandsManager.editGodleyTitle();
+                      },
+                    },
+                    { label: 'Cut' },
+                    { label: 'Copy' },
+                    { label: 'Paste' },
+                  ],
+                }),
+                new MenuItem({
+                  label: 'View',
+                  submenu: [
+                    { label: 'Zoom In' },
+                    { label: 'Zoom Out' },
+                    { label: 'Reset Zoom' },
+                  ],
+                }),
+                new MenuItem({
+                  label: 'Options',
+                  submenu: [
+                    { label: 'Show Values' },
+                    { label: 'DR/CR Style' },
+                    { label: 'Enable Multiple Equity Column' },
+                  ],
+                }),
+                new MenuItem({ label: 'Help' }),
+              ])
+            );
           }
           break;
 
         case ClassType.PlotWidget:
           if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
-            WindowManager.createMenuPopUpWithRouting({
-              title: ClassType.PlotWidget + ' : ' + itemInfo.id,
-              url: `#/headless/plot-widget-view`,
-              uid: itemInfo.id,
-            });
+            let systemWindowId = null;
+            const window = await this.initializePopupWindow(
+              itemInfo,
+              `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+            );
+
+            systemWindowId = WindowManager.getWindowByUid(itemInfo.id)
+              .systemWindowId;
+
+            window.loadURL(
+              WindowManager.getWindowUrl(
+                `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+              )
+            );
+
+            // window.setMenu(
+            //   Menu.buildFromTemplate([
+            //     new MenuItem({
+            //       label: 'Options',
+            //       submenu: [
+            //         {
+            //           label: 'Options',
+            //           click: () => {
+            //             WindowManager.createMenuPopUpWithRouting({
+            //               title: 'Plot Window Options',
+            //               url: `#/headless/plot-widget-options?itemId=${itemInfo.id}`,
+            //               uid: itemInfo.id,
+            //               height: 500,
+            //               width: 500,
+            //             });
+            //           },
+            //         },
+            //       ],
+            //     }),
+            //   ])
+            // );
           }
           break;
 

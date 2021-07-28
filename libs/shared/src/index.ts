@@ -1,4 +1,5 @@
 export * from './lib/constants/constants';
+export * from './lib/constants/MainRenderingTabs';
 export * from './lib/functions/functions';
 export * from './lib/interfaces/ActiveWindow';
 export * from './lib/interfaces/FEEvents';

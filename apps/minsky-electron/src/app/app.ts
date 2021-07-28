@@ -103,6 +103,10 @@ export default class App {
     })();
   }
 
+  private static async onQuit() {
+    await RestServiceManager.onQuit();
+  }
+
   private static onActivate() {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
@@ -217,6 +221,8 @@ export default class App {
     App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
     App.application.on('ready', App.onReady); // App is ready to load data
     App.application.on('activate', App.onActivate); // App is activated
+    App.application.on('quit', App.onQuit); // App is quit
+
 
     process.on('uncaughtException', (err) => {
       console.error(

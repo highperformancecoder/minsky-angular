@@ -8,6 +8,7 @@ import {
   commandsMapping,
   events,
   MinskyProcessPayload,
+  ChangeTabPayload,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { ipcMain } from 'electron';
@@ -29,35 +30,14 @@ export default class ElectronEvents {
   }
 }
 
-const {
-  ADD_RECENT_FILE,
-  APP_LAYOUT_CHANGED,
-  CREATE_MENU_POPUP,
-  MINSKY_PROCESS,
-  POPULATE_BOOKMARKS,
-  SET_BACKGROUND_COLOR,
-  GET_APP_VERSION,
-  KEY_PRESS,
-  TOGGLE_MINSKY_SERVICE,
-  MINSKY_PROCESS_FOR_IPC_MAIN,
-  NEW_SYSTEM,
-  AUTO_START_MINSKY_SERVICE,
-  GET_PREFERENCES,
-  UPDATE_PREFERENCES,
-  CONTEXT_MENU,
-  DISPLAY_MOUSE_COORDINATES,
-  DOUBLE_CLICK,
-  LOG_SIMULATION,
-} = events;
-
 // Retrieve app version
-ipcMain.handle(GET_APP_VERSION, () => {
+ipcMain.handle(events.GET_APP_VERSION, () => {
   logUpdateEvent(`Fetching application version... [v${environment.version}]`);
 
   return environment.version;
 });
 
-ipcMain.on(SET_BACKGROUND_COLOR, (event, { color }) => {
+ipcMain.on(events.SET_BACKGROUND_COLOR, (event, { color }) => {
   if (color) {
     StoreManager.store.set('backgroundColor', color);
   }
@@ -66,44 +46,49 @@ ipcMain.on(SET_BACKGROUND_COLOR, (event, { color }) => {
   );
 });
 
-ipcMain.on(CREATE_MENU_POPUP, (event, data) => {
+ipcMain.on(events.CREATE_MENU_POPUP, (event, data) => {
   WindowManager.createMenuPopUpWithRouting(data);
 });
 
 // MINSKY_PROCESS_FOR_IPC_MAIN won't reply with the response
 ipcMain.on(
-  MINSKY_PROCESS_FOR_IPC_MAIN,
+  events.MINSKY_PROCESS_FOR_IPC_MAIN,
   async (event, payload: MinskyProcessPayload) => {
     await RestServiceManager.handleMinskyProcess(payload);
   }
 );
 
-ipcMain.handle(MINSKY_PROCESS, async (event, payload: MinskyProcessPayload) => {
+ipcMain.handle(events.MINSKY_PROCESS, async (event, payload: MinskyProcessPayload) => {
   return await RestServiceManager.handleMinskyProcess(payload);
 });
 
-ipcMain.on(APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {
+ipcMain.on(events.APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {
   WindowManager.onAppLayoutChanged(payload);
 });
 
-ipcMain.on(POPULATE_BOOKMARKS, async (event, bookmarks: string[]) => {
+
+ipcMain.on(events.CHANGE_MAIN_TAB, async (event, payload: ChangeTabPayload) => {
+  await RestServiceManager.setCurrentTab(payload.newTab);
+});
+
+ipcMain.on(events.POPULATE_BOOKMARKS, async (event, bookmarks: string[]) => {
   await BookmarkManager.populateBookmarks(bookmarks);
 });
 
-ipcMain.on(ADD_RECENT_FILE, (event, filePath: string) => {
+ipcMain.on(events.ADD_RECENT_FILE, (event, filePath: string) => {
   RecentFilesManager.addFileToRecentFiles(filePath);
 });
 
-ipcMain.handle(KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
+ipcMain.handle(events.KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
   return await KeyBindingManager.handleOnKeyPress(payload);
 });
 
-ipcMain.handle(GET_PREFERENCES, () => {
+ipcMain.handle(events.GET_PREFERENCES, () => {
   return StoreManager.store.get('preferences');
 });
 
 ipcMain.handle(
-  UPDATE_PREFERENCES,
+  events.UPDATE_PREFERENCES,
   async (event, preferencesPayload: Record<string, unknown>) => {
     const { font, ...preferences } = preferencesPayload;
     const {
@@ -131,31 +116,31 @@ ipcMain.handle(
   }
 );
 
-ipcMain.on(TOGGLE_MINSKY_SERVICE, async () => {
+ipcMain.on(events.TOGGLE_MINSKY_SERVICE, async () => {
   await RestServiceManager.toggleMinskyService();
 });
 
-ipcMain.on(AUTO_START_MINSKY_SERVICE, async () => {
+ipcMain.on(events.AUTO_START_MINSKY_SERVICE, async () => {
   await RestServiceManager.startMinskyService();
 });
 
-ipcMain.handle(NEW_SYSTEM, async () => {
+ipcMain.handle(events.NEW_SYSTEM, async () => {
   await CommandsManager.createNewSystem();
   return;
 });
 
-ipcMain.on(CONTEXT_MENU, async (event, { x, y }) => {
+ipcMain.on(events.CONTEXT_MENU, async (event, { x, y }) => {
   await ContextMenuManager.initContextMenu(x, y);
 });
 
-ipcMain.on(DISPLAY_MOUSE_COORDINATES, async (event, { mouseX, mouseY }) => {
+ipcMain.on(events.DISPLAY_MOUSE_COORDINATES, async (event, { mouseX, mouseY }) => {
   WindowManager.showMouseCoordinateWindow({ mouseX, mouseY });
 });
 
-ipcMain.on(DOUBLE_CLICK, async (event, payload) => {
+ipcMain.on(events.DOUBLE_CLICK, async (event, payload) => {
   await CommandsManager.handleDoubleClick(payload);
 });
 
-ipcMain.on(LOG_SIMULATION, async (event, selectedItems: string[]) => {
+ipcMain.on(events.LOG_SIMULATION, async (event, selectedItems: string[]) => {
   await CommandsManager.logSimulation(selectedItems);
 });

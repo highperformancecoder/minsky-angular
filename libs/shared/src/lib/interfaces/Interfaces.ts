@@ -1,3 +1,5 @@
+import { MainRenderingTabs } from '../constants/MainRenderingTabs';
+
 export interface MinskyProcessPayload {
   mouseX?: number;
   mouseY?: number;
@@ -16,7 +18,17 @@ export interface MinskyProcessPayload {
 
 export interface AppLayoutPayload {
   type: string;
-  value: any;
+  value: {
+    width : number,
+    height : number,
+    top : number,
+    left : number,
+    electronMenuBarHeight? : number
+  };
+}
+
+export interface ChangeTabPayload {
+  newTab : MainRenderingTabs
 }
 
 export interface HeaderEvent {

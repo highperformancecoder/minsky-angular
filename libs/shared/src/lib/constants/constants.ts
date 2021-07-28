@@ -44,16 +44,12 @@ export const commandsMapping = {
   LIST: '/list',
   LIST_V2: '/minsky/@list',
   LOAD: '/minsky/load',
-  mousedown: '/minsky/canvas/mouseDown',
-  mousemove: `/minsky/canvas/mouseMove`,
-  mouseup: '/minsky/canvas/mouseUp',
   ORDER: '/minsky/order',
   PASTE: `/minsky/paste`,
   PLAY: '/minsky/step',
   RECORD: 'startRecording',
   RECORDING_REPLAY: 'startRecordingReplay',
   REDO: `/minsky/undo`,
-  REDRAW: '/minsky/canvas/redraw',
   REMOVE_UNITS: '/minsky/deleteAllUnits',
   RENDER_ALL_PLOTS_AS_SVG: '/minsky/renderAllPlotsAsSVG',
   RENDER_CANVAS_TO_EMF: '/minsky/renderCanvasToEMF',
@@ -61,7 +57,15 @@ export const commandsMapping = {
   RENDER_CANVAS_TO_PNG: '/minsky/renderCanvasToPNG',
   RENDER_CANVAS_TO_PS: '/minsky/renderCanvasToPS',
   RENDER_CANVAS_TO_SVG: '/minsky/renderCanvasToSVG',
-  RENDER_FRAME: '/minsky/canvas/renderFrame',
+
+  RENDER_FRAME_SUBCOMMAND: 'renderFrame',
+  REQUEST_REDRAW_SUBCOMMAND: 'requestRedraw',
+
+  MOUSEDOWN_SUBCOMMAND: 'mouseDown',
+  MOUSEMOVE_SUBCOMMAND: 'mouseMove',
+  MOUSEUP_SUBCOMMAND: 'mouseUp',
+
+  REDRAW__DEPRECATED: '/minsky/canvas/redraw',
   RESET_ZOOM: `/minsky/model/setZoom`,
   RESET: '/minsky/reset',
   REVERSE_CHECKBOX: `/minsky/reverse`,
@@ -106,7 +110,6 @@ export const commandsMapping = {
   CANVAS_GET_WIRE_AT: '/minsky/canvas/getWireAt',
   CANVAS_ITEM: '/minsky/canvas/item',
   CANVAS_WIRE: '/minsky/canvas/wire',
-  CANVAS_REQUEST_REDRAW: '/minsky/canvas/requestRedraw',
   CANVAS_ITEM_ID: '/minsky/canvas/item/id',
   CANVAS_ITEM_CLASS_TYPE: '/minsky/canvas/item/classType',
   CANVAS_SELECT_VAR: '/minsky/canvas/selectVar',
@@ -230,6 +233,9 @@ export const commandsMapping = {
   CANVAS_ITEM_UNITS_STR: '/minsky/canvas/item/unitsStr',
   CANVAS_ITEM_INT_VAR_SLIDER_STEP_REL:
     '/minsky/canvas/item/intVar/sliderStepRel',
+  ADD_ENTRY_TO_NAMED_ITEMS_MAP: '/minsky/nameCurrentItem',
+  REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP: '/minsky/namedItems/@erase', // TODO:: Check syntax, call when any item is deleted
+  GET_NAMED_ITEM: '/minsky/namedItems/@elem',
 };
 
 export const availableOperations = {
@@ -319,6 +325,7 @@ export const events = {
   DISPLAY_MOUSE_COORDINATES: 'display-mouse-coordinates',
   DOUBLE_CLICK: 'double-click',
   LOG_SIMULATION: 'log-simulation',
+  CHANGE_MAIN_TAB: 'change-main-tab',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup
