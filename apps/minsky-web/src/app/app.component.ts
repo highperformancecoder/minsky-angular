@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { events } from '@minsky/shared';
+import { events, MainRenderingTabs } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
@@ -16,7 +16,7 @@ const logInfo = debug('minsky:web:info');
 })
 export class AppComponent implements AfterViewInit {
   loader = false;
-
+  MainRenderingTabs = MainRenderingTabs;
   constructor(
     private electronService: ElectronService,
     private cmService: CommunicationService,
@@ -93,6 +93,13 @@ export class AppComponent implements AfterViewInit {
   async toggleMinskyService() {
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.send(events.TOGGLE_MINSKY_SERVICE);
+    }
+  }
+
+  async changeTab(tab : MainRenderingTabs) {
+    if (this.electronService.isElectron) {
+      const payload = { newTab : tab };
+      this.electronService.ipcRenderer.send(events.CHANGE_MAIN_TAB, payload);
     }
   }
 
