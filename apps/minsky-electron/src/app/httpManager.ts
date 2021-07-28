@@ -30,6 +30,8 @@ export class HttpManager {
   }
 
   static async handleMinskyCommand(command: string): Promise<unknown> {
+    // TODO:: Check if interface can be made faster by avoiding string operations
+    
     try {
       if (!command) {
         throw new Error(`command cannot be blank`);
@@ -40,12 +42,14 @@ export class HttpManager {
       if (commandMetaData.length >= 2) {
         const [cmd] = commandMetaData;
         const arg = command.substring(command.indexOf(' ') + 1);
+        // CAVEAT: logging before invoking command seems to cause performance issues
         // log.info('PUT ->', cmd, arg);
         const response = await HttpManager.put(cmd, arg);
         // log.info('PUT:response ->' + JSON.stringify(response));
         return response;
       }
       const [cmd] = commandMetaData;
+      // CAVEAT: logging before invoking command seems to cause performance issues
       // log.info('GET ->', cmd);
       const response = await HttpManager.get(cmd);
       // log.info('GET:response ->' + JSON.stringify(response));
