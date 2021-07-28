@@ -44,7 +44,6 @@ export const commandsMapping = {
   LIST: '/list',
   LIST_V2: '/minsky/@list',
   LOAD: '/minsky/load',
- 
   ORDER: '/minsky/order',
   PASTE: `/minsky/paste`,
   PLAY: '/minsky/step',
@@ -58,7 +57,7 @@ export const commandsMapping = {
   RENDER_CANVAS_TO_PNG: '/minsky/renderCanvasToPNG',
   RENDER_CANVAS_TO_PS: '/minsky/renderCanvasToPS',
   RENDER_CANVAS_TO_SVG: '/minsky/renderCanvasToSVG',
-  
+
   RENDER_FRAME_SUBCOMMAND: 'renderFrame',
   REQUEST_REDRAW_SUBCOMMAND: 'requestRedraw',
 
@@ -232,10 +231,11 @@ export const commandsMapping = {
   CANVAS_ITEM_INT_VAR_SET_UNITS: '/minsky/canvas/item/intVar/setUnits',
   CANVAS_ITEM_INT_VAR_UNITS_STR: '/minsky/canvas/item/intVar/unitsStr',
   CANVAS_ITEM_UNITS_STR: '/minsky/canvas/item/unitsStr',
-  CANVAS_ITEM_INT_VAR_SLIDER_STEP_REL: '/minsky/canvas/item/intVar/sliderStepRel',
-  ADD_ENTRY_TO_NAMED_ITEMS_MAP : '/minsky/nameCurrentItem',
-  REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP : '/minsky/namedItems/@erase', // TODO:: Check syntax, call when any item is deleted
-  GET_NAMED_ITEM: '/minsky/namedItems/@elem'
+  CANVAS_ITEM_INT_VAR_SLIDER_STEP_REL:
+    '/minsky/canvas/item/intVar/sliderStepRel',
+  ADD_ENTRY_TO_NAMED_ITEMS_MAP: '/minsky/nameCurrentItem',
+  REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP: '/minsky/namedItems/@erase', // TODO:: Check syntax, call when any item is deleted
+  GET_NAMED_ITEM: '/minsky/namedItems/@elem',
 };
 
 export const availableOperations = {
@@ -325,7 +325,7 @@ export const events = {
   DISPLAY_MOUSE_COORDINATES: 'display-mouse-coordinates',
   DOUBLE_CLICK: 'double-click',
   LOG_SIMULATION: 'log-simulation',
-  CHANGE_MAIN_TAB : 'change-main-tab'
+  CHANGE_MAIN_TAB: 'change-main-tab',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup

@@ -21,10 +21,10 @@
 
     <div class="form-control">
       <label for="plotType">Plot type</label>
-      <select formControlName="plotType">
-        <option *ngFor="let item of plotTypes" [value]="item">
-          {{ item }}
-        </option>
+      <select name="plotType" id="plotType" formControlName="plotType">
+        <option value="automatic">Automatic</option>
+        <option value="bar">Bar</option>
+        <option value="line">Line</option>
       </select>
     </div>
 

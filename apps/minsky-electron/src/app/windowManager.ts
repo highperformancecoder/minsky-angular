@@ -29,8 +29,7 @@ export class WindowManager {
   static activeWindows = new Map<number, ActiveWindow>();
   private static uidToWindowMap = new Map<number, ActiveWindow>();
 
-
-  static getWindowByUid(uid : number) : ActiveWindow {
+  static getWindowByUid(uid: number): ActiveWindow {
     return this.uidToWindowMap.get(uid);
   }
 
@@ -57,18 +56,11 @@ export class WindowManager {
     return false;
   }
 
-  static createMenuPopUpWithRouting(
-    payload: CreateWindowPayload
-  ): BrowserWindow {
-    const window = WindowManager.createWindow(payload);
-
+  static getWindowUrl(url: string) {
     if (!Utility.isPackaged()) {
-      const initialURL = payload.url
-        ? rendererAppURL + payload.url
-        : rendererAppURL;
+      const initialURL = url ? rendererAppURL + url : rendererAppURL;
 
-      window.loadURL(initialURL);
-      return window;
+      return initialURL;
     }
 
     const path = format({
@@ -77,9 +69,18 @@ export class WindowManager {
       slashes: true,
     });
 
-    const initialURL = path + (payload.url || '#/');
+    const initialURL = path + (url || '#/');
 
-    window.loadURL(initialURL);
+    return initialURL;
+  }
+
+  static createMenuPopUpWithRouting(
+    payload: CreateWindowPayload
+  ): BrowserWindow {
+    const window = WindowManager.createWindow(payload);
+    const url = this.getWindowUrl(payload.url);
+
+    window.loadURL(url);
     return window;
   }
 
@@ -127,8 +128,6 @@ export class WindowManager {
       },
       icon: __dirname + '/assets/favicon.png',
     });
-
-   
 
     childWindow.setMenu(null);
 

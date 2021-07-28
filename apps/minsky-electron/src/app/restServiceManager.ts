@@ -2,13 +2,13 @@ import {
   commandsMapping,
   events,
   green,
+  MainRenderingTabs,
   MinskyProcessPayload,
   MINSKY_HTTP_SERVER_PORT,
   MINSKY_SYSTEM_HTTP_SERVER_PATH,
   red,
-  USE_MINSKY_SYSTEM_BINARY,
   USE_FRONTEND_DRIVEN_RENDERING,
-  MainRenderingTabs
+  USE_MINSKY_SYSTEM_BINARY,
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import { dialog, ipcMain } from 'electron';
@@ -51,17 +51,18 @@ export class RestServiceManager {
   private static lastZoomPayload: MinskyProcessPayload = null;
   static availableOperationsMappings: Record<string, string[]> = {};
 
+  private static currentTab: MainRenderingTabs = MainRenderingTabs.canvas;
 
-  private static currentTab : MainRenderingTabs = MainRenderingTabs.canvas;
-
-  public static async setCurrentTab(tab : MainRenderingTabs) {
-    if(tab !== this.currentTab) {
+  public static async setCurrentTab(tab: MainRenderingTabs) {
+    if (tab !== this.currentTab) {
       this.currentTab = tab;
       this.render = true;
       this.lastMouseMovePayload = null;
       this.lastModelMoveToPayload = null;
       this.lastZoomPayload = null;
-      this.handleMinskyProcess({ command : commandsMapping.RENDER_FRAME_SUBCOMMAND });
+      this.handleMinskyProcess({
+        command: commandsMapping.RENDER_FRAME_SUBCOMMAND,
+      });
     }
   }
 
@@ -89,7 +90,7 @@ export class RestServiceManager {
   }
 
   public static async onQuit() {
-    console.log("Please complete onQuit Actions!");
+    console.log('Please complete onQuit Actions!');
     //TODO:
     // 1. Flush commands queue
     // 2. Kill  Minsky process (wait for it to be killed)
@@ -248,9 +249,9 @@ export class RestServiceManager {
         stdinCommand = Utility.isDevelopmentMode()
           ? `${payload.command} "${join(__dirname, 'assets/godley.svg')}"`
           : `${payload.command} "${join(
-            process.resourcesPath,
-            'assets/godley.svg'
-          )}"`;
+              process.resourcesPath,
+              'assets/godley.svg'
+            )}"`;
 
         break;
 
@@ -258,9 +259,9 @@ export class RestServiceManager {
         stdinCommand = Utility.isDevelopmentMode()
           ? `${payload.command} "${join(__dirname, 'assets/group.svg')}"`
           : `${payload.command} "${join(
-            process.resourcesPath,
-            'assets/group.svg'
-          )}"`;
+              process.resourcesPath,
+              'assets/group.svg'
+            )}"`;
         break;
 
       case commandsMapping.REQUEST_REDRAW_SUBCOMMAND:
@@ -276,50 +277,40 @@ export class RestServiceManager {
         RecordingManager.record(stdinCommand);
       }
 
-      if(payload.command === commandsMapping.RENDER_FRAME_SUBCOMMAND) {
+      if (payload.command === commandsMapping.RENDER_FRAME_SUBCOMMAND) {
         // Render called explicitly
         this.render = false;
         await HttpManager.handleMinskyCommand(this.getRenderCommand());
-        return await HttpManager.handleMinskyCommand(this.getRequestRedrawCommand());
+        return await HttpManager.handleMinskyCommand(
+          this.getRequestRedrawCommand()
+        );
         // TODO:: Check which of the above command's response we should return
       }
 
       const res = await HttpManager.handleMinskyCommand(stdinCommand);
       const { render = true } = payload;
-      if ((USE_FRONTEND_DRIVEN_RENDERING && render) || (
-        this.render &&
-        WindowManager.canvasHeight &&
-        WindowManager.canvasWidth
-      )) {
-        this.render = false;
+
+      if ((USE_FRONTEND_DRIVEN_RENDERING && render) || this.render) {
         const renderCommand = this.getRenderCommand();
-        await HttpManager.handleMinskyCommand(renderCommand);
+
+        if (renderCommand) {
+          await HttpManager.handleMinskyCommand(renderCommand);
+          this.render = false;
+        }
       }
       return res;
     }
     console.error('Command was null or undefined');
   }
 
-
-  public static getRenderCommandForPopupWindows(uid : number, itemAccessor : string) {
-    const window = WindowManager.getWindowByUid(uid);
-    if(window) {
-      // TODO:: Get the proper offsets
-      return `${commandsMapping.GET_NAMED_ITEM}/${uid}/second${itemAccessor}/renderFrame [ ${window.systemWindowId}, 0, 0, ${window.size[0]}, ${window.size[1]} ]`
-    }
-    return null;
-  }
-
-
-  private static getRequestRedrawCommand(tab? : MainRenderingTabs) {
-    if(!tab) {
+  private static getRequestRedrawCommand(tab?: MainRenderingTabs) {
+    if (!tab) {
       tab = this.currentTab;
     }
     return `${tab}/${commandsMapping.REQUEST_REDRAW_SUBCOMMAND}`;
   }
 
-
-  private static getRenderCommand(tab? : MainRenderingTabs) {
+  private static getRenderCommand(tab?: MainRenderingTabs) {
     const {
       leftOffset,
       canvasWidth,
@@ -328,8 +319,11 @@ export class RestServiceManager {
       electronTopOffset,
     } = WindowManager;
 
-    if(!tab) {
+    if (!tab) {
       tab = this.currentTab;
+    }
+    if (!canvasHeight || !canvasWidth) {
+      return null;
     }
 
     const mainWindowId = activeWindows.get(1).systemWindowId;

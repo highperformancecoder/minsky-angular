@@ -19,7 +19,6 @@ export class MenuManager {
   static createMenu() {
     const menu = Menu.buildFromTemplate([
       {
-        role : 'services',
         label: 'File',
         submenu: [
           {
