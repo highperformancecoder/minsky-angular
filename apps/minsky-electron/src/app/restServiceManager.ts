@@ -7,7 +7,8 @@ import {
   MINSKY_SYSTEM_HTTP_SERVER_PATH,
   red,
   USE_MINSKY_SYSTEM_BINARY,
-  USE_FRONTEND_DRIVEN_RENDERING
+  USE_FRONTEND_DRIVEN_RENDERING,
+  MainRenderingTabs
 } from '@minsky/shared';
 import { ChildProcess, spawn } from 'child_process';
 import { dialog, ipcMain } from 'electron';
@@ -50,6 +51,20 @@ export class RestServiceManager {
   private static lastZoomPayload: MinskyProcessPayload = null;
   static availableOperationsMappings: Record<string, string[]> = {};
 
+
+  private static currentTab : MainRenderingTabs = MainRenderingTabs.canvas;
+
+  public static async setCurrentTab(tab : MainRenderingTabs) {
+    if(tab !== this.currentTab) {
+      this.currentTab = tab;
+      this.render = true;
+      this.lastMouseMovePayload = null;
+      this.lastModelMoveToPayload = null;
+      this.lastZoomPayload = null;
+      this.handleMinskyProcess({ command : commandsMapping.RENDER_FRAME_SUBCOMMAND });
+    }
+  }
+
   private static async processCommandsInQueueNew(): Promise<unknown> {
     // Should be on a separate thread......? Janak
     const shouldProcessQueue = this.isQueueEnabled
@@ -59,7 +74,7 @@ export class RestServiceManager {
     if (shouldProcessQueue) {
       const nextItem = this.payloadDataQueue.shift();
 
-      if (nextItem.payload.command === commandsMapping.mousemove) {
+      if (nextItem.payload.command === commandsMapping.MOUSEMOVE_SUBCOMMAND) {
         this.lastMouseMovePayload = null;
       } else if (nextItem.payload.command === commandsMapping.MOVE_TO) {
         this.lastModelMoveToPayload = null;
@@ -109,7 +124,8 @@ export class RestServiceManager {
 
     let queueItem: QueueItem = { payload, promise: new Deferred() };
 
-    if (payload.command === commandsMapping.mousemove) {
+    // TODO:: Take into account Tab when merging commands
+    if (payload.command === commandsMapping.MOUSEMOVE_SUBCOMMAND) {
       if (this.lastMouseMovePayload !== null) {
         // console.log("Merging mouse move commands");
         this.lastMouseMovePayload.mouseX = payload.mouseX;
@@ -204,26 +220,24 @@ export class RestServiceManager {
 
       case commandsMapping.SAVE:
         stdinCommand = `${payload.command} "${payload.filePath}"`;
-
         this.currentMinskyModelFilePath = payload.filePath;
-
         ipcMain.emit(events.ADD_RECENT_FILE, null, payload.filePath);
         break;
 
-      case commandsMapping.mousemove:
-        stdinCommand = `${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
+      case commandsMapping.MOUSEMOVE_SUBCOMMAND:
+        stdinCommand = `${this.currentTab}/${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
 
       case commandsMapping.MOVE_TO:
         stdinCommand = `${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
 
-      case commandsMapping.mousedown:
-        stdinCommand = `${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
+      case commandsMapping.MOUSEDOWN_SUBCOMMAND:
+        stdinCommand = `${this.currentTab}/${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
 
-      case commandsMapping.mouseup:
-        stdinCommand = `${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
+      case commandsMapping.MOUSEUP_SUBCOMMAND:
+        stdinCommand = `${this.currentTab}/${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
 
       case commandsMapping.ZOOM_IN:
@@ -249,8 +263,8 @@ export class RestServiceManager {
           )}"`;
         break;
 
-      case commandsMapping.REDRAW:
-        stdinCommand = this.getRenderCommand();
+      case commandsMapping.REQUEST_REDRAW_SUBCOMMAND:
+        stdinCommand = this.getRequestRedrawCommand();
         break;
 
       default:
@@ -258,14 +272,19 @@ export class RestServiceManager {
         break;
     }
     if (stdinCommand) {
-      const miscCommand = stdinCommand;
-      const renderCommand = this.getRenderCommand();
-
       if (RecordingManager.isRecording) {
         RecordingManager.record(stdinCommand);
       }
 
-      const res = await HttpManager.handleMinskyCommand(miscCommand);
+      if(payload.command === commandsMapping.RENDER_FRAME_SUBCOMMAND) {
+        // Render called explicitly
+        this.render = false;
+        await HttpManager.handleMinskyCommand(this.getRenderCommand());
+        return await HttpManager.handleMinskyCommand(this.getRequestRedrawCommand());
+        // TODO:: Check which of the above command's response we should return
+      }
+
+      const res = await HttpManager.handleMinskyCommand(stdinCommand);
       const { render = true } = payload;
       if ((USE_FRONTEND_DRIVEN_RENDERING && render) || (
         this.render &&
@@ -273,9 +292,9 @@ export class RestServiceManager {
         WindowManager.canvasWidth
       )) {
         this.render = false;
+        const renderCommand = this.getRenderCommand();
         await HttpManager.handleMinskyCommand(renderCommand);
       }
-
       return res;
     }
     console.error('Command was null or undefined');
@@ -292,7 +311,15 @@ export class RestServiceManager {
   }
 
 
-  private static getRenderCommand() {
+  private static getRequestRedrawCommand(tab? : MainRenderingTabs) {
+    if(!tab) {
+      tab = this.currentTab;
+    }
+    return `${tab}/${commandsMapping.REQUEST_REDRAW_SUBCOMMAND}`;
+  }
+
+
+  private static getRenderCommand(tab? : MainRenderingTabs) {
     const {
       leftOffset,
       canvasWidth,
@@ -301,9 +328,12 @@ export class RestServiceManager {
       electronTopOffset,
     } = WindowManager;
 
-    const mainWindowId = activeWindows.get(1).systemWindowId;
+    if(!tab) {
+      tab = this.currentTab;
+    }
 
-    const renderCommand = `${commandsMapping.RENDER_FRAME} [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}]`;
+    const mainWindowId = activeWindows.get(1).systemWindowId;
+    const renderCommand = `${tab}/${commandsMapping.RENDER_FRAME_SUBCOMMAND} [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}]`;
 
     return renderCommand;
   }

@@ -522,7 +522,7 @@ export class CommandsManager {
     });
 
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.mousemove,
+      command: commandsMapping.MOUSEMOVE_SUBCOMMAND,
       mouseX: x,
       mouseY: y,
     });
@@ -642,7 +642,7 @@ export class CommandsManager {
 
   static async mouseDown(mouseX: number, mouseY: number): Promise<void> {
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.mousedown,
+      command: commandsMapping.MOUSEDOWN_SUBCOMMAND,
       mouseX,
       mouseY,
     });
@@ -652,7 +652,7 @@ export class CommandsManager {
 
   static async mouseUp(mouseX: number, mouseY: number): Promise<void> {
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.mouseup,
+      command: commandsMapping.MOUSEUP_SUBCOMMAND,
       mouseX,
       mouseY,
     });
@@ -662,7 +662,7 @@ export class CommandsManager {
 
   static async mouseMove(mouseX: number, mouseY: number): Promise<void> {
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.mousemove,
+      command: commandsMapping.MOUSEMOVE_SUBCOMMAND,
       mouseX,
       mouseY,
     });
@@ -672,9 +672,8 @@ export class CommandsManager {
 
   static async requestRedraw(): Promise<void> {
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.CANVAS_REQUEST_REDRAW,
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
     });
-
     return;
   }
 
@@ -943,7 +942,7 @@ export class CommandsManager {
     });
 
     await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.CANVAS_REQUEST_REDRAW,
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
     });
 
     WindowManager.getMainWindow().setTitle(filePath);
