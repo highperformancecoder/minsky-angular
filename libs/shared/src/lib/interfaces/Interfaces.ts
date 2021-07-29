@@ -19,16 +19,16 @@ export interface MinskyProcessPayload {
 export interface AppLayoutPayload {
   type: string;
   value: {
-    width : number,
-    height : number,
-    top : number,
-    left : number,
-    electronMenuBarHeight? : number
+    width: number;
+    height: number;
+    top: number;
+    left: number;
+    electronMenuBarHeight?: number;
   };
 }
 
 export interface ChangeTabPayload {
-  newTab : MainRenderingTabs
+  newTab: MainRenderingTabs;
 }
 
 export interface HeaderEvent {
@@ -58,6 +58,11 @@ export enum RecordingStatus {
   RecordingCanceled = 'RecordingCanceled',
   RecordingStarted = 'RecordingStarted',
   RecordingStopped = 'RecordingStopped',
+}
+
+export enum GodleyTableOutputStyles {
+  DRCR = 'DRCR',
+  SIGN = 'sign',
 }
 
 export enum ReplayRecordingStatus {
