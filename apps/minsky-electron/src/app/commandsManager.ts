@@ -1163,13 +1163,21 @@ export class CommandsManager {
       switch (itemInfo?.classType) {
         case ClassType.GodleyIcon:
           if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
+            let systemWindowId = null;
+
             const window = await this.initializePopupWindow(
               itemInfo,
-              `#/headless/godley-widget-view`
+              `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
             );
 
-            // const systemWindowId = WindowManager.getWindowByUid(itemInfo.id)
-            //   .systemWindowId;
+            systemWindowId = WindowManager.getWindowByUid(itemInfo.id)
+              .systemWindowId;
+
+            window.loadURL(
+              WindowManager.getWindowUrl(
+                `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+              )
+            );
 
             window.setMenu(
               Menu.buildFromTemplate([
