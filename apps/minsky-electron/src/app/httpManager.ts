@@ -1,23 +1,26 @@
-import {
-  MINSKY_HTTP_PROXY_SERVER_PORT,
-  MINSKY_HTTP_SERVER_PORT,
-  red,
-} from '@minsky/shared';
+import { red } from '@minsky/shared';
 import axios from 'axios';
 import * as log from 'electron-log';
+import { PortsManager } from './portsManager';
 
 const USE_PROXY = true;
 
 export class HttpManager {
-  private static URL = `http://localhost:${
-    USE_PROXY ? MINSKY_HTTP_PROXY_SERVER_PORT : MINSKY_HTTP_SERVER_PORT
-  }`;
+  private static async getURL(): Promise<string> {
+    return `http://localhost:${
+      USE_PROXY
+        ? PortsManager.MINSKY_HTTP_PROXY_SERVER_PORT ||
+          (await PortsManager.generateHttpServerPort())
+        : PortsManager.MINSKY_HTTP_SERVER_PORT ||
+          (await PortsManager.generateHttpProxyServerPort())
+    }`;
+  }
 
   private static async get(command: string): Promise<unknown> {
     if (!command) {
       throw new Error(`command cannot be blank`);
     }
-    return (await axios.get(`${this.URL}${command}`)).data;
+    return (await axios.get(`${await this.getURL()}${command}`)).data;
   }
 
   private static async put(command: string, arg: string): Promise<unknown> {
@@ -28,7 +31,7 @@ export class HttpManager {
       throw new Error(`arg cannot be blank`);
     }
     const bodyArg = USE_PROXY ? { arg } : arg;
-    const result = await axios.put(`${this.URL}${command}`, bodyArg);
+    const result = await axios.put(`${await this.getURL()}${command}`, bodyArg);
     if (result) {
       return result.data;
     }

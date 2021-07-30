@@ -15,8 +15,6 @@ export const USE_MINSKY_SYSTEM_BINARY = true;
 export const USE_FRONTEND_DRIVEN_RENDERING = false;
 
 export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
-export const MINSKY_HTTP_SERVER_PORT = 4444;
-export const MINSKY_HTTP_PROXY_SERVER_PORT = 5555;
 
 export const commandsMapping = {
   ADD_BOOKMARK: '/minsky/model/addBookmark',

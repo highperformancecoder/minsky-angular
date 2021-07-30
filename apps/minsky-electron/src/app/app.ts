@@ -74,19 +74,19 @@ export default class App {
     App.initMainWindow();
     startSocketServer();
 
-    App.initMinskyService();
+    await App.initMinskyService();
 
     App.initMenu();
 
     App.loadMainWindow();
   }
 
-  private static initMinskyService() {
+  private static async initMinskyService() {
     const windowId = WindowManager.activeWindows.get(1).systemWindowId;
     console.log('🚀🚀🚀🚀🚀' + green(` WindowId -> ${windowId}`));
 
-    RestServiceManager.startMinskyService();
-    startProxyServer();
+    await RestServiceManager.startMinskyService();
+    await startProxyServer();
   }
 
   private static initMenu() {
@@ -222,7 +222,6 @@ export default class App {
     App.application.on('ready', App.onReady); // App is ready to load data
     App.application.on('activate', App.onActivate); // App is activated
     App.application.on('quit', App.onQuit); // App is quit
-
 
     process.on('uncaughtException', (err) => {
       console.error(

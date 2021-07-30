@@ -4,7 +4,6 @@ import {
   green,
   MainRenderingTabs,
   MinskyProcessPayload,
-  MINSKY_HTTP_SERVER_PORT,
   MINSKY_SYSTEM_HTTP_SERVER_PATH,
   red,
   USE_FRONTEND_DRIVEN_RENDERING,
@@ -15,6 +14,7 @@ import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
 import { join } from 'path';
 import { HttpManager } from './httpManager';
+import { PortsManager } from './portsManager';
 import { RecordingManager } from './recordingManager';
 import { StoreManager } from './storeManager';
 import { Utility } from './utility';
@@ -108,7 +108,7 @@ export class RestServiceManager {
       payload.command === commandsMapping.START_MINSKY_PROCESS;
 
     if (isStartProcessCommand) {
-      this.startHttpServer(payload);
+      await this.startHttpServer(payload);
       return;
     }
 
@@ -396,7 +396,7 @@ export class RestServiceManager {
     }
   }
 
-  static startHttpServer(payload: MinskyProcessPayload) {
+  static async startHttpServer(payload: MinskyProcessPayload) {
     if (this.minskyHttpServer) {
       this.minskyHttpServer.stdout.emit('close');
       this.minskyHttpServer.kill();
@@ -423,11 +423,16 @@ export class RestServiceManager {
         StoreManager.store.set('minskyHttpServerPath', filePath);
       }
 
-      this.minskyHttpServer = spawn(filePath, [`${MINSKY_HTTP_SERVER_PORT}`]);
+      this.minskyHttpServer = spawn(filePath, [
+        `${
+          PortsManager.MINSKY_HTTP_SERVER_PORT ||
+          (await PortsManager.generateHttpServerPort())
+        }`,
+      ]);
 
       console.log(
         green(
-          `🚀🚀🚀 HTTP server "${filePath}" started on port ${MINSKY_HTTP_SERVER_PORT}`
+          `🚀🚀🚀 HTTP server "${filePath}" started on port ${PortsManager.MINSKY_HTTP_SERVER_PORT}`
         )
       );
 
