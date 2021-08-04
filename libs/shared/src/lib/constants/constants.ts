@@ -81,7 +81,7 @@ export const commandsMapping = {
   T: `/minsky/t`,
   TIME_UNIT: '/minsky/timeUnit',
   UNDO: `/minsky/undo`,
-  MOVE_TO: `/minsky/model/moveTo`,
+  MOVE_TO: `/minsky/canvas/moveTo`,
   ZOOM_IN: `/minsky/canvas/model/zoom`,
   ZOOM_OUT: `/minsky/canvas/model/zoom`,
   ZOOM_TO_FIT: `/minsky/canvas/model/zoom`,
