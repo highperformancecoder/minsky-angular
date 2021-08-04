@@ -718,14 +718,14 @@ export class CommandsManager {
     WindowManager.getMainWindow().setTitle('New System');
 
     const newSystemCommands = [
-      `${commandsMapping.PUSH_HISTORY} 0`,
+      `${commandsMapping.PUSH_HISTORY} false`,
       commandsMapping.CLEAR_ALL_MAPS,
       commandsMapping.PUSH_FLAGS,
       commandsMapping.CLEAR_HISTORY,
       `${commandsMapping.SET_ZOOM} 1`,
       commandsMapping.RECENTER,
       commandsMapping.POP_FLAGS,
-      `${commandsMapping.PUSH_HISTORY} 1`,
+      `${commandsMapping.PUSH_HISTORY} true`,
     ];
 
     for (const command of newSystemCommands) {
