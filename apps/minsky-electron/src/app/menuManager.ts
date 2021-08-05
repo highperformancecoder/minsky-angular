@@ -407,29 +407,29 @@ export class MenuManager {
           {
             label: 'Cut',
             accelerator: 'CmdOrCtrl + Shift + X',
-            async click() {
-              await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.CUT}`,
-              });
-            },
+            // async click() {
+            //   await RestServiceManager.handleMinskyProcess({
+            //     command: `${commandsMapping.CUT}`,
+            //   });
+            // },
           },
           {
             label: 'Copy',
             accelerator: 'CmdOrCtrl + Shift + C',
-            async click() {
-              await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.COPY}`,
-              });
-            },
+            // async click() {
+            //   await RestServiceManager.handleMinskyProcess({
+            //     command: `${commandsMapping.COPY}`,
+            //   });
+            // },
           },
           {
             label: 'Paste',
             accelerator: 'CmdOrCtrl + Shift + V',
-            async click() {
-              await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.PASTE}`,
-              });
-            },
+            // async click() {
+            //   await RestServiceManager.handleMinskyProcess({
+            //     command: `${commandsMapping.PASTE}`,
+            //   });
+            // },
           },
           {
             label: 'Group selection',

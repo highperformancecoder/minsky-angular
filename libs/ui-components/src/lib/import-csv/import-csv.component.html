@@ -1,0 +1,126 @@
+<div class="grid" [formGroup]="form">
+  <div class="import-container">
+    <span class="import">
+      <button mat-raised-button type="button" (click)="selectFile()">
+        File
+      </button>
+      or URL
+      <input class="url" type="text" formControlName="url" />
+      <button mat-raised-button type="button" (click)="load()">Load</button>
+    </span>
+  </div>
+
+  <div class="option-column-one">
+    <span>
+      <label for="columnar">Columnar</label>
+      <input id="columnar" type="checkbox" formControlName="columnar" />
+    </span>
+
+    <span>
+      <label for="separator">Separator</label>
+      <select id="separator" formControlName="separator">
+        <option value=",">,</option>
+        <option value=";">;</option>
+        <option [innerText]="'<tab>'" value="'<tab>'"></option>
+        <option [innerText]="'<space>'" value="'<space>'"></option>
+      </select>
+    </span>
+
+    <span>
+      <label for="decimal-separator">Decimal Separator</label>
+      <select id="decimal-separator" formControlName="decimalSeparator">
+        <option value=".">.</option>
+        <option value=",">,</option>
+      </select>
+    </span>
+
+    <span>
+      <label for="escape">Escape</label>
+      <select id="escape" formControlName="escape">
+        <option value="\">\</option>
+      </select>
+    </span>
+
+    <span>
+      <label for="quote">Quote</label>
+      <select id="quote" formControlName="quote">
+        <option value="'">'</option>
+        <option value='"'>"</option>
+      </select>
+    </span>
+
+    <span>
+      <label for="merge-delimeters">Merge Delimiters</label>
+      <input
+        id="merge-delimeters"
+        type="checkbox"
+        formControlName="mergeDelimiters"
+      />
+    </span>
+
+    <span>
+      <label for="missing-value">Missing Value</label>
+      <select id="missing-value" formControlName="missingValue">
+        <option value="nan">nan</option>
+        <option value="0">0</option>
+      </select>
+    </span>
+  </div>
+
+  <div class="option-column-two">
+    <span>
+      <label for="column-width">Column Width</label>
+      <input id="column-width" type="number" formControlName="columnWidth" />
+    </span>
+
+    <span>
+      <label for="duplicate-key-action">Duplicate Key Action</label>
+      <select id="duplicate-key-action" formControlName="duplicateKeyAction">
+        <option value="throwException">throwException</option>
+        <option value="sumProducts">sumProducts</option>
+        <option value="min">min</option>
+        <option value="max">max</option>
+        <option value="av">av</option>
+      </select>
+    </span>
+
+    <span>
+      <label for="horizontal-dimension">Horizontal Dimension</label>
+      <input
+        id="horizontal-dimension"
+        type="text"
+        formControlName="horizontalDimension"
+      />
+    </span>
+
+    <span>
+      <label for="type">Type</label>
+      <select id="type" formControlName="type">
+        <option value="string">string</option>
+        <option value="value">value</option>
+        <option value="time">time</option>
+      </select>
+    </span>
+
+    <span>
+      <label for="format">Format</label>
+      <input id="format" type="text" formControlName="format" />
+    </span>
+  </div>
+  <div class="canvas-container"></div>
+
+  <div class="form-buttons">
+    <button mat-raised-button class="btn cancel-btn" (click)="closeWindow()">
+      Cancel
+    </button>
+
+    <button
+      mat-raised-button
+      class="btn ok-btn submit"
+      type="submit"
+      (click)="handleSubmit()"
+    >
+      Import
+    </button>
+  </div>
+</div>

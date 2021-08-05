@@ -1477,4 +1477,14 @@ export class CommandsManager {
 
     return;
   }
+
+  static importCSV(itemInfo: CanvasItem) {
+    WindowManager.createMenuPopUpWithRouting({
+      title: 'Import CSV',
+      url: '#/headless/import-csv',
+      uid: itemInfo.id,
+      height: 600,
+      width: 1250,
+    });
+  }
 }

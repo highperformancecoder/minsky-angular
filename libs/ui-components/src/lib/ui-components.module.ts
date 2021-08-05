@@ -25,6 +25,7 @@ import { WiringComponent } from './wiring/wiring.component';
 import { PlotWidgetViewComponent } from './plot-widget-view/plot-widget-view.component';
 import { GodleyWidgetViewComponent } from './godley-widget-view/godley-widget-view.component';
 import { PlotWidgetOptionsComponent } from './plot-widget-options/plot-widget-options.component';
+import { ImportCsvComponent } from './import-csv/import-csv.component';
 @NgModule({
   declarations: [
     HeaderComponent,
@@ -51,6 +52,7 @@ import { PlotWidgetOptionsComponent } from './plot-widget-options/plot-widget-op
     PlotWidgetViewComponent,
     GodleyWidgetViewComponent,
     PlotWidgetOptionsComponent,
+    ImportCsvComponent,
   ],
   imports: [CommonModule, SharedModule],
   exports: [
@@ -76,6 +78,7 @@ import { PlotWidgetOptionsComponent } from './plot-widget-options/plot-widget-op
     PlotWidgetViewComponent,
     GodleyWidgetViewComponent,
     PlotWidgetOptionsComponent,
+    ImportCsvComponent,
   ],
 })
 export class UiComponentsModule {}
