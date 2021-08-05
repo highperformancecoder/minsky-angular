@@ -1,10 +1,10 @@
-import { startSocketServer } from '@minsky/minsky-server';
+// import { startSocketServer } from '@minsky/minsky-server';
 import {
   ActiveWindow,
   green,
   red,
   rendererAppName,
-  rendererAppURL,
+  rendererAppURL
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
@@ -72,7 +72,7 @@ export default class App {
       : await HelpFilesManager.initialize(__dirname + '/../../../minsky-docs/');
 
     App.initMainWindow();
-    startSocketServer();
+    // startSocketServer();
 
     await App.initMinskyService();
 

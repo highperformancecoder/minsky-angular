@@ -11,7 +11,7 @@ import { UiComponentsModule } from '@minsky/ui-components';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AngularResizedEventModule } from 'angular-resize-event';
-import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
+// import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import 'reflect-metadata';
 import '../polyfills';
 import { AppRoutingModule } from './app-routing.module';
@@ -22,7 +22,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
+// const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
 @NgModule({
   declarations: [AppComponent],
@@ -37,7 +37,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
     AppRoutingModule,
     AngularResizedEventModule,
     UiComponentsModule,
-    SocketIoModule.forRoot(config),
+    // SocketIoModule.forRoot(config),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

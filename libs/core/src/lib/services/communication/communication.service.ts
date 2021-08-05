@@ -6,9 +6,9 @@ import {
   MinskyProcessPayload,
   ReplayRecordingStatus,
   ZOOM_IN_FACTOR,
-  ZOOM_OUT_FACTOR,
+  ZOOM_OUT_FACTOR
 } from '@minsky/shared';
-import { Socket } from 'ngx-socket-io';
+// import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
 import { WindowUtilityService } from '../WindowUtility/window-utility.service';
 import { ElectronService } from './../electron/electron.service';
@@ -48,7 +48,7 @@ export class CommunicationService {
   runUntilTime: number;
 
   constructor(
-    private socket: Socket,
+    // private socket: Socket,
     private electronService: ElectronService,
     private windowUtilityService: WindowUtilityService // private dialog: MatDialog
   ) {
@@ -222,9 +222,10 @@ export class CommunicationService {
         if (command && autoHandleMinskyProcess) {
           await this.electronService.sendMinskyCommandAndRender({ command });
         }
-      } else {
-        this.socket.emit(event, message);
       }
+      // else {
+      //   this.socket.emit(event, message);
+      // }
     } catch (error) {
       console.error(
         '🚀  file: communication.service.ts ~ line 188 ~ CommunicationService ~ sendEvent ~ error',
@@ -427,9 +428,10 @@ export class CommunicationService {
           mouseY: this.mouseY,
         });
       }
-    } else {
-      this.socket.emit(event, clickData);
     }
+    // else {
+    //   this.socket.emit(event, clickData);
+    // }
   }
 
   canvasOffsetValues() {
