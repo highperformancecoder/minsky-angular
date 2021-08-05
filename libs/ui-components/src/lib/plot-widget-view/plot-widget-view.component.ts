@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from '@minsky/core';
 import { commandsMapping, events } from '@minsky/shared';
@@ -12,8 +11,6 @@ import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
   styleUrls: ['./plot-widget-view.component.scss'],
 })
 export class PlotWidgetViewComponent implements OnInit, OnDestroy {
-  form: FormGroup;
-
   itemId: number;
   systemWindowId: number;
 

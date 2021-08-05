@@ -3,6 +3,7 @@ import {
   ClassType,
   commandsMapping,
   events,
+  GodleyTableOutputStyles,
   green,
   isEmptyObject,
 } from '@minsky/shared';
@@ -11,6 +12,7 @@ import { existsSync, promises, unlinkSync } from 'fs';
 import { join } from 'path';
 import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './restServiceManager';
+import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
@@ -341,14 +343,18 @@ export class CommandsManager {
     });
   }
 
-  static async editGodleyTitle(): Promise<void> {
-    const title = (await RestServiceManager.handleMinskyProcess({
+  static async editGodleyTitle(itemId: number = null): Promise<void> {
+    let title = (await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_TABLE_TITLE,
     })) as string;
 
+    if (isEmptyObject(title)) {
+      title = '';
+    }
+
     WindowManager.createMenuPopUpWithRouting({
       title: `Edit godley title`,
-      url: `#/headless/edit-godley-title?title=${title?.slice(1, 1) || ''}`,
+      url: `#/headless/edit-godley-title?title=${title || ''}&itemId=${itemId}`,
       height: 100,
       width: 400,
     });
@@ -835,7 +841,10 @@ export class CommandsManager {
     return;
   }
 
-  static async exportGodleyAs(ext: string): Promise<void> {
+  static async exportGodleyAs(
+    ext: string,
+    command: string = null
+  ): Promise<void> {
     const saveDialog = await dialog.showSaveDialog({
       filters: [
         {
@@ -852,11 +861,19 @@ export class CommandsManager {
       return;
     }
 
+    if (command) {
+      await RestServiceManager.handleMinskyProcess({
+        command: `${command} "${saveDialog.filePath}"`,
+      });
+      return;
+    }
+
     switch (ext) {
       case 'csv':
         await RestServiceManager.handleMinskyProcess({
           command: `${commandsMapping.EXPORT_GODLEY_TO_CSV} "${saveDialog.filePath}"`,
         });
+
         break;
 
       case 'tex':
@@ -966,15 +983,6 @@ export class CommandsManager {
     const path = !Utility.isPackaged()
       ? `${join(__dirname, '../../../', `minsky-docs/minsky/${fileName}`)}`
       : `${join(process.resourcesPath, `minsky-docs/minsky/${fileName}`)}`;
-
-    console.log(
-      '🚀 ~ file: commandsManager.ts ~ line 961 ~ CommandsManager ~ help ~ process.resourcesPath',
-      process.resourcesPath
-    );
-    console.log(
-      '🚀 ~ file: commandsManager.ts ~ line 945 ~ CommandsManager ~ help ~ path',
-      path
-    );
 
     WindowManager.createMenuPopUpAndLoadFile({
       title: `Help: ${classType}`,
@@ -1155,9 +1163,20 @@ export class CommandsManager {
       switch (itemInfo?.classType) {
         case ClassType.GodleyIcon:
           if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
+            let systemWindowId = null;
+
             const window = await this.initializePopupWindow(
               itemInfo,
-              `#/headless/godley-widget-view`
+              `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+            );
+
+            systemWindowId = WindowManager.getWindowByUid(itemInfo.id)
+              .systemWindowId;
+
+            window.loadURL(
+              WindowManager.getWindowUrl(
+                `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+              )
             );
 
             window.setMenu(
@@ -1171,13 +1190,23 @@ export class CommandsManager {
                         {
                           label: 'CSV',
                           click: async () => {
-                            await CommandsManager.exportGodleyAs('csv');
+                            const command = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/table/exportToCSV`;
+
+                            await CommandsManager.exportGodleyAs(
+                              'csv',
+                              command
+                            );
                           },
                         },
                         {
                           label: 'LaTeX',
                           click: async () => {
-                            await CommandsManager.exportGodleyAs('tex');
+                            const command = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/table/exportToLaTeX`;
+
+                            await CommandsManager.exportGodleyAs(
+                              'tex',
+                              command
+                            );
                           },
                         },
                       ],
@@ -1192,7 +1221,7 @@ export class CommandsManager {
                     {
                       label: 'Title',
                       click: () => {
-                        CommandsManager.editGodleyTitle();
+                        CommandsManager.editGodleyTitle(itemInfo.id);
                       },
                     },
                     { label: 'Cut' },
@@ -1211,12 +1240,113 @@ export class CommandsManager {
                 new MenuItem({
                   label: 'Options',
                   submenu: [
-                    { label: 'Show Values' },
-                    { label: 'DR/CR Style' },
-                    { label: 'Enable Multiple Equity Column' },
+                    {
+                      label: 'Show Values',
+                      click: async () => {
+                        const preferences = StoreManager.store.get(
+                          'preferences'
+                        );
+
+                        const {
+                          godleyTableOutputStyle,
+                          godleyTableShowValues,
+                        } = preferences;
+
+                        StoreManager.store.set({
+                          preferences: {
+                            ...preferences,
+                            godleyTableShowValues: !godleyTableShowValues,
+                          },
+                        });
+
+                        await RestServiceManager.handleMinskyProcess({
+                          command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"}]`,
+                        });
+                      },
+                    },
+                    {
+                      label: 'DR/CR Style',
+                      click: async () => {
+                        const preferences = StoreManager.store.get(
+                          'preferences'
+                        );
+
+                        const {
+                          godleyTableOutputStyle,
+                          godleyTableShowValues,
+                        } = preferences;
+
+                        const newGodleyTableOutputStyle =
+                          godleyTableOutputStyle ===
+                          GodleyTableOutputStyles.DRCR
+                            ? GodleyTableOutputStyles.SIGN
+                            : GodleyTableOutputStyles.DRCR;
+
+                        StoreManager.store.set('preferences', {
+                          ...preferences,
+                          godleyTableOutputStyle: newGodleyTableOutputStyle,
+                        });
+
+                        await RestServiceManager.handleMinskyProcess({
+                          command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${newGodleyTableOutputStyle}"}]`,
+                        });
+                      },
+                    },
+                    {
+                      label: 'Enable Multiple Equity Column',
+                      click: async () => {
+                        const preferences = StoreManager.store.get(
+                          'preferences'
+                        );
+
+                        const { enableMultipleEquityColumns } = preferences;
+
+                        StoreManager.store.set('preferences', {
+                          ...preferences,
+                          enableMultipleEquityColumns: !enableMultipleEquityColumns,
+                        });
+
+                        await RestServiceManager.handleMinskyProcess({
+                          command: `${
+                            commandsMapping.MULTIPLE_EQUITIES
+                          } ${!enableMultipleEquityColumns}`,
+                        });
+                      },
+                    },
                   ],
                 }),
-                new MenuItem({ label: 'Help' }),
+                new MenuItem({
+                  label: 'Help',
+                  submenu: [
+                    {
+                      label: 'Help',
+                      click: () => {
+                        const fileName = HelpFilesManager.getHelpFileForType(
+                          ClassType.GodleyIcon
+                        );
+
+                        const path = !Utility.isPackaged()
+                          ? `${join(
+                              __dirname,
+                              '../../../',
+                              `minsky-docs/minsky/${fileName}`
+                            )}`
+                          : `${join(
+                              process.resourcesPath,
+                              `minsky-docs/minsky/${fileName}`
+                            )}`;
+
+                        WindowManager.createMenuPopUpAndLoadFile({
+                          title: `Help: ${ClassType.GodleyIcon}`,
+                          height: 800,
+                          width: 1000,
+                          modal: true,
+                          url: path,
+                        });
+                      },
+                    },
+                  ],
+                }),
               ])
             );
           }
