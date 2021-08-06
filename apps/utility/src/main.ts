@@ -147,11 +147,18 @@ function showMenu() {
     }
 
     if (option === '3') {
-      rl.close();
-      minskyHttpServer.emit('close');
-      minskyHttpServer.kill();
-      minskyHttpServer = null;
+      console.log('Freeing up the resources...');
+      if (rl) {
+        rl.close();
+      }
 
+      if (minskyHttpServer) {
+        minskyHttpServer.emit('close');
+        minskyHttpServer.kill();
+        minskyHttpServer = null;
+      }
+
+      console.log('Press ctrl+c to exit');
       process.kill(process.pid, 'SIGTERM');
       process.exit(1);
     }
