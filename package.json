@@ -38,7 +38,8 @@
     "bump:minor": "nx run workspace:version --version=minor",
     "bump:patch": "nx run workspace:version --version=patch",
     "bump:alpha": "nx run workspace:version --version=prerelease --preid=alpha",
-    "bump:beta": "nx run workspace:version --version=prerelease --preid=beta"
+    "bump:beta": "nx run workspace:version --version=prerelease --preid=beta",
+    "signature:utility": "nx serve utility"
   },
   "private": true,
   "dependencies": {

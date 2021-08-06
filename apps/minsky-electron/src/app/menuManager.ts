@@ -10,7 +10,6 @@ import {
 import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
-import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
 const logError = debug('minsky:electron_error');
@@ -364,20 +363,6 @@ export class MenuManager {
                 command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
               });
             },
-          },
-          {
-            label: 'Generate Signature',
-            click: async () => {
-              await CommandsManager.generateSignature();
-            },
-            visible: Utility.isDevelopmentMode() && !Utility.isPackaged(),
-          },
-          {
-            label: 'Check Signature',
-            click: async () => {
-              await CommandsManager.checkSignature();
-            },
-            visible: Utility.isDevelopmentMode() && !Utility.isPackaged(),
           },
         ],
       },
