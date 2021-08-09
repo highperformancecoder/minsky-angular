@@ -12,6 +12,7 @@ import {
   EquationsComponent,
   FindAllInstancesComponent,
   GodleyWidgetViewComponent,
+  ImportCsvComponent,
   MultipleKeyOperationComponent,
   PageNotFoundComponent,
   ParametersComponent,
@@ -103,6 +104,10 @@ const routes: Routes = [
   {
     path: 'headless/terminal',
     component: CliInputComponent,
+  },
+  {
+    path: 'headless/import-csv',
+    component: ImportCsvComponent,
   },
   {
     path: '**',

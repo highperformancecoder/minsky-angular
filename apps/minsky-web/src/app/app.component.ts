@@ -90,20 +90,20 @@ export class AppComponent implements AfterViewInit {
     this.cmService.canvasOffsetValues();
   }
 
-  async toggleMinskyService() {
+  toggleMinskyService() {
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.send(events.TOGGLE_MINSKY_SERVICE);
     }
   }
 
-  async changeTab(tab : MainRenderingTabs) {
+  changeTab(tab: MainRenderingTabs) {
     if (this.electronService.isElectron) {
-      const payload = { newTab : tab };
+      const payload = { newTab: tab };
       this.electronService.ipcRenderer.send(events.CHANGE_MAIN_TAB, payload);
     }
   }
 
-  async startTerminal() {
+  startTerminal() {
     if (this.electronService.isElectron) {
       this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
         title: 'Terminal',

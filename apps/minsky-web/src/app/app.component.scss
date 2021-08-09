@@ -9,6 +9,7 @@
 }
 
 .example-button-row {
+  margin-left: 0.5rem;
   a {
     border: 2px solid $toolbar-border-light;
     background-color: $toolbar-bg;
@@ -69,4 +70,8 @@
 
 .minsky-service {
   margin-right: 10px !important;
+}
+
+.variables {
+  cursor: pointer;
 }

@@ -1,0 +1,59 @@
+@import '../../../../shared/src/lib/theme/variables.scss';
+@import '../../../../shared/src/lib/theme/common-style.scss';
+
+.grid {
+  display: grid;
+  height: 100vh;
+  grid-template-rows: 50px 25px 25px auto 50px;
+  align-items: center;
+
+  .import-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .import {
+      .url {
+        width: 35rem;
+      }
+    }
+  }
+
+  .option-column-one {
+    padding-left: $padding;
+    span {
+      input[type='checkbox'] {
+        width: auto;
+        padding-left: 0;
+      }
+    }
+  }
+  .option-column-two {
+    padding-left: $padding;
+    input[type='number'] {
+      width: 3rem;
+    }
+    input[type='text'] {
+      width: 5.5rem;
+    }
+  }
+
+  .canvas-container {
+    height: 100%;
+    overflow: scroll;
+  }
+}
+
+button {
+  margin: $margin;
+}
+
+label,
+input,
+select {
+  margin-right: $padding;
+}
+
+.form-buttons {
+  margin: 0;
+}

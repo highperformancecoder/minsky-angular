@@ -183,11 +183,11 @@ export class ContextMenuManager {
       }),
       new MenuItem({
         label: 'Copy selection',
-        click: async () => {
-          await RestServiceManager.handleMinskyProcess({
-            command: commandsMapping.COPY,
-          });
-        },
+        // click: async () => {
+        //   await RestServiceManager.handleMinskyProcess({
+        //     command: commandsMapping.COPY,
+        //   });
+        // },
       }),
       new MenuItem({
         label: 'Save selection as',
@@ -197,9 +197,9 @@ export class ContextMenuManager {
       }),
       new MenuItem({
         label: 'Paste selection',
-        click: () => {
-          CommandsManager.pasteAt(this.x, this.y);
-        },
+        // click: () => {
+        //   CommandsManager.pasteAt(this.x, this.y);
+        // },
       }),
       new MenuItem({
         label: 'Hide defining groups of selected variables',
@@ -868,7 +868,14 @@ export class ContextMenuManager {
     );
 
     if ((await CommandsManager.getItemType()) === 'parameter') {
-      menuItems.push(new MenuItem({ label: 'Import CSV' }));
+      menuItems.push(
+        new MenuItem({
+          label: 'Import CSV',
+          click: () => {
+            CommandsManager.importCSV(itemInfo);
+          },
+        })
+      );
     }
 
     menuItems.push(
