@@ -14,8 +14,8 @@ export class WindowUtilityService {
   private electronMenuBarHeight = 0;
   private drawableWidth = 0;
   private drawableHeight = 0;
-  private scrollableAreaWidth = 0;
-  private scrollableAreaHeight = 0;
+  private scrollableAreaWidth = null;
+  private scrollableAreaHeight = null;
   SCROLLABLE_AREA_FACTOR = 10;
 
   constructor(private electronService: ElectronService) { }
@@ -37,15 +37,19 @@ export class WindowUtilityService {
 
       this.minskyCanvasContainer.style.height = (bodyElement.clientHeight - this.minskyCanvasContainer.offsetTop) + "px";
 
-      this.scrollableAreaWidth = bodyElement.clientWidth * this.SCROLLABLE_AREA_FACTOR;
-      this.scrollableAreaHeight = bodyElement.clientHeight * this.SCROLLABLE_AREA_FACTOR;
+      if (!this.scrollableAreaWidth || !this.scrollableAreaHeight) {
+        // Scrollable area size should not change
+        
+        this.scrollableAreaWidth = bodyElement.clientWidth * this.SCROLLABLE_AREA_FACTOR;
+        this.scrollableAreaHeight = bodyElement.clientHeight * this.SCROLLABLE_AREA_FACTOR;
 
-      // No need to set canvas widht / height - we don't use the frontend canvas at all
-      // this.minskyCanvasElement.width = this.scrollableAreaWidth;
-      // this.minskyCanvasElement.height = this.scrollableAreaHeight;
+        // No need to set canvas widht / height - we don't use the frontend canvas at all
+        // this.minskyCanvasElement.width = this.scrollableAreaWidth;
+        // this.minskyCanvasElement.height = this.scrollableAreaHeight;
 
-      this.minskyCanvasElement.style.width = this.scrollableAreaWidth + 'px';
-      this.minskyCanvasElement.style.height = this.scrollableAreaHeight + 'px';
+        this.minskyCanvasElement.style.width = this.scrollableAreaWidth + 'px';
+        this.minskyCanvasElement.style.height = this.scrollableAreaHeight + 'px';
+      }
 
       // After setting the above, container gets scrollbars, so we need to compute drawableWidth & Height only now (clientWidth/clientHeight change after scrollbar addtion)
 
