@@ -23,9 +23,6 @@ export class WindowManager {
   static canvasHeight: number;
   static canvasWidth: number;
 
-  static mainWindowHeight: number;
-  static mainWindowWidth: number;
-
   static activeWindows = new Map<number, ActiveWindow>();
   private static uidToWindowMap = new Map<number, ActiveWindow>();
 
@@ -190,51 +187,17 @@ export class WindowManager {
     });
   };
 
-  static onAppLayoutChanged({ type, value }: AppLayoutPayload) {
-    console.log(green('Initializing the offset and height width of canvas'));
-    console.table({ type, value });
-    switch (type) {
-      case 'RESIZE':
-        if (!WindowManager.mainWindowHeight) {
-          WindowManager.mainWindowHeight = value.height;
-        }
+  static onAppLayoutChanged(payload: AppLayoutPayload) {
+    console.log(green('Setting the offset and height width of canvas'));
+    
+    
+    this.topOffset = Math.round(payload.offset.top);
+    this.leftOffset = Math.round(payload.offset.left);
+    const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
+    this.electronTopOffset = Math.round(payload.offset.electronMenuBarHeight * scaleFactor + payload.offset.top);
 
-        if (!WindowManager.mainWindowWidth) {
-          WindowManager.mainWindowWidth = value.width;
-        }
-        break;
-
-      case 'OFFSET':
-        if (!WindowManager.topOffset) {
-          WindowManager.topOffset = Math.round(value.top);
-        }
-
-        if (!WindowManager.electronTopOffset) {
-          const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
-
-          WindowManager.electronTopOffset = Math.round(
-            value.electronMenuBarHeight * scaleFactor + value.top
-          );
-        }
-
-        if (!WindowManager.leftOffset) {
-          WindowManager.leftOffset = Math.round(value.left);
-        }
-        break;
-
-      case 'CANVAS':
-        if (!WindowManager.canvasHeight) {
-          WindowManager.canvasHeight = value.height;
-        }
-
-        if (!WindowManager.canvasWidth) {
-          WindowManager.canvasWidth = value.width;
-        }
-        break;
-
-      default:
-        break;
-    }
+    this.canvasHeight = payload.drawableArea.height;
+    this.canvasWidth = payload.drawableArea.width;
   }
 
   static showMouseCoordinateWindow({ mouseX, mouseY }) {

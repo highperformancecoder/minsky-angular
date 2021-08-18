@@ -6,7 +6,8 @@ import {
   MinskyProcessPayload,
   ReplayRecordingStatus,
   ZOOM_IN_FACTOR,
-  ZOOM_OUT_FACTOR
+  ZOOM_OUT_FACTOR,
+  AppLayoutPayload
 } from '@minsky/shared';
 // import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
@@ -152,12 +153,12 @@ export class CommunicationService {
           case 'ZOOM_OUT':
             command = `${command} [${canvasWidth / 2}, ${
               canvasHeight / 2
-            }, ${ZOOM_OUT_FACTOR}]`;
+              }, ${ZOOM_OUT_FACTOR}]`;
             break;
           case 'ZOOM_IN':
             command = `${command} [${canvasWidth / 2}, ${
               canvasHeight / 2
-            }, ${ZOOM_IN_FACTOR}]`;
+              }, ${ZOOM_IN_FACTOR}]`;
             break;
           case 'RESET_ZOOM':
             autoHandleMinskyProcess = false;
@@ -324,7 +325,7 @@ export class CommunicationService {
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
       command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
         1 / (relZoom || 1)
-      }]`;
+        }]`;
     } else {
       command = `${commandsMapping.SET_ZOOM} 1`;
     }
@@ -363,11 +364,11 @@ export class CommunicationService {
     this.mouseX = clientX;
     this.mouseY = clientY - Math.round(offset.top);
 
-    const clickData = {
-      type,
-      clientX,
-      clientY,
-    };
+    // const clickData = {
+    //   type,
+    //   clientX,
+    //   clientY,
+    // };
 
     if (event === 'contextmenu') {
       this.electronService.ipcRenderer.send(events.CONTEXT_MENU, {
@@ -384,11 +385,11 @@ export class CommunicationService {
 
     if (this.electronService.isElectron) {
       let command = null;
-      if(type === 'mousemove') {
+      if (type === 'mousemove') {
         command = commandsMapping.MOUSEMOVE_SUBCOMMAND;
-      } else if(type === 'mousedown') {
+      } else if (type === 'mousedown') {
         command = commandsMapping.MOUSEDOWN_SUBCOMMAND;
-      } else if(type === 'mouseup') {
+      } else if (type === 'mouseup') {
         command = commandsMapping.MOUSEUP_SUBCOMMAND;
       }
 
@@ -434,26 +435,18 @@ export class CommunicationService {
     // }
   }
 
-  canvasOffsetValues() {
-    // code for canvas offset values
-    document.addEventListener('DOMContentLoaded', () => {
-      // When the event DOMContentLoaded occurs, it is safe to access the DOM
-
+  setWindowSizeAndCanvasOffsets(isResizeEvent: boolean) {
+    // Code for canvas offset values
+    if (this.electronService.isElectron) {
+      this.windowUtilityService.reInitialize();
       const offset = this.windowUtilityService.getMinskyCanvasOffset();
       const drawableArea = this.windowUtilityService.getDrawableArea();
-
-      if (this.electronService.isElectron) {
-        this.electronService.ipcRenderer.send(events.APP_LAYOUT_CHANGED, {
-          type: 'OFFSET',
-          value: offset,
-        });
-
-        this.electronService.ipcRenderer.send(events.APP_LAYOUT_CHANGED, {
-          type: 'CANVAS',
-          value: drawableArea,
-        });
-      }
-    });
+      this.electronService.ipcRenderer.send(events.APP_LAYOUT_CHANGED, {
+        isResizeEvent: isResizeEvent,
+        offset: offset,
+        drawableArea: drawableArea
+      } as AppLayoutPayload);
+    }
   }
 
   async addOperation(arg) {

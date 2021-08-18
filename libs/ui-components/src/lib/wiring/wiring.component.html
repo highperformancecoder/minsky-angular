@@ -72,12 +72,7 @@
       <img src="assets/images/icons/ravel.gif" alt="Ravel" title="Ravel" />
     </button>
   </div>
-  <div
-    [ngStyle]="{ height: offsetTop ? offsetTop : 'auto' }"
-    class="minsky-canvas-container"
-    id="minsky-canvas-container"
-    tabindex="0"
-  >
+  <div class="minsky-canvas-container" id="minsky-canvas-container" tabindex="0">
     <canvas
       [ngClass]="{ 'cursor-grab': showDragCursor }"
       id="main-minsky-canvas"

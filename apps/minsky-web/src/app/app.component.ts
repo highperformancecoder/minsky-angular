@@ -3,9 +3,9 @@ import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
 import { events, MainRenderingTabs } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
-import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
 import { AppConfig } from '../environments/environment';
+import { ResizedEvent } from 'angular-resize-event';
 
 const logInfo = debug('minsky:web:info');
 
@@ -28,7 +28,10 @@ export class AppComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.cmService.canvasOffsetValues();
+    // When the event DOMContentLoaded occurs, it is safe to access the DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      this.cmService.setWindowSizeAndCanvasOffsets(false);
+    });
 
     this.cmService.setBackgroundColor();
 
@@ -71,23 +74,8 @@ export class AppComponent implements AfterViewInit {
   }
 
   windowResize(event: ResizedEvent) {
-    const windowResizeDetail = {
-      resizeWidth: event.newWidth,
-      resizeHeight: event.newHeight,
-    };
-
-    logInfo(JSON.stringify(windowResizeDetail));
-
-    if (this.electronService.isElectron) {
-      const payload = {
-        type: 'RESIZE',
-        value: { height: event.newHeight, width: event.newWidth },
-      };
-
-      this.electronService.ipcRenderer.send(events.APP_LAYOUT_CHANGED, payload);
-    }
-
-    this.cmService.canvasOffsetValues();
+    logInfo("Got a resize event ", event);
+    this.cmService.setWindowSizeAndCanvasOffsets(true);
   }
 
   toggleMinskyService() {

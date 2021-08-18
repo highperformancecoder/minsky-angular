@@ -1,76 +1,81 @@
 import { Injectable } from '@angular/core';
 import { ElectronService } from '../electron/electron.service';
+import { ElectronCanvasOffset } from '@minsky/shared';
 
-interface Offset {
-  left: number;
-  top: number;
-  electronMenuBarHeight: number;
-}
 
 @Injectable({
   providedIn: 'root',
 })
 export class WindowUtilityService {
-  private minskyCanvasElement: HTMLElement = null;
+  private minskyCanvasElement: HTMLCanvasElement = null;
   private minskyCanvasContainer: HTMLElement = null;
   private leftOffset = 0;
   private topOffset = 0;
   private electronMenuBarHeight = 0;
   private drawableWidth = 0;
   private drawableHeight = 0;
-  private containerWidth = 0;
-  private containerHeight = 0;
+  private scrollableAreaWidth = 0;
+  private scrollableAreaHeight = 0;
   SCROLLABLE_AREA_FACTOR = 10;
 
-  constructor(private electronService: ElectronService) {}
+  constructor(private electronService: ElectronService) { }
 
   private initializeIfNeeded() {
     if (!this.minskyCanvasElement) {
-      this.minskyCanvasContainer = document.getElementById(
-        'minsky-canvas-container'
-      );
+      this.reInitialize();
+    }
+  }
 
-      if (this.minskyCanvasContainer) {
-        this.minskyCanvasElement = document.getElementById(
-          'main-minsky-canvas'
-        );
+  public reInitialize() {
+    this.minskyCanvasContainer = document.getElementById(
+      'minsky-canvas-container'
+    );
 
-        this.drawableWidth = this.minskyCanvasContainer.clientWidth;
-        this.drawableHeight = this.minskyCanvasContainer.clientHeight;
+    if (this.minskyCanvasContainer) {
+      const bodyElement = document.getElementsByTagName("body")[0];
+      this.minskyCanvasElement = document.getElementById('main-minsky-canvas') as HTMLCanvasElement;
 
-        // TODO:: Review ---> Canvas dimensions 10X of container
+      this.minskyCanvasContainer.style.height = (bodyElement.clientHeight - this.minskyCanvasContainer.offsetTop) + "px";
 
-        this.containerWidth = this.drawableWidth * this.SCROLLABLE_AREA_FACTOR;
-        this.containerHeight =
-          this.drawableHeight * this.SCROLLABLE_AREA_FACTOR;
 
-        this.minskyCanvasElement.style.width = this.containerWidth + 'px';
-        this.minskyCanvasElement.style.height = this.containerHeight + 'px';
+      this.scrollableAreaWidth = bodyElement.clientWidth * this.SCROLLABLE_AREA_FACTOR;
+      this.scrollableAreaHeight = bodyElement.clientHeight * this.SCROLLABLE_AREA_FACTOR;
 
-        const clientRect = this.minskyCanvasContainer.getBoundingClientRect();
+      // this.minskyCanvasElement.width = this.scrollableAreaWidth;
+      // this.minskyCanvasElement.height = this.scrollableAreaHeight;
 
-        this.leftOffset = clientRect.left;
-        this.topOffset = clientRect.top;
+      this.minskyCanvasElement.style.width = this.scrollableAreaWidth + 'px';
+      this.minskyCanvasElement.style.height = this.scrollableAreaHeight + 'px';
 
-        const currentWindow = this.electronService.remote.getCurrentWindow();
-        const currentWindowSize = currentWindow.getSize()[1];
-        const currentWindowContentSize = currentWindow.getContentSize()[1];
-        const electronMenuBarHeight =
-          currentWindowSize - currentWindowContentSize;
-        this.electronMenuBarHeight = electronMenuBarHeight;
-      }
+
+      console.log("Body height after: ", bodyElement.clientHeight);
+
+      // After setting the above, body gets scrollbars, so we need to compute drawableWidth & Height only now (clientWidth/clientHeight may have changed)
+
+      this.drawableWidth = this.minskyCanvasContainer.clientWidth;
+      this.drawableHeight = this.minskyCanvasContainer.clientHeight;
+
+      const clientRect = this.minskyCanvasContainer.getBoundingClientRect();
+
+      this.leftOffset = clientRect.left;
+      this.topOffset = clientRect.top;
+
+      const currentWindow = this.electronService.remote.getCurrentWindow();
+      const currentWindowSize = currentWindow.getSize()[1];
+      const currentWindowContentSize = currentWindow.getContentSize()[1];
+      const electronMenuBarHeight = currentWindowSize - currentWindowContentSize;
+      this.electronMenuBarHeight = electronMenuBarHeight;
     }
   }
 
   public scrollToCenter() {
     this.initializeIfNeeded();
-    this.minskyCanvasElement.scrollTop = this.containerHeight / 2;
-    this.minskyCanvasElement.scrollLeft = this.containerWidth / 2;
+    this.minskyCanvasElement.scrollTop = this.scrollableAreaHeight / 2;
+    this.minskyCanvasElement.scrollLeft = this.scrollableAreaWidth / 2;
   }
 
-  public getMinskyCanvasOffset(): Offset {
+  public getMinskyCanvasOffset(): ElectronCanvasOffset {
     this.initializeIfNeeded();
-
     return {
       left: this.leftOffset,
       top: this.topOffset,
@@ -80,7 +85,6 @@ export class WindowUtilityService {
 
   public getDrawableArea() {
     this.initializeIfNeeded();
-
     return {
       width: this.drawableWidth,
       height: this.drawableHeight,
@@ -90,20 +94,18 @@ export class WindowUtilityService {
   public getScrollableArea() {
     this.initializeIfNeeded();
     return {
-      width: this.containerWidth,
-      height: this.containerHeight,
+      width: this.scrollableAreaWidth,
+      height: this.scrollableAreaHeight,
     };
   }
 
   public getMinskyCanvasElement(): HTMLElement {
     this.initializeIfNeeded();
-
     return this.minskyCanvasElement;
   }
 
   public getMinskyContainerElement(): HTMLElement {
     this.initializeIfNeeded();
-
     return this.minskyCanvasContainer;
   }
 }

@@ -143,7 +143,7 @@ export default class App {
       y: 0,
       title: 'Minsky',
       icon: __dirname + '/assets/favicon.png',
-      resizable: false,
+      resizable: true,
     });
 
     App.mainWindow.center();

@@ -23,7 +23,7 @@ import { sampleTime } from 'rxjs/operators';
 })
 export class WiringComponent implements OnInit, OnDestroy {
   mouseMove$: Observable<MouseEvent>;
-  offsetTop: string;
+  canvasContainerHeight: string;
   availableOperationsMapping: Record<string, string[]> = {};
   showDragCursor = false;
   constructor(
@@ -32,13 +32,10 @@ export class WiringComponent implements OnInit, OnDestroy {
     private windowUtilityService: WindowUtilityService,
     private zone: NgZone,
     private changeDetectorRef: ChangeDetectorRef
-  ) {}
+  ) { }
 
   async ngOnInit() {
     const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
-
-    this.offsetTop = `calc(100vh - ${minskyCanvasContainer.offsetTop}px)`;
-
     this.cmService.showDragCursor$.subscribe((showDragCursor) => {
       this.showDragCursor = showDragCursor;
       this.changeDetectorRef.detectChanges();
@@ -104,7 +101,7 @@ export class WiringComponent implements OnInit, OnDestroy {
         minskyCanvasElement.addEventListener(
           'mousedown',
           async (event: MouseEvent) => {
-            
+
             await this.cmService.mouseEvents('CANVAS_EVENT', event);
           }
         );
@@ -131,5 +128,5 @@ export class WiringComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

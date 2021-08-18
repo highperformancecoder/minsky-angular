@@ -66,6 +66,12 @@ export class RestServiceManager {
     }
   }
 
+  public static async reInvokeRenderFrame() {
+    await this.handleMinskyProcess({
+      command: commandsMapping.RENDER_FRAME_SUBCOMMAND,
+    });
+  }
+
   private static async processCommandsInQueueNew(): Promise<unknown> {
     // Should be on a separate thread......? Janak
     const shouldProcessQueue = this.isQueueEnabled

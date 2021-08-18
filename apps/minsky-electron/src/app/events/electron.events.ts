@@ -62,8 +62,12 @@ ipcMain.handle(events.MINSKY_PROCESS, async (event, payload: MinskyProcessPayloa
   return await RestServiceManager.handleMinskyProcess(payload);
 });
 
-ipcMain.on(events.APP_LAYOUT_CHANGED, (event, payload: AppLayoutPayload) => {
+ipcMain.on(events.APP_LAYOUT_CHANGED, async (event, payload: AppLayoutPayload) => {
   WindowManager.onAppLayoutChanged(payload);
+  if(payload.isResizeEvent) {
+    // TODO:: We need to throttle the re-invocation of renderFrame
+    await RestServiceManager.reInvokeRenderFrame();
+  }
 });
 
 

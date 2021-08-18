@@ -16,15 +16,20 @@ export interface MinskyProcessPayload {
   render?: boolean;
 }
 
+
+export interface ElectronCanvasOffset {
+  left: number;
+  top: number;
+  electronMenuBarHeight: number;
+}
+
 export interface AppLayoutPayload {
-  type: string;
-  value: {
-    width: number;
-    height: number;
-    top: number;
-    left: number;
-    electronMenuBarHeight?: number;
-  };
+  isResizeEvent : boolean,
+  drawableArea : {
+    width : number,
+    height : number
+  },
+  offset : ElectronCanvasOffset
 }
 
 export interface ChangeTabPayload {
