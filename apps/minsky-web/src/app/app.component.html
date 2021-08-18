@@ -1,4 +1,4 @@
-<div (resized)="windowResize($event)">
+<div (window:resize)="windowResize($event)">
   <div *ngIf="loader" class="spinner">
     <mat-spinner color="#ffa600" mode="indeterminate"></mat-spinner>
   </div>
