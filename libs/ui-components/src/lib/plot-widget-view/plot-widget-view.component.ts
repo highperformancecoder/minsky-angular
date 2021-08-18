@@ -52,6 +52,8 @@ export class PlotWidgetViewComponent implements OnInit, OnDestroy {
       }/second/renderFrame [${this.systemWindowId},${this.leftOffset},${22},${
         this.width
       },${this.height}]`;
+      // TODO:: Remove hardcoding of the number (22) above
+
 
       this.electronService.sendMinskyCommandAndRender({
         command,

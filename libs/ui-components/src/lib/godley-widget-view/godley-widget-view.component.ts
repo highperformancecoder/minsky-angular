@@ -53,6 +53,7 @@ export class GodleyWidgetViewComponent implements OnInit, OnDestroy {
       }/second/godleyT/table/renderFrame [${this.systemWindowId},${
         this.leftOffset
       },${45},${this.width},${this.height}]`;
+      // TODO:: Remove hardcoding of the number (45) above
 
       console.log(
         '🚀 ~ file: godley-widget-view.component.ts ~ line 43 ~ GodleyWidgetViewComponent ~ ngOnInit ~ command',
