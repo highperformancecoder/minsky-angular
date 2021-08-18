@@ -50,7 +50,7 @@ export class GodleyWidgetViewComponent implements OnInit, OnDestroy {
     ) {
       const command = `${commandsMapping.GET_NAMED_ITEM}/${
         this.itemId
-      }/second/godleyT/table/renderFrame [${this.systemWindowId},${
+      }/second/popup/renderFrame [${this.systemWindowId},${
         this.leftOffset
       },${45},${this.width},${this.height}]`;
       // TODO:: Remove hardcoding of the number (45) above
