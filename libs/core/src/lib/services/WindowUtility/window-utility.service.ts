@@ -37,20 +37,17 @@ export class WindowUtilityService {
 
       this.minskyCanvasContainer.style.height = (bodyElement.clientHeight - this.minskyCanvasContainer.offsetTop) + "px";
 
-
       this.scrollableAreaWidth = bodyElement.clientWidth * this.SCROLLABLE_AREA_FACTOR;
       this.scrollableAreaHeight = bodyElement.clientHeight * this.SCROLLABLE_AREA_FACTOR;
 
+      // No need to set canvas widht / height - we don't use the frontend canvas at all
       // this.minskyCanvasElement.width = this.scrollableAreaWidth;
       // this.minskyCanvasElement.height = this.scrollableAreaHeight;
 
       this.minskyCanvasElement.style.width = this.scrollableAreaWidth + 'px';
       this.minskyCanvasElement.style.height = this.scrollableAreaHeight + 'px';
 
-
-      console.log("Body height after: ", bodyElement.clientHeight);
-
-      // After setting the above, body gets scrollbars, so we need to compute drawableWidth & Height only now (clientWidth/clientHeight may have changed)
+      // After setting the above, container gets scrollbars, so we need to compute drawableWidth & Height only now (clientWidth/clientHeight change after scrollbar addtion)
 
       this.drawableWidth = this.minskyCanvasContainer.clientWidth;
       this.drawableHeight = this.minskyCanvasContainer.clientHeight;
