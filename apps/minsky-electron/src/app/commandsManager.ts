@@ -1062,7 +1062,9 @@ export class CommandsManager {
 
   private static async initializePopupWindow(
     itemInfo: CanvasItem,
-    url: string
+    url: string,
+    height = 600,
+    width = 800
   ): Promise<Electron.BrowserWindow> {
     // Pushing the current item to namedItems map
     await RestServiceManager.handleMinskyProcess({
@@ -1073,6 +1075,8 @@ export class CommandsManager {
       title: itemInfo.classType + ' : ' + itemInfo.id,
       url: url,
       uid: itemInfo.id,
+      height,
+      width,
     });
 
     return window;
@@ -1402,13 +1406,24 @@ export class CommandsManager {
     return;
   }
 
-  static importCSV(itemInfo: CanvasItem) {
-    WindowManager.createMenuPopUpWithRouting({
-      title: 'Import CSV',
-      url: '#/headless/import-csv',
-      uid: itemInfo.id,
-      height: 600,
-      width: 1250,
-    });
+  static async importCSV(itemInfo: CanvasItem) {
+    if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
+      let systemWindowId = null;
+
+      const window = await this.initializePopupWindow(
+        itemInfo,
+        `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
+        600,
+        1000
+      );
+
+      systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
+
+      window.loadURL(
+        WindowManager.getWindowUrl(
+          `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+        )
+      );
+    }
   }
 }

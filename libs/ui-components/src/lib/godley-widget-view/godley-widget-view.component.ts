@@ -120,6 +120,9 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
     this.electronService.sendMinskyCommandAndRender({
       command,
     });
+
+    //TODO: remove this once the rendering issue is fixed
+    this.renderFrame();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
