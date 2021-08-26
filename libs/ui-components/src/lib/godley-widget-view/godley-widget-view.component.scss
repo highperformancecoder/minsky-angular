@@ -1,14 +1,7 @@
 @import '../../../../shared/src/lib/theme/variables.scss';
 
 .godley-cairo-canvas {
-  height: calc(100vh - 45px);
+  height: 100vh;
   width: 100vw;
   border: 1px solid $toolbar-box;
-}
-
-.toolbar {
-  height: 45px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }

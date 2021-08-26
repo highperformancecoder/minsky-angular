@@ -1,8 +1,20 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CommunicationService, ElectronService } from '@minsky/core';
-import { commandsMapping, HeaderEvent } from '@minsky/shared';
+import {
+  CommunicationService,
+  ElectronService,
+  WindowUtilityService,
+} from '@minsky/core';
+import { commandsMapping } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
+import { fromEvent, Observable } from 'rxjs';
+import { sampleTime } from 'rxjs/operators';
 
 @AutoUnsubscribe()
 @Component({
@@ -10,11 +22,23 @@ import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
   templateUrl: './godley-widget-view.component.html',
   styleUrls: ['./godley-widget-view.component.scss'],
 })
-export class GodleyWidgetViewComponent implements OnInit, OnDestroy {
-  headerEvent = 'HEADER_EVENT';
+export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
+  @ViewChild('godleyCanvasElemRef') godleyCanvasElemRef: ElementRef;
+
+  itemId: number;
+  systemWindowId: number;
+  namedItemSubCommand: string;
+
+  leftOffset = 0;
+  topOffset: number;
+  height: number;
+  width: number;
+  godleyCanvasContainer: HTMLElement;
+  mouseMove$: Observable<MouseEvent>;
 
   constructor(
     private communicationService: CommunicationService,
+    private windowUtilityService: WindowUtilityService,
     private electronService: ElectronService,
     private route: ActivatedRoute
   ) {
@@ -23,24 +47,27 @@ export class GodleyWidgetViewComponent implements OnInit, OnDestroy {
       this.systemWindowId = params.systemWindowId;
     });
   }
-  itemId: number;
-  systemWindowId: number;
 
-  leftOffset = 0;
-  topOffset: number;
-  height: number;
-  width: number;
-  ngOnInit() {
-    const plotCanvasContainer = document.getElementById('godley-cairo-canvas');
+  ngAfterViewInit() {
+    this.godleyCanvasContainer = this.godleyCanvasElemRef
+      .nativeElement as HTMLElement;
 
-    const clientRect = plotCanvasContainer.getBoundingClientRect();
+    const clientRect = this.godleyCanvasContainer.getBoundingClientRect();
 
     this.leftOffset = Math.round(clientRect.left);
-    this.topOffset = Math.round(clientRect.top);
+    this.topOffset = Math.round(
+      this.windowUtilityService.getElectronMenuBarHeight()
+    );
 
-    this.height = Math.round(plotCanvasContainer.clientHeight);
-    this.width = Math.round(plotCanvasContainer.clientWidth);
+    this.height = Math.round(this.godleyCanvasContainer.clientHeight);
+    this.width = Math.round(this.godleyCanvasContainer.clientWidth);
 
+    this.namedItemSubCommand = `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/popup`;
+    this.renderFrame();
+    this.initEvents();
+  }
+
+  renderFrame() {
     if (
       this.electronService.isElectron &&
       this.systemWindowId &&
@@ -48,25 +75,51 @@ export class GodleyWidgetViewComponent implements OnInit, OnDestroy {
       this.height &&
       this.width
     ) {
-      const command = `${commandsMapping.GET_NAMED_ITEM}/${
-        this.itemId
-      }/second/popup/renderFrame [${this.systemWindowId},${
-        this.leftOffset
-      },${45},${this.width},${this.height}]`;
-      // TODO:: Remove hardcoding of the number (45) above
+      const command = `${this.namedItemSubCommand}/renderFrame [${this.systemWindowId},${this.leftOffset},${this.topOffset},${this.width},${this.height}]`;
 
-      console.log(
-        '🚀 ~ file: godley-widget-view.component.ts ~ line 43 ~ GodleyWidgetViewComponent ~ ngOnInit ~ command',
-        command
-      );
       this.electronService.sendMinskyCommandAndRender({
         command,
       });
     }
   }
 
-  async handleToolbarEvent(event: HeaderEvent) {
-    await this.communicationService.sendEvent(this.headerEvent, event);
+  initEvents() {
+    this.mouseMove$ = fromEvent<MouseEvent>(
+      this.godleyCanvasContainer,
+      'mousemove'
+    ).pipe(sampleTime(30)); /// FPS=1000/sampleTime
+
+    this.mouseMove$.subscribe(async (event: MouseEvent) => {
+      const { clientX, clientY } = event;
+      this.sendMouseEvent(
+        clientX,
+        clientY,
+        commandsMapping.MOUSEMOVE_SUBCOMMAND
+      );
+      // await this.communicationService.mouseEvents('CANVAS_EVENT', event);
+    });
+
+    this.godleyCanvasContainer.addEventListener('mousedown', (event) => {
+      const { clientX, clientY } = event;
+      this.sendMouseEvent(
+        clientX,
+        clientY,
+        commandsMapping.MOUSEDOWN_SUBCOMMAND
+      );
+    });
+
+    this.godleyCanvasContainer.addEventListener('mouseup', (event) => {
+      const { clientX, clientY } = event;
+      this.sendMouseEvent(clientX, clientY, commandsMapping.MOUSEUP_SUBCOMMAND);
+    });
+  }
+
+  sendMouseEvent(x: number, y: number, type: string) {
+    const command = `${this.namedItemSubCommand}/${type} [${x},${y}]`;
+
+    this.electronService.sendMinskyCommandAndRender({
+      command,
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
