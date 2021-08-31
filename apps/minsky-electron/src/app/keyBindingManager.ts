@@ -22,7 +22,16 @@ export class KeyBindingManager {
   static async handleOnKeyPress(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
-    const { key, shift, capsLock, ctrl, alt, mouseX, mouseY } = payload;
+    const {
+      key,
+      shift,
+      capsLock,
+      ctrl,
+      alt,
+      mouseX,
+      mouseY,
+      command = '',
+    } = payload;
 
     const _keysym = keysym.fromName(key)?.keysym;
 
@@ -46,22 +55,25 @@ export class KeyBindingManager {
     }
 
     if (_keysym) {
-      const _payload = {
-        command: `${commandsMapping.KEY_PRESS} [${_keysym},${_utf8},${modifierKeyCode},${mouseX},${mouseY}]`,
-      };
+      const _payload: MinskyProcessPayload = {};
+
+      _payload.command = command
+        ? `${command}/keyPress [${_keysym},${_utf8},${modifierKeyCode},${mouseX},${mouseY}]`
+        : `${commandsMapping.KEY_PRESS} [${_keysym},${_utf8},${modifierKeyCode},${mouseX},${mouseY}]`;
 
       const isKeyPressHandled = await RestServiceManager.handleMinskyProcess(
         _payload
       );
 
-      if (!isKeyPressHandled) {
+      if (!isKeyPressHandled && !command) {
         return await this.handleOnKeyPressFallback(payload);
       }
 
       return isKeyPressHandled;
     }
+    const res = command ? false : await this.handleOnKeyPressFallback(payload);
 
-    return await this.handleOnKeyPressFallback(payload);
+    return res;
   }
 
   private static async handleOnKeyPressFallback(payload: MinskyProcessPayload) {

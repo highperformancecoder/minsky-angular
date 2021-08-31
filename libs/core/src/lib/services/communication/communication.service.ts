@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  AppLayoutPayload,
   commandsMapping,
   events,
   HeaderEvent,
@@ -7,7 +8,6 @@ import {
   ReplayRecordingStatus,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
-  AppLayoutPayload
 } from '@minsky/shared';
 // import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject } from 'rxjs';
@@ -153,12 +153,12 @@ export class CommunicationService {
           case 'ZOOM_OUT':
             command = `${command} [${canvasWidth / 2}, ${
               canvasHeight / 2
-              }, ${ZOOM_OUT_FACTOR}]`;
+            }, ${ZOOM_OUT_FACTOR}]`;
             break;
           case 'ZOOM_IN':
             command = `${command} [${canvasWidth / 2}, ${
               canvasHeight / 2
-              }, ${ZOOM_IN_FACTOR}]`;
+            }, ${ZOOM_IN_FACTOR}]`;
             break;
           case 'RESET_ZOOM':
             autoHandleMinskyProcess = false;
@@ -325,7 +325,7 @@ export class CommunicationService {
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
       command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
         1 / (relZoom || 1)
-        }]`;
+      }]`;
     } else {
       command = `${commandsMapping.SET_ZOOM} 1`;
     }
@@ -403,7 +403,10 @@ export class CommunicationService {
 
       // TODO:: Should the drag logic be in this branch or else? isElectron / FE?
 
-      if (command === commandsMapping.MOUSEDOWN_SUBCOMMAND && this.isShiftPressed) {
+      if (
+        command === commandsMapping.MOUSEDOWN_SUBCOMMAND &&
+        this.isShiftPressed
+      ) {
         this.drag = true;
         return;
       }
@@ -444,7 +447,7 @@ export class CommunicationService {
       this.electronService.ipcRenderer.send(events.APP_LAYOUT_CHANGED, {
         isResizeEvent: isResizeEvent,
         offset: offset,
-        drawableArea: drawableArea
+        drawableArea: drawableArea,
       } as AppLayoutPayload);
     }
   }
@@ -513,7 +516,7 @@ export class CommunicationService {
 
   async handleKeyDown(event: KeyboardEvent) {
     const payload: MinskyProcessPayload = {
-      command: commandsMapping.KEY_PRESS,
+      command: '',
       key: event.key,
       shift: event.shiftKey,
       capsLock: event.getModifierState('CapsLock'),

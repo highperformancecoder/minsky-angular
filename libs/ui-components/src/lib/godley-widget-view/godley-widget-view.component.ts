@@ -11,7 +11,7 @@ import {
   ElectronService,
   WindowUtilityService,
 } from '@minsky/core';
-import { commandsMapping } from '@minsky/shared';
+import { commandsMapping, events, MinskyProcessPayload } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
@@ -35,6 +35,9 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
   width: number;
   godleyCanvasContainer: HTMLElement;
   mouseMove$: Observable<MouseEvent>;
+
+  mouseX = 0;
+  mouseY = 0;
 
   constructor(
     private communicationService: CommunicationService,
@@ -91,6 +94,8 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
 
     this.mouseMove$.subscribe(async (event: MouseEvent) => {
       const { clientX, clientY } = event;
+      this.mouseX = clientX;
+      this.mouseY = clientY;
       this.sendMouseEvent(
         clientX,
         clientY,
@@ -114,6 +119,7 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
     });
 
     this.godleyCanvasContainer.onwheel = this.onMouseWheelZoom;
+    document.onkeydown = this.onKeyDown;
   }
 
   sendMouseEvent(x: number, y: number, type: string) {
@@ -127,6 +133,23 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
     this.renderFrame();
   }
 
+  onKeyDown = async (event: KeyboardEvent) => {
+    const payload: MinskyProcessPayload = {
+      command: this.namedItemSubCommand,
+      key: event.key,
+      shift: event.shiftKey,
+      capsLock: event.getModifierState('CapsLock'),
+      ctrl: event.ctrlKey,
+      alt: event.altKey,
+      mouseX: this.mouseX,
+      mouseY: this.mouseY,
+    };
+
+    await this.electronService.sendMinskyCommandAndRender(
+      payload,
+      events.KEY_PRESS
+    );
+  };
   onMouseWheelZoom = async (event: WheelEvent) => {
     event.preventDefault();
     const { deltaY } = event;
