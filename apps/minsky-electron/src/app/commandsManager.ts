@@ -1107,176 +1107,7 @@ export class CommandsManager {
               )
             );
 
-            window.setMenu(
-              Menu.buildFromTemplate([
-                new MenuItem({
-                  label: 'File',
-                  submenu: [
-                    {
-                      label: 'Export as',
-                      submenu: [
-                        {
-                          label: 'CSV',
-                          click: async () => {
-                            const command = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/table/exportToCSV`;
-
-                            await CommandsManager.exportGodleyAs(
-                              'csv',
-                              command
-                            );
-                          },
-                        },
-                        {
-                          label: 'LaTeX',
-                          click: async () => {
-                            const command = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/table/exportToLaTeX`;
-
-                            await CommandsManager.exportGodleyAs(
-                              'tex',
-                              command
-                            );
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                }),
-                new MenuItem({
-                  label: 'Edit',
-                  submenu: [
-                    { label: 'Undo' },
-                    { label: 'Redo' },
-                    {
-                      label: 'Title',
-                      click: () => {
-                        CommandsManager.editGodleyTitle(itemInfo.id);
-                      },
-                    },
-                    { label: 'Cut' },
-                    { label: 'Copy' },
-                    { label: 'Paste' },
-                  ],
-                }),
-                new MenuItem({
-                  label: 'View',
-                  submenu: [
-                    { label: 'Zoom In' },
-                    { label: 'Zoom Out' },
-                    { label: 'Reset Zoom' },
-                  ],
-                }),
-                new MenuItem({
-                  label: 'Options',
-                  submenu: [
-                    {
-                      label: 'Show Values',
-                      click: async () => {
-                        const preferences = StoreManager.store.get(
-                          'preferences'
-                        );
-
-                        const {
-                          godleyTableOutputStyle,
-                          godleyTableShowValues,
-                        } = preferences;
-
-                        StoreManager.store.set({
-                          preferences: {
-                            ...preferences,
-                            godleyTableShowValues: !godleyTableShowValues,
-                          },
-                        });
-
-                        await RestServiceManager.handleMinskyProcess({
-                          command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"}]`,
-                        });
-                      },
-                    },
-                    {
-                      label: 'DR/CR Style',
-                      click: async () => {
-                        const preferences = StoreManager.store.get(
-                          'preferences'
-                        );
-
-                        const {
-                          godleyTableOutputStyle,
-                          godleyTableShowValues,
-                        } = preferences;
-
-                        const newGodleyTableOutputStyle =
-                          godleyTableOutputStyle ===
-                          GodleyTableOutputStyles.DRCR
-                            ? GodleyTableOutputStyles.SIGN
-                            : GodleyTableOutputStyles.DRCR;
-
-                        StoreManager.store.set('preferences', {
-                          ...preferences,
-                          godleyTableOutputStyle: newGodleyTableOutputStyle,
-                        });
-
-                        await RestServiceManager.handleMinskyProcess({
-                          command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${newGodleyTableOutputStyle}"}]`,
-                        });
-                      },
-                    },
-                    {
-                      label: 'Enable Multiple Equity Column',
-                      click: async () => {
-                        const preferences = StoreManager.store.get(
-                          'preferences'
-                        );
-
-                        const { enableMultipleEquityColumns } = preferences;
-
-                        StoreManager.store.set('preferences', {
-                          ...preferences,
-                          enableMultipleEquityColumns: !enableMultipleEquityColumns,
-                        });
-
-                        await RestServiceManager.handleMinskyProcess({
-                          command: `${
-                            commandsMapping.MULTIPLE_EQUITIES
-                          } ${!enableMultipleEquityColumns}`,
-                        });
-                      },
-                    },
-                  ],
-                }),
-                new MenuItem({
-                  label: 'Help',
-                  submenu: [
-                    {
-                      label: 'Help',
-                      click: () => {
-                        const fileName = HelpFilesManager.getHelpFileForType(
-                          ClassType.GodleyIcon
-                        );
-
-                        const path = !Utility.isPackaged()
-                          ? `${join(
-                              __dirname,
-                              '../../../',
-                              `minsky-docs/minsky/${fileName}`
-                            )}`
-                          : `${join(
-                              process.resourcesPath,
-                              `minsky-docs/minsky/${fileName}`
-                            )}`;
-
-                        WindowManager.createMenuPopUpAndLoadFile({
-                          title: `Help: ${ClassType.GodleyIcon}`,
-                          height: 800,
-                          width: 1000,
-                          modal: true,
-                          url: path,
-                        });
-                      },
-                    },
-                  ],
-                }),
-              ])
-            );
+            CommandsManager.createMenusForGodleyView(window, itemInfo);
           }
           break;
 
@@ -1354,6 +1185,206 @@ export class CommandsManager {
           break;
       }
     }
+  }
+
+  private static createMenusForGodleyView(
+    window: Electron.BrowserWindow,
+    itemInfo: CanvasItem
+  ) {
+    window.setMenu(
+      Menu.buildFromTemplate([
+        new MenuItem({
+          label: 'File',
+          submenu: [
+            {
+              label: 'Export as',
+              submenu: [
+                {
+                  label: 'CSV',
+                  click: async () => {
+                    const command = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/table/exportToCSV`;
+
+                    await CommandsManager.exportGodleyAs('csv', command);
+                  },
+                },
+                {
+                  label: 'LaTeX',
+                  click: async () => {
+                    const command = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/table/exportToLaTeX`;
+
+                    await CommandsManager.exportGodleyAs('tex', command);
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+        new MenuItem({
+          label: 'Edit',
+          submenu: [
+            {
+              label: 'Undo',
+              click: async () => {
+                const numberOfTimes = 1;
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/undo ${numberOfTimes}`,
+                });
+              },
+            },
+            {
+              label: 'Redo',
+              click: async () => {
+                const numberOfTimes = -1;
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/copy ${numberOfTimes}`,
+                });
+              },
+            },
+            {
+              label: 'Title',
+              click: () => {
+                CommandsManager.editGodleyTitle(itemInfo.id);
+              },
+            },
+            {
+              label: 'Cut',
+              click: async () => {
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/cut`,
+                });
+              },
+            },
+            {
+              label: 'Copy',
+              click: async () => {
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/copy`,
+                });
+              },
+            },
+            {
+              label: 'Paste',
+              click: async () => {
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/paste`,
+                });
+              },
+            },
+          ],
+        }),
+        new MenuItem({
+          label: 'View',
+          submenu: [
+            { label: 'Zoom In' },
+            { label: 'Zoom Out' },
+            { label: 'Reset Zoom' },
+          ],
+        }),
+        new MenuItem({
+          label: 'Options',
+          submenu: [
+            {
+              label: 'Show Values',
+              click: async () => {
+                const preferences = StoreManager.store.get('preferences');
+
+                const {
+                  godleyTableOutputStyle,
+                  godleyTableShowValues,
+                } = preferences;
+
+                StoreManager.store.set({
+                  preferences: {
+                    ...preferences,
+                    godleyTableShowValues: !godleyTableShowValues,
+                  },
+                });
+
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"}]`,
+                });
+              },
+            },
+            {
+              label: 'DR/CR Style',
+              click: async () => {
+                const preferences = StoreManager.store.get('preferences');
+
+                const {
+                  godleyTableOutputStyle,
+                  godleyTableShowValues,
+                } = preferences;
+
+                const newGodleyTableOutputStyle =
+                  godleyTableOutputStyle === GodleyTableOutputStyles.DRCR
+                    ? GodleyTableOutputStyles.SIGN
+                    : GodleyTableOutputStyles.DRCR;
+
+                StoreManager.store.set('preferences', {
+                  ...preferences,
+                  godleyTableOutputStyle: newGodleyTableOutputStyle,
+                });
+
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${newGodleyTableOutputStyle}"}]`,
+                });
+              },
+            },
+            {
+              label: 'Enable Multiple Equity Column',
+              click: async () => {
+                const preferences = StoreManager.store.get('preferences');
+
+                const { enableMultipleEquityColumns } = preferences;
+
+                StoreManager.store.set('preferences', {
+                  ...preferences,
+                  enableMultipleEquityColumns: !enableMultipleEquityColumns,
+                });
+
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${
+                    commandsMapping.MULTIPLE_EQUITIES
+                  } ${!enableMultipleEquityColumns}`,
+                });
+              },
+            },
+          ],
+        }),
+        new MenuItem({
+          label: 'Help',
+          submenu: [
+            {
+              label: 'Help',
+              click: () => {
+                const fileName = HelpFilesManager.getHelpFileForType(
+                  ClassType.GodleyIcon
+                );
+
+                const path = !Utility.isPackaged()
+                  ? `${join(
+                      __dirname,
+                      '../../../',
+                      `minsky-docs/minsky/${fileName}`
+                    )}`
+                  : `${join(
+                      process.resourcesPath,
+                      `minsky-docs/minsky/${fileName}`
+                    )}`;
+
+                WindowManager.createMenuPopUpAndLoadFile({
+                  title: `Help: ${ClassType.GodleyIcon}`,
+                  height: 800,
+                  width: 1000,
+                  modal: true,
+                  url: path,
+                });
+              },
+            },
+          ],
+        }),
+      ])
+    );
   }
 
   static async logSimulation(selectedItems: string[]) {
