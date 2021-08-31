@@ -112,6 +112,8 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
       const { clientX, clientY } = event;
       this.sendMouseEvent(clientX, clientY, commandsMapping.MOUSEUP_SUBCOMMAND);
     });
+
+    this.godleyCanvasContainer.onwheel = this.onMouseWheelZoom;
   }
 
   sendMouseEvent(x: number, y: number, type: string) {
@@ -124,6 +126,29 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
     //TODO: remove this once the rendering issue is fixed
     this.renderFrame();
   }
+
+  onMouseWheelZoom = async (event: WheelEvent) => {
+    event.preventDefault();
+    const { deltaY } = event;
+    const zoomIn = deltaY < 0;
+
+    const command = `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/popup/zoomFactor`;
+
+    let zoomFactor = (await this.electronService.sendMinskyCommandAndRender({
+      command,
+    })) as number;
+
+    if (zoomIn) {
+      zoomFactor = zoomFactor * 1.1;
+    } else {
+      zoomFactor = zoomFactor / 1.1;
+    }
+
+    //TODO: throttle here if required
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${command} ${zoomFactor}`,
+    });
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
   ngOnDestroy() {}

@@ -1275,9 +1275,49 @@ export class CommandsManager {
         new MenuItem({
           label: 'View',
           submenu: [
-            { label: 'Zoom In' },
-            { label: 'Zoom Out' },
-            { label: 'Reset Zoom' },
+            {
+              label: 'Zoom In',
+              click: async () => {
+                const zoomFactor = (await RestServiceManager.handleMinskyProcess(
+                  {
+                    command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/zoomFactor`,
+                  }
+                )) as number;
+
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.GET_NAMED_ITEM}/${
+                    itemInfo.id
+                  }/second/popup/zoomFactor ${zoomFactor * 1.1}`,
+                });
+              },
+            },
+            {
+              label: 'Zoom Out',
+              click: async () => {
+                const zoomFactor = (await RestServiceManager.handleMinskyProcess(
+                  {
+                    command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/zoomFactor`,
+                  }
+                )) as number;
+
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.GET_NAMED_ITEM}/${
+                    itemInfo.id
+                  }/second/popup/zoomFactor ${zoomFactor / 1.1}`,
+                });
+              },
+            },
+            {
+              label: 'Reset Zoom',
+              click: async () => {
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/zoomFactor 1`,
+                });
+                await RestServiceManager.handleMinskyProcess({
+                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/requestRedraw`,
+                });
+              },
+            },
           ],
         }),
         new MenuItem({
