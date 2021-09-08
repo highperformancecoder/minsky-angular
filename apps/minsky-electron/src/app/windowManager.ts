@@ -13,6 +13,7 @@ import * as os from 'os';
 import { join } from 'path';
 import { format } from 'url';
 import { Utility } from './utility';
+import * as log from 'electron-log';
 
 const logWindows = debug('minsky:electron_windows');
 
@@ -33,11 +34,13 @@ export class WindowManager {
    static getSystemWindowId(menuWindow: BrowserWindow) {
        const nativeBuffer = menuWindow.getNativeWindowHandle();
        switch (nativeBuffer.length) {
-       case 4: return os.endianness()=='LE'? nativeBuffer.readUInt32LE(0): nativeBuffer.readUInt32BE(0);
+       case 4:
+           var r = os.endianness()=='LE'? nativeBuffer.readUInt32LE(0): nativeBuffer.readUInt32BE(0);
+           return BigInt(r);
        case 8: return os.endianness() == 'LE'? nativeBuffer.readBigUInt64LE(0): nativeBuffer.readBigUInt64BE(0);
        default:
            log.error("Unsupported native window handle type");
-           return 0;
+           return BigInt(0);
        }
    }          
     
