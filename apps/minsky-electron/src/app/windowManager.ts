@@ -34,8 +34,8 @@ export class WindowManager {
     const offset = 0;
     const windowId =
       os.endianness() == 'LE'
-        ? menuWindow.getNativeWindowHandle().readInt32LE(offset)
-        : menuWindow.getNativeWindowHandle().readInt32BE(offset);
+        ? menuWindow.getNativeWindowHandle().readBigUInt64LE(offset)
+        : menuWindow.getNativeWindowHandle().readBigUInt64BE(offset);
 
     return windowId;
   }
