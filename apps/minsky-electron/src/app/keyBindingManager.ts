@@ -58,8 +58,8 @@ export class KeyBindingManager {
       const _payload: MinskyProcessPayload = {};
 
       _payload.command = command
-        ? `${command}/keyPress [${_keysym},${_utf8},${modifierKeyCode},${mouseX},${mouseY}]`
-        : `${commandsMapping.KEY_PRESS} [${_keysym},${_utf8},${modifierKeyCode},${mouseX},${mouseY}]`;
+        ? `${command}/keyPress [${_keysym},"${_utf8}",${modifierKeyCode},${mouseX},${mouseY}]`
+        : `${commandsMapping.KEY_PRESS} [${_keysym},"${_utf8}",${modifierKeyCode},${mouseX},${mouseY}]`;
 
       const isKeyPressHandled = await RestServiceManager.handleMinskyProcess(
         _payload
