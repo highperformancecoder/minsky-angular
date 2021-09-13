@@ -23,7 +23,7 @@ import { sampleTime } from 'rxjs/operators';
   styleUrls: ['./godley-widget-view.component.scss'],
 })
 export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
-  @ViewChild('godleyCanvasElemRef') godleyCanvasElemRef: ElementRef;
+  @ViewChild('godleyCanvasElemWrapper') godleyCanvasElemWrapper: ElementRef;
 
   itemId: number;
   systemWindowId: number;
@@ -52,7 +52,7 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.godleyCanvasContainer = this.godleyCanvasElemRef
+    this.godleyCanvasContainer = this.godleyCanvasElemWrapper
       .nativeElement as HTMLElement;
 
     const clientRect = this.godleyCanvasContainer.getBoundingClientRect();
@@ -87,6 +87,13 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
   }
 
   initEvents() {
+    this.godleyCanvasContainer.addEventListener('scroll', async () => {
+      await this.handleScroll(
+        this.godleyCanvasContainer.scrollTop,
+        this.godleyCanvasContainer.scrollLeft
+      );
+    });
+
     this.mouseMove$ = fromEvent<MouseEvent>(
       this.godleyCanvasContainer,
       'mousemove'
@@ -113,24 +120,33 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
       );
     });
 
-    this.godleyCanvasContainer.addEventListener('mouseup', (event) => {
+    this.godleyCanvasContainer.addEventListener('mouseup', async (event) => {
       const { clientX, clientY } = event;
-      this.sendMouseEvent(clientX, clientY, commandsMapping.MOUSEUP_SUBCOMMAND);
+      await this.sendMouseEvent(
+        clientX,
+        clientY,
+        commandsMapping.MOUSEUP_SUBCOMMAND
+      );
     });
 
     this.godleyCanvasContainer.onwheel = this.onMouseWheelZoom;
     document.onkeydown = this.onKeyDown;
   }
 
-  sendMouseEvent(x: number, y: number, type: string) {
+  async redraw() {
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.namedItemSubCommand}/requestRedraw`,
+    });
+  }
+
+  async sendMouseEvent(x: number, y: number, type: string) {
     const command = `${this.namedItemSubCommand}/${type} [${x},${y}]`;
 
-    this.electronService.sendMinskyCommandAndRender({
+    await this.electronService.sendMinskyCommandAndRender({
       command,
     });
 
-    //TODO: remove this once the rendering issue is fixed
-    this.renderFrame();
+    await this.redraw();
   }
 
   onKeyDown = async (event: KeyboardEvent) => {
@@ -149,6 +165,8 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
       payload,
       events.KEY_PRESS
     );
+
+    await this.redraw();
   };
   onMouseWheelZoom = async (event: WheelEvent) => {
     event.preventDefault();
@@ -172,6 +190,18 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
       command: `${command} ${zoomFactor}`,
     });
   };
+
+  async handleScroll(scrollTop: number, scrollLeft: number) {
+    const posX = this.width / 2 - scrollLeft;
+    const posY = this.height / 2 - scrollTop;
+
+    // TODO: fix moveTo command not found
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.namedItemSubCommand}/moveTo`,
+      mouseX: posX,
+      mouseY: posY,
+    });
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
   ngOnDestroy() {}
