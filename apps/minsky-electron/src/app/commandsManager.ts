@@ -1224,6 +1224,7 @@ export class CommandsManager {
           submenu: [
             {
               label: 'Undo',
+              accelerator: 'CmdOrCtrl + z',
               click: async () => {
                 const numberOfTimes = 1;
                 await RestServiceManager.handleMinskyProcess({
@@ -1233,10 +1234,11 @@ export class CommandsManager {
             },
             {
               label: 'Redo',
+              accelerator: 'CmdOrCtrl + y',
               click: async () => {
                 const numberOfTimes = -1;
                 await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/copy ${numberOfTimes}`,
+                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/undo ${numberOfTimes}`,
                 });
               },
             },
@@ -1248,6 +1250,8 @@ export class CommandsManager {
             },
             {
               label: 'Cut',
+              role: 'cut',
+              accelerator: 'CmdOrCtrl + x',
               click: async () => {
                 await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/cut`,
@@ -1256,6 +1260,7 @@ export class CommandsManager {
             },
             {
               label: 'Copy',
+              accelerator: 'CmdOrCtrl + c',
               click: async () => {
                 await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/copy`,
@@ -1264,6 +1269,7 @@ export class CommandsManager {
             },
             {
               label: 'Paste',
+              accelerator: 'CmdOrCtrl + v',
               click: async () => {
                 await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/paste`,
@@ -1277,6 +1283,7 @@ export class CommandsManager {
           submenu: [
             {
               label: 'Zoom In',
+              accelerator: 'CmdOrCtrl + Plus',
               click: async () => {
                 const zoomFactor = (await RestServiceManager.handleMinskyProcess(
                   {
@@ -1293,6 +1300,7 @@ export class CommandsManager {
             },
             {
               label: 'Zoom Out',
+              accelerator: 'CmdOrCtrl + Minus',
               click: async () => {
                 const zoomFactor = (await RestServiceManager.handleMinskyProcess(
                   {
