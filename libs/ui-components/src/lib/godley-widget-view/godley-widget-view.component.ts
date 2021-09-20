@@ -192,15 +192,31 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
   };
 
   async handleScroll(scrollTop: number, scrollLeft: number) {
-    const posX = this.width / 2 - scrollLeft;
-    const posY = this.height / 2 - scrollTop;
+    //TODO: throttle here if required
 
-    // TODO: fix moveTo command not found
+    const cols = (await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/table/cols`,
+    })) as number;
+
+    const rows = (await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/table/rows`,
+    })) as number;
+
+    const stepX = this.godleyCanvasContainer.scrollHeight / cols;
+    const stepY = this.godleyCanvasContainer.scrollHeight / rows;
+
+    const currentStepX = Math.round(scrollLeft / stepX);
+    const currentStepY = Math.round(scrollTop / stepY);
+
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${this.namedItemSubCommand}/moveTo`,
-      mouseX: posX,
-      mouseY: posY,
+      command: `${this.namedItemSubCommand}/scrollColStart ${currentStepX}`,
     });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.namedItemSubCommand}/scrollRowStart ${currentStepY}`,
+    });
+
+    this.redraw();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
