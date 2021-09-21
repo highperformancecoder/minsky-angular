@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ElectronService } from '@minsky/core';
+import { normalizeFilePathForPlatform } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-import-csv',
   templateUrl: './import-csv.component.html',
   styleUrls: ['./import-csv.component.scss'],
 })
-export class ImportCsvComponent implements OnInit {
+export class ImportCsvComponent {
   form: FormGroup;
 
   public get url(): AbstractControl {
@@ -32,8 +33,6 @@ export class ImportCsvComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
-
   async selectFile() {
     const fileDialog = await this.electronService.remote.dialog.showOpenDialog({
       filters: [
@@ -46,7 +45,9 @@ export class ImportCsvComponent implements OnInit {
       return;
     }
 
-    const filePath = fileDialog.filePaths[0].toString();
+    const filePath = normalizeFilePathForPlatform(
+      fileDialog.filePaths[0].toString()
+    );
 
     this.url.setValue(filePath);
   }

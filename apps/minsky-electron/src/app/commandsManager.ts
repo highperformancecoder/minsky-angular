@@ -6,6 +6,7 @@ import {
   GodleyTableOutputStyles,
   green,
   isEmptyObject,
+  normalizeFilePathForPlatform,
 } from '@minsky/shared';
 import { dialog, ipcMain, Menu, MenuItem } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
@@ -889,87 +890,80 @@ export class CommandsManager {
     return;
   }
 
-    static async openNamedFile(filePath: string) {
-        // quoted special characters for JSON encoding
-        const character = {
-            '\\': '\\\\',
-            '"': '\\"'
-        };
-        filePath = filePath.replace(/[\\"]/g, function(c) {
-            return character[c];
-        });
-        const autoBackupFileName = filePath + '#';
+  static async openNamedFile(filePath: string) {
+    filePath = normalizeFilePathForPlatform(filePath);
+    const autoBackupFileName = filePath + '#';
 
-        await this.createNewSystem();
+    await this.createNewSystem();
 
-        WindowManager.scrollToCenter();
+    WindowManager.scrollToCenter();
 
-        const autoBackupFileExists = existsSync(`${autoBackupFileName}`);
+    const autoBackupFileExists = existsSync(`${autoBackupFileName}`);
 
-        if (!autoBackupFileExists) {
-            await RestServiceManager.handleMinskyProcess({
-                command: commandsMapping.LOAD,
-                filePath: filePath,
-            });
+    if (!autoBackupFileExists) {
+      await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.LOAD,
+        filePath: filePath,
+      });
 
-            ipcMain.emit(events.ADD_RECENT_FILE, null, filePath);
-        }
-
-        if (autoBackupFileExists) {
-            const choice = dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
-                type: 'question',
-                buttons: ['Yes', 'No'],
-                title: 'Confirm',
-                message: 'Auto save file exists, do you wish to load it?',
-            });
-
-            if (choice === 0) {
-                await RestServiceManager.handleMinskyProcess({
-                    command: commandsMapping.LOAD,
-                    filePath: autoBackupFileName,
-                });
-            } else {
-                await RestServiceManager.handleMinskyProcess({
-                    command: commandsMapping.LOAD,
-                    filePath: filePath,
-                });
-
-                ipcMain.emit(events.ADD_RECENT_FILE, null, filePath);
-
-                unlinkSync(autoBackupFileName);
-            }
-        }
-
-        await RestServiceManager.handleMinskyProcess({
-            command: `${commandsMapping.SET_AUTO_SAVE_FILE} "${autoBackupFileName}"`,
-        });
-
-        RestServiceManager.currentMinskyModelFilePath = filePath;
-        
-        await RestServiceManager.handleMinskyProcess({
-            command: `${commandsMapping.PUSH_HISTORY} 0`,
-        });
-
-        await RestServiceManager.handleMinskyProcess({
-            command: commandsMapping.PUSH_FLAGS,
-        });
-
-        // TODO:
-        // # minsky.load resets minsky.multipleEquities, so restore it to preferences
-        // minsky.multipleEquities $preferences(multipleEquities)
-        // canvas.focusFollowsMouse $preferences(focusFollowsMouse)
-        // pushFlags
-        
-        await RestServiceManager.handleMinskyProcess({
-            command: commandsMapping.RECENTER,
-        });
-        
-        await RestServiceManager.handleMinskyProcess({
-            command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
-        });
-        
-        WindowManager.getMainWindow().setTitle(filePath);
+      ipcMain.emit(events.ADD_RECENT_FILE, null, filePath);
     }
+
+    if (autoBackupFileExists) {
+      const choice = dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        title: 'Confirm',
+        message: 'Auto save file exists, do you wish to load it?',
+      });
+
+      if (choice === 0) {
+        await RestServiceManager.handleMinskyProcess({
+          command: commandsMapping.LOAD,
+          filePath: autoBackupFileName,
+        });
+      } else {
+        await RestServiceManager.handleMinskyProcess({
+          command: commandsMapping.LOAD,
+          filePath: filePath,
+        });
+
+        ipcMain.emit(events.ADD_RECENT_FILE, null, filePath);
+
+        unlinkSync(autoBackupFileName);
+      }
+    }
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.SET_AUTO_SAVE_FILE} "${autoBackupFileName}"`,
+    });
+
+    RestServiceManager.currentMinskyModelFilePath = filePath;
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.PUSH_HISTORY} 0`,
+    });
+
+    await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.PUSH_FLAGS,
+    });
+
+    // TODO:
+    // # minsky.load resets minsky.multipleEquities, so restore it to preferences
+    // minsky.multipleEquities $preferences(multipleEquities)
+    // canvas.focusFollowsMouse $preferences(focusFollowsMouse)
+    // pushFlags
+
+    await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.RECENTER,
+    });
+
+    await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
+    });
+
+    WindowManager.getMainWindow().setTitle(filePath);
+  }
 
   static async help(x: number, y: number) {
     let classType = (await this.getCurrentItemClassType(true)) as string;
