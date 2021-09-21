@@ -108,7 +108,6 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
         clientY,
         commandsMapping.MOUSEMOVE_SUBCOMMAND
       );
-      // await this.communicationService.mouseEvents('CANVAS_EVENT', event);
     });
 
     this.godleyCanvasContainer.addEventListener('mousedown', (event) => {
