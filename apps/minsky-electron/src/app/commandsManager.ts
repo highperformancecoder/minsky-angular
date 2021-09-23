@@ -1495,7 +1495,7 @@ export class CommandsManager {
         itemInfo,
         `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
         600,
-        1000
+        1100
       );
 
       systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;

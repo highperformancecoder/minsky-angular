@@ -41,6 +41,8 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   mouseY: number;
   mouseX: number;
 
+  CSVLines: Array<Array<string>> = [];
+
   public get url(): AbstractControl {
     return this.form.get('url');
   }
@@ -132,13 +134,11 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.height = Math.round(this.canvasContainer.clientHeight);
     this.width = Math.round(this.canvasContainer.clientWidth);
-    // this.initEvents();
+
     (async () => {
       this.valueId = await this.getValueId();
       this.variableValuesSubCommand = `/minsky/variableValues/@elem/${this.valueId}/second`;
-      await this.renderFrame();
     })();
-    // this.initEvents();
   }
 
   async getValueId() {
@@ -150,34 +150,6 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
     return valueId;
   }
-
-  async renderFrame() {
-    if (
-      this.electronService.isElectron &&
-      this.systemWindowId &&
-      this.itemId &&
-      this.height &&
-      this.width &&
-      this.valueId
-    ) {
-      const command = `${
-        this.variableValuesSubCommand
-      }/csvDialog/renderFrame [${this.systemWindowId},${
-        this.leftOffset
-      },${100},${this.width + 17},${this.height - 25}]`;
-
-      await this.electronService.sendMinskyCommandAndRender({
-        command,
-      });
-    }
-  }
-
-  async redraw() {
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${this.variableValuesSubCommand}/csvDialog/requestRedraw`,
-    });
-  }
-  // initEvents() {}
 
   async selectFile() {
     const fileDialog = await this.electronService.remote.dialog.showOpenDialog({
@@ -221,7 +193,14 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    await this.redraw();
+    await this.parseLines();
+    // await this.redraw();
+  }
+
+  async parseLines() {
+    this.CSVLines = (await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.variableValuesSubCommand}/csvDialog/parseLines`,
+    })) as Array<Array<string>>;
   }
 
   updateColumnar() {
@@ -230,7 +209,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
         command: `${this.variableValuesSubCommand}/csvDialog/spec/columnar ${v}`,
       });
 
-      await this.redraw();
+      // await this.redraw();
     });
   }
 
@@ -287,7 +266,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
         command: `${this.variableValuesSubCommand}/csvDialog/colWidth ${v}`,
       });
 
-      await this.redraw();
+      // await this.redraw();
     });
   }
 
@@ -322,55 +301,6 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  /*  initEvents() {
-    this.mouseMove$ = fromEvent<MouseEvent>(
-      this.canvasContainer,
-      'mousemove'
-    ).pipe(sampleTime(30)); /// FPS=1000/sampleTime
-
-    this.mouseMove$.subscribe(async (event: MouseEvent) => {
-      console.log('🚀 ~ this.mouseMove$.subscribe ~ event', event);
-      const { clientX, clientY } = event;
-      this.mouseX = clientX;
-      this.mouseY = clientY;
-      this.sendMouseEvent(
-        clientX,
-        clientY,
-        commandsMapping.MOUSEMOVE_SUBCOMMAND
-      );
-    });
-
-    this.canvasContainer.addEventListener('mousedown', (event) => {
-      console.log('🚀 ~ file: import-csv.component.ts ~ mousedown', event);
-      const { clientX, clientY } = event;
-      this.sendMouseEvent(
-        clientX,
-        clientY,
-        commandsMapping.MOUSEDOWN_SUBCOMMAND
-      );
-    });
-
-    this.canvasContainer.addEventListener('mouseup', (event) => {
-      console.log('🚀 ~ file: import-csv.component.ts ~ mouseup', event);
-      const { clientX, clientY } = event;
-      this.sendMouseEvent(clientX, clientY, commandsMapping.MOUSEUP_SUBCOMMAND);
-    });
-
-    // this.canvasContainer.onwheel = this.onMouseWheelZoom;
-    // document.onkeydown = this.onKeyDown;
-  }
-
-  sendMouseEvent(x: number, y: number, type: string) {
-    const command = `${this.variableValuesSubCommand}/csvDialog/${type} [${x},${y}]`;
-
-    this.electronService.sendMinskyCommandAndRender({
-      command,
-    });
-
-    //TODO: remove this once the rendering issue is fixed
-    // this.redraw();
-  }
- */
   handleSubmit() {
     this.closeWindow();
   }
