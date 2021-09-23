@@ -1,4 +1,9 @@
-import { commandsMapping, events, RecordingStatus } from '@minsky/shared';
+import {
+  commandsMapping,
+  events,
+  normalizeFilePathForPlatform,
+  RecordingStatus,
+} from '@minsky/shared';
 import { ipcMain } from 'electron';
 import { dialog, MessageBoxSyncOptions } from 'electron/main';
 import { createWriteStream, readFileSync, WriteStream } from 'fs';
@@ -61,7 +66,10 @@ export class RecordingManager {
   private static async replay(
     replayRecordingDialog: Electron.OpenDialogReturnValue
   ) {
-    const replayFile = readFileSync(replayRecordingDialog.filePaths[0], {
+    const filePath = normalizeFilePathForPlatform(
+      replayRecordingDialog.filePaths[0]
+    );
+    const replayFile = readFileSync(filePath, {
       encoding: 'utf8',
       flag: 'r',
     });
