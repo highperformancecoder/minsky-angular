@@ -23,10 +23,11 @@
     padding-left: $padding;
     span {
       input[type='checkbox'] {
-        width: auto;
-        padding-left: 0;
+        width: 2rem;
+        padding-left: 0.5rem;
       }
     }
+    margin-bottom: $padding;
   }
   .option-column-two {
     padding-left: $padding;
@@ -56,4 +57,20 @@ select {
 
 .form-buttons {
   margin: 0;
+}
+
+.autocomplete {
+  width: 11.125rem;
+}
+
+::ng-deep .mat-option-text {
+  font-size: 0.7rem !important;
+}
+
+::ng-deep .mat-option {
+  height: 25px !important;
+}
+
+::ng-deep .cdk-overlay-pane {
+  height: 4.5rem !important;
 }

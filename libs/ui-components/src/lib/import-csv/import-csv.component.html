@@ -70,7 +70,14 @@
   <div class="option-column-two">
     <span>
       <label for="column-width">Column Width</label>
-      <input id="column-width" type="number" formControlName="columnWidth" />
+      <input
+        id="column-width"
+        type="number"
+        min="10"
+        max="500"
+        step="10"
+        formControlName="columnWidth"
+      />
     </span>
 
     <span>
@@ -104,10 +111,28 @@
 
     <span>
       <label for="format">Format</label>
-      <input id="format" type="text" formControlName="format" />
+      <input
+        id="format"
+        type="text"
+        formControlName="format"
+        [matAutocomplete]="auto"
+        class="form-control autocomplete"
+        [matAutocompletePosition]="'above'"
+      />
+      <mat-autocomplete [panelWidth]="'10rem'" #auto="matAutocomplete">
+        <ng-container *ngIf="type.value === 'time'">
+          <mat-option *ngFor="let tfs of timeFormatStrings" [value]="tfs.value">
+            {{ tfs.label }}
+          </mat-option>
+        </ng-container>
+      </mat-autocomplete>
     </span>
   </div>
-  <div class="canvas-container"></div>
+  <div
+    #canvasElemRef
+    id="import-csv-canvas-container"
+    class="canvas-container"
+  ></div>
 
   <div class="form-buttons">
     <button mat-raised-button class="btn cancel-btn" (click)="closeWindow()">

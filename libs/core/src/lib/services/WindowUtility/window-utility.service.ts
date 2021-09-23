@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ElectronService } from '../electron/electron.service';
 import { ElectronCanvasOffset } from '@minsky/shared';
-
+import { ElectronService } from '../electron/electron.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +17,7 @@ export class WindowUtilityService {
   private scrollableAreaHeight = null;
   SCROLLABLE_AREA_FACTOR = 10;
 
-  constructor(private electronService: ElectronService) { }
+  constructor(private electronService: ElectronService) {}
 
   private initializeIfNeeded() {
     if (!this.minskyCanvasElement) {
@@ -32,26 +31,32 @@ export class WindowUtilityService {
     );
 
     if (this.minskyCanvasContainer) {
-      const bodyElement = document.getElementsByTagName("body")[0];
-      this.minskyCanvasElement = document.getElementById('main-minsky-canvas') as HTMLCanvasElement;
+      const bodyElement = document.getElementsByTagName('body')[0];
+      this.minskyCanvasElement = document.getElementById(
+        'main-minsky-canvas'
+      ) as HTMLCanvasElement;
 
-      this.minskyCanvasContainer.style.height = (bodyElement.clientHeight - this.minskyCanvasContainer.offsetTop) + "px";
+      this.minskyCanvasContainer.style.height =
+        bodyElement.clientHeight - this.minskyCanvasContainer.offsetTop + 'px';
 
       if (!this.scrollableAreaWidth || !this.scrollableAreaHeight) {
         // Scrollable area size should not change
-        
-        this.scrollableAreaWidth = bodyElement.clientWidth * this.SCROLLABLE_AREA_FACTOR;
-        this.scrollableAreaHeight = bodyElement.clientHeight * this.SCROLLABLE_AREA_FACTOR;
 
-        // No need to set canvas widht / height - we don't use the frontend canvas at all
+        this.scrollableAreaWidth =
+          bodyElement.clientWidth * this.SCROLLABLE_AREA_FACTOR;
+        this.scrollableAreaHeight =
+          bodyElement.clientHeight * this.SCROLLABLE_AREA_FACTOR;
+
+        // No need to set canvas width / height - we don't use the frontend canvas at all
         // this.minskyCanvasElement.width = this.scrollableAreaWidth;
         // this.minskyCanvasElement.height = this.scrollableAreaHeight;
 
         this.minskyCanvasElement.style.width = this.scrollableAreaWidth + 'px';
-        this.minskyCanvasElement.style.height = this.scrollableAreaHeight + 'px';
+        this.minskyCanvasElement.style.height =
+          this.scrollableAreaHeight + 'px';
       }
 
-      // After setting the above, container gets scrollbars, so we need to compute drawableWidth & Height only now (clientWidth/clientHeight change after scrollbar addtion)
+      // After setting the above, container gets scrollbars, so we need to compute drawableWidth & Height only now (clientWidth/clientHeight change after scrollbar addition)
 
       this.drawableWidth = this.minskyCanvasContainer.clientWidth;
       this.drawableHeight = this.minskyCanvasContainer.clientHeight;
@@ -61,12 +66,16 @@ export class WindowUtilityService {
       this.leftOffset = clientRect.left;
       this.topOffset = clientRect.top;
 
-      const currentWindow = this.electronService.remote.getCurrentWindow();
-      const currentWindowSize = currentWindow.getSize()[1];
-      const currentWindowContentSize = currentWindow.getContentSize()[1];
-      const electronMenuBarHeight = currentWindowSize - currentWindowContentSize;
-      this.electronMenuBarHeight = electronMenuBarHeight;
+      this.electronMenuBarHeight = this.getElectronMenuBarHeight();
     }
+  }
+
+  public getElectronMenuBarHeight() {
+    const currentWindow = this.electronService.remote.getCurrentWindow();
+    const currentWindowSize = currentWindow.getSize()[1];
+    const currentWindowContentSize = currentWindow.getContentSize()[1];
+    const electronMenuBarHeight = currentWindowSize - currentWindowContentSize;
+    return electronMenuBarHeight;
   }
 
   public scrollToCenter() {
