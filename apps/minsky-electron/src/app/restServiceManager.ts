@@ -5,6 +5,7 @@ import {
   MainRenderingTabs,
   MinskyProcessPayload,
   MINSKY_SYSTEM_HTTP_SERVER_PATH,
+  normalizeFilePathForPlatform,
   red,
   USE_FRONTEND_DRIVEN_RENDERING,
   USE_MINSKY_SYSTEM_BINARY,
@@ -219,6 +220,7 @@ export class RestServiceManager {
     payload: MinskyProcessPayload
   ): Promise<unknown> {
     let stdinCommand = null;
+
     switch (payload.command) {
       case commandsMapping.LOAD:
         stdinCommand = `${payload.command} "${payload.filePath}"`;
@@ -252,22 +254,25 @@ export class RestServiceManager {
         break;
 
       case commandsMapping.SET_GODLEY_ICON_RESOURCE:
-        stdinCommand = Utility.isDevelopmentMode()
-          ? `${payload.command} "${join(__dirname, 'assets/godley.svg')}"`
-          : `${payload.command} "${join(
-              process.resourcesPath,
-              'assets/godley.svg'
-            )}"`;
+        // eslint-disable-next-line no-case-declarations
+        const godleyIconFilePath = normalizeFilePathForPlatform(
+          Utility.isDevelopmentMode()
+            ? `${join(__dirname, 'assets/godley.svg')}`
+            : `${join(process.resourcesPath, 'assets/godley.svg')}`
+        );
+        stdinCommand = `${payload.command} "${godleyIconFilePath}"`;
 
         break;
 
       case commandsMapping.SET_GROUP_ICON_RESOURCE:
-        stdinCommand = Utility.isDevelopmentMode()
-          ? `${payload.command} "${join(__dirname, 'assets/group.svg')}"`
-          : `${payload.command} "${join(
-              process.resourcesPath,
-              'assets/group.svg'
-            )}"`;
+        // eslint-disable-next-line no-case-declarations
+        const groupIconFilePath = normalizeFilePathForPlatform(
+          Utility.isDevelopmentMode()
+            ? `${join(__dirname, 'assets/group.svg')}`
+            : `${join(process.resourcesPath, 'assets/group.svg')}"`
+        );
+
+        stdinCommand = `${payload.command} "${groupIconFilePath}"`;
         break;
 
       case commandsMapping.REQUEST_REDRAW_SUBCOMMAND:
@@ -395,8 +400,8 @@ export class RestServiceManager {
       if (_dialog.canceled) {
         return;
       }
-
-      this.startMinskyService(_dialog.filePaths[0], true);
+      const filePath = normalizeFilePathForPlatform(_dialog.filePaths[0]);
+      this.startMinskyService(filePath, true);
     } catch (error) {
       console.error(error);
     }

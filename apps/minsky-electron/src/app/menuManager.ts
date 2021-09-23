@@ -1,4 +1,8 @@
-import { availableOperations, commandsMapping } from '@minsky/shared';
+import {
+  availableOperations,
+  commandsMapping,
+  normalizeFilePathForPlatform,
+} from '@minsky/shared';
 import * as debug from 'debug';
 import {
   dialog,
@@ -65,10 +69,10 @@ export class MenuManager {
                 if (_dialog.canceled || !_dialog.filePaths) {
                   return;
                 }
-
-                await CommandsManager.openNamedFile(
+                const filePath = normalizeFilePathForPlatform(
                   _dialog.filePaths[0].toString()
                 );
+                await CommandsManager.openNamedFile(filePath);
               } catch (error) {
                 logError(error);
               }
@@ -168,10 +172,12 @@ export class MenuManager {
                   properties: ['openFile'],
                 });
 
+                const filePath = normalizeFilePathForPlatform(
+                  insertGroupDialog.filePaths[0].toString()
+                );
+
                 await RestServiceManager.handleMinskyProcess({
-                  command: `${
-                    commandsMapping.INSERT_GROUP_FROM_FILE
-                  } "${insertGroupDialog.filePaths[0].toString()}"}`,
+                  command: `${commandsMapping.INSERT_GROUP_FROM_FILE} "${filePath}"}`,
                 });
               } catch (err) {
                 logError('file is not selected', err);

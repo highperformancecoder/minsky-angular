@@ -191,7 +191,9 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const filePath = fileDialog.filePaths[0].toString();
+    const filePath = normalizeFilePathForPlatform(
+      fileDialog.filePaths[0].toString()
+    );
 
     this.url.setValue(filePath);
   }

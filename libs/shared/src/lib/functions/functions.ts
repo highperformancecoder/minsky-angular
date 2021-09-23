@@ -47,3 +47,24 @@ export const getBackgroundStyle = (color) => {
 
   return 'body { background-color: ' + color + '; color: white; }';
 };
+
+export const normalizeFilePathForPlatform = (filePath: string) => {
+  const isWin = process && process.platform === 'win32';
+
+  if (isWin) {
+    // quoted special characters for JSON encoding
+
+    const character = {
+      '\\': '\\\\',
+      '"': '\\"',
+    };
+
+    const normalizedFilePath = filePath.replace(/[\\"]/g, function (c) {
+      return character[c];
+    });
+
+    return normalizedFilePath;
+  }
+
+  return filePath;
+};

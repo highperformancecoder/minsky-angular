@@ -9,6 +9,7 @@ import {
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen } from 'electron';
+import * as log from 'electron-log';
 import * as os from 'os';
 import { join } from 'path';
 import { format } from 'url';
@@ -31,13 +32,22 @@ export class WindowManager {
   }
 
   static getSystemWindowId(menuWindow: BrowserWindow) {
-    const offset = 0;
-    const windowId =
-      os.endianness() == 'LE'
-        ? menuWindow.getNativeWindowHandle().readInt32LE(offset)
-        : menuWindow.getNativeWindowHandle().readInt32BE(offset);
-
-    return windowId;
+    const nativeBuffer = menuWindow.getNativeWindowHandle();
+    switch (nativeBuffer.length) {
+      case 4:
+        return BigInt(
+          os.endianness() == 'LE'
+            ? nativeBuffer.readUInt32LE(0)
+            : nativeBuffer.readUInt32BE(0)
+        );
+      case 8:
+        return os.endianness() == 'LE'
+          ? nativeBuffer.readBigUInt64LE(0)
+          : nativeBuffer.readBigUInt64BE(0);
+      default:
+        log.error('Unsupported native window handle type');
+        return BigInt(0);
+    }
   }
 
   static getMainWindow(): BrowserWindow {
@@ -189,12 +199,13 @@ export class WindowManager {
 
   static onAppLayoutChanged(payload: AppLayoutPayload) {
     console.log(green('Setting the offset and height width of canvas'));
-    
-    
+
     this.topOffset = Math.round(payload.offset.top);
     this.leftOffset = Math.round(payload.offset.left);
     const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
-    this.electronTopOffset = Math.round(payload.offset.electronMenuBarHeight * scaleFactor + payload.offset.top);
+    this.electronTopOffset = Math.round(
+      payload.offset.electronMenuBarHeight * scaleFactor + payload.offset.top
+    );
 
     this.canvasHeight = payload.drawableArea.height;
     this.canvasWidth = payload.drawableArea.width;

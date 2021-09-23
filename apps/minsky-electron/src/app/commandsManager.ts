@@ -6,6 +6,7 @@ import {
   GodleyTableOutputStyles,
   green,
   isEmptyObject,
+  normalizeFilePathForPlatform,
 } from '@minsky/shared';
 import { dialog, ipcMain, Menu, MenuItem } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
@@ -890,6 +891,7 @@ export class CommandsManager {
   }
 
   static async openNamedFile(filePath: string) {
+    filePath = normalizeFilePathForPlatform(filePath);
     const autoBackupFileName = filePath + '#';
 
     await this.createNewSystem();
