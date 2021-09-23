@@ -74,3 +74,17 @@ select {
 ::ng-deep .cdk-overlay-pane {
   height: 4.5rem !important;
 }
+
+table {
+  border-collapse: collapse;
+  user-select: none;
+}
+
+td {
+  border: 1px solid black;
+  user-select: none;
+}
+
+.header {
+  cursor: pointer;
+}

@@ -9,7 +9,7 @@ import {
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from '@minsky/core';
-import { dateTimeFormats } from '@minsky/shared';
+import { dateTimeFormats, normalizeFilePathForPlatform } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
 
@@ -41,7 +41,12 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   mouseY: number;
   mouseX: number;
 
-  CSVLines: Array<Array<string>> = [];
+  parsedLines: string[][] = [];
+  csvCols: any[];
+  selectedHeader = 0;
+  selectedRow = -1;
+  selectedCol = -1;
+  checkboxes: Array<boolean> = [];
 
   public get url(): AbstractControl {
     return this.form.get('url');
@@ -198,9 +203,58 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async parseLines() {
-    this.CSVLines = (await this.electronService.sendMinskyCommandAndRender({
+    this.parsedLines = (await this.electronService.sendMinskyCommandAndRender({
       command: `${this.variableValuesSubCommand}/csvDialog/parseLines`,
-    })) as Array<Array<string>>;
+    })) as string[][];
+
+    this.csvCols = new Array(this.parsedLines[0].length);
+    this.checkboxes = new Array(this.parsedLines[0].length).fill(false);
+  }
+
+  selectHeader(index: number) {
+    this.selectedHeader = index;
+  }
+
+  selectRowAndCol(rowIndex: number, colIndex: number) {
+    this.selectedRow = rowIndex;
+
+    this.selectedCol = colIndex;
+  }
+
+  getColorForCell(rowIndex: number, colIndex: number) {
+    let color = '';
+
+    if (this.selectedHeader === rowIndex) {
+      //header row
+      color = 'blue';
+      if (this.selectedCol >= 0 && this.selectedCol >= colIndex) {
+        color = 'green';
+      }
+    } else {
+      //not a header row
+      if (this.selectedCol >= 0 && this.selectedCol > colIndex) {
+        // column
+        color = 'red';
+      }
+
+      if (
+        this.selectedRow >= 0 &&
+        this.selectedRow >= rowIndex &&
+        this.selectedCol >= colIndex
+      ) {
+        // row
+        color = 'red';
+      }
+    }
+
+    return color;
+  }
+
+  updatedCheckBoxValue(event: any, index: number) {
+    console.log(
+      '🚀 ~ file: app.component.ts ~ line 125 ~ AppComponent ~ updatedCheckBoxValue ~ updatedCheckBoxValue'
+    );
+    this.checkboxes[index] = event.target.checked;
   }
 
   updateColumnar() {

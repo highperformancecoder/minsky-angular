@@ -128,11 +128,62 @@
       </mat-autocomplete>
     </span>
   </div>
-  <div
-    #canvasElemRef
-    id="import-csv-canvas-container"
-    class="canvas-container"
-  ></div>
+  <div #canvasElemRef id="import-csv-canvas-container" class="canvas-container">
+    <table *ngIf="parsedLines.length">
+      <tr>
+        <th>Dimension</th>
+        <td *ngFor="let col of csvCols; let i = index">
+          <input
+            *ngIf="selectedCol >= i"
+            type="checkbox"
+            name="{{ i }}"
+            id="{{ i }}"
+            (change)="updatedCheckBoxValue($event, i)"
+          />
+        </td>
+      </tr>
+
+      <tr>
+        <th>Type</th>
+        <td *ngFor="let col of csvCols; let i = index">
+          <ng-container *ngIf="selectedCol >= i && checkboxes[i]"
+            >type</ng-container
+          >
+        </td>
+      </tr>
+
+      <tr>
+        <th>Format</th>
+        <td *ngFor="let col of csvCols"></td>
+      </tr>
+
+      <tr>
+        <th>Name</th>
+        <td *ngFor="let col of csvCols; let i = index">
+          <ng-container *ngIf="checkboxes[i]">name</ng-container>
+        </td>
+      </tr>
+
+      <tr *ngFor="let row of parsedLines; let rowIndex = index">
+        <th class="header" (click)="selectHeader(rowIndex)">
+          <ng-container *ngIf="rowIndex === selectedHeader"
+            >Header</ng-container
+          >
+        </th>
+        <td
+          *ngFor="let rowElement of row; let colIndex = index"
+          (click)="selectRowAndCol(rowIndex, colIndex)"
+          [ngStyle]="{ color: getColorForCell(rowIndex, colIndex) }"
+        >
+          {{ rowElement }}
+        </td>
+
+        <ng-container *ngIf="!row.length">
+          <td *ngFor="let col of csvCols" [innerHtml]="'&nbsp'"></td>
+        </ng-container>
+      </tr>
+    </table>
+  </div>
 
   <div class="form-buttons">
     <button mat-raised-button class="btn cancel-btn" (click)="closeWindow()">
