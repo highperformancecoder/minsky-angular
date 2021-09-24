@@ -9,7 +9,7 @@ import {
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from '@minsky/core';
-import { dateTimeFormats } from '@minsky/shared';
+import { dateTimeFormats, normalizeFilePathForPlatform } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
 
