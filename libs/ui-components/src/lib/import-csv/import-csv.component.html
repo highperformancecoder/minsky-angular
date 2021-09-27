@@ -1,4 +1,5 @@
 <div class="grid" [formGroup]="form">
+  <!-- HEADER START -->
   <div class="import-container">
     <span class="import">
       <button mat-raised-button type="button" (click)="selectFile()">
@@ -117,7 +118,6 @@
         formControlName="format"
         [matAutocomplete]="auto"
         class="form-control autocomplete"
-        [matAutocompletePosition]="'above'"
       />
       <mat-autocomplete [panelWidth]="'10rem'" #auto="matAutocomplete">
         <ng-container *ngIf="type.value === 'time'">
@@ -128,6 +128,9 @@
       </mat-autocomplete>
     </span>
   </div>
+  <!-- HEADER END -->
+
+  <!-- Table START -->
   <div #canvasElemRef id="import-csv-canvas-container" class="canvas-container">
     <table *ngIf="parsedLines.length">
       <tr>
@@ -146,21 +149,62 @@
       <tr>
         <th>Type</th>
         <td *ngFor="let col of csvCols; let i = index">
-          <ng-container *ngIf="selectedCol >= i && checkboxes[i]"
-            >type</ng-container
-          >
+          <ng-container *ngIf="checkboxes[i]">
+            <select
+              value="{{ CSVDialogSpec?.dimensions[i]?.type }}"
+              (change)="CSVDialogSpec.dimensions[i].type = $event.target.value"
+            >
+              <option value="string">string</option>
+              <option value="value">value</option>
+              <option value="time">time</option>
+            </select>
+          </ng-container>
         </td>
       </tr>
 
       <tr>
         <th>Format</th>
-        <td *ngFor="let col of csvCols"></td>
+        <td *ngFor="let col of csvCols; let i = index">
+          <input
+            *ngIf="checkboxes[i]"
+            [matAutocomplete]="autocompleteFormat"
+            class="form-control autocomplete"
+          />
+          <mat-autocomplete
+            id="format_{{ i }}"
+            [panelWidth]="'10rem'"
+            #autocompleteFormat="matAutocomplete"
+          >
+            <ng-container *ngIf="CSVDialogSpec?.dimensions[i]?.type === 'time'">
+              <mat-option
+                *ngFor="let tfs of timeFormatStrings"
+                [value]="tfs.value"
+              >
+                {{ tfs.label }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </td>
       </tr>
 
       <tr>
         <th>Name</th>
         <td *ngFor="let col of csvCols; let i = index">
-          <ng-container *ngIf="checkboxes[i]">name</ng-container>
+          <input
+            *ngIf="checkboxes[i]"
+            [matAutocomplete]="autocompleteName"
+            class="form-control autocomplete"
+            value="{{ CSVDialogSpec?.dimensionNames[i] }}"
+          />
+          <mat-autocomplete
+            id="name_{{ i }}"
+            [panelWidth]="'10rem'"
+            #autocompleteName="matAutocomplete"
+          >
+            <ng-container>
+              <mat-option> </mat-option>
+            </ng-container>
+          </mat-autocomplete>
         </td>
       </tr>
 
@@ -184,6 +228,7 @@
       </tr>
     </table>
   </div>
+  <!-- Table END -->
 
   <div class="form-buttons">
     <button mat-raised-button class="btn cancel-btn" (click)="closeWindow()">

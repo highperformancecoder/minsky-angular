@@ -234,6 +234,7 @@ export const commandsMapping = {
   ADD_ENTRY_TO_NAMED_ITEMS_MAP: '/minsky/nameCurrentItem',
   REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP: '/minsky/namedItems/@erase', // TODO:: Check syntax, call when any item is deleted
   GET_NAMED_ITEM: '/minsky/namedItems/@elem',
+  CANVAS_ITEM_IMPORT_FROM_CSV: '/minsky/canvas/item/importFromCSV',
 };
 
 export const availableOperations = {

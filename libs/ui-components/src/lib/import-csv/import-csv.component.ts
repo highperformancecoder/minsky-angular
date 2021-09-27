@@ -9,7 +9,11 @@ import {
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from '@minsky/core';
-import { dateTimeFormats, normalizeFilePathForPlatform } from '@minsky/shared';
+import {
+  commandsMapping,
+  dateTimeFormats,
+  normalizeFilePathForPlatform,
+} from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Observable } from 'rxjs';
 
@@ -47,6 +51,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedRow = -1;
   selectedCol = -1;
   checkboxes: Array<boolean> = [];
+  CSVDialogSpec: Record<string, unknown>;
 
   public get url(): AbstractControl {
     return this.form.get('url');
@@ -127,6 +132,12 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     this.updateHorizontalDimension();
     this.updateType();
     this.updateFormat();
+
+    this.form.valueChanges.subscribe(async (_form) => {
+      if (this.url === _form.url) {
+        await this.parseLines();
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -199,7 +210,20 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     await this.parseLines();
+    await this.getCSVDialogSpec();
     // await this.redraw();
+  }
+
+  async getCSVDialogSpec() {
+    this.CSVDialogSpec = JSON.parse(
+      ((await this.electronService.sendMinskyCommandAndRender({
+        command: `${this.variableValuesSubCommand}/csvDialog/spec`,
+      })) as string).replace(/\bnan\b/g, '"nan"')
+    );
+    console.log(
+      '🚀 ~ file: import-csv.component.ts ~ line 215 ~ ImportCsvComponent ~ getCSVDialogSpec ~ this.CSVDialogSpec',
+      this.CSVDialogSpec
+    );
   }
 
   async parseLines() {
@@ -207,18 +231,28 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       command: `${this.variableValuesSubCommand}/csvDialog/parseLines`,
     })) as string[][];
 
-    this.csvCols = new Array(this.parsedLines[0].length);
-    this.checkboxes = new Array(this.parsedLines[0].length).fill(false);
+    this.csvCols = new Array(this.parsedLines[0]?.length);
+    this.checkboxes = new Array(this.parsedLines[0]?.length).fill(false);
   }
 
-  selectHeader(index: number) {
+  async selectHeader(index: number) {
     this.selectedHeader = index;
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.variableValuesSubCommand}/csvDialog/spec/headerRow ${this.selectedHeader}`,
+    });
+
+    // await this.parseLines();
   }
 
-  selectRowAndCol(rowIndex: number, colIndex: number) {
+  async selectRowAndCol(rowIndex: number, colIndex: number) {
     this.selectedRow = rowIndex;
 
     this.selectedCol = colIndex;
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.variableValuesSubCommand}/csvDialog/spec/setDataArea [${rowIndex},${colIndex}]`,
+    });
   }
 
   getColorForCell(rowIndex: number, colIndex: number) {
@@ -251,9 +285,6 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updatedCheckBoxValue(event: any, index: number) {
-    console.log(
-      '🚀 ~ file: app.component.ts ~ line 125 ~ AppComponent ~ updatedCheckBoxValue ~ updatedCheckBoxValue'
-    );
     this.checkboxes[index] = event.target.checked;
   }
 
@@ -355,7 +386,13 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  handleSubmit() {
+  async handleSubmit() {
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${
+        commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
+      } "${JSON.stringify(this.CSVDialogSpec)}"`,
+    });
+
     this.closeWindow();
   }
 
