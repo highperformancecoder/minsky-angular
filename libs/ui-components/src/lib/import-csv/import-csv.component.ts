@@ -250,6 +250,10 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.selectedCol = colIndex;
 
+    for (let i = this.selectedCol + 1; i <= this.parsedLines.length; i++) {
+      this.checkboxes[i] = false;
+    }
+
     await this.electronService.sendMinskyCommandAndRender({
       command: `${this.variableValuesSubCommand}/csvDialog/spec/setDataArea [${rowIndex},${colIndex}]`,
     });

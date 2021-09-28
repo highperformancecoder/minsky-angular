@@ -149,7 +149,7 @@
       <tr>
         <th>Type</th>
         <td *ngFor="let col of csvCols; let i = index">
-          <ng-container *ngIf="checkboxes[i]">
+          <ng-container *ngIf="selectedCol >= i && checkboxes[i]">
             <select
               value="{{ CSVDialogSpec?.dimensions[i]?.type }}"
               (change)="CSVDialogSpec.dimensions[i].type = $event.target.value"
@@ -166,9 +166,10 @@
         <th>Format</th>
         <td *ngFor="let col of csvCols; let i = index">
           <input
-            *ngIf="checkboxes[i]"
+            *ngIf="selectedCol >= i && checkboxes[i]"
+            type="text"
             [matAutocomplete]="autocompleteFormat"
-            class="form-control autocomplete"
+            class="form-control"
           />
           <mat-autocomplete
             id="format_{{ i }}"
@@ -191,9 +192,10 @@
         <th>Name</th>
         <td *ngFor="let col of csvCols; let i = index">
           <input
-            *ngIf="checkboxes[i]"
+            *ngIf="selectedCol >= i && checkboxes[i]"
+            type="text"
             [matAutocomplete]="autocompleteName"
-            class="form-control autocomplete"
+            class="form-control"
             value="{{ CSVDialogSpec?.dimensionNames[i] }}"
           />
           <mat-autocomplete
