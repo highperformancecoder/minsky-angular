@@ -83,6 +83,7 @@ table {
 td {
   border: 1px solid black;
   user-select: none;
+
   input[type='text'] {
     margin: 0;
     width: 100%;
@@ -100,4 +101,8 @@ td {
 
 .header {
   cursor: pointer;
+}
+
+.checkbox-container {
+  text-align: center;
 }

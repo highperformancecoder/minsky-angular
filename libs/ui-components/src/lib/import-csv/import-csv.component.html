@@ -135,7 +135,10 @@
     <table *ngIf="parsedLines.length">
       <tr>
         <th>Dimension</th>
-        <td *ngFor="let col of csvCols; let i = index">
+        <td
+          *ngFor="let col of csvCols; let i = index"
+          class="checkbox-container"
+        >
           <input
             *ngIf="selectedCol >= i"
             type="checkbox"
