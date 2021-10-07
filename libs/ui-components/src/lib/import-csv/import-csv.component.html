@@ -29,7 +29,7 @@
 
     <span>
       <label for="decimal-separator">Decimal Separator</label>
-      <select id="decimal-separator" formControlName="decimalSeparator">
+      <select id="decimal-separator" formControlName="decSeparator">
         <option value=".">.</option>
         <option value=",">,</option>
       </select>
@@ -97,41 +97,45 @@
       <input
         id="horizontal-dimension"
         type="text"
-        formControlName="horizontalDimension"
+        formControlName="horizontalDimName"
       />
     </span>
+    <ng-container [formGroup]="horizontalDimension">
+      <span>
+        <label for="type">Type</label>
+        <select id="type" formControlName="type">
+          <option value="string">string</option>
+          <option value="value">value</option>
+          <option value="time">time</option>
+        </select>
+      </span>
 
-    <span>
-      <label for="type">Type</label>
-      <select id="type" formControlName="type">
-        <option value="string">string</option>
-        <option value="value">value</option>
-        <option value="time">time</option>
-      </select>
-    </span>
-
-    <span>
-      <label for="format">Format</label>
-      <input
-        id="format"
-        type="text"
-        formControlName="format"
-        [matAutocomplete]="auto"
-        class="form-control autocomplete"
-      />
-      <mat-autocomplete [panelWidth]="'10rem'" #auto="matAutocomplete">
-        <ng-container *ngIf="type.value === 'time'">
-          <mat-option *ngFor="let tfs of timeFormatStrings" [value]="tfs.value">
-            {{ tfs.label }}
-          </mat-option>
-        </ng-container>
-      </mat-autocomplete>
-    </span>
+      <span>
+        <label for="format">Format</label>
+        <input
+          id="format"
+          type="text"
+          formControlName="format"
+          [matAutocomplete]="auto"
+          class="form-control autocomplete"
+        />
+        <mat-autocomplete [panelWidth]="'10rem'" #auto="matAutocomplete">
+          <ng-container *ngIf="type.value === 'time'">
+            <mat-option
+              *ngFor="let tfs of timeFormatStrings"
+              [value]="tfs.value"
+            >
+              {{ tfs.label }}
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+      </span>
+    </ng-container>
   </div>
   <!-- HEADER END -->
 
   <!-- Table START -->
-  <div #canvasElemRef id="import-csv-canvas-container" class="canvas-container">
+  <div id="import-csv-canvas-container" class="canvas-container">
     <table *ngIf="parsedLines.length">
       <tr>
         <th>Dimension</th>
@@ -154,8 +158,8 @@
         <td *ngFor="let col of csvCols; let i = index">
           <ng-container *ngIf="selectedCol >= i && checkboxes[i]">
             <select
-              value="{{ CSVDialogSpec?.dimensions[i]?.type }}"
-              (change)="CSVDialogSpec.dimensions[i].type = $event.target.value"
+              value="{{ spec?.dimensions[i]?.type }}"
+              (change)="spec.dimensions[i].type = $event.target.value"
             >
               <option value="string">string</option>
               <option value="value">value</option>
@@ -173,13 +177,14 @@
             type="text"
             [matAutocomplete]="autocompleteFormat"
             class="form-control"
+            (change)="spec.dimensions[i].units = $event.target.value"
           />
           <mat-autocomplete
             id="format_{{ i }}"
             [panelWidth]="'10rem'"
             #autocompleteFormat="matAutocomplete"
           >
-            <ng-container *ngIf="CSVDialogSpec?.dimensions[i]?.type === 'time'">
+            <ng-container *ngIf="spec?.dimensions[i]?.type === 'time'">
               <mat-option
                 *ngFor="let tfs of timeFormatStrings"
                 [value]="tfs.value"
@@ -199,7 +204,7 @@
             type="text"
             [matAutocomplete]="autocompleteName"
             class="form-control"
-            value="{{ CSVDialogSpec?.dimensionNames[i] }}"
+            value="{{ spec?.dimensionNames[i] }}"
           />
           <mat-autocomplete
             id="name_{{ i }}"
