@@ -536,7 +536,9 @@ export class CommandsManager {
   }
 
   static async saveSelectionAsFile(): Promise<void> {
-    const saveDialog = await dialog.showSaveDialog({});
+    const saveDialog = await dialog.showSaveDialog({
+      defaultPath: 'selection.mky',
+    });
 
     if (saveDialog.canceled || !saveDialog.filePath) {
       return;

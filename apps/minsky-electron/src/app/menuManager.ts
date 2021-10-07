@@ -179,6 +179,7 @@ export class MenuManager {
                 await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.INSERT_GROUP_FROM_FILE} "${filePath}"}`,
                 });
+                await CommandsManager.requestRedraw();
               } catch (err) {
                 logError('file is not selected', err);
               }
@@ -383,6 +384,7 @@ export class MenuManager {
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.UNDO} ${numberOfTimes}`,
               });
+              await CommandsManager.requestRedraw();
             },
           },
           {
@@ -393,34 +395,39 @@ export class MenuManager {
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.REDO} ${numberOfTimes}`,
               });
+
+              await CommandsManager.requestRedraw();
             },
           },
           {
             label: 'Cut',
             accelerator: 'CmdOrCtrl + Shift + X',
-            // async click() {
-            //   await RestServiceManager.handleMinskyProcess({
-            //     command: `${commandsMapping.CUT}`,
-            //   });
-            // },
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.CUT}`,
+              });
+              await CommandsManager.requestRedraw();
+            },
           },
           {
             label: 'Copy',
             accelerator: 'CmdOrCtrl + Shift + C',
-            // async click() {
-            //   await RestServiceManager.handleMinskyProcess({
-            //     command: `${commandsMapping.COPY}`,
-            //   });
-            // },
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.COPY}`,
+              });
+              await CommandsManager.requestRedraw();
+            },
           },
           {
             label: 'Paste',
             accelerator: 'CmdOrCtrl + Shift + V',
-            // async click() {
-            //   await RestServiceManager.handleMinskyProcess({
-            //     command: `${commandsMapping.PASTE}`,
-            //   });
-            // },
+            async click() {
+              await RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.PASTE}`,
+              });
+              await CommandsManager.requestRedraw();
+            },
           },
           {
             label: 'Group selection',

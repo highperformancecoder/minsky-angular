@@ -151,14 +151,26 @@ export class CommunicationService {
 
         switch (target) {
           case 'ZOOM_OUT':
-            command = `${command} [${canvasWidth / 2}, ${
-              canvasHeight / 2
-            }, ${ZOOM_OUT_FACTOR}]`;
+            autoHandleMinskyProcess = false;
+            await this.electronService.sendMinskyCommandAndRender({
+              command: `${command} [${canvasWidth / 2}, ${
+                canvasHeight / 2
+              }, ${ZOOM_OUT_FACTOR}]`,
+            });
+            await this.electronService.sendMinskyCommandAndRender({
+              command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
+            });
             break;
           case 'ZOOM_IN':
-            command = `${command} [${canvasWidth / 2}, ${
-              canvasHeight / 2
-            }, ${ZOOM_IN_FACTOR}]`;
+            autoHandleMinskyProcess = false;
+            await this.electronService.sendMinskyCommandAndRender({
+              command: `${command} [${canvasWidth / 2}, ${
+                canvasHeight / 2
+              }, ${ZOOM_IN_FACTOR}]`,
+            });
+            await this.electronService.sendMinskyCommandAndRender({
+              command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
+            });
             break;
           case 'RESET_ZOOM':
             autoHandleMinskyProcess = false;
@@ -335,6 +347,10 @@ export class CommunicationService {
     await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.RECENTER,
     });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
+    });
   }
 
   private async zoomToFit(canvasWidth: number, canvasHeight: number) {
@@ -354,6 +370,9 @@ export class CommunicationService {
     await this.electronService.sendMinskyCommandAndRender({ command });
     await this.electronService.sendMinskyCommandAndRender({
       command: commandsMapping.RECENTER,
+    });
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
     });
   }
 
@@ -502,6 +521,10 @@ export class CommunicationService {
         y,
         zoomFactor,
       },
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
     });
   };
 
