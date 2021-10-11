@@ -982,6 +982,19 @@ export class CommandsManager {
       return;
     }
 
+    // TODO: come up with a better solution
+    switch (classType) {
+      case ClassType.VarConstant:
+        classType = 'Variable:constant';
+        break;
+      case ClassType.Sheet:
+        classType = 'Sheets';
+        break;
+
+      default:
+        break;
+    }
+
     const fileName = HelpFilesManager.getHelpFileForType(classType);
 
     const path = !Utility.isPackaged()
