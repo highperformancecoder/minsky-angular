@@ -233,25 +233,21 @@ export class CommandsManager {
     return;
   }
 
-  static async exportItemAsImage(): Promise<void> {
+  static async exportItemAsImage(
+    extension: string,
+    name: string
+  ): Promise<void> {
     const exportImage = await dialog.showSaveDialog({
       title: 'Export item as...',
-      defaultPath: 'export.svg',
+      defaultPath: `export.${extension}`,
       properties: ['showOverwriteConfirmation', 'createDirectory'],
-      filters: [
-        { extensions: ['svg'], name: 'SVG' },
-        { extensions: ['pdf'], name: 'PDF' },
-        { extensions: ['ps'], name: 'PostScript' },
-        { extensions: ['emf'], name: 'LaTeX' },
-      ],
+      filters: [{ extensions: [extension], name }],
     });
 
     const { canceled, filePath } = exportImage;
     if (canceled || !filePath) {
       return;
     }
-
-    const extension = filePath.split('.').pop();
 
     switch (extension?.toLowerCase()) {
       case 'svg':

@@ -440,10 +440,33 @@ export class ContextMenuManager {
         },
       }),
       new MenuItem({
-        label: 'Export as Image',
-        click: async () => {
-          await CommandsManager.exportItemAsImage();
-        },
+        label: 'Export Image As',
+        submenu: [
+          {
+            label: 'SVG',
+            click: async () => {
+              CommandsManager.exportItemAsImage('svg', 'SVG');
+            },
+          },
+          {
+            label: 'PDF',
+            click: async () => {
+              CommandsManager.exportItemAsImage('pdf', 'PDF');
+            },
+          },
+          {
+            label: 'PostScript',
+            click: async () => {
+              CommandsManager.exportItemAsImage('ps', 'PostScript');
+            },
+          },
+          {
+            label: 'LaTeX',
+            click: async () => {
+              CommandsManager.exportItemAsImage('emf', 'LaTeX');
+            },
+          },
+        ],
       }),
     ];
 
