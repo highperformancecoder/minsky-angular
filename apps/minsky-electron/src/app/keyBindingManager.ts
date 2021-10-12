@@ -130,6 +130,28 @@ export class KeyBindingManager {
 
         break;
 
+      case 'x':
+      case 'X':
+        if (payload.ctrl && !payload.alt && !payload.shift) {
+          await CommandsManager.cut();
+        }
+        break;
+
+      case 'c':
+      case 'C':
+        if (payload.ctrl && !payload.alt && !payload.shift) {
+          await CommandsManager.copy();
+        }
+
+        break;
+
+      case 'v':
+      case 'V':
+        if (payload.ctrl && !payload.alt && !payload.shift) {
+          await CommandsManager.paste();
+        }
+        break;
+
       default:
         executed = false;
         break;

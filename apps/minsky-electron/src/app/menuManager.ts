@@ -401,32 +401,23 @@ export class MenuManager {
           },
           {
             label: 'Cut',
-            accelerator: 'CmdOrCtrl + Shift + X',
+            accelerator: 'CmdOrCtrl + X',
             async click() {
-              await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.CUT}`,
-              });
-              await CommandsManager.requestRedraw();
+              await CommandsManager.cut();
             },
           },
           {
             label: 'Copy',
-            accelerator: 'CmdOrCtrl + Shift + C',
+            accelerator: 'CmdOrCtrl + C',
             async click() {
-              await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.COPY}`,
-              });
-              await CommandsManager.requestRedraw();
+              await CommandsManager.copy();
             },
           },
           {
             label: 'Paste',
-            accelerator: 'CmdOrCtrl + Shift + V',
+            accelerator: 'CmdOrCtrl + V',
             async click() {
-              await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.PASTE}`,
-              });
-              await CommandsManager.requestRedraw();
+              await CommandsManager.paste();
             },
           },
           {

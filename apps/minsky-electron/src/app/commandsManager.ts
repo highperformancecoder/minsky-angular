@@ -1518,4 +1518,25 @@ export class CommandsManager {
       );
     }
   }
+
+  static async cut() {
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CUT}`,
+    });
+    await CommandsManager.requestRedraw();
+  }
+
+  static async copy() {
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.COPY}`,
+    });
+    await CommandsManager.requestRedraw();
+  }
+
+  static async paste() {
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.PASTE}`,
+    });
+    await CommandsManager.requestRedraw();
+  }
 }
