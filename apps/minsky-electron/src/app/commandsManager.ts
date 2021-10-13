@@ -233,25 +233,21 @@ export class CommandsManager {
     return;
   }
 
-  static async exportItemAsImage(): Promise<void> {
+  static async exportItemAsImage(
+    extension: string,
+    name: string
+  ): Promise<void> {
     const exportImage = await dialog.showSaveDialog({
       title: 'Export item as...',
-      defaultPath: 'export.svg',
+      defaultPath: `export.${extension}`,
       properties: ['showOverwriteConfirmation', 'createDirectory'],
-      filters: [
-        { extensions: ['svg'], name: 'SVG' },
-        { extensions: ['pdf'], name: 'PDF' },
-        { extensions: ['ps'], name: 'PostScript' },
-        { extensions: ['emf'], name: 'LaTeX' },
-      ],
+      filters: [{ extensions: [extension], name }],
     });
 
     const { canceled, filePath } = exportImage;
     if (canceled || !filePath) {
       return;
     }
-
-    const extension = filePath.split('.').pop();
 
     switch (extension?.toLowerCase()) {
       case 'svg':
@@ -536,7 +532,9 @@ export class CommandsManager {
   }
 
   static async saveSelectionAsFile(): Promise<void> {
-    const saveDialog = await dialog.showSaveDialog({});
+    const saveDialog = await dialog.showSaveDialog({
+      defaultPath: 'selection.mky',
+    });
 
     if (saveDialog.canceled || !saveDialog.filePath) {
       return;
@@ -978,6 +976,19 @@ export class CommandsManager {
 
     if (!classType) {
       return;
+    }
+
+    // TODO: come up with a better solution
+    switch (classType) {
+      case ClassType.VarConstant:
+        classType = 'Variable:constant';
+        break;
+      case ClassType.Sheet:
+        classType = 'Sheets';
+        break;
+
+      default:
+        break;
     }
 
     const fileName = HelpFilesManager.getHelpFileForType(classType);
@@ -1506,5 +1517,26 @@ export class CommandsManager {
         )
       );
     }
+  }
+
+  static async cut() {
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CUT}`,
+    });
+    await CommandsManager.requestRedraw();
+  }
+
+  static async copy() {
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.COPY}`,
+    });
+    await CommandsManager.requestRedraw();
+  }
+
+  static async paste() {
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.PASTE}`,
+    });
+    await CommandsManager.requestRedraw();
   }
 }

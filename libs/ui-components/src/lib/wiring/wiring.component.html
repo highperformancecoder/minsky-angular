@@ -1,5 +1,49 @@
 <div class="wrapper">
   <div class="wiring-tabs">
+    <button class="tab" (click)="cmService.insertElement('ADD_RAVEL')">
+      <img src="assets/images/icons/ravel.gif" alt="Ravel" title="Ravel" />
+    </button>
+
+    <button class="tab" (click)="cmService.insertElement('ADD_PLOT')">
+      <img
+        src="assets/images/icons/plot.gif"
+        alt="PlotWidget"
+        title="PlotWidget"
+      />
+    </button>
+
+    <button class="tab" (click)="cmService.insertElement('ADD_SHEET')">
+      <img src="assets/images/icons/sheet.gif" alt="Sheet" title="Sheet" />
+    </button>
+
+    <minsky-variable></minsky-variable>
+
+    <button
+      class="tab"
+      (click)="
+        cmService.insertElement('ADD_NOTE', 'Enter your note here', 'string')
+      "
+    >
+      <img src="assets/images/icons/note.gif" alt="Note" title="Note" />
+    </button>
+
+    <button class="tab" (click)="cmService.addOperation('time')">
+      <img src="assets/images/icons/time.gif" alt="Time" title="Time" />
+    </button>
+
+    <ng-container
+      *ngFor="let operation of availableOperationsMapping | keyvalue"
+    >
+      <minsky-available-operations
+        [title]="operation.key"
+        [operations]="operation.value"
+      ></minsky-available-operations>
+    </ng-container>
+
+    <button class="tab" (click)="cmService.insertElement('ADD_SWITCH')">
+      <img src="assets/images/icons/switch.gif" alt="Switch" title="Switch" />
+    </button>
+
     <button class="tab" (click)="cmService.insertElement('ADD_GODLEY')">
       <img
         src="assets/images/icons/bank.gif"
@@ -7,8 +51,6 @@
         title="Godley table"
       />
     </button>
-
-    <minsky-variable></minsky-variable>
 
     <button class="tab" (click)="cmService.addOperation('integrate')">
       <img
@@ -25,54 +67,13 @@
         title="Differentiate"
       />
     </button>
-
-    <button class="tab" (click)="cmService.addOperation('time')">
-      <img src="assets/images/icons/time.gif" alt="Time" title="Time" />
-    </button>
-
-    <ng-container
-      *ngFor="let operation of availableOperationsMapping | keyvalue"
-    >
-      <minsky-available-operations
-        [title]="operation.key"
-        [operations]="operation.value"
-      ></minsky-available-operations>
-    </ng-container>
-
-    <button class="tab" (click)="cmService.addOperation('data')">
-      <img src="assets/images/icons/data.gif" alt="Data" title="Data" />
-    </button>
-
-    <button class="tab" (click)="cmService.insertElement('ADD_SWITCH')">
-      <img src="assets/images/icons/switch.gif" alt="Switch" title="Switch" />
-    </button>
-
-    <button class="tab" (click)="cmService.insertElement('ADD_PLOT')">
-      <img
-        src="assets/images/icons/plot.gif"
-        alt="PlotWidget"
-        title="PlotWidget"
-      />
-    </button>
-
-    <button class="tab" (click)="cmService.insertElement('ADD_SHEET')">
-      <img src="assets/images/icons/sheet.gif" alt="Sheet" title="Sheet" />
-    </button>
-
-    <button
-      class="tab"
-      (click)="
-        cmService.insertElement('ADD_NOTE', 'Enter your note here', 'string')
-      "
-    >
-      <img src="assets/images/icons/note.gif" alt="Note" title="Note" />
-    </button>
-
-    <button class="tab" (click)="cmService.insertElement('ADD_RAVEL')">
-      <img src="assets/images/icons/ravel.gif" alt="Ravel" title="Ravel" />
-    </button>
   </div>
-  <div class="minsky-canvas-container" id="minsky-canvas-container" tabindex="0">
+
+  <div
+    class="minsky-canvas-container"
+    id="minsky-canvas-container"
+    tabindex="0"
+  >
     <canvas
       [ngClass]="{ 'cursor-grab': showDragCursor }"
       id="main-minsky-canvas"

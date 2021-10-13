@@ -3,9 +3,9 @@ import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
 import { events, MainRenderingTabs } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
+import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
 import { AppConfig } from '../environments/environment';
-import { ResizedEvent } from 'angular-resize-event';
 
 const logInfo = debug('minsky:web:info');
 
@@ -55,9 +55,8 @@ export class AppComponent implements AfterViewInit {
   // close modals with ESC
   private handleEscKey() {
     const currentWindow = this.electronService.remote.getCurrentWindow();
-    const isModal = currentWindow.isModal();
 
-    if (isModal) {
+    if (currentWindow.id !== 1) {
       currentWindow.close();
     }
   }
@@ -74,7 +73,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   windowResize(event: ResizedEvent) {
-    logInfo("Got a resize event ", event);
+    logInfo('Got a resize event ', event);
     this.cmService.setWindowSizeAndCanvasOffsets(true);
   }
 
