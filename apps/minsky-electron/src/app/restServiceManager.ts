@@ -20,6 +20,8 @@ import { RecordingManager } from './recordingManager';
 import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
+import * as restService from '../assets/RESTService/addon';
+console.log(restService.call("/minsky/minskyVersion",""));
 
 interface QueueItem {
   promise: Deferred;
@@ -39,6 +41,29 @@ class Deferred {
   }
 }
 
+// TODO refactor to use command and arguments separately
+function callRESTApi(command: string)
+{
+  console.log("in callRESTApi");
+  //if (!command) return "";
+  const commandMetaData = command.split(' ');
+  const [cmd] = commandMetaData;
+  var arg='';
+  if (commandMetaData.length >= 2) {
+      arg=command.substring(command.indexOf(' ') + 1);
+  }
+  try {
+      console.log("calling: "+cmd+":"+arg);
+      const response=restService.call(cmd, arg);
+      console.log("response: "+response);
+      return response;
+  } catch (error) {
+      // TODO - properly alert the user of the error message
+      console.log("Exception caught: "+error?.response?.data);
+      //alert(error?.response?.data);
+  }
+}
+
 export class RestServiceManager {
   static minskyHttpServer: ChildProcess;
   static currentMinskyModelFilePath: string;
@@ -53,7 +78,7 @@ export class RestServiceManager {
   static availableOperationsMappings: Record<string, string[]> = {};
 
   private static currentTab: MainRenderingTabs = MainRenderingTabs.canvas;
-
+    
   public static async setCurrentTab(tab: MainRenderingTabs) {
     if (tab !== this.currentTab) {
       this.currentTab = tab;
@@ -111,18 +136,18 @@ export class RestServiceManager {
   public static async handleMinskyProcess(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
-    const isStartProcessCommand =
-      payload.command === commandsMapping.START_MINSKY_PROCESS;
-
-    if (isStartProcessCommand) {
-      await this.startHttpServer(payload);
-      return;
-    }
-
-    if (!this.minskyHttpServer) {
-      console.error('Minsky HTTP server is not running yet.');
-      return;
-    }
+//    const isStartProcessCommand =
+//      payload.command === commandsMapping.START_MINSKY_PROCESS;
+//
+//    if (isStartProcessCommand) {
+//      await this.startHttpServer(payload);
+//      return;
+//    }
+//
+//    if (!this.minskyHttpServer) {
+//      console.error('Minsky HTTP server is not running yet.');
+//      return;
+//    }
 
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
 
@@ -291,22 +316,27 @@ export class RestServiceManager {
       if (payload.command === commandsMapping.RENDER_FRAME_SUBCOMMAND) {
         // Render called explicitly
         this.render = false;
-        await HttpManager.handleMinskyCommand(this.getRenderCommand());
-        return await HttpManager.handleMinskyCommand(
-          this.getRequestRedrawCommand()
-        );
+          await callRESTApi(this.getRenderCommand());
+          return await callRESTApi(this.getRequestRedrawCommand());
+//          await HttpManager.handleMinskyCommand(this.getRenderCommand());
+//        return await HttpManager.handleMinskyCommand(
+//          this.getRequestRedrawCommand()
+//        );
         // TODO:: Check which of the above command's response we should return
       }
 
-      const res = await HttpManager.handleMinskyCommand(stdinCommand);
+      const res = callRESTApi(this.getRenderCommand());//await HttpManager.handleMinskyCommand(stdinCommand);
       const { render = true } = payload;
 
       if ((USE_FRONTEND_DRIVEN_RENDERING && render) || this.render) {
         const renderCommand = this.getRenderCommand();
 
         if (renderCommand) {
-          await HttpManager.handleMinskyCommand(renderCommand);
-          this.render = false;
+//          await HttpManager.handleMinskyCommand(renderCommand);
+//          await HttpManager.handleMinskyCommand(this.getRequestRedrawCommand());
+            await callRESTApi(this.getRenderCommand());
+            await callRESTApi(this.getRequestRedrawCommand());
+            this.render = false;
         }
       }
       return res;
