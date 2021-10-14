@@ -23,7 +23,7 @@ const GodleyPopupMenuItemIds = {
 }
 
 export class CommandsManager {
-  static activeGodleyWindowMenus = new Map<number, Menu>();
+  static activeGodleyWindowItems = new Map<number, CanvasItem>();
 
   static async getItemAt(
     x: number,
@@ -1080,8 +1080,8 @@ export class CommandsManager {
 
 
   private static onPopupWindowClose(uid: number) {
-    if (uid in this.activeGodleyWindowMenus) {
-      this.activeGodleyWindowMenus.delete(uid);
+    if (uid in this.activeGodleyWindowItems) {
+      this.activeGodleyWindowItems.delete(uid);
     }
   }
 
@@ -1134,7 +1134,7 @@ export class CommandsManager {
             );
 
             const menu = CommandsManager.createMenusForGodleyView(window, itemInfo);
-            this.activeGodleyWindowMenus.set(itemInfo.id, menu);
+            this.activeGodleyWindowItems.set(itemInfo.id, itemInfo);
           }
           break;
 
@@ -1215,6 +1215,7 @@ export class CommandsManager {
   }
 
   private static async toggleMultipleEquitiesColumn() {
+    const scope = this;
     const preferences = StoreManager.store.get('preferences');
     const { enableMultipleEquityColumns } = preferences;
     const newValue = !enableMultipleEquityColumns;
@@ -1224,20 +1225,16 @@ export class CommandsManager {
       enableMultipleEquityColumns: newValue,
     });
 
-    // TODO:: Display of checkbox does not seem to work - atleast in system menu bars at the top
-    // this.activeGodleyWindowMenus.forEach((menu) => {
-    //   if (menu) {
-    //     const item = menu.getMenuItemById(GodleyPopupMenuItemIds.toggleMultipleEquities);
-    // 
-    //     if (item) {
-    //       console.log("Previous value = ", item.checked);
-    //       item.checked = !item.checked;
-    //       // item.checked = newValue;
-    //       console.log("New value = ", item.checked);
-    //     }
+    // CAVEAT 1:: Dynamic menu items (checkbox / visibility etc ) does not seem to work as documented in electron - atleast in system menu bars at the top
+    // CAVEAT 2:: Recreating menu works - but results in flickering (menu popup auto closes after on click - if it is created more than once)
+
+    // this.activeGodleyWindowItems.forEach((itemInfo, windowId) => {
+    //   const window = WindowManager.getWindowByUid(windowId);
+    //   if(window) {
+    //     scope.createMenusForGodleyView(window.context, itemInfo);
     //   }
     // });
-
+   
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.MULTIPLE_EQUITIES} ${newValue}`,
     });
@@ -1249,7 +1246,6 @@ export class CommandsManager {
 
     const preferences = StoreManager.store.get('preferences');
     const { enableMultipleEquityColumns } = preferences;
-    console.log("Value of Multiple Equity Columns = ", enableMultipleEquityColumns);
     const menu = Menu.buildFromTemplate([
       new MenuItem({
         label: 'File',
