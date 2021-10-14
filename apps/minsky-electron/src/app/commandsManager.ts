@@ -17,7 +17,15 @@ import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
+
+const GodleyPopupMenuItemIds = {
+  disableMultipleEquity : 'multiple-equity-column-to-disable',
+  enableMultipleEquity : 'multiple-equity-column-to-enable'
+}
+
 export class CommandsManager {
+  static activeGodleyWindowMenus = new Map<number, Menu>();
+
   static async getItemAt(
     x: number,
     y: number
@@ -1071,12 +1079,20 @@ export class CommandsManager {
     });
   }
 
+
+  private static onPopupWindowClose(uid: number) {
+    if (uid in this.activeGodleyWindowMenus) {
+      this.activeGodleyWindowMenus.delete(uid);
+    }
+  }
+
   private static async initializePopupWindow(
     itemInfo: CanvasItem,
     url: string,
     height = 600,
     width = 800
   ): Promise<Electron.BrowserWindow> {
+    const scope = this;
     // Pushing the current item to namedItems map
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.ADD_ENTRY_TO_NAMED_ITEMS_MAP} "${itemInfo.id}"`,
@@ -1088,8 +1104,9 @@ export class CommandsManager {
       uid: itemInfo.id,
       height,
       width,
+    }, function () {
+      scope.onPopupWindowClose(itemInfo.id);
     });
-
     return window;
   }
 
@@ -1117,7 +1134,8 @@ export class CommandsManager {
               )
             );
 
-            CommandsManager.createMenusForGodleyView(window, itemInfo);
+            const menu = CommandsManager.createMenusForGodleyView(window, itemInfo);
+            this.activeGodleyWindowMenus.set(itemInfo.id, menu);
           }
           break;
 
@@ -1206,13 +1224,19 @@ export class CommandsManager {
       ...preferences,
       enableMultipleEquityColumns: newValue,
     });
+    this.activeGodleyWindowMenus.forEach((menu) => {
+      if (menu) {
+        const disableAction = menu.getMenuItemById(GodleyPopupMenuItemIds.disableMultipleEquity);
+        const enableAction = menu.getMenuItemById(GodleyPopupMenuItemIds.enableMultipleEquity);
+        if (disableAction) {
+          disableAction.visible = newValue; // Supposed to work, but not working (electron issue)!
+        }
+        if (enableAction) {
+          enableAction.visible = !newValue; // Supposed to work, but not working (electron issue)!
+        }
+      }
+    });
 
-    //TODO:: Issue is - following needs to be done for all Godley popup windows! (Are we having atmost one window at a time?). So need to store a list of godley windows or their menus
-    // const menuItemEnabled = menu.getMenuItemById('multiple-equity-column-enabled');
-    // const menuItemDisabled = menu.getMenuItemById('multiple-equity-column-disabled');
-    // menuItemEnabled.visible = newValue;
-    // menuItemDisabled.visible = !newValue;
-    
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.MULTIPLE_EQUITIES} ${newValue}`,
     });
@@ -1221,6 +1245,10 @@ export class CommandsManager {
   private static createMenusForGodleyView(window: Electron.BrowserWindow, itemInfo: CanvasItem) {
     const scope = this;
     const itemAccessor = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second`;
+
+    const preferences = StoreManager.store.get('preferences');
+    const { enableMultipleEquityColumns } = preferences;
+    console.log("Value of Multiple Equity Columns = ", enableMultipleEquityColumns);
     const menu = Menu.buildFromTemplate([
       new MenuItem({
         label: 'File',
@@ -1406,15 +1434,27 @@ export class CommandsManager {
             },
           },
           {
-            label: 'Toggle Multiple Equity Column',
-            // id: 'multiple-equity-column-toggler',
+            label: 'Toggle Multiple Equity Column', // TODO:: Menu item toggling not working due to an electron issue
+            id: GodleyPopupMenuItemIds.disableMultipleEquity,
+            visible: enableMultipleEquityColumns,
             click: async () => {
               scope.toggleMultipleEquitiesColumn();
               await RestServiceManager.handleMinskyProcess({
-                command : `${itemAccessor}/popup/requestRedraw`
+                command: `${itemAccessor}/popup/requestRedraw`
               });
             },
           },
+          {
+            label: 'Toggle Multiple Equity Column',
+            id: GodleyPopupMenuItemIds.enableMultipleEquity,
+            visible: !enableMultipleEquityColumns,
+            click: async () => {
+              scope.toggleMultipleEquitiesColumn();
+              await RestServiceManager.handleMinskyProcess({
+                command: `${itemAccessor}/popup/requestRedraw`
+              });
+            },
+          }
         ],
       }),
       new MenuItem({
@@ -1452,6 +1492,7 @@ export class CommandsManager {
     ]);
 
     window.setMenu(menu);
+    return menu;
   }
 
   static async logSimulation(selectedItems: string[]) {

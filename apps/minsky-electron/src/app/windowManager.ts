@@ -81,12 +81,9 @@ export class WindowManager {
     return initialURL;
   }
 
-  static createMenuPopUpWithRouting(
-    payload: CreateWindowPayload
-  ): BrowserWindow {
-    const window = WindowManager.createWindow(payload);
+  static createMenuPopUpWithRouting(payload: CreateWindowPayload, onCloseCallback? : Function): BrowserWindow {
+    const window = WindowManager.createWindow(payload, onCloseCallback);
     const url = this.getWindowUrl(payload.url);
-
     window.loadURL(url);
     return window;
   }
@@ -114,7 +111,7 @@ export class WindowManager {
     return window;
   }
 
-  private static createWindow(payload: CreateWindowPayload) {
+  private static createWindow(payload: CreateWindowPayload, onCloseCallback? : Function) {
     const { width, height, title, modal, backgroundColor } = payload;
 
     const mainWindow = WindowManager.getMainWindow();
@@ -168,6 +165,9 @@ export class WindowManager {
     logWindows(WindowManager.activeWindows);
 
     childWindow.on('close', () => {
+      if(onCloseCallback) {
+        onCloseCallback();
+      }
       if (payload.uid) {
         this.uidToWindowMap.delete(payload.uid);
       }
