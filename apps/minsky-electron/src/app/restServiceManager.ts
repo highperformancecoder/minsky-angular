@@ -20,7 +20,9 @@ import { RecordingManager } from './recordingManager';
 import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
-import * as restService from '../assets/RESTService/addon';
+
+const  restService = require('bindings')('../apps/minsky-electron/src/assets/RESTService/addon.node');
+// const restService = require('../assets/addon.node');
 console.log(restService.call("/minsky/minskyVersion",""));
 
 interface QueueItem {
@@ -44,8 +46,11 @@ class Deferred {
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string)
 {
-  console.log("in callRESTApi");
-  //if (!command) return "";
+  console.log("In callRESTApi");
+  if (!command) {
+    console.error("callRESTApi caled without any command");
+    return;
+  }
   const commandMetaData = command.split(' ');
   const [cmd] = commandMetaData;
   var arg='';
