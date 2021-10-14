@@ -22,7 +22,6 @@ import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
 const  restService = require('bindings')('../apps/minsky-electron/src/assets/RESTService/addon.node');
-// const restService = require('../assets/addon.node');
 console.log(restService.call("/minsky/minskyVersion",""));
 
 interface QueueItem {
@@ -48,7 +47,7 @@ function callRESTApi(command: string)
 {
   console.log("In callRESTApi");
   if (!command) {
-    console.error("callRESTApi caled without any command");
+    console.error("callRESTApi called without any command");
     return;
   }
   const commandMetaData = command.split(' ');
@@ -58,13 +57,13 @@ function callRESTApi(command: string)
       arg=command.substring(command.indexOf(' ') + 1);
   }
   try {
-      console.log("calling: "+cmd+":"+arg);
+      console.log("calling: "+cmd+": "+arg);
       const response=restService.call(cmd, arg);
       console.log("response: "+response);
       return response;
   } catch (error) {
       // TODO - properly alert the user of the error message
-      console.log("Exception caught: "+error?.response?.data);
+      console.error("Exception caught: "+error?.response?.data);
       //alert(error?.response?.data);
   }
 }
@@ -330,7 +329,7 @@ export class RestServiceManager {
         // TODO:: Check which of the above command's response we should return
       }
 
-      const res = callRESTApi(this.getRenderCommand());//await HttpManager.handleMinskyCommand(stdinCommand);
+      const res = callRESTApi(stdinCommand);//await HttpManager.handleMinskyCommand(stdinCommand);
       const { render = true } = payload;
 
       if ((USE_FRONTEND_DRIVEN_RENDERING && render) || this.render) {
