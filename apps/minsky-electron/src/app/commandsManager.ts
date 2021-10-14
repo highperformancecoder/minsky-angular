@@ -449,9 +449,8 @@ export class CommandsManager {
     );
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
-        numCases + delta
-      }`,
+      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${numCases + delta
+        }`,
     });
 
     CommandsManager.requestRedraw();
@@ -1042,9 +1041,8 @@ export class CommandsManager {
       width: 500,
       height: 650,
       title: `Edit ${itemName || ''}`,
-      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
-        itemName || ''
-      }&isEditMode=true`,
+      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${itemName || ''
+        }&isEditMode=true`,
     });
   }
 
@@ -1105,7 +1103,6 @@ export class CommandsManager {
         case ClassType.GodleyIcon:
           if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
             let systemWindowId = null;
-
             const window = await this.initializePopupWindow(
               itemInfo,
               `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
@@ -1200,252 +1197,261 @@ export class CommandsManager {
     }
   }
 
-  private static createMenusForGodleyView(
-    window: Electron.BrowserWindow,
-    itemInfo: CanvasItem
-  ) {
-    window.setMenu(
-      Menu.buildFromTemplate([
-        new MenuItem({
-          label: 'File',
-          submenu: [
-            {
-              label: 'Export as',
-              submenu: [
-                {
-                  label: 'CSV',
-                  click: async () => {
-                    const command = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/table/exportToCSV`;
+  private static async toggleMultipleEquitiesColumn() {
+    const preferences = StoreManager.store.get('preferences');
+    const { enableMultipleEquityColumns } = preferences;
+    const newValue = !enableMultipleEquityColumns;
 
-                    await CommandsManager.exportGodleyAs('csv', command);
-                  },
+    StoreManager.store.set('preferences', {
+      ...preferences,
+      enableMultipleEquityColumns: newValue,
+    });
+
+    //TODO:: Issue is - following needs to be done for all Godley popup windows! (Are we having atmost one window at a time?). So need to store a list of godley windows or their menus
+    // const menuItemEnabled = menu.getMenuItemById('multiple-equity-column-enabled');
+    // const menuItemDisabled = menu.getMenuItemById('multiple-equity-column-disabled');
+    // menuItemEnabled.visible = newValue;
+    // menuItemDisabled.visible = !newValue;
+    
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.MULTIPLE_EQUITIES} ${newValue}`,
+    });
+  }
+
+  private static createMenusForGodleyView(window: Electron.BrowserWindow, itemInfo: CanvasItem) {
+    const scope = this;
+    const itemAccessor = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second`;
+    const menu = Menu.buildFromTemplate([
+      new MenuItem({
+        label: 'File',
+        submenu: [
+          {
+            label: 'Export as',
+            submenu: [
+              {
+                label: 'CSV',
+                click: async () => {
+                  const command = `${itemAccessor}/table/exportToCSV`;
+
+                  await CommandsManager.exportGodleyAs('csv', command);
                 },
-                {
-                  label: 'LaTeX',
-                  click: async () => {
-                    const command = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/table/exportToLaTeX`;
+              },
+              {
+                label: 'LaTeX',
+                click: async () => {
+                  const command = `${itemAccessor}/table/exportToLaTeX`;
 
-                    await CommandsManager.exportGodleyAs('tex', command);
-                  },
+                  await CommandsManager.exportGodleyAs('tex', command);
                 },
-              ],
-            },
-          ],
-        }),
-        new MenuItem({
-          label: 'Edit',
-          submenu: [
-            {
-              label: 'Undo',
-              accelerator: 'CmdOrCtrl + z',
-              click: async () => {
-                const numberOfTimes = 1;
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/undo ${numberOfTimes}`,
-                });
               },
+            ],
+          },
+        ],
+      }),
+      new MenuItem({
+        label: 'Edit',
+        submenu: [
+          {
+            label: 'Undo',
+            accelerator: 'CmdOrCtrl + z',
+            click: async () => {
+              const numberOfTimes = 1;
+              await RestServiceManager.handleMinskyProcess({
+                command: `${itemAccessor}/popup/undo ${numberOfTimes}`,
+              });
             },
-            {
-              label: 'Redo',
-              accelerator: 'CmdOrCtrl + y',
-              click: async () => {
-                const numberOfTimes = -1;
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/undo ${numberOfTimes}`,
-                });
-              },
+          },
+          {
+            label: 'Redo',
+            accelerator: 'CmdOrCtrl + y',
+            click: async () => {
+              const numberOfTimes = -1;
+              await RestServiceManager.handleMinskyProcess({
+                command: `${itemAccessor}/popup/undo ${numberOfTimes}`,
+              });
             },
-            {
-              label: 'Title',
-              click: () => {
-                CommandsManager.editGodleyTitle(itemInfo.id);
-              },
+          },
+          {
+            label: 'Title',
+            click: () => {
+              CommandsManager.editGodleyTitle(itemInfo.id);
             },
-            {
-              label: 'Cut',
-              role: 'cut',
-              accelerator: 'CmdOrCtrl + x',
-              click: async () => {
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/cut`,
-                });
-              },
+          },
+          {
+            label: 'Cut',
+            role: 'cut',
+            accelerator: 'CmdOrCtrl + x',
+            click: async () => {
+              await RestServiceManager.handleMinskyProcess({
+                command: `${itemAccessor}/popup/cut`,
+              });
             },
-            {
-              label: 'Copy',
-              accelerator: 'CmdOrCtrl + c',
-              click: async () => {
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/copy`,
-                });
-              },
+          },
+          {
+            label: 'Copy',
+            accelerator: 'CmdOrCtrl + c',
+            click: async () => {
+              await RestServiceManager.handleMinskyProcess({
+                command: `${itemAccessor}/popup/copy`,
+              });
             },
-            {
-              label: 'Paste',
-              accelerator: 'CmdOrCtrl + v',
-              click: async () => {
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/paste`,
-                });
-              },
+          },
+          {
+            label: 'Paste',
+            accelerator: 'CmdOrCtrl + v',
+            click: async () => {
+              await RestServiceManager.handleMinskyProcess({
+                command: `${itemAccessor}/popup/paste`,
+              });
             },
-          ],
-        }),
-        new MenuItem({
-          label: 'View',
-          submenu: [
-            {
-              label: 'Zoom In',
-              accelerator: 'CmdOrCtrl + Plus',
-              click: async () => {
-                const zoomFactor = (await RestServiceManager.handleMinskyProcess(
-                  {
-                    command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/zoomFactor`,
-                  }
-                )) as number;
+          },
+        ],
+      }),
+      new MenuItem({
+        label: 'View',
+        submenu: [
+          {
+            label: 'Zoom In',
+            accelerator: 'CmdOrCtrl + Plus',
+            click: async () => {
+              const zoomFactor = (await RestServiceManager.handleMinskyProcess(
+                {
+                  command: `${itemAccessor}/popup/zoomFactor`,
+                }
+              )) as number;
 
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.GET_NAMED_ITEM}/${
-                    itemInfo.id
+              await RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id
                   }/second/popup/zoomFactor ${zoomFactor * 1.1}`,
-                });
-              },
+              });
             },
-            {
-              label: 'Zoom Out',
-              accelerator: 'CmdOrCtrl + Minus',
-              click: async () => {
-                const zoomFactor = (await RestServiceManager.handleMinskyProcess(
-                  {
-                    command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/zoomFactor`,
-                  }
-                )) as number;
+          },
+          {
+            label: 'Zoom Out',
+            accelerator: 'CmdOrCtrl + Minus',
+            click: async () => {
+              const zoomFactor = (await RestServiceManager.handleMinskyProcess(
+                {
+                  command: `${itemAccessor}/popup/zoomFactor`,
+                }
+              )) as number;
 
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.GET_NAMED_ITEM}/${
-                    itemInfo.id
+              await RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id
                   }/second/popup/zoomFactor ${zoomFactor / 1.1}`,
-                });
-              },
+              });
             },
-            {
-              label: 'Reset Zoom',
-              click: async () => {
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/zoomFactor 1`,
-                });
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/requestRedraw`,
-                });
-              },
+          },
+          {
+            label: 'Reset Zoom',
+            click: async () => {
+              await RestServiceManager.handleMinskyProcess({
+                command: `${itemAccessor}/popup/zoomFactor 1`,
+              });
+              await RestServiceManager.handleMinskyProcess({
+                command: `${itemAccessor}/popup/requestRedraw`,
+              });
             },
-          ],
-        }),
-        new MenuItem({
-          label: 'Options',
-          submenu: [
-            {
-              label: 'Show Values',
-              click: async () => {
-                const preferences = StoreManager.store.get('preferences');
+          },
+        ],
+      }),
+      new MenuItem({
+        label: 'Options',
+        submenu: [
+          {
+            label: 'Show Values',
+            click: async () => {
+              const preferences = StoreManager.store.get('preferences');
 
-                const {
-                  godleyTableOutputStyle,
-                  godleyTableShowValues,
-                } = preferences;
+              const {
+                godleyTableOutputStyle,
+                godleyTableShowValues,
+              } = preferences;
 
-                StoreManager.store.set({
-                  preferences: {
-                    ...preferences,
-                    godleyTableShowValues: !godleyTableShowValues,
-                  },
-                });
-
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"}]`,
-                });
-              },
-            },
-            {
-              label: 'DR/CR Style',
-              click: async () => {
-                const preferences = StoreManager.store.get('preferences');
-
-                const {
-                  godleyTableOutputStyle,
-                  godleyTableShowValues,
-                } = preferences;
-
-                const newGodleyTableOutputStyle =
-                  godleyTableOutputStyle === GodleyTableOutputStyles.DRCR
-                    ? GodleyTableOutputStyles.SIGN
-                    : GodleyTableOutputStyles.DRCR;
-
-                StoreManager.store.set('preferences', {
+              StoreManager.store.set({
+                preferences: {
                   ...preferences,
-                  godleyTableOutputStyle: newGodleyTableOutputStyle,
-                });
+                  godleyTableShowValues: !godleyTableShowValues,
+                },
+              });
 
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${newGodleyTableOutputStyle}"}]`,
-                });
-              },
+              await RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"}]`,
+              });
             },
-            {
-              label: 'Enable Multiple Equity Column',
-              click: async () => {
-                const preferences = StoreManager.store.get('preferences');
+          },
+          {
+            label: 'DR/CR Style',
+            click: async () => {
+              const preferences = StoreManager.store.get('preferences');
 
-                const { enableMultipleEquityColumns } = preferences;
+              const {
+                godleyTableOutputStyle,
+                godleyTableShowValues,
+              } = preferences;
 
-                StoreManager.store.set('preferences', {
-                  ...preferences,
-                  enableMultipleEquityColumns: !enableMultipleEquityColumns,
-                });
+              const newGodleyTableOutputStyle =
+                godleyTableOutputStyle === GodleyTableOutputStyles.DRCR
+                  ? GodleyTableOutputStyles.SIGN
+                  : GodleyTableOutputStyles.DRCR;
 
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${
-                    commandsMapping.MULTIPLE_EQUITIES
-                  } ${!enableMultipleEquityColumns}`,
-                });
-              },
+              StoreManager.store.set('preferences', {
+                ...preferences,
+                godleyTableOutputStyle: newGodleyTableOutputStyle,
+              });
+
+              await RestServiceManager.handleMinskyProcess({
+                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${newGodleyTableOutputStyle}"}]`,
+              });
             },
-          ],
-        }),
-        new MenuItem({
-          label: 'Help',
-          submenu: [
-            {
-              label: 'Help',
-              click: () => {
-                const fileName = HelpFilesManager.getHelpFileForType(
-                  ClassType.GodleyIcon
-                );
-
-                const path = !Utility.isPackaged()
-                  ? `${join(
-                      __dirname,
-                      '../../../',
-                      `minsky-docs/minsky/${fileName}`
-                    )}`
-                  : `${join(
-                      process.resourcesPath,
-                      `minsky-docs/minsky/${fileName}`
-                    )}`;
-
-                WindowManager.createMenuPopUpAndLoadFile({
-                  title: `Help: ${ClassType.GodleyIcon}`,
-                  height: 800,
-                  width: 1000,
-                  modal: true,
-                  url: path,
-                });
-              },
+          },
+          {
+            label: 'Toggle Multiple Equity Column',
+            // id: 'multiple-equity-column-toggler',
+            click: async () => {
+              scope.toggleMultipleEquitiesColumn();
+              await RestServiceManager.handleMinskyProcess({
+                command : `${itemAccessor}/popup/requestRedraw`
+              });
             },
-          ],
-        }),
-      ])
-    );
+          },
+        ],
+      }),
+      new MenuItem({
+        label: 'Help',
+        submenu: [
+          {
+            label: 'Help',
+            click: () => {
+              const fileName = HelpFilesManager.getHelpFileForType(
+                ClassType.GodleyIcon
+              );
+
+              const path = !Utility.isPackaged()
+                ? `${join(
+                  __dirname,
+                  '../../../',
+                  `minsky-docs/minsky/${fileName}`
+                )}`
+                : `${join(
+                  process.resourcesPath,
+                  `minsky-docs/minsky/${fileName}`
+                )}`;
+
+              WindowManager.createMenuPopUpAndLoadFile({
+                title: `Help: ${ClassType.GodleyIcon}`,
+                height: 800,
+                width: 1000,
+                modal: true,
+                url: path,
+              });
+            },
+          },
+        ],
+      }),
+    ]);
+
+    window.setMenu(menu);
   }
 
   static async logSimulation(selectedItems: string[]) {

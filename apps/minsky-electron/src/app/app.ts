@@ -188,7 +188,7 @@ export default class App {
     // TODO: test it on Russell's machine
     // TODO: do the same thing for child windows (godley,plot)
     App.mainWindow.on('focus', async () => {
-      console.log(green('on focussssssssssssssssss'));
+      console.log(green('On Focus'));
       await CommandsManager.requestRedraw();
     });
 
