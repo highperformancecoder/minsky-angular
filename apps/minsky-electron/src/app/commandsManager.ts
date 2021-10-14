@@ -19,8 +19,7 @@ import { WindowManager } from './windowManager';
 
 
 const GodleyPopupMenuItemIds = {
-  disableMultipleEquity : 'multiple-equity-column-to-disable',
-  enableMultipleEquity : 'multiple-equity-column-to-enable'
+  toggleMultipleEquities : 'multiple-equity-column-toggler'
 }
 
 export class CommandsManager {
@@ -1224,18 +1223,20 @@ export class CommandsManager {
       ...preferences,
       enableMultipleEquityColumns: newValue,
     });
-    this.activeGodleyWindowMenus.forEach((menu) => {
-      if (menu) {
-        const disableAction = menu.getMenuItemById(GodleyPopupMenuItemIds.disableMultipleEquity);
-        const enableAction = menu.getMenuItemById(GodleyPopupMenuItemIds.enableMultipleEquity);
-        if (disableAction) {
-          disableAction.visible = newValue; // Supposed to work, but not working (electron issue)!
-        }
-        if (enableAction) {
-          enableAction.visible = !newValue; // Supposed to work, but not working (electron issue)!
-        }
-      }
-    });
+
+    // TODO:: Display of checkbox does not seem to work - atleast in system menu bars at the top
+    // this.activeGodleyWindowMenus.forEach((menu) => {
+    //   if (menu) {
+    //     const item = menu.getMenuItemById(GodleyPopupMenuItemIds.toggleMultipleEquities);
+    // 
+    //     if (item) {
+    //       console.log("Previous value = ", item.checked);
+    //       item.checked = !item.checked;
+    //       // item.checked = newValue;
+    //       console.log("New value = ", item.checked);
+    //     }
+    //   }
+    // });
 
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.MULTIPLE_EQUITIES} ${newValue}`,
@@ -1434,9 +1435,10 @@ export class CommandsManager {
             },
           },
           {
-            label: 'Toggle Multiple Equity Column', // TODO:: Menu item toggling not working due to an electron issue
-            id: GodleyPopupMenuItemIds.disableMultipleEquity,
-            visible: enableMultipleEquityColumns,
+            label: 'Toggle Multiple Equity Column', // TODO:: Menu item toggling not working due to an electron issue,
+            type : 'checkbox',
+            checked : enableMultipleEquityColumns,
+            id: GodleyPopupMenuItemIds.toggleMultipleEquities,
             click: async () => {
               scope.toggleMultipleEquitiesColumn();
               await RestServiceManager.handleMinskyProcess({
@@ -1444,17 +1446,17 @@ export class CommandsManager {
               });
             },
           },
-          {
-            label: 'Toggle Multiple Equity Column',
-            id: GodleyPopupMenuItemIds.enableMultipleEquity,
-            visible: !enableMultipleEquityColumns,
-            click: async () => {
-              scope.toggleMultipleEquitiesColumn();
-              await RestServiceManager.handleMinskyProcess({
-                command: `${itemAccessor}/popup/requestRedraw`
-              });
-            },
-          }
+          // {
+          //   label: 'Toggle Multiple Equity Column',
+          //   id: GodleyPopupMenuItemIds.enableMultipleEquity,
+          //   visible: !enableMultipleEquityColumns,
+          //   click: async () => {
+          //     scope.toggleMultipleEquitiesColumn();
+          //     await RestServiceManager.handleMinskyProcess({
+          //       command: `${itemAccessor}/popup/requestRedraw`
+          //     });
+          //   },
+          // }
         ],
       }),
       new MenuItem({
