@@ -4,12 +4,13 @@ import {
   green,
   red,
   rendererAppName,
-  rendererAppURL
+  rendererAppURL,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
+import { CommandsManager } from './commandsManager';
 import { HelpFilesManager } from './HelpFilesManager';
 import { MenuManager } from './menuManager';
 import { startProxyServer } from './proxy';
@@ -183,6 +184,17 @@ export default class App {
     App.mainWindow.on('close', () => {
       WindowManager.activeWindows.delete(App.mainWindow.id);
     });
+
+    // TODO: test it on Russell's machine
+    // TODO: do the same thing for child windows (godley,plot)
+    App.mainWindow.on('focus', async () => {
+      console.log(green('On Focus'));
+      await CommandsManager.requestRedraw();
+    });
+
+    // App.mainWindow.on('blur', async () => {
+    //   await CommandsManager.requestRedraw();
+    // });
 
     App.mainWindow.on('closed', () => {
       // Dereference the window object, usually you would store windows

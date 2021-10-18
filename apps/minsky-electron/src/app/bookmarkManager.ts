@@ -1,5 +1,6 @@
 import { commandsMapping } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
+import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
 
 export class BookmarkManager {
@@ -37,6 +38,7 @@ export class BookmarkManager {
                 await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.GOTO_BOOKMARK} ${index}`,
                 });
+                await CommandsManager.requestRedraw();
               },
             })
           );
@@ -55,6 +57,7 @@ export class BookmarkManager {
                     command: commandsMapping.BOOKMARK_LIST,
                   }
                 );
+                await CommandsManager.requestRedraw();
 
                 await this.populateBookmarks(_bookmarks as string[]);
               },

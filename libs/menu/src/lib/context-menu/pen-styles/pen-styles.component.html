@@ -19,7 +19,7 @@
             [type]="hidden"
             class="palette"
           />
-          <input type="text" formControlName="width" class="palette width" />
+          <input type="number" formControlName="width" class="palette width" />
 
           <select class="palette" name="i" id="i" formControlName="dashStyle">
             <option *ngFor="let item of dashStyles" [value]="item">

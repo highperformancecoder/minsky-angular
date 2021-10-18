@@ -198,6 +198,14 @@ export class PlotWidgetOptionsComponent implements OnInit, OnDestroy {
       await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/logy ${this.yLogScale.value}`,
       });
+
+      await this.electronService.sendMinskyCommandAndRender({
+        command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/${commandsMapping.REQUEST_REDRAW_SUBCOMMAND}`,
+      });
+
+      await this.electronService.sendMinskyCommandAndRender({
+        command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
+      });
     }
 
     this.closeWindow();
