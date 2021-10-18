@@ -549,6 +549,8 @@ export class CommunicationService {
       mouseY: this.mouseY,
     };
 
+    // console.table(payload);
+
     if (event.shiftKey) {
       this.isShiftPressed = true;
       this.showDragCursor$.next(true);
