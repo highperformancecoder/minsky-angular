@@ -1,4 +1,4 @@
-<input type="text" [formControl]="nameControl" />
+<input type="text" [formControl]="nameControl" #inputElement />
 <div class="buttons">
   <button mat-raised-button type="submit" class="submit" (click)="handleSave()">
     {{ positiveActionLabel }}

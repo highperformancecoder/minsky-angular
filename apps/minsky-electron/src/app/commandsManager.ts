@@ -17,10 +17,9 @@ import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
-
 const GodleyPopupMenuItemIds = {
-  toggleMultipleEquities : 'multiple-equity-column-toggler'
-}
+  toggleMultipleEquities: 'multiple-equity-column-toggler',
+};
 
 export class CommandsManager {
   static activeGodleyWindowItems = new Map<number, CanvasItem>();
@@ -456,8 +455,9 @@ export class CommandsManager {
     );
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${numCases + delta
-        }`,
+      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
+        numCases + delta
+      }`,
     });
 
     CommandsManager.requestRedraw();
@@ -1048,8 +1048,9 @@ export class CommandsManager {
       width: 500,
       height: 650,
       title: `Edit ${itemName || ''}`,
-      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${itemName || ''
-        }&isEditMode=true`,
+      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
+        itemName || ''
+      }&isEditMode=true`,
     });
   }
 
@@ -1078,7 +1079,6 @@ export class CommandsManager {
     });
   }
 
-
   private static onPopupWindowClose(uid: number) {
     if (uid in this.activeGodleyWindowItems) {
       this.activeGodleyWindowItems.delete(uid);
@@ -1091,21 +1091,23 @@ export class CommandsManager {
     height = 600,
     width = 800
   ): Promise<Electron.BrowserWindow> {
-    const scope = this;
     // Pushing the current item to namedItems map
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.ADD_ENTRY_TO_NAMED_ITEMS_MAP} "${itemInfo.id}"`,
     });
 
-    const window = WindowManager.createMenuPopUpWithRouting({
-      title: itemInfo.classType + ' : ' + itemInfo.id,
-      url: url,
-      uid: itemInfo.id,
-      height,
-      width,
-    }, function () {
-      scope.onPopupWindowClose(itemInfo.id);
-    });
+    const window = WindowManager.createMenuPopUpWithRouting(
+      {
+        title: itemInfo.classType + ' : ' + itemInfo.id,
+        url: url,
+        uid: itemInfo.id,
+        height,
+        width,
+      },
+      () => {
+        this.onPopupWindowClose(itemInfo.id);
+      }
+    );
     return window;
   }
 
@@ -1133,7 +1135,8 @@ export class CommandsManager {
               )
             );
 
-            const menu = CommandsManager.createMenusForGodleyView(window, itemInfo);
+            CommandsManager.createMenusForGodleyView(window, itemInfo);
+
             this.activeGodleyWindowItems.set(itemInfo.id, itemInfo);
           }
           break;
@@ -1215,7 +1218,6 @@ export class CommandsManager {
   }
 
   private static async toggleMultipleEquitiesColumn() {
-    const scope = this;
     const preferences = StoreManager.store.get('preferences');
     const { enableMultipleEquityColumns } = preferences;
     const newValue = !enableMultipleEquityColumns;
@@ -1225,27 +1227,23 @@ export class CommandsManager {
       enableMultipleEquityColumns: newValue,
     });
 
-    // CAVEAT 1:: Dynamic menu items (checkbox / visibility etc ) does not seem to work as documented in electron - atleast in system menu bars at the top
-    // CAVEAT 2:: Recreating menu works - but results in flickering (menu popup auto closes after on click - if it is created more than once)
-
-    // this.activeGodleyWindowItems.forEach((itemInfo, windowId) => {
-    //   const window = WindowManager.getWindowByUid(windowId);
-    //   if(window) {
-    //     scope.createMenusForGodleyView(window.context, itemInfo);
-    //   }
-    // });
-   
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.MULTIPLE_EQUITIES} ${newValue}`,
     });
   }
 
-  private static createMenusForGodleyView(window: Electron.BrowserWindow, itemInfo: CanvasItem) {
-    const scope = this;
+  private static createMenusForGodleyView(
+    window: Electron.BrowserWindow,
+    itemInfo: CanvasItem
+  ) {
     const itemAccessor = `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second`;
 
     const preferences = StoreManager.store.get('preferences');
-    const { enableMultipleEquityColumns } = preferences;
+    const {
+      enableMultipleEquityColumns,
+      godleyTableShowValues,
+      godleyTableOutputStyle,
+    } = preferences;
     const menu = Menu.buildFromTemplate([
       new MenuItem({
         label: 'File',
@@ -1339,15 +1337,14 @@ export class CommandsManager {
             label: 'Zoom In',
             accelerator: 'CmdOrCtrl + Plus',
             click: async () => {
-              const zoomFactor = (await RestServiceManager.handleMinskyProcess(
-                {
-                  command: `${itemAccessor}/popup/zoomFactor`,
-                }
-              )) as number;
+              const zoomFactor = (await RestServiceManager.handleMinskyProcess({
+                command: `${itemAccessor}/popup/zoomFactor`,
+              })) as number;
 
               await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id
-                  }/second/popup/zoomFactor ${zoomFactor * 1.1}`,
+                command: `${commandsMapping.GET_NAMED_ITEM}/${
+                  itemInfo.id
+                }/second/popup/zoomFactor ${zoomFactor * 1.1}`,
               });
             },
           },
@@ -1355,15 +1352,14 @@ export class CommandsManager {
             label: 'Zoom Out',
             accelerator: 'CmdOrCtrl + Minus',
             click: async () => {
-              const zoomFactor = (await RestServiceManager.handleMinskyProcess(
-                {
-                  command: `${itemAccessor}/popup/zoomFactor`,
-                }
-              )) as number;
+              const zoomFactor = (await RestServiceManager.handleMinskyProcess({
+                command: `${itemAccessor}/popup/zoomFactor`,
+              })) as number;
 
               await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id
-                  }/second/popup/zoomFactor ${zoomFactor / 1.1}`,
+                command: `${commandsMapping.GET_NAMED_ITEM}/${
+                  itemInfo.id
+                }/second/popup/zoomFactor ${zoomFactor / 1.1}`,
               });
             },
           },
@@ -1385,6 +1381,8 @@ export class CommandsManager {
         submenu: [
           {
             label: 'Show Values',
+            type: 'checkbox',
+            checked: godleyTableShowValues,
             click: async () => {
               const preferences = StoreManager.store.get('preferences');
 
@@ -1407,6 +1405,8 @@ export class CommandsManager {
           },
           {
             label: 'DR/CR Style',
+            type: 'checkbox',
+            checked: godleyTableOutputStyle === 'DRCR',
             click: async () => {
               const preferences = StoreManager.store.get('preferences');
 
@@ -1431,28 +1431,17 @@ export class CommandsManager {
             },
           },
           {
-            label: 'Toggle Multiple Equity Column', // TODO:: Menu item toggling not working due to an electron issue,
-            type : 'checkbox',
-            checked : enableMultipleEquityColumns,
+            label: 'Toggle Multiple Equity Column',
+            type: 'checkbox',
+            checked: enableMultipleEquityColumns,
             id: GodleyPopupMenuItemIds.toggleMultipleEquities,
             click: async () => {
-              scope.toggleMultipleEquitiesColumn();
+              this.toggleMultipleEquitiesColumn();
               await RestServiceManager.handleMinskyProcess({
-                command: `${itemAccessor}/popup/requestRedraw`
+                command: `${itemAccessor}/popup/requestRedraw`,
               });
             },
           },
-          // {
-          //   label: 'Toggle Multiple Equity Column',
-          //   id: GodleyPopupMenuItemIds.enableMultipleEquity,
-          //   visible: !enableMultipleEquityColumns,
-          //   click: async () => {
-          //     scope.toggleMultipleEquitiesColumn();
-          //     await RestServiceManager.handleMinskyProcess({
-          //       command: `${itemAccessor}/popup/requestRedraw`
-          //     });
-          //   },
-          // }
         ],
       }),
       new MenuItem({
@@ -1467,14 +1456,14 @@ export class CommandsManager {
 
               const path = !Utility.isPackaged()
                 ? `${join(
-                  __dirname,
-                  '../../../',
-                  `minsky-docs/minsky/${fileName}`
-                )}`
+                    __dirname,
+                    '../../../',
+                    `minsky-docs/minsky/${fileName}`
+                  )}`
                 : `${join(
-                  process.resourcesPath,
-                  `minsky-docs/minsky/${fileName}`
-                )}`;
+                    process.resourcesPath,
+                    `minsky-docs/minsky/${fileName}`
+                  )}`;
 
               WindowManager.createMenuPopUpAndLoadFile({
                 title: `Help: ${ClassType.GodleyIcon}`,

@@ -152,6 +152,7 @@ export default class App {
     if (Utility.isDevelopmentMode()) {
       App.mainWindow.webContents.openDevTools({
         mode: 'detach',
+        activate: false,
       });
     }
 
