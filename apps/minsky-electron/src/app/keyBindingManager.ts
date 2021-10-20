@@ -80,6 +80,15 @@ export class KeyBindingManager {
     let executed = true;
     const { key } = payload;
 
+    // console.log(
+    //   '🚀 ~ file: keyBindingManager.ts ~ line 184 ~ KeyBindingManager ~ handleOnKeyPressFallback ~ key',
+    //   key
+    // );
+    // console.log(
+    //   '🚀 ~ file: keyBindingManager.ts ~ line 185 ~ KeyBindingManager ~ handleOnKeyPressFallback ~ this.multipleKeyString',
+    //   this.multipleKeyString
+    // );
+
     switch (key) {
       case 'Backspace':
       case 'Delete':
@@ -130,6 +139,51 @@ export class KeyBindingManager {
 
         break;
 
+      case 'x':
+      case 'X':
+        if (
+          !this.multipleKeyString &&
+          payload.ctrl &&
+          !payload.alt &&
+          !payload.shift
+        ) {
+          await CommandsManager.cut();
+        } else {
+          executed = false;
+        }
+
+        break;
+
+      case 'c':
+      case 'C':
+        if (
+          !this.multipleKeyString &&
+          payload.ctrl &&
+          !payload.alt &&
+          !payload.shift
+        ) {
+          await CommandsManager.copy();
+        } else {
+          executed = false;
+        }
+
+        break;
+
+      case 'v':
+      case 'V':
+        if (
+          !this.multipleKeyString &&
+          payload.ctrl &&
+          !payload.alt &&
+          !payload.shift
+        ) {
+          await CommandsManager.paste();
+        } else {
+          executed = false;
+        }
+
+        break;
+
       default:
         executed = false;
         break;
@@ -144,6 +198,7 @@ export class KeyBindingManager {
 
     if (!executed && key.length === 1 && key.match(asciiRegex)) {
       this.multipleKeyString += key;
+
       if (!this.isMultipleKeyModalOpen) {
         this.multipleKeyWindow = WindowManager.createMenuPopUpWithRouting({
           title: 'Text Input',
@@ -167,6 +222,10 @@ export class KeyBindingManager {
             this.multipleKeyString
           )}`
         );
+        // console.log(
+        //   '🚀 ~ file: keyBindingManager.ts ~ line 226 ~ KeyBindingManager ~ handleOnKeyPressFallback ~ this.multipleKeyString',
+        //   green(this.multipleKeyString)
+        // );
       }
     }
 

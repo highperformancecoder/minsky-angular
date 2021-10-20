@@ -82,11 +82,12 @@ export class WindowManager {
   }
 
   static createMenuPopUpWithRouting(
-    payload: CreateWindowPayload
+    payload: CreateWindowPayload,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    onCloseCallback?: Function
   ): BrowserWindow {
-    const window = WindowManager.createWindow(payload);
+    const window = WindowManager.createWindow(payload, onCloseCallback);
     const url = this.getWindowUrl(payload.url);
-
     window.loadURL(url);
     return window;
   }
@@ -114,7 +115,11 @@ export class WindowManager {
     return window;
   }
 
-  private static createWindow(payload: CreateWindowPayload) {
+  private static createWindow(
+    payload: CreateWindowPayload,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    onCloseCallback?: Function
+  ) {
     const { width, height, title, modal, backgroundColor } = payload;
 
     const mainWindow = WindowManager.getMainWindow();
@@ -146,7 +151,9 @@ export class WindowManager {
       event.preventDefault();
     });
 
-    childWindow.webContents.openDevTools({ mode: 'detach' }); // command to inspect popup
+    // if (Utility.isDevelopmentMode()) {
+    //   childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
+    // }
 
     const windowId = WindowManager.getSystemWindowId(childWindow);
 
@@ -168,6 +175,9 @@ export class WindowManager {
     logWindows(WindowManager.activeWindows);
 
     childWindow.on('close', () => {
+      if (onCloseCallback) {
+        onCloseCallback();
+      }
       if (payload.uid) {
         this.uidToWindowMap.delete(payload.uid);
       }

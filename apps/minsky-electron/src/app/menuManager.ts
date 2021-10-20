@@ -179,6 +179,7 @@ export class MenuManager {
                 await RestServiceManager.handleMinskyProcess({
                   command: `${commandsMapping.INSERT_GROUP_FROM_FILE} "${filePath}"}`,
                 });
+                await CommandsManager.requestRedraw();
               } catch (err) {
                 logError('file is not selected', err);
               }
@@ -383,6 +384,7 @@ export class MenuManager {
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.UNDO} ${numberOfTimes}`,
               });
+              await CommandsManager.requestRedraw();
             },
           },
           {
@@ -393,34 +395,30 @@ export class MenuManager {
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.REDO} ${numberOfTimes}`,
               });
+
+              await CommandsManager.requestRedraw();
             },
           },
           {
             label: 'Cut',
-            accelerator: 'CmdOrCtrl + Shift + X',
-            // async click() {
-            //   await RestServiceManager.handleMinskyProcess({
-            //     command: `${commandsMapping.CUT}`,
-            //   });
-            // },
+            accelerator: 'CmdOrCtrl + X',
+            async click() {
+              await CommandsManager.cut();
+            },
           },
           {
             label: 'Copy',
-            accelerator: 'CmdOrCtrl + Shift + C',
-            // async click() {
-            //   await RestServiceManager.handleMinskyProcess({
-            //     command: `${commandsMapping.COPY}`,
-            //   });
-            // },
+            accelerator: 'CmdOrCtrl + C',
+            async click() {
+              await CommandsManager.copy();
+            },
           },
           {
             label: 'Paste',
-            accelerator: 'CmdOrCtrl + Shift + V',
-            // async click() {
-            //   await RestServiceManager.handleMinskyProcess({
-            //     command: `${commandsMapping.PASTE}`,
-            //   });
-            // },
+            accelerator: 'CmdOrCtrl + V',
+            async click() {
+              await CommandsManager.paste();
+            },
           },
           {
             label: 'Group selection',

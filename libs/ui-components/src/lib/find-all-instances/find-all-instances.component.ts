@@ -25,7 +25,10 @@ export class FindAllInstancesComponent {
   async goToInstance(i) {
     if (this.electronService.isElectron) {
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.VARIABLE_INSTANCE_LIST_GOTO_INSTANCE} ${i}}`,
+        command: `${commandsMapping.VARIABLE_INSTANCE_LIST_GOTO_INSTANCE} ${i}`,
+      });
+      await this.electronService.sendMinskyCommandAndRender({
+        command: `${commandsMapping.REQUEST_REDRAW_SUBCOMMAND} `,
       });
     }
   }

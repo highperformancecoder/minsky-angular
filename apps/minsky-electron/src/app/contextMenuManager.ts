@@ -207,6 +207,8 @@ export class ContextMenuManager {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_PUSH_DEFINING_VARS_TO_TAB,
           });
+
+          await CommandsManager.requestRedraw();
         },
       }),
       new MenuItem({
@@ -215,6 +217,8 @@ export class ContextMenuManager {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_SHOW_DEFINING_VARS_ON_CANVAS,
           });
+
+          await CommandsManager.requestRedraw();
         },
       }),
       new MenuItem({
@@ -436,10 +440,33 @@ export class ContextMenuManager {
         },
       }),
       new MenuItem({
-        label: 'Export as Image',
-        click: async () => {
-          await CommandsManager.exportItemAsImage();
-        },
+        label: 'Export Image As',
+        submenu: [
+          {
+            label: 'SVG',
+            click: async () => {
+              CommandsManager.exportItemAsImage('svg', 'SVG');
+            },
+          },
+          {
+            label: 'PDF',
+            click: async () => {
+              CommandsManager.exportItemAsImage('pdf', 'PDF');
+            },
+          },
+          {
+            label: 'PostScript',
+            click: async () => {
+              CommandsManager.exportItemAsImage('ps', 'PostScript');
+            },
+          },
+          {
+            label: 'LaTeX',
+            click: async () => {
+              CommandsManager.exportItemAsImage('emf', 'LaTeX');
+            },
+          },
+        ],
       }),
     ];
 
@@ -636,6 +663,8 @@ export class ContextMenuManager {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ZOOM_TO_DISPLAY,
           });
+
+          await CommandsManager.requestRedraw();
         },
       }),
       new MenuItem({
@@ -644,6 +673,8 @@ export class ContextMenuManager {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_REMOVE_DISPLAY_PLOT,
           });
+
+          await CommandsManager.requestRedraw();
         },
       }),
       new MenuItem({

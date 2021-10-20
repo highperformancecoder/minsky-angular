@@ -271,7 +271,9 @@ export class RestServiceManager {
         break;
 
       case commandsMapping.MOUSEDOWN_SUBCOMMAND:
-        stdinCommand = `${this.currentTab}/${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
+        const actualMouseDownCmd = (this.currentTab === MainRenderingTabs.canvas)? payload.command : commandsMapping.MOUSEDOWN_FOR_OTHER_TABS;
+
+        stdinCommand = `${this.currentTab}/${actualMouseDownCmd} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
 
       case commandsMapping.MOUSEUP_SUBCOMMAND:
