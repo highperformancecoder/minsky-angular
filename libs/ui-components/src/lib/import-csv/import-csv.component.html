@@ -144,7 +144,7 @@
           class="checkbox-container"
         >
           <input
-            *ngIf="selectedCol >= i"
+            *ngIf="selectedCol > i"
             type="checkbox"
             name="{{ i }}"
             id="{{ i }}"
@@ -156,7 +156,7 @@
       <tr>
         <th>Type</th>
         <td *ngFor="let col of csvCols; let i = index">
-          <ng-container *ngIf="selectedCol >= i && checkboxes[i]">
+          <ng-container *ngIf="selectedCol > i && checkboxes[i]">
             <select
               value="{{ spec?.dimensions[i]?.type }}"
               (change)="spec.dimensions[i].type = $event.target.value"
@@ -173,7 +173,7 @@
         <th>Format</th>
         <td *ngFor="let col of csvCols; let i = index">
           <input
-            *ngIf="selectedCol >= i && checkboxes[i]"
+            *ngIf="selectedCol > i && checkboxes[i]"
             type="text"
             [matAutocomplete]="autocompleteFormat"
             class="form-control"
@@ -200,7 +200,7 @@
         <th>Name</th>
         <td *ngFor="let col of csvCols; let i = index">
           <input
-            *ngIf="selectedCol >= i && checkboxes[i]"
+            *ngIf="selectedCol > i && checkboxes[i]"
             type="text"
             [matAutocomplete]="autocompleteName"
             class="form-control"

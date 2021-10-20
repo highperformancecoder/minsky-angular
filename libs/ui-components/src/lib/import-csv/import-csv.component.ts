@@ -122,7 +122,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
       await this.getCSVDialogSpec();
       this.updateForm();
-      this.selectedHeader = (this.spec.headerRow as number) + 1;
+      this.selectedHeader = this.spec.headerRow as number;
     })();
   }
 
@@ -209,13 +209,13 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     })) as string[][];
 
     this.csvCols = new Array(this.parsedLines[0]?.length);
-    this.checkboxes = new Array(this.parsedLines[0]?.length).fill(false);
+    this.checkboxes = new Array(this.parsedLines[0]?.length - 1).fill(false);
   }
 
   async selectHeader(index: number) {
     this.selectedHeader = index;
 
-    this.spec.headerRow = this.selectedHeader - 1;
+    this.spec.headerRow = this.selectedHeader;
 
     // await this.parseLines();
   }
@@ -225,7 +225,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.selectedCol = colIndex;
 
-    for (let i = this.selectedCol + 1; i <= this.parsedLines.length; i++) {
+    for (let i = this.selectedCol + 1; i <= this.parsedLines.length - 1; i++) {
       this.checkboxes[i] = false;
     }
 
@@ -240,7 +240,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.selectedHeader === rowIndex) {
       //header row
       color = 'blue';
-      if (this.selectedCol >= 0 && this.selectedCol >= colIndex) {
+      if (this.selectedCol >= 0 && this.selectedCol > colIndex) {
         color = 'green';
       }
     } else {
@@ -250,11 +250,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
         color = 'red';
       }
 
-      if (
-        this.selectedRow >= 0 &&
-        this.selectedRow >= rowIndex &&
-        this.selectedCol >= colIndex
-      ) {
+      if (this.selectedRow >= 0 && this.selectedRow > rowIndex) {
         // row
         color = 'red';
       }
@@ -263,15 +259,21 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     return color;
   }
 
-  updateDimCols(checkboxes: boolean[]) {
-    this.spec.dimensionCols;
-    // TODO:
-    // this.checkboxes.fil
+  updateDimColsAndNames() {
+    this.spec.dimensionCols = this.checkboxes
+      .map((c, index) => (c ? index : false))
+      .filter((v) => v !== false);
+
+    this.spec.dimensionNames = this.parsedLines[
+      this.selectedHeader
+    ].filter((value, index) =>
+      (this.spec.dimensionCols as number[]).includes(index)
+    );
   }
 
   updatedCheckBoxValue(event: any, index: number) {
     this.checkboxes[index] = event.target.checked;
-    this.updateDimCols(this.checkboxes);
+    this.updateDimColsAndNames();
   }
 
   // TODO: do we need this?
@@ -299,8 +301,8 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       horizontalDimension,
     } = this.form.value;
 
-    const spec = Object.assign(
-      this.spec,
+    const spec = {
+      ...this.spec,
       columnar,
       decSeparator,
       duplicateKeyAction,
@@ -310,8 +312,8 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       missingValue,
       quote,
       separator,
-      horizontalDimension
-    );
+      horizontalDimension,
+    };
     console.log(
       '🚀 ~ file: import-csv.component.ts ~ line 327 ~ ImportCsvComponent ~ handleSubmit ~ spec',
       spec
