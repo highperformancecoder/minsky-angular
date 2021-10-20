@@ -13,16 +13,22 @@ import {
 import { ChildProcess, spawn } from 'child_process';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
+// import { HttpManager } from './httpManager';
 import { join } from 'path';
-import { HttpManager } from './httpManager';
 import { PortsManager } from './portsManager';
 import { RecordingManager } from './recordingManager';
 import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
-const  restService = require('bindings')('../apps/minsky-electron/src/assets/RESTService/addon.node');
-console.log(restService.call("/minsky/minskyVersion",""));
+const addonPath = Utility.isPackaged()
+  ? join(process.resourcesPath, 'node-addons', 'addon.node')
+  : __dirname + '/../../../node-addons/addon.node';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const restService = require('bindings')(addonPath);
+
+console.log(restService.call('/minsky/minskyVersion', ''));
 
 interface QueueItem {
   promise: Deferred;
@@ -43,28 +49,27 @@ class Deferred {
 }
 
 // TODO refactor to use command and arguments separately
-function callRESTApi(command: string)
-{
-  console.log("In callRESTApi");
+function callRESTApi(command: string) {
+  console.log('In callRESTApi');
   if (!command) {
-    console.error("callRESTApi called without any command");
+    console.error('callRESTApi called without any command');
     return;
   }
   const commandMetaData = command.split(' ');
   const [cmd] = commandMetaData;
-  var arg='';
+  let arg = '';
   if (commandMetaData.length >= 2) {
-      arg=command.substring(command.indexOf(' ') + 1);
+    arg = command.substring(command.indexOf(' ') + 1);
   }
   try {
-      console.log("calling: "+cmd+": "+arg);
-      const response=restService.call(cmd, arg);
-      console.log("response: "+response);
-      return response;
+    console.log('calling: ' + cmd + ': ' + arg);
+    const response = restService.call(cmd, arg);
+    console.log('response: ' + response);
+    return response;
   } catch (error) {
-      // TODO - properly alert the user of the error message
-      console.error("Exception caught: "+error?.response?.data);
-      //alert(error?.response?.data);
+    // TODO - properly alert the user of the error message
+    console.error('Exception caught: ' + error?.response?.data);
+    //alert(error?.response?.data);
   }
 }
 
@@ -82,7 +87,7 @@ export class RestServiceManager {
   static availableOperationsMappings: Record<string, string[]> = {};
 
   private static currentTab: MainRenderingTabs = MainRenderingTabs.canvas;
-    
+
   public static async setCurrentTab(tab: MainRenderingTabs) {
     if (tab !== this.currentTab) {
       this.currentTab = tab;
@@ -140,18 +145,18 @@ export class RestServiceManager {
   public static async handleMinskyProcess(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
-//    const isStartProcessCommand =
-//      payload.command === commandsMapping.START_MINSKY_PROCESS;
-//
-//    if (isStartProcessCommand) {
-//      await this.startHttpServer(payload);
-//      return;
-//    }
-//
-//    if (!this.minskyHttpServer) {
-//      console.error('Minsky HTTP server is not running yet.');
-//      return;
-//    }
+    //    const isStartProcessCommand =
+    //      payload.command === commandsMapping.START_MINSKY_PROCESS;
+    //
+    //    if (isStartProcessCommand) {
+    //      await this.startHttpServer(payload);
+    //      return;
+    //    }
+    //
+    //    if (!this.minskyHttpServer) {
+    //      console.error('Minsky HTTP server is not running yet.');
+    //      return;
+    //    }
 
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
 
@@ -271,7 +276,11 @@ export class RestServiceManager {
         break;
 
       case commandsMapping.MOUSEDOWN_SUBCOMMAND:
-        const actualMouseDownCmd = (this.currentTab === MainRenderingTabs.canvas)? payload.command : commandsMapping.MOUSEDOWN_FOR_OTHER_TABS;
+        // eslint-disable-next-line no-case-declarations
+        const actualMouseDownCmd =
+          this.currentTab === MainRenderingTabs.canvas
+            ? payload.command
+            : commandsMapping.MOUSEDOWN_FOR_OTHER_TABS;
 
         stdinCommand = `${this.currentTab}/${actualMouseDownCmd} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
@@ -322,27 +331,27 @@ export class RestServiceManager {
       if (payload.command === commandsMapping.RENDER_FRAME_SUBCOMMAND) {
         // Render called explicitly
         this.render = false;
-          await callRESTApi(this.getRenderCommand());
-          return await callRESTApi(this.getRequestRedrawCommand());
-//          await HttpManager.handleMinskyCommand(this.getRenderCommand());
-//        return await HttpManager.handleMinskyCommand(
-//          this.getRequestRedrawCommand()
-//        );
+        await callRESTApi(this.getRenderCommand());
+        return await callRESTApi(this.getRequestRedrawCommand());
+        //          await HttpManager.handleMinskyCommand(this.getRenderCommand());
+        //        return await HttpManager.handleMinskyCommand(
+        //          this.getRequestRedrawCommand()
+        //        );
         // TODO:: Check which of the above command's response we should return
       }
 
-      const res = callRESTApi(stdinCommand);//await HttpManager.handleMinskyCommand(stdinCommand);
+      const res = callRESTApi(stdinCommand); //await HttpManager.handleMinskyCommand(stdinCommand);
       const { render = true } = payload;
 
       if ((USE_FRONTEND_DRIVEN_RENDERING && render) || this.render) {
         const renderCommand = this.getRenderCommand();
 
         if (renderCommand) {
-//          await HttpManager.handleMinskyCommand(renderCommand);
-//          await HttpManager.handleMinskyCommand(this.getRequestRedrawCommand());
-            await callRESTApi(this.getRenderCommand());
-            await callRESTApi(this.getRequestRedrawCommand());
-            this.render = false;
+          //          await HttpManager.handleMinskyCommand(renderCommand);
+          //          await HttpManager.handleMinskyCommand(this.getRequestRedrawCommand());
+          await callRESTApi(this.getRenderCommand());
+          await callRESTApi(this.getRequestRedrawCommand());
+          this.render = false;
         }
       }
       return res;
