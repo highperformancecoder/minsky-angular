@@ -7,6 +7,7 @@ import {
   dateTimeFormats,
   normalizeFilePathForPlatform,
 } from '@minsky/shared';
+import { MessageBoxSyncOptions } from 'electron/renderer';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
 @AutoUnsubscribe()
@@ -325,14 +326,54 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
           commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
         } "${JSON.stringify(spec).replace(/\b"nan"\b/g, 'nan')}"`,
       })
-      .catch((error) => {
+      .catch(async (error) => {
         console.log(
           '🚀 ~ file: import-csv.component.ts ~ line 325 ~ ImportCsvComponent ~ handleSubmit ~ error',
           error
         );
+
+        const positiveResponseText = 'Yes';
+        const negativeResponseText = 'No';
+
+        const options: MessageBoxSyncOptions = {
+          buttons: [positiveResponseText, negativeResponseText],
+          message: 'Something went wrong... Do you want to generate a report?',
+          title: 'Generate Report ?',
+        };
+
+        const index = this.electronService.remote.dialog.showMessageBoxSync(
+          options
+        );
+
+        if (options.buttons[index] === positiveResponseText) {
+          await this.doReport();
+        }
       });
 
+    //TODO: uncomment this
     // this.closeWindow();
+  }
+
+  async doReport() {
+    const {
+      canceled,
+      filePath,
+    } = await this.electronService.remote.dialog.showSaveDialog({
+      defaultPath: `${this.url}-error-report.csv`,
+      title: 'Save report',
+      properties: ['showOverwriteConfirmation', 'createDirectory'],
+      filters: [{ extensions: ['csv'], name: 'CSV' }],
+    });
+
+    if (canceled || !filePath) {
+      return;
+    }
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.variableValuesSubCommand}/csvDialog/reportFromFile ["${this.url}","${filePath}"]`,
+    });
+
+    return;
   }
 
   closeWindow() {
