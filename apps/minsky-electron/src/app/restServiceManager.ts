@@ -60,10 +60,11 @@ function callRESTApi(command: string)
       console.log("calling: "+cmd+": "+arg);
       const response=restService.call(cmd, arg);
       console.log("response: "+response);
-      return response;
+      return JSON.parse(response);
   } catch (error) {
       // TODO - properly alert the user of the error message
       console.error("Exception caught: "+error?.response?.data);
+      return {};
       //alert(error?.response?.data);
   }
 }
