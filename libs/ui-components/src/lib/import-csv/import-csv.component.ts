@@ -31,6 +31,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedCol = -1;
   checkboxes: Array<boolean> = [];
   spec: Record<string, unknown>;
+  initialDimensionNames: string[];
 
   public get url(): AbstractControl {
     return this.form.get('url');
@@ -201,6 +202,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
         command: `${this.variableValuesSubCommand}/csvDialog/spec`,
       })) as string).replace(/\bnan\b/g, '"nan"')
     );
+    this.initialDimensionNames = this.spec.dimensionNames as string[];
     console.log('🚀 this.CSVDialogSpec', this.spec);
   }
 
@@ -248,7 +250,10 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       //not a header row
       if (this.selectedCol >= 0 && this.selectedCol > colIndex) {
         // column
-        color = 'red';
+        color =
+          this.checkboxes[colIndex] && this.selectedHeader !== rowIndex
+            ? 'blue'
+            : 'red';
       }
 
       if (this.selectedRow >= 0 && this.selectedRow > rowIndex) {

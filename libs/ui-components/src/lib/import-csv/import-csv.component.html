@@ -183,6 +183,7 @@
             id="format_{{ i }}"
             [panelWidth]="'10rem'"
             #autocompleteFormat="matAutocomplete"
+            (optionSelected)="spec.dimensions[i].units = $event.option.value"
           >
             <ng-container *ngIf="spec?.dimensions[i]?.type === 'time'">
               <mat-option
@@ -204,16 +205,18 @@
             type="text"
             [matAutocomplete]="autocompleteName"
             class="form-control"
-            value="{{ spec?.dimensionNames[i] }}"
+            value="{{ initialDimensionNames[i] }}"
+            (change)="spec.dimensionNames[i] = $event.target.value"
           />
           <mat-autocomplete
             id="name_{{ i }}"
             [panelWidth]="'10rem'"
             #autocompleteName="matAutocomplete"
+            (optionSelected)="spec.dimensionNames[i] = $event.option.value"
           >
-            <ng-container>
-              <mat-option> </mat-option>
-            </ng-container>
+            <mat-option [value]="parsedLines[selectedHeader][i]"
+              >{{ parsedLines[selectedHeader][i] }}
+            </mat-option>
           </mat-autocomplete>
         </td>
       </tr>
@@ -232,9 +235,9 @@
           {{ rowElement }}
         </td>
 
-        <ng-container *ngIf="!row.length">
+        <!-- <ng-container *ngIf="!row.length">
           <td *ngFor="let col of csvCols" [innerHtml]="'&nbsp'"></td>
-        </ng-container>
+        </ng-container> -->
       </tr>
     </table>
   </div>
