@@ -27,7 +27,12 @@ const addonDir=Utility.isPackaged()
   : '../../../node-addons';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const restService = require('bindings')(join(addonDir,'minskyRESTService.node'));
+let restService = null;
+try {
+  restService = require('bindings')(join(addonDir,'minskyRESTService.node'));
+} catch (error) {
+  log.error(error);
+}
 
 console.log(restService.call('/minsky/minskyVersion', ''));
 
