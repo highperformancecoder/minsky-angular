@@ -21,12 +21,13 @@ import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
-const addonPath = Utility.isPackaged()
-  ? join(process.resourcesPath, 'node-addons', 'addon.node')
-  : '/../../../node-addons/addon.node';
+console.log('resources path='+process.resourcesPath);
+const addonDir=Utility.isPackaged()
+  ? join(process.resourcesPath, 'node-addons')
+  : '../../../node-addons';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const restService = require('bindings')(addonPath);
+const restService = require('bindings')(join(addonDir,'minskyRESTService.node'));
 
 console.log(restService.call('/minsky/minskyVersion', ''));
 
