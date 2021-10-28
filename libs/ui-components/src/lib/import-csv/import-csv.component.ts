@@ -1,17 +1,14 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from '@minsky/core';
-import { dateTimeFormats, normalizeFilePathForPlatform } from '@minsky/shared';
+import {
+  commandsMapping,
+  dateTimeFormats,
+  normalizeFilePathForPlatform,
+} from '@minsky/shared';
+import { MessageBoxSyncOptions } from 'electron/renderer';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-import { Observable } from 'rxjs';
 
 @AutoUnsubscribe()
 @Component({
@@ -20,26 +17,21 @@ import { Observable } from 'rxjs';
   styleUrls: ['./import-csv.component.scss'],
 })
 export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('canvasElemRef') canvasElemRef: ElementRef;
-  canvasContainer: HTMLElement;
-
   form: FormGroup;
 
   itemId: number;
   systemWindowId: number;
   valueId: number;
   variableValuesSubCommand: string;
-
-  leftOffset = 0;
-  topOffset: number;
-  height: number;
-  width: number;
-
-  mouseMove$: Observable<MouseEvent>;
-
   timeFormatStrings = dateTimeFormats;
-  mouseY: number;
-  mouseX: number;
+  parsedLines: string[][] = [];
+  csvCols: any[];
+  selectedHeader = 0;
+  selectedRow = -1;
+  selectedCol = -1;
+  checkboxes: Array<boolean> = [];
+  spec: Record<string, unknown>;
+  initialDimensionNames: string[];
 
   public get url(): AbstractControl {
     return this.form.get('url');
@@ -50,8 +42,8 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   public get separator(): AbstractControl {
     return this.form.get('separator');
   }
-  public get decimalSeparator(): AbstractControl {
-    return this.form.get('decimalSeparator');
+  public get decSeparator(): AbstractControl {
+    return this.form.get('decSeparator');
   }
   public get escape(): AbstractControl {
     return this.form.get('escape');
@@ -71,14 +63,17 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   public get duplicateKeyAction(): AbstractControl {
     return this.form.get('duplicateKeyAction');
   }
+  public get horizontalDimName(): AbstractControl {
+    return this.form.get('horizontalDimName');
+  }
   public get horizontalDimension(): AbstractControl {
     return this.form.get('horizontalDimension');
   }
   public get type(): AbstractControl {
-    return this.form.get('type');
+    return this.horizontalDimension.get('type');
   }
   public get format(): AbstractControl {
-    return this.form.get('format');
+    return this.horizontalDimension.get('format');
   }
 
   constructor(
@@ -91,54 +86,58 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.form = new FormGroup({
-      url: new FormControl(''),
       columnar: new FormControl(false),
-      separator: new FormControl(','),
-      decimalSeparator: new FormControl('.'),
+      decSeparator: new FormControl('.'),
+      duplicateKeyAction: new FormControl('throwException'),
       escape: new FormControl(''),
-      quote: new FormControl('"'),
+      horizontalDimName: new FormControl('?'),
       mergeDelimiters: new FormControl(false),
       missingValue: new FormControl('nan'),
+      quote: new FormControl('"'),
+      separator: new FormControl(','),
+
+      // review
+      url: new FormControl(''),
       columnWidth: new FormControl(50),
-      duplicateKeyAction: new FormControl('throwException'),
-      horizontalDimension: new FormControl('?'),
-      type: new FormControl('string'),
-      format: new FormControl(''),
+      horizontalDimension: new FormGroup({
+        type: new FormControl('string'),
+        format: new FormControl(''),
+      }),
     });
   }
 
   ngOnInit() {
-    this.updateColumnar();
-    this.updateSeparator();
-    this.updateDecimalSeparator();
-    this.updateEscape();
-    this.updateQuote();
-    this.updateMergeDelimiters();
-    this.updateMissingValue();
-    this.updateColumnWidth();
-    this.updateDuplicateKeyAction();
-    this.updateHorizontalDimension();
-    this.updateType();
-    this.updateFormat();
+    // this.updateColumnWidth();
+
+    // ??
+    this.form.valueChanges.subscribe(async (_form) => {
+      if (this.url === _form.url) {
+        await this.parseLines();
+      }
+    });
   }
 
   ngAfterViewInit() {
-    this.canvasContainer = this.canvasElemRef.nativeElement;
-
-    const clientRect = this.canvasContainer.getBoundingClientRect();
-
-    this.leftOffset = Math.round(clientRect.left);
-    this.topOffset = 200;
-
-    this.height = Math.round(this.canvasContainer.clientHeight);
-    this.width = Math.round(this.canvasContainer.clientWidth);
-    // this.initEvents();
     (async () => {
       this.valueId = await this.getValueId();
       this.variableValuesSubCommand = `/minsky/variableValues/@elem/${this.valueId}/second`;
-      await this.renderFrame();
+
+      await this.getCSVDialogSpec();
+      this.updateForm();
+      this.selectedHeader = this.spec.headerRow as number;
     })();
-    // this.initEvents();
+  }
+
+  updateForm() {
+    this.columnar.setValue(this.spec.columnar);
+    this.decSeparator.setValue(this.spec.decSeparator);
+    this.duplicateKeyAction.setValue(this.spec.duplicateKeyAction);
+    this.escape.setValue(this.spec.escape);
+    this.horizontalDimName.setValue(this.spec.horizontalDimName);
+    this.mergeDelimiters.setValue(this.spec.mergeDelimiters);
+    this.missingValue.setValue(this.spec.missingValue);
+    this.quote.setValue(this.spec.quote);
+    this.separator.setValue(this.spec.separator);
   }
 
   async getValueId() {
@@ -150,34 +149,6 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
     return valueId;
   }
-
-  async renderFrame() {
-    if (
-      this.electronService.isElectron &&
-      this.systemWindowId &&
-      this.itemId &&
-      this.height &&
-      this.width &&
-      this.valueId
-    ) {
-      const command = `${
-        this.variableValuesSubCommand
-      }/csvDialog/renderFrame [${this.systemWindowId},${
-        this.leftOffset
-      },${100},${this.width + 17},${this.height - 25}]`;
-
-      await this.electronService.sendMinskyCommandAndRender({
-        command,
-      });
-    }
-  }
-
-  async redraw() {
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${this.variableValuesSubCommand}/csvDialog/requestRedraw`,
-    });
-  }
-  // initEvents() {}
 
   async selectFile() {
     const fileDialog = await this.electronService.remote.dialog.showOpenDialog({
@@ -221,158 +192,193 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    await this.redraw();
+    await this.parseLines();
+    // await this.redraw();
   }
 
-  updateColumnar() {
-    this.columnar.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/columnar ${v}`,
+  async getCSVDialogSpec() {
+    this.spec = JSON.parse(
+      ((await this.electronService.sendMinskyCommandAndRender({
+        command: `${this.variableValuesSubCommand}/csvDialog/spec`,
+      })) as string).replace(/\bnan\b/g, '"nan"')
+    );
+    this.initialDimensionNames = this.spec.dimensionNames as string[];
+    console.log('🚀 this.CSVDialogSpec', this.spec);
+  }
+
+  async parseLines() {
+    this.parsedLines = (await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.variableValuesSubCommand}/csvDialog/parseLines`,
+    })) as string[][];
+
+    this.csvCols = new Array(this.parsedLines[0]?.length);
+    this.checkboxes = new Array(this.parsedLines[0]?.length - 1).fill(false);
+  }
+
+  async selectHeader(index: number) {
+    this.selectedHeader = index;
+
+    this.spec.headerRow = this.selectedHeader;
+
+    // await this.parseLines();
+  }
+
+  async selectRowAndCol(rowIndex: number, colIndex: number) {
+    this.selectedRow = rowIndex;
+
+    this.selectedCol = colIndex;
+
+    for (let i = this.selectedCol + 1; i <= this.parsedLines.length - 1; i++) {
+      this.checkboxes[i] = false;
+    }
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.variableValuesSubCommand}/csvDialog/spec/setDataArea [${rowIndex},${colIndex}]`,
+    });
+  }
+
+  getColorForCell(rowIndex: number, colIndex: number) {
+    let color = '';
+
+    if (this.selectedHeader === rowIndex) {
+      //header row
+      color = 'blue';
+      if (this.selectedCol >= 0 && this.selectedCol > colIndex) {
+        color = 'green';
+      }
+    } else {
+      //not a header row
+      if (this.selectedCol >= 0 && this.selectedCol > colIndex) {
+        // column
+        color =
+          this.checkboxes[colIndex] && this.selectedHeader !== rowIndex
+            ? 'blue'
+            : 'red';
+      }
+
+      if (this.selectedRow >= 0 && this.selectedRow > rowIndex) {
+        // row
+        color = 'red';
+      }
+    }
+
+    return color;
+  }
+
+  updateDimColsAndNames() {
+    this.spec.dimensionCols = this.checkboxes
+      .map((c, index) => (c ? index : false))
+      .filter((v) => v !== false);
+
+    this.spec.dimensionNames = this.parsedLines[
+      this.selectedHeader
+    ].filter((value, index) =>
+      (this.spec.dimensionCols as number[]).includes(index)
+    );
+  }
+
+  updatedCheckBoxValue(event: any, index: number) {
+    this.checkboxes[index] = event.target.checked;
+    this.updateDimColsAndNames();
+  }
+
+  // TODO: do we need this?
+  // updateColumnWidth() {
+  //   this.columnWidth.valueChanges.subscribe(async (v) => {
+  //     await this.electronService.sendMinskyCommandAndRender({
+  //       command: `${this.variableValuesSubCommand}/csvDialog/colWidth ${v}`,
+  //     });
+
+  //     // await this.redraw();
+  //   });
+  // }
+
+  async handleSubmit() {
+    const {
+      columnar,
+      decSeparator,
+      duplicateKeyAction,
+      escape,
+      horizontalDimName,
+      mergeDelimiters,
+      missingValue,
+      quote,
+      separator,
+      horizontalDimension,
+    } = this.form.value;
+
+    const spec = {
+      ...this.spec,
+      columnar,
+      decSeparator,
+      duplicateKeyAction,
+      escape,
+      horizontalDimName,
+      mergeDelimiters,
+      missingValue,
+      quote,
+      separator,
+      horizontalDimension,
+    };
+    console.log(
+      '🚀 ~ file: import-csv.component.ts ~ line 327 ~ ImportCsvComponent ~ handleSubmit ~ spec',
+      spec
+    );
+
+    await this.electronService
+      .sendMinskyCommandAndRender({
+        command: `${
+          commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
+        } "${JSON.stringify(spec).replace(/\b"nan"\b/g, 'nan')}"`,
+      })
+      .catch(async (error) => {
+        console.log(
+          '🚀 ~ file: import-csv.component.ts ~ line 325 ~ ImportCsvComponent ~ handleSubmit ~ error',
+          error
+        );
+
+        const positiveResponseText = 'Yes';
+        const negativeResponseText = 'No';
+
+        const options: MessageBoxSyncOptions = {
+          buttons: [positiveResponseText, negativeResponseText],
+          message: 'Something went wrong... Do you want to generate a report?',
+          title: 'Generate Report ?',
+        };
+
+        const index = this.electronService.remote.dialog.showMessageBoxSync(
+          options
+        );
+
+        if (options.buttons[index] === positiveResponseText) {
+          await this.doReport();
+        }
       });
 
-      await this.redraw();
-    });
+    //TODO: uncomment this
+    // this.closeWindow();
   }
 
-  updateSeparator() {
-    this.separator.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/separator "${v}"`,
-      });
-    });
-  }
-
-  updateDecimalSeparator() {
-    this.decimalSeparator.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/decSeparator "${v}"`,
-      });
-    });
-  }
-
-  updateEscape() {
-    this.escape.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/escape "${v}"`,
-      });
-    });
-  }
-
-  updateQuote() {
-    this.quote.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/quote "${v}"`,
-      });
-    });
-  }
-
-  updateMergeDelimiters() {
-    this.mergeDelimiters.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/mergeDelimiters ${v}`,
-      });
-    });
-  }
-  updateMissingValue() {
-    this.missingValue.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/missingValue "${v}"`,
-      });
-    });
-  }
-
-  updateColumnWidth() {
-    this.columnWidth.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/colWidth ${v}`,
-      });
-
-      await this.redraw();
-    });
-  }
-
-  updateDuplicateKeyAction() {
-    this.duplicateKeyAction.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/duplicateKeyAction "${v}"`,
-      });
-    });
-  }
-
-  updateHorizontalDimension() {
-    this.horizontalDimension.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/horizontalDimension "${v}"`,
-      });
-    });
-  }
-  updateType() {
-    this.type.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/horizontalDimension/type "${v}"`,
-      });
-    });
-  }
-
-  updateFormat() {
-    this.format.valueChanges.subscribe(async (v) => {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec/horizontalDimension/units "${v}"`,
-      });
-    });
-  }
-
-  /*  initEvents() {
-    this.mouseMove$ = fromEvent<MouseEvent>(
-      this.canvasContainer,
-      'mousemove'
-    ).pipe(sampleTime(30)); /// FPS=1000/sampleTime
-
-    this.mouseMove$.subscribe(async (event: MouseEvent) => {
-      console.log('🚀 ~ this.mouseMove$.subscribe ~ event', event);
-      const { clientX, clientY } = event;
-      this.mouseX = clientX;
-      this.mouseY = clientY;
-      this.sendMouseEvent(
-        clientX,
-        clientY,
-        commandsMapping.MOUSEMOVE_SUBCOMMAND
-      );
+  async doReport() {
+    const {
+      canceled,
+      filePath,
+    } = await this.electronService.remote.dialog.showSaveDialog({
+      defaultPath: `${this.url}-error-report.csv`,
+      title: 'Save report',
+      properties: ['showOverwriteConfirmation', 'createDirectory'],
+      filters: [{ extensions: ['csv'], name: 'CSV' }],
     });
 
-    this.canvasContainer.addEventListener('mousedown', (event) => {
-      console.log('🚀 ~ file: import-csv.component.ts ~ mousedown', event);
-      const { clientX, clientY } = event;
-      this.sendMouseEvent(
-        clientX,
-        clientY,
-        commandsMapping.MOUSEDOWN_SUBCOMMAND
-      );
+    if (canceled || !filePath) {
+      return;
+    }
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.variableValuesSubCommand}/csvDialog/reportFromFile ["${this.url}","${filePath}"]`,
     });
 
-    this.canvasContainer.addEventListener('mouseup', (event) => {
-      console.log('🚀 ~ file: import-csv.component.ts ~ mouseup', event);
-      const { clientX, clientY } = event;
-      this.sendMouseEvent(clientX, clientY, commandsMapping.MOUSEUP_SUBCOMMAND);
-    });
-
-    // this.canvasContainer.onwheel = this.onMouseWheelZoom;
-    // document.onkeydown = this.onKeyDown;
-  }
-
-  sendMouseEvent(x: number, y: number, type: string) {
-    const command = `${this.variableValuesSubCommand}/csvDialog/${type} [${x},${y}]`;
-
-    this.electronService.sendMinskyCommandAndRender({
-      command,
-    });
-
-    //TODO: remove this once the rendering issue is fixed
-    // this.redraw();
-  }
- */
-  handleSubmit() {
-    this.closeWindow();
+    return;
   }
 
   closeWindow() {

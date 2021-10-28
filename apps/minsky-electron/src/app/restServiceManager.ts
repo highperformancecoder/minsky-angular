@@ -20,6 +20,7 @@ import { RecordingManager } from './recordingManager';
 import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
+const JSON5 = require('json5');
 
 log.info('resources path='+process.resourcesPath);
 const addonDir=Utility.isPackaged()
@@ -27,14 +28,11 @@ const addonDir=Utility.isPackaged()
   : '../../../node-addons';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-let restService = null;
-try {
-  restService = require('bindings')(join(addonDir,'minskyRESTService.node'));
-} catch (error) {
-  log.error(error);
-}
+const restService = require('bindings')(addonFilePath);
 
 console.log(restService.call('/minsky/minskyVersion', ''));
+
+console.log(JSON.parse("1E1024"));
 
 interface QueueItem {
   promise: Deferred;
@@ -71,7 +69,7 @@ function callRESTApi(command: string) {
     console.log('calling: ' + cmd + ': ' + arg);
     const response = restService.call(cmd, arg);
     console.log('response: ' + response);
-    return JSON.parse(response);
+    return JSON5.parse(response);
   } catch (error) {
     // TODO - properly alert the user of the error message
     console.error('Exception caught: ' + error?.response?.data);
