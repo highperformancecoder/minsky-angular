@@ -21,9 +21,9 @@ import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 
-console.log('resources path='+process.resourcesPath);
+log.info('resources path='+process.resourcesPath);
 const addonDir=Utility.isPackaged()
-  ? join(process.resourcesPath, 'node-addons')
+  ? '../../node-addons'
   : '../../../node-addons';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
