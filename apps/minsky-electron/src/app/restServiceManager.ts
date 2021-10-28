@@ -57,7 +57,7 @@ function callRESTApi(command: string) {
   console.log('In callRESTApi');
   if (!command) {
     console.error('callRESTApi called without any command');
-    return;
+    return {};
   }
   const commandMetaData = command.split(' ');
   const [cmd] = commandMetaData;
