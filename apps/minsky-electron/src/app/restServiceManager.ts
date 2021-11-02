@@ -13,7 +13,7 @@ import {
 import { ChildProcess, spawn } from 'child_process';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
-// import { HttpManager } from './httpManager';
+import { HttpManager } from './httpManager';
 import { join } from 'path';
 import { PortsManager } from './portsManager';
 import { RecordingManager } from './recordingManager';
@@ -59,7 +59,10 @@ class Deferred {
 
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string) {
-  console.log('In callRESTApi');
+ // For debugging purposes, it can be useful to uncomment the
+ // following line, and attach a debugger to the httpd process
+ //return HttpManager.handleMinskyCommand(command);
+ console.log('In callRESTApi');
   if (!command) {
     console.error('callRESTApi called without any command');
     return {};
@@ -388,6 +391,7 @@ export class RestServiceManager {
     if (!tab) {
       tab = this.currentTab;
     }
+    console.log('canvasHeight=',canvasHeight,' canvasWidth=',canvasWidth);
     if (!canvasHeight || !canvasWidth) {
       return null;
     }
