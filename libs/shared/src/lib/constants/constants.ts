@@ -59,7 +59,7 @@ export const commandsMapping = {
   RENDER_FRAME_SUBCOMMAND: 'renderFrame',
   REQUEST_REDRAW_SUBCOMMAND: 'requestRedraw',
 
-  MOUSEDOWN_FOR_OTHER_TABS: 'mouseDownCommon',
+  MOUSEDOWN_FOR_OTHER_TABS: 'mouseDown',
   MOUSEDOWN_SUBCOMMAND: 'mouseDown',
   MOUSEMOVE_SUBCOMMAND: 'mouseMove',
   MOUSEUP_SUBCOMMAND: 'mouseUp',

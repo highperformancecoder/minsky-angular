@@ -87,7 +87,12 @@ export class WindowUtilityService {
       currentWindowContentSize
     );
     const electronMenuBarHeight = currentWindowSize - currentWindowContentSize;
-    return isWindows() ? electronMenuBarHeight - 47 : electronMenuBarHeight;
+
+    const windowsMenuBarHeightDifference = 47;
+    //https://github.com/electron/electron/issues/17580
+    //https://github.com/electron/electron/issues/4045
+    
+    return isWindows() ? electronMenuBarHeight - windowsMenuBarHeightDifference : electronMenuBarHeight;
   }
 
   public scrollToCenter() {

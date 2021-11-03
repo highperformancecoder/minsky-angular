@@ -23,6 +23,7 @@ export class WindowManager {
   static leftOffset: number;
   static canvasHeight: number;
   static canvasWidth: number;
+  static scaleFactor : number;
 
   static activeWindows = new Map<number, ActiveWindow>();
   private static uidToWindowMap = new Map<number, ActiveWindow>();
@@ -212,10 +213,11 @@ export class WindowManager {
 
     this.topOffset = Math.round(payload.offset.top);
     this.leftOffset = Math.round(payload.offset.left);
-    const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
+    this.scaleFactor = screen.getPrimaryDisplay().scaleFactor;
+
     console.log(
       '🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀SF = ',
-      scaleFactor,
+      this.scaleFactor,
       ' Menu bar height = ',
       payload.offset.electronMenuBarHeight,
       ' OFfsetTop=',
@@ -223,7 +225,7 @@ export class WindowManager {
     );
 
     this.electronTopOffset = Math.round(
-      payload.offset.electronMenuBarHeight * scaleFactor + payload.offset.top
+      payload.offset.electronMenuBarHeight * this.scaleFactor + payload.offset.top
     );
 
     this.canvasHeight = payload.drawableArea.height;

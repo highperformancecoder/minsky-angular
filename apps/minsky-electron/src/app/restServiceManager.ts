@@ -64,6 +64,7 @@ function callRESTApi(command: string) {
     canvasWidth,
     canvasHeight,
     electronTopOffset,
+    scaleFactor
   } = WindowManager;
 
   console.log(
@@ -74,7 +75,9 @@ function callRESTApi(command: string) {
     canvasWidth,
     canvasHeight,
     '| ETO=',
-    electronTopOffset
+    electronTopOffset,
+    '| Scale Factor = ',
+    scaleFactor
   );
   if (!command) {
     log.error('callRESTApi called without any command');
@@ -403,6 +406,7 @@ export class RestServiceManager {
       canvasHeight,
       activeWindows,
       electronTopOffset,
+      scaleFactor
     } = WindowManager;
 
     if (!tab) {
@@ -416,8 +420,7 @@ export class RestServiceManager {
     }
 
     const mainWindowId = activeWindows.get(1).systemWindowId;
-    const renderCommand = `${tab}/${commandsMapping.RENDER_FRAME_SUBCOMMAND} [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}]`;
-
+    const renderCommand = `${tab}/${commandsMapping.RENDER_FRAME_SUBCOMMAND} [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}, ${scaleFactor.toPrecision(5)}}]`; // TODO:: Remove this and fix backend to accept integer values
     return renderCommand;
   }
 
