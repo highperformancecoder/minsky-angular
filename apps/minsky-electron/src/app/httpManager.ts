@@ -61,7 +61,7 @@ export class HttpManager {
       // CAVEAT: logging before invoking command seems to cause performance issues
       log.info('GET ->', cmd);
       const response = await HttpManager.get(cmd);
-      log.info('GET:response ->' + response );//JSON.stringify(response));
+      log.info('GET:response ->' + JSON.stringify(response));
       return response;
     } catch (error) {
       log.error(red(`Command failed: ${command}`));

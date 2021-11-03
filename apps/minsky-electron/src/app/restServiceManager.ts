@@ -22,22 +22,22 @@ import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 const JSON5 = require('json5');
 
-log.info('resources path='+process.resourcesPath);
-const addonDir=Utility.isPackaged()
+log.info('resources path=' + process.resourcesPath);
+const addonDir = Utility.isPackaged()
   ? '../../node-addons'
   : '../../../node-addons';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 let restService = null;
 try {
-  restService = require('bindings')(join(addonDir,'minskyRESTService.node'));
+  restService = require('bindings')(join(addonDir, 'minskyRESTService.node'));
 } catch (error) {
   log.error(error);
 }
 
 console.log(restService.call('/minsky/minskyVersion', ''));
 
-console.log(JSON.parse("1E1024"));
+console.log(JSON.parse('1E1024'));
 
 interface QueueItem {
   promise: Deferred;
@@ -59,7 +59,6 @@ class Deferred {
 
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string) {
-
   const {
     leftOffset,
     canvasWidth,
@@ -71,7 +70,7 @@ function callRESTApi(command: string) {
 
   console.log('In callRESTApi::', "left offset = ", leftOffset, "| CDims =", canvasWidth, canvasHeight, "| ETO=", electronTopOffset);
   if (!command) {
-    console.error('callRESTApi called without any command');
+    log.error('callRESTApi called without any command');
     return {};
   }
   const commandMetaData = command.split(' ');
@@ -81,13 +80,17 @@ function callRESTApi(command: string) {
     arg = command.substring(command.indexOf(' ') + 1);
   }
   try {
-    console.log('calling: ' + cmd + ': ' + arg);
+    log.info('calling: ' + cmd + ': ' + arg);
     const response = restService.call(cmd, arg);
-    console.log('response: ' + response);
+    log.info('response: ' + response);
     return JSON5.parse(response);
   } catch (error) {
+    dialog.showErrorBox(
+      'Something went wrong while calling the Minsky Backend',
+      error?.response?.data
+    );
     // TODO - properly alert the user of the error message
-    console.error('Exception caught: ' + error?.response?.data);
+    log.error('Exception caught: ' + error?.response?.data);
     return {};
     //alert(error?.response?.data);
   }
@@ -376,7 +379,7 @@ export class RestServiceManager {
       }
       return res;
     }
-    console.error('Command was null or undefined');
+    log.error('Command was null or undefined');
   }
 
   private static getRequestRedrawCommand(tab?: MainRenderingTabs) {
@@ -398,6 +401,7 @@ export class RestServiceManager {
     if (!tab) {
       tab = this.currentTab;
     }
+    log.info('canvasHeight=', canvasHeight, ' canvasWidth=', canvasWidth);
     if (!canvasHeight || !canvasWidth) {
       return null;
     }
