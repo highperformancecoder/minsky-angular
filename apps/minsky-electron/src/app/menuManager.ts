@@ -69,10 +69,10 @@ export class MenuManager {
                 if (_dialog.canceled || !_dialog.filePaths) {
                   return;
                 }
-                const filePath = normalizeFilePathForPlatform(
-                  _dialog.filePaths[0].toString()
-                );
-                await CommandsManager.openNamedFile(filePath);
+                // const filePath = normalizeFilePathForPlatform(
+                //   _dialog.filePaths[0].toString()
+                // );
+                await CommandsManager.openNamedFile(_dialog.filePaths[0].toString());
               } catch (error) {
                 logError(error);
               }

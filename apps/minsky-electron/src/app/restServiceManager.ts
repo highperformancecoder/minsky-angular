@@ -59,7 +59,17 @@ class Deferred {
 
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string) {
-  console.log('In callRESTApi');
+
+  const {
+    leftOffset,
+    canvasWidth,
+    canvasHeight,
+    activeWindows,
+    electronTopOffset,
+  } = WindowManager;
+
+
+  console.log('In callRESTApi::', "left offset = ", leftOffset, "| CDims =", canvasWidth, canvasHeight, "| ETO=", electronTopOffset);
   if (!command) {
     console.error('callRESTApi called without any command');
     return {};

@@ -213,6 +213,7 @@ export class WindowManager {
     this.topOffset = Math.round(payload.offset.top);
     this.leftOffset = Math.round(payload.offset.left);
     const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
+    console.log("SF = ", scaleFactor,  " Menu bar height = ", payload.offset.electronMenuBarHeight,   " OFfsetTop=", payload.offset.top);
     this.electronTopOffset = Math.round(
       payload.offset.electronMenuBarHeight * scaleFactor + payload.offset.top
     );
