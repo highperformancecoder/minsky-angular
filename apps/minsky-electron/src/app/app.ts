@@ -119,8 +119,8 @@ export default class App {
   private static initMainWindow() {
     const display = screen.getPrimaryDisplay();
     const workAreaSize = display.workAreaSize;
-    const width = Math.round(workAreaSize.width*0.9);
-    const height = Math.round(workAreaSize.height*0.9);
+    const width = Math.round(workAreaSize.width * 0.9);
+    const height = Math.round(workAreaSize.height * 0.9);
 
     // Create the browser window.
     App.mainWindow = new BrowserWindow({
@@ -145,6 +145,9 @@ export default class App {
       title: 'Minsky',
       icon: __dirname + '/assets/favicon.png',
       resizable: true,
+      // autoHideMenuBar: true,
+      // useContentSize: true,
+      // frame: false,
     });
 
     App.mainWindow.center();
@@ -228,15 +231,14 @@ export default class App {
     App.BrowserWindow = browserWindow;
     App.application = app;
 
-    App.application.commandLine.appendSwitch('high-dpi-support', '1'); 
+    App.application.commandLine.appendSwitch('disable-gpu');
+
+    // App.application.commandLine.appendSwitch('high-dpi-support', '1');
     // We don't know what this does?
 
-
-    
     //This effects how display scaling is handled -  if set to 1, then it will ignore the scale factor (always set it to 1). Check this!
     // This ensures that electron treats native resolution as the default
-    //App.application.commandLine.appendSwitch('force-device-scale-factor', '1');
-
+    // App.application.commandLine.appendSwitch('force-device-scale-factor', '1');
 
     App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
     App.application.on('ready', App.onReady); // App is ready to load data

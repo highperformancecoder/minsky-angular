@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ElectronCanvasOffset } from '@minsky/shared';
+import { ElectronCanvasOffset, isWindows } from '@minsky/shared';
 import { ElectronService } from '../electron/electron.service';
 
 @Injectable({
@@ -67,15 +67,27 @@ export class WindowUtilityService {
       this.topOffset = clientRect.top;
 
       this.electronMenuBarHeight = this.getElectronMenuBarHeight();
+      console.log(
+        '🚀 ~ file: window-utility.service.ts ~ line 70 ~ WindowUtilityService ~ reInitialize ~ this.electronMenuBarHeight',
+        this.electronMenuBarHeight
+      );
     }
   }
 
   public getElectronMenuBarHeight() {
     const currentWindow = this.electronService.remote.getCurrentWindow();
     const currentWindowSize = currentWindow.getSize()[1];
+    console.log(
+      '🚀 ~ file: window-utility.service.ts ~ line 80 ~ WindowUtilityService ~ getElectronMenuBarHeight ~ currentWindow.getSize()',
+      currentWindow.getSize()
+    );
     const currentWindowContentSize = currentWindow.getContentSize()[1];
+    console.log(
+      '🚀 ~ file: window-utility.service.ts ~ line 85 ~ WindowUtilityService ~ getElectronMenuBarHeight ~ currentWindowContentSize',
+      currentWindowContentSize
+    );
     const electronMenuBarHeight = currentWindowSize - currentWindowContentSize;
-    return electronMenuBarHeight;
+    return isWindows() ? electronMenuBarHeight - 47 : electronMenuBarHeight;
   }
 
   public scrollToCenter() {

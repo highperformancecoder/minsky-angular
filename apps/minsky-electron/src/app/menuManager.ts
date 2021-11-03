@@ -69,10 +69,8 @@ export class MenuManager {
                 if (_dialog.canceled || !_dialog.filePaths) {
                   return;
                 }
-                // const filePath = normalizeFilePathForPlatform(
-                //   _dialog.filePaths[0].toString()
-                // );
-                await CommandsManager.openNamedFile(_dialog.filePaths[0].toString());
+                const filePath = _dialog.filePaths[0].toString();
+                await CommandsManager.openNamedFile(filePath);
               } catch (error) {
                 logError(error);
               }
@@ -366,7 +364,9 @@ export class MenuManager {
           {
             label: 'Redraw',
             async click() {
-              console.log("File menu: Redraw: "+commandsMapping.RENDER_FRAME_SUBCOMMAND);
+              console.log(
+                'File menu: Redraw: ' + commandsMapping.RENDER_FRAME_SUBCOMMAND
+              );
               await RestServiceManager.handleMinskyProcess({
                 //command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
                 command: commandsMapping.RENDER_FRAME_SUBCOMMAND,

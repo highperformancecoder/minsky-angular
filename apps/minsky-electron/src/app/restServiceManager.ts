@@ -35,7 +35,7 @@ try {
   log.error(error);
 }
 
-console.log(restService.call('/minsky/minskyVersion', ''));
+log.info(restService.call('/minsky/minskyVersion', ''));
 
 console.log(JSON.parse('1E1024'));
 
@@ -63,12 +63,19 @@ function callRESTApi(command: string) {
     leftOffset,
     canvasWidth,
     canvasHeight,
-    activeWindows,
     electronTopOffset,
   } = WindowManager;
 
-
-  console.log('In callRESTApi::', "left offset = ", leftOffset, "| CDims =", canvasWidth, canvasHeight, "| ETO=", electronTopOffset);
+  console.log(
+    'In callRESTApi::',
+    'left offset = ',
+    leftOffset,
+    '| CDims =',
+    canvasWidth,
+    canvasHeight,
+    '| ETO=',
+    electronTopOffset
+  );
   if (!command) {
     log.error('callRESTApi called without any command');
     return {};
@@ -401,7 +408,9 @@ export class RestServiceManager {
     if (!tab) {
       tab = this.currentTab;
     }
+
     log.info('canvasHeight=', canvasHeight, ' canvasWidth=', canvasWidth);
+
     if (!canvasHeight || !canvasWidth) {
       return null;
     }
