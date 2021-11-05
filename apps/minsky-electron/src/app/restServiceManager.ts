@@ -338,7 +338,7 @@ export class RestServiceManager {
         const groupIconFilePath = normalizeFilePathForPlatform(
           Utility.isDevelopmentMode()
             ? `${join(__dirname, 'assets/group.svg')}`
-            : `${join(process.resourcesPath, 'assets/group.svg')}"`
+            : `${join(process.resourcesPath, 'assets/group.svg')}`
         );
 
         stdinCommand = `${payload.command} "${groupIconFilePath}"`;
