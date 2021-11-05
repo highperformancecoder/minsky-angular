@@ -95,14 +95,10 @@ function callRESTApi(command: string) {
     log.info('response: ' + response);
     return JSON5.parse(response);
   } catch (error) {
-    dialog.showErrorBox(
-      'Something went wrong while calling the Minsky Backend',
-      error?.response?.data
-    );
-    // TODO - properly alert the user of the error message
-    log.error('Exception caught: ' + error?.response?.data);
-    return {};
-    //alert(error?.response?.data);
+      if (error?.message)
+          dialog.showErrorBox(error.message,'');
+      log.error('Exception caught: ' + error?.message);
+      return {};
   }
 }
 
