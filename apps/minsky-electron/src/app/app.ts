@@ -234,12 +234,10 @@ export default class App {
     App.application.commandLine.appendSwitch('disable-gpu');
     // Rendering was not working on some window's machines without disabling gpu
 
-
     App.application.commandLine.appendSwitch('high-dpi-support', '1');
     // This probably supports high-res fonts, but we don't know exactly what implications it has!
 
-
-    //This effects how display scaling is handled -  if set to 1, then it will ignore the scale factor (always set it to 1). 
+    //This effects how display scaling is handled -  if set to 1, then it will ignore the scale factor (always set it to 1).
     // Typically, effects are visible on display resolutions > 2MP. Electron seems to scale down its window
     // when native display resolution is > 2MP by default. If we force to 1, it will not scale down
     App.application.commandLine.appendSwitch('force-device-scale-factor', '1');

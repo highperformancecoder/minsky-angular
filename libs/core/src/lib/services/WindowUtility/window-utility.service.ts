@@ -15,6 +15,7 @@ export class WindowUtilityService {
   private drawableHeight = 0;
   private scrollableAreaWidth = null;
   private scrollableAreaHeight = null;
+  private mainWindowId = 1;
   SCROLLABLE_AREA_FACTOR = 10;
 
   constructor(private electronService: ElectronService) {}
@@ -30,7 +31,10 @@ export class WindowUtilityService {
       'minsky-canvas-container'
     );
 
-    if (this.minskyCanvasContainer) {
+    if (
+      this.minskyCanvasContainer &&
+      this.electronService.remote.getCurrentWindow().id === this.mainWindowId
+    ) {
       const bodyElement = document.getElementsByTagName('body')[0];
       this.minskyCanvasElement = document.getElementById(
         'main-minsky-canvas'
@@ -67,32 +71,24 @@ export class WindowUtilityService {
       this.topOffset = clientRect.top;
 
       this.electronMenuBarHeight = this.getElectronMenuBarHeight();
-      console.log(
-        '🚀 ~ file: window-utility.service.ts ~ line 70 ~ WindowUtilityService ~ reInitialize ~ this.electronMenuBarHeight',
-        this.electronMenuBarHeight
-      );
     }
   }
 
   public getElectronMenuBarHeight() {
     const currentWindow = this.electronService.remote.getCurrentWindow();
     const currentWindowSize = currentWindow.getSize()[1];
-    console.log(
-      '🚀 ~ file: window-utility.service.ts ~ line 80 ~ WindowUtilityService ~ getElectronMenuBarHeight ~ currentWindow.getSize()',
-      currentWindow.getSize()
-    );
+
     const currentWindowContentSize = currentWindow.getContentSize()[1];
-    console.log(
-      '🚀 ~ file: window-utility.service.ts ~ line 85 ~ WindowUtilityService ~ getElectronMenuBarHeight ~ currentWindowContentSize',
-      currentWindowContentSize
-    );
+
     const electronMenuBarHeight = currentWindowSize - currentWindowContentSize;
 
     const windowsMenuBarHeightDifference = 47;
     //https://github.com/electron/electron/issues/17580
     //https://github.com/electron/electron/issues/4045
-    
-    return isWindows() ? electronMenuBarHeight - windowsMenuBarHeightDifference : electronMenuBarHeight;
+
+    return isWindows()
+      ? electronMenuBarHeight - windowsMenuBarHeightDifference
+      : electronMenuBarHeight;
   }
 
   public scrollToCenter() {
