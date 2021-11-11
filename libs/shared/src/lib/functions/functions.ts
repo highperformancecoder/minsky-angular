@@ -48,10 +48,11 @@ export const getBackgroundStyle = (color) => {
   return 'body { background-color: ' + color + '; color: white; }';
 };
 
-export const normalizeFilePathForPlatform = (filePath: string) => {
-  const isWin = process && process.platform === 'win32';
+export const isWindows = () =>
+  process && process.platform === 'win32' ? true : false;
 
-  if (isWin) {
+export const normalizeFilePathForPlatform = (filePath: string) => {
+  if (isWindows()) {
     // quoted special characters for JSON encoding
 
     const character = {

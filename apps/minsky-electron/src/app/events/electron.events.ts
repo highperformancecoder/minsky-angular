@@ -5,10 +5,10 @@
 
 import {
   AppLayoutPayload,
+  ChangeTabPayload,
   commandsMapping,
   events,
   MinskyProcessPayload,
-  ChangeTabPayload,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { ipcMain } from 'electron';
@@ -58,18 +58,26 @@ ipcMain.on(
   }
 );
 
-ipcMain.handle(events.MINSKY_PROCESS, async (event, payload: MinskyProcessPayload) => {
-  return await RestServiceManager.handleMinskyProcess(payload);
-});
-
-ipcMain.on(events.APP_LAYOUT_CHANGED, async (event, payload: AppLayoutPayload) => {
-  WindowManager.onAppLayoutChanged(payload);
-  if(payload.isResizeEvent) {
-    // TODO:: We need to throttle the re-invocation of renderFrame
-    await RestServiceManager.reInvokeRenderFrame();
+ipcMain.handle(
+  events.MINSKY_PROCESS,
+  async (event, payload: MinskyProcessPayload) => {
+    return await RestServiceManager.handleMinskyProcess(payload);
   }
-});
+);
 
+ipcMain.on(
+  events.APP_LAYOUT_CHANGED,
+  async (event, payload: AppLayoutPayload) => {
+    if (event.sender.id === WindowManager.getMainWindow().id) {
+      WindowManager.onAppLayoutChanged(payload);
+    }
+
+    if (payload.isResizeEvent) {
+      // TODO:: We need to throttle the re-invocation of renderFrame
+      await RestServiceManager.reInvokeRenderFrame();
+    }
+  }
+);
 
 ipcMain.on(events.CHANGE_MAIN_TAB, async (event, payload: ChangeTabPayload) => {
   await RestServiceManager.setCurrentTab(payload.newTab);
@@ -83,9 +91,12 @@ ipcMain.on(events.ADD_RECENT_FILE, (event, filePath: string) => {
   RecentFilesManager.addFileToRecentFiles(filePath);
 });
 
-ipcMain.handle(events.KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
-  return await KeyBindingManager.handleOnKeyPress(payload);
-});
+ipcMain.handle(
+  events.KEY_PRESS,
+  async (event, payload: MinskyProcessPayload) => {
+    return await KeyBindingManager.handleOnKeyPress(payload);
+  }
+);
 
 ipcMain.handle(events.GET_PREFERENCES, () => {
   return StoreManager.store.get('preferences');
@@ -137,9 +148,12 @@ ipcMain.on(events.CONTEXT_MENU, async (event, { x, y }) => {
   await ContextMenuManager.initContextMenu(x, y);
 });
 
-ipcMain.on(events.DISPLAY_MOUSE_COORDINATES, async (event, { mouseX, mouseY }) => {
-  WindowManager.showMouseCoordinateWindow({ mouseX, mouseY });
-});
+ipcMain.on(
+  events.DISPLAY_MOUSE_COORDINATES,
+  async (event, { mouseX, mouseY }) => {
+    WindowManager.showMouseCoordinateWindow({ mouseX, mouseY });
+  }
+);
 
 ipcMain.on(events.DOUBLE_CLICK, async (event, payload) => {
   await CommandsManager.handleDoubleClick(payload);

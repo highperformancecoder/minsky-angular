@@ -1,7 +1,7 @@
 @import '../../../../shared/src/lib/theme/variables.scss';
 
 .minsky-canvas-container {
-  height: calc(100vh - 138px);
+  height: calc(100vh - 8.625rem);
   width: 100%;
   overflow: scroll;
   border: 1px solid $toolbar-box;

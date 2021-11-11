@@ -119,8 +119,8 @@ export default class App {
   private static initMainWindow() {
     const display = screen.getPrimaryDisplay();
     const workAreaSize = display.workAreaSize;
-    const width = Math.min(workAreaSize.width - 100, 1366);
-    const height = Math.min(workAreaSize.height - 100, 768);
+    const width = Math.round(workAreaSize.width * 0.9);
+    const height = Math.round(workAreaSize.height * 0.9);
 
     // Create the browser window.
     App.mainWindow = new BrowserWindow({
@@ -145,6 +145,9 @@ export default class App {
       title: 'Minsky',
       icon: __dirname + '/assets/favicon.png',
       resizable: true,
+      // autoHideMenuBar: true,
+      // useContentSize: true,
+      // frame: false,
     });
 
     App.mainWindow.center();
@@ -225,12 +228,20 @@ export default class App {
     // Electron.BrowserWindow into this function
     // so this class has no dependencies. This
     // makes the code easier to write tests for
-
     App.BrowserWindow = browserWindow;
     App.application = app;
 
-    // App.application.commandLine.appendSwitch('high-dpi-support', '1');
-    // App.application.commandLine.appendSwitch('force-device-scale-factor', '1');
+    App.application.commandLine.appendSwitch('disable-gpu');
+    // Rendering was not working on some window's machines without disabling gpu
+
+    App.application.commandLine.appendSwitch('high-dpi-support', '1');
+    // This probably supports high-res fonts, but we don't know exactly what implications it has!
+
+    //This effects how display scaling is handled -  if set to 1, then it will ignore the scale factor (always set it to 1).
+    // Typically, effects are visible on display resolutions > 2MP. Electron seems to scale down its window
+    // when native display resolution is > 2MP by default. If we force to 1, it will not scale down
+    App.application.commandLine.appendSwitch('force-device-scale-factor', '1');
+
     App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
     App.application.on('ready', App.onReady); // App is ready to load data
     App.application.on('activate', App.onActivate); // App is activated

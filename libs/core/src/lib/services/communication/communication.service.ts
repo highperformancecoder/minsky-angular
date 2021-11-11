@@ -380,6 +380,8 @@ export class CommunicationService {
     const { type, clientX, clientY, button } = message;
     const offset = this.windowUtilityService.getMinskyCanvasOffset();
 
+    console.log("Mouse move =", window.innerHeight, window.innerWidth, clientX, clientY);
+
     this.mouseX = clientX;
     this.mouseY = clientY - Math.round(offset.top);
 

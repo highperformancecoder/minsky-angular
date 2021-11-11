@@ -13,13 +13,31 @@ import {
 import { ChildProcess, spawn } from 'child_process';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
+// import { HttpManager } from './httpManager';
 import { join } from 'path';
-import { HttpManager } from './httpManager';
 import { PortsManager } from './portsManager';
 import { RecordingManager } from './recordingManager';
 import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
+const JSON5 = require('json5');
+
+log.info('resources path=' + process.resourcesPath);
+const addonDir = Utility.isPackaged()
+  ? '../../node-addons'
+  : '../../../node-addons';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+let restService = null;
+try {
+  restService = require('bindings')(join(addonDir, 'minskyRESTService.node'));
+} catch (error) {
+  log.error(error);
+}
+
+log.info(restService.call('/minsky/minskyVersion', ''));
+
+console.log(JSON.parse('1E1024'));
 
 interface QueueItem {
   promise: Deferred;
@@ -36,6 +54,51 @@ class Deferred {
       this.reject = reject;
       this.resolve = resolve;
     });
+  }
+}
+
+// TODO refactor to use command and arguments separately
+function callRESTApi(command: string) {
+  const {
+    leftOffset,
+    canvasWidth,
+    canvasHeight,
+    electronTopOffset,
+    scaleFactor
+  } = WindowManager;
+
+  console.log(
+    'In callRESTApi::',
+    'left offset = ',
+    leftOffset,
+    '| CDims =',
+    canvasWidth,
+    canvasHeight,
+    '| ETO=',
+    electronTopOffset,
+    '| Scale Factor = ',
+    scaleFactor
+  );
+  if (!command) {
+    log.error('callRESTApi called without any command');
+    return {};
+  }
+  const commandMetaData = command.split(' ');
+  const [cmd] = commandMetaData;
+  let arg = '';
+  if (commandMetaData.length >= 2) {
+    arg = command.substring(command.indexOf(' ') + 1);
+  }
+  try {
+    log.info('calling: ' + cmd + ': ' + arg);
+    const response = restService.call(cmd, arg);
+    log.info('response: ' + response);
+    return JSON5.parse(response);
+  } catch (error) {
+      if (error?.message)
+          dialog.showErrorBox(error.message,'');
+      log.error('Exception caught: ' + error?.message);
+      return {};
   }
 }
 
@@ -111,18 +174,18 @@ export class RestServiceManager {
   public static async handleMinskyProcess(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
-    const isStartProcessCommand =
-      payload.command === commandsMapping.START_MINSKY_PROCESS;
-
-    if (isStartProcessCommand) {
-      await this.startHttpServer(payload);
-      return;
-    }
-
-    if (!this.minskyHttpServer) {
-      console.error('Minsky HTTP server is not running yet.');
-      return;
-    }
+    //    const isStartProcessCommand =
+    //      payload.command === commandsMapping.START_MINSKY_PROCESS;
+    //
+    //    if (isStartProcessCommand) {
+    //      await this.startHttpServer(payload);
+    //      return;
+    //    }
+    //
+    //    if (!this.minskyHttpServer) {
+    //      console.error('Minsky HTTP server is not running yet.');
+    //      return;
+    //    }
 
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
 
@@ -242,7 +305,11 @@ export class RestServiceManager {
         break;
 
       case commandsMapping.MOUSEDOWN_SUBCOMMAND:
-        const actualMouseDownCmd = (this.currentTab === MainRenderingTabs.canvas)? payload.command : commandsMapping.MOUSEDOWN_FOR_OTHER_TABS;
+        // eslint-disable-next-line no-case-declarations
+        const actualMouseDownCmd =
+          this.currentTab === MainRenderingTabs.canvas
+            ? payload.command
+            : commandsMapping.MOUSEDOWN_FOR_OTHER_TABS;
 
         stdinCommand = `${this.currentTab}/${actualMouseDownCmd} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
@@ -271,7 +338,7 @@ export class RestServiceManager {
         const groupIconFilePath = normalizeFilePathForPlatform(
           Utility.isDevelopmentMode()
             ? `${join(__dirname, 'assets/group.svg')}`
-            : `${join(process.resourcesPath, 'assets/group.svg')}"`
+            : `${join(process.resourcesPath, 'assets/group.svg')}`
         );
 
         stdinCommand = `${payload.command} "${groupIconFilePath}"`;
@@ -293,27 +360,32 @@ export class RestServiceManager {
       if (payload.command === commandsMapping.RENDER_FRAME_SUBCOMMAND) {
         // Render called explicitly
         this.render = false;
-        await HttpManager.handleMinskyCommand(this.getRenderCommand());
-        return await HttpManager.handleMinskyCommand(
-          this.getRequestRedrawCommand()
-        );
+        await callRESTApi(this.getRenderCommand());
+        return await callRESTApi(this.getRequestRedrawCommand());
+        //          await HttpManager.handleMinskyCommand(this.getRenderCommand());
+        //        return await HttpManager.handleMinskyCommand(
+        //          this.getRequestRedrawCommand()
+        //        );
         // TODO:: Check which of the above command's response we should return
       }
 
-      const res = await HttpManager.handleMinskyCommand(stdinCommand);
+      const res = callRESTApi(stdinCommand); //await HttpManager.handleMinskyCommand(stdinCommand);
       const { render = true } = payload;
 
       if ((USE_FRONTEND_DRIVEN_RENDERING && render) || this.render) {
         const renderCommand = this.getRenderCommand();
 
         if (renderCommand) {
-          await HttpManager.handleMinskyCommand(renderCommand);
+          //          await HttpManager.handleMinskyCommand(renderCommand);
+          //          await HttpManager.handleMinskyCommand(this.getRequestRedrawCommand());
+          await callRESTApi(this.getRenderCommand());
+          await callRESTApi(this.getRequestRedrawCommand());
           this.render = false;
         }
       }
       return res;
     }
-    console.error('Command was null or undefined');
+    log.error('Command was null or undefined');
   }
 
   private static getRequestRedrawCommand(tab?: MainRenderingTabs) {
@@ -330,18 +402,21 @@ export class RestServiceManager {
       canvasHeight,
       activeWindows,
       electronTopOffset,
+      scaleFactor
     } = WindowManager;
 
     if (!tab) {
       tab = this.currentTab;
     }
+
+    log.info('canvasHeight=', canvasHeight, ' canvasWidth=', canvasWidth);
+
     if (!canvasHeight || !canvasWidth) {
       return null;
     }
 
     const mainWindowId = activeWindows.get(1).systemWindowId;
-    const renderCommand = `${tab}/${commandsMapping.RENDER_FRAME_SUBCOMMAND} [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}]`;
-
+    const renderCommand = `${tab}/${commandsMapping.RENDER_FRAME_SUBCOMMAND} [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}, ${scaleFactor.toPrecision(5)}}]`; // TODO:: Remove this and fix backend to accept integer values
     return renderCommand;
   }
 

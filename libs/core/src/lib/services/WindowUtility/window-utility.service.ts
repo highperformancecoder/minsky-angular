@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ElectronCanvasOffset } from '@minsky/shared';
+import { ElectronCanvasOffset, isWindows } from '@minsky/shared';
 import { ElectronService } from '../electron/electron.service';
 
 @Injectable({
@@ -15,6 +15,7 @@ export class WindowUtilityService {
   private drawableHeight = 0;
   private scrollableAreaWidth = null;
   private scrollableAreaHeight = null;
+  private mainWindowId = 1;
   SCROLLABLE_AREA_FACTOR = 10;
 
   constructor(private electronService: ElectronService) {}
@@ -30,7 +31,10 @@ export class WindowUtilityService {
       'minsky-canvas-container'
     );
 
-    if (this.minskyCanvasContainer) {
+    if (
+      this.minskyCanvasContainer &&
+      this.electronService.remote.getCurrentWindow().id === this.mainWindowId
+    ) {
       const bodyElement = document.getElementsByTagName('body')[0];
       this.minskyCanvasElement = document.getElementById(
         'main-minsky-canvas'
@@ -73,9 +77,18 @@ export class WindowUtilityService {
   public getElectronMenuBarHeight() {
     const currentWindow = this.electronService.remote.getCurrentWindow();
     const currentWindowSize = currentWindow.getSize()[1];
+
     const currentWindowContentSize = currentWindow.getContentSize()[1];
+
     const electronMenuBarHeight = currentWindowSize - currentWindowContentSize;
-    return electronMenuBarHeight;
+
+    const windowsMenuBarHeightDifference = 47;
+    //https://github.com/electron/electron/issues/17580
+    //https://github.com/electron/electron/issues/4045
+
+    return isWindows()
+      ? electronMenuBarHeight - windowsMenuBarHeightDifference
+      : electronMenuBarHeight;
   }
 
   public scrollToCenter() {

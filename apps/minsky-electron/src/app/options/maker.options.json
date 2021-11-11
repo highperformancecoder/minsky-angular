@@ -10,6 +10,11 @@
       "from": "minsky-docs",
       "to": "minsky-docs",
       "filter": ["**/*.*"]
+    },
+    {
+      "from": "node-addons",
+      "to": "node-addons",
+      "filter": ["**/*.*"]
     }
   ]
 }
