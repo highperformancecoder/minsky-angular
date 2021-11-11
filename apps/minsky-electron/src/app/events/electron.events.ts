@@ -131,10 +131,6 @@ ipcMain.handle(
   }
 );
 
-ipcMain.on(events.TOGGLE_MINSKY_SERVICE, async () => {
-  await RestServiceManager.toggleMinskyService();
-});
-
 ipcMain.on(events.AUTO_START_MINSKY_SERVICE, async () => {
   await RestServiceManager.startMinskyService();
 });

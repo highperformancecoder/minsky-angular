@@ -1,4 +1,3 @@
-// import { startSocketServer } from '@minsky/minsky-server';
 import {
   ActiveWindow,
   green,
@@ -13,7 +12,6 @@ import { format } from 'url';
 import { CommandsManager } from './commandsManager';
 import { HelpFilesManager } from './HelpFilesManager';
 import { MenuManager } from './menuManager';
-import { startProxyServer } from './proxy';
 import { RecentFilesManager } from './recentFilesManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
@@ -73,7 +71,6 @@ export default class App {
       : await HelpFilesManager.initialize(__dirname + '/../../../minsky-docs/');
 
     App.initMainWindow();
-    // startSocketServer();
 
     await App.initMinskyService();
 
@@ -87,7 +84,6 @@ export default class App {
     console.log('🚀🚀🚀🚀🚀' + green(` WindowId -> ${windowId}`));
 
     await RestServiceManager.startMinskyService();
-    await startProxyServer();
   }
 
   private static initMenu() {
@@ -102,10 +98,6 @@ export default class App {
     (async () => {
       await MenuManager.buildMenuForInsertOperations();
     })();
-  }
-
-  private static async onQuit() {
-    await RestServiceManager.onQuit();
   }
 
   private static onActivate() {
@@ -245,7 +237,6 @@ export default class App {
     App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
     App.application.on('ready', App.onReady); // App is ready to load data
     App.application.on('activate', App.onActivate); // App is activated
-    App.application.on('quit', App.onQuit); // App is quit
 
     process.on('uncaughtException', (err) => {
       console.error(
