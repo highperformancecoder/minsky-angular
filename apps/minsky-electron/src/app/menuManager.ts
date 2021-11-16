@@ -110,10 +110,7 @@ export class MenuManager {
             accelerator: 'CmdOrCtrl + S',
             async click() {
               if (RestServiceManager.currentMinskyModelFilePath) {
-                await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.SAVE}`,
-                  filePath: RestServiceManager.currentMinskyModelFilePath,
-                });
+                await CommandsManager.saveFile(RestServiceManager.currentMinskyModelFilePath);
               } else {
                 const saveDialog = await dialog.showSaveDialog({});
 
@@ -121,10 +118,7 @@ export class MenuManager {
                   return;
                 }
 
-                await RestServiceManager.handleMinskyProcess({
-                  command: commandsMapping.SAVE,
-                  filePath: saveDialog.filePath,
-                });
+                await CommandsManager.saveFile(saveDialog.filePath);
               }
             },
           },
@@ -154,9 +148,7 @@ export class MenuManager {
                 return;
               }
 
-              await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
-              });
+                await CommandsManager.saveFile(saveDialog.filePath);
 
               RestServiceManager.currentMinskyModelFilePath =
                 saveDialog.filePath;
@@ -292,7 +284,7 @@ export class MenuManager {
                   }
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.RENDER_ALL_PLOTS_AS_SVG} "${filePath}"`,
+                    command: `${commandsMapping.RENDER_ALL_PLOTS_AS_SVG} "${normalizeFilePathForPlatform(filePath)}"`,
                   });
                 },
               },
@@ -316,7 +308,7 @@ export class MenuManager {
                   }
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.EXPORT_ALL_PLOTS_AS_CSV} "${filePath}"`,
+                    command: `${commandsMapping.EXPORT_ALL_PLOTS_AS_CSV} "${normalizeFilePathForPlatform(filePath)}"`,
                   });
                 },
               },

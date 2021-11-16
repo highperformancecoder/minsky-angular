@@ -646,7 +646,7 @@ export class CommandsManager {
       return;
     }
 
-    return filePath;
+      return normalizeFilePathForPlatform(filePath);
   }
 
   static async mouseDown(mouseX: number, mouseY: number): Promise<void> {
@@ -967,6 +967,14 @@ export class CommandsManager {
     });
 
     WindowManager.getMainWindow().setTitle(filePath);
+  }
+
+  static async saveFile(filePath: string) {
+      filePath = normalizeFilePathForPlatform(filePath);
+      await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.SAVE}`,
+          filePath: filePath,
+      });
   }
 
   static async help(x: number, y: number) {
