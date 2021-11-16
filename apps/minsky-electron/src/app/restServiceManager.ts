@@ -319,7 +319,7 @@ export class RestServiceManager {
         break;
 
       case commandsMapping.ZOOM_IN:
-        stdinCommand = `${payload.command} [${payload.args.x}, ${payload.args.y}, ${payload.args.zoomFactor}]`;
+        stdinCommand = `${this.currentTab}/zoom [${payload.args.x}, ${payload.args.y}, ${payload.args.zoomFactor}]`;
         break;
 
       case commandsMapping.SET_GODLEY_ICON_RESOURCE:
