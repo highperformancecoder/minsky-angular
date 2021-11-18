@@ -196,8 +196,6 @@ export class MenuManager {
                   title: 'Dimensional Analysis',
                   message: 'Dimensional Analysis Passed',
                 });
-              } else {
-                dialog.showErrorBox('Error', 'Dimensional Analysis Failed');
               }
             },
           },

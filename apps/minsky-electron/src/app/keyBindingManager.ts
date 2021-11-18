@@ -199,6 +199,13 @@ export class KeyBindingManager {
     if (!executed && key.length === 1 && key.match(asciiRegex)) {
       this.multipleKeyString += key;
 
+      /*
+      TODO:
+            #ghjhjhj remove # and add a note
+            -1 should create a constant -1
+            - create subtraction operator
+      */
+
       if (!this.isMultipleKeyModalOpen) {
         this.multipleKeyWindow = WindowManager.createMenuPopUpWithRouting({
           title: 'Text Input',
@@ -247,12 +254,6 @@ export class KeyBindingManager {
   }
 
   private static async handleMinusKey(payload: MinskyProcessPayload) {
-    if (payload.shift) {
-      // <Key-minus>
-      // TODO: ask @janak
-      return;
-    }
-
     // <Key-KP_Subtract>
     await this.zoom(ZOOM_OUT_FACTOR);
     return;

@@ -41,7 +41,7 @@ export class CommandsManager {
     if (itemId) {
       WindowManager.closeWindowByUid(itemId);
       await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP}/${itemId}`,
+        command: `${commandsMapping.REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP} "${itemId}"`,
       });
       await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_DELETE_ITEM,

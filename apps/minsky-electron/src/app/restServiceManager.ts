@@ -89,7 +89,7 @@ function callRESTApi(command: string) {
   } catch (error) {
     if (error?.message) dialog.showErrorBox(error.message, '');
     log.error('Exception caught: ' + error?.message);
-    return {};
+    return error?.message;
   }
 }
 
@@ -330,8 +330,8 @@ export class RestServiceManager {
       if (payload.command === commandsMapping.RENDER_FRAME_SUBCOMMAND) {
         // Render called explicitly
         this.render = false;
-        await callRESTApi(this.getRenderCommand());
-        return await callRESTApi(this.getRequestRedrawCommand());
+        callRESTApi(this.getRenderCommand());
+        return callRESTApi(this.getRequestRedrawCommand());
         // TODO:: Check which of the above command's response we should return
       }
 
@@ -342,8 +342,8 @@ export class RestServiceManager {
         const renderCommand = this.getRenderCommand();
 
         if (renderCommand) {
-          await callRESTApi(this.getRenderCommand());
-          await callRESTApi(this.getRequestRedrawCommand());
+          callRESTApi(this.getRenderCommand());
+          callRESTApi(this.getRequestRedrawCommand());
           this.render = false;
         }
       }

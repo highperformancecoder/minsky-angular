@@ -97,7 +97,7 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
     this.mouseMove$ = fromEvent<MouseEvent>(
       this.godleyCanvasContainer,
       'mousemove'
-    ).pipe(sampleTime(30)); /// FPS=1000/sampleTime
+    ).pipe(sampleTime(1)); /// FPS=1000/sampleTime
 
     this.mouseMove$.subscribe(async (event: MouseEvent) => {
       const { clientX, clientY } = event;

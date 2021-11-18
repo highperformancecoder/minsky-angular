@@ -221,9 +221,12 @@ export class ContextMenuManager {
           await CommandsManager.requestRedraw();
         },
       }),
+
       new MenuItem({
         label: 'Show all plots on tab',
+        checked: false,
         click: async () => {
+          // TODO: make this toggle on click with a checkbox
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_SHOW_ALL_PLOTS_ON_TAB,
           });

@@ -226,7 +226,7 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
     await this.electronService.sendMinskyCommandAndRender({
       command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${
         this.units.value || ''
-      } "`,
+      }"`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({

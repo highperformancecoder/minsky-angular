@@ -195,7 +195,7 @@ export const commandsMapping = {
   VARIABLE_INSTANCE_LIST_GOTO_INSTANCE:
     '/minsky/variableInstanceList/gotoInstance',
   CANVAS_ITEM_RETYPE: '/minsky/canvas/item/retype',
-  RENAME_ITEM: '/minsky/renameItem',
+  RENAME_ITEM: '/minsky/canvas/renameItem',
   CANVAS_ITEM_INIT: '/minsky/canvas/item/init',
   CANVAS_ITEM_TOOLTIP: '/minsky/canvas/item/tooltip',
   CANVAS_ITEM_DETAILED_TEXT: '/minsky/canvas/item/detailedText',

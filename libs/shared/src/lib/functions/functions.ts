@@ -52,20 +52,20 @@ export const isWindows = () =>
   process && process.platform === 'win32' ? true : false;
 
 export const normalizeFilePathForPlatform = (filePath: string) => {
-  if (isWindows()) {
-    // quoted special characters for JSON encoding
+  // if (isWindows()) {
+  //   // quoted special characters for JSON encoding
 
-    const character = {
-      '\\': '\\\\',
-      '"': '\\"',
-    };
+  //   const character = {
+  //     '\\': '\\\\',
+  //     '"': '\\"',
+  //   };
 
-    const normalizedFilePath = filePath.replace(/[\\"]/g, function (c) {
-      return character[c];
-    });
+  //   const normalizedFilePath = filePath.replace(/[\\"]/g, function (c) {
+  //     return character[c];
+  //   });
 
-    return normalizedFilePath;
-  }
+  //   return normalizedFilePath;
+  // }
 
-  return filePath;
+  return JSON.stringify(filePath);
 };
