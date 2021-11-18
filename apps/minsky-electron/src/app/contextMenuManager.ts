@@ -584,7 +584,7 @@ export class ContextMenuManager {
 
             if (filePath) {
               await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.CANVAS_ITEM_READ_DATA} "${filePath}"`,
+                command: `${commandsMapping.CANVAS_ITEM_READ_DATA} ${filePath}`,
               });
             }
           },

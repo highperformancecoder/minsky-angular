@@ -117,13 +117,16 @@ export class MenuManager {
               } else {
                 const saveDialog = await dialog.showSaveDialog({});
 
-                if (saveDialog.canceled || !saveDialog.filePath) {
+                const { canceled, filePath: _filePath } = saveDialog;
+                const filePath = normalizeFilePathForPlatform(_filePath);
+
+                if (canceled || !filePath) {
                   return;
                 }
 
                 await RestServiceManager.handleMinskyProcess({
                   command: commandsMapping.SAVE,
-                  filePath: saveDialog.filePath,
+                  filePath,
                 });
               }
             },
@@ -150,16 +153,18 @@ export class MenuManager {
                 properties: ['showOverwriteConfirmation'],
               });
 
-              if (saveDialog.canceled || !saveDialog.filePath) {
+              const { canceled, filePath: _filePath } = saveDialog;
+              const filePath = normalizeFilePathForPlatform(_filePath);
+
+              if (canceled || !filePath) {
                 return;
               }
 
               await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
+                command: `${commandsMapping.SAVE} ${filePath}`,
               });
 
-              RestServiceManager.currentMinskyModelFilePath =
-                saveDialog.filePath;
+              RestServiceManager.currentMinskyModelFilePath = filePath;
             },
           },
           {
@@ -175,7 +180,7 @@ export class MenuManager {
                 );
 
                 await RestServiceManager.handleMinskyProcess({
-                  command: `${commandsMapping.INSERT_GROUP_FROM_FILE} "${filePath}"}`,
+                  command: `${commandsMapping.INSERT_GROUP_FROM_FILE} ${filePath}`,
                 });
                 await CommandsManager.requestRedraw();
               } catch (err) {
@@ -210,7 +215,7 @@ export class MenuManager {
                   );
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.RENDER_CANVAS_TO_SVG} "${filePath}"`,
+                    command: `${commandsMapping.RENDER_CANVAS_TO_SVG} ${filePath}`,
                   });
                 },
               },
@@ -222,7 +227,7 @@ export class MenuManager {
                   );
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.RENDER_CANVAS_TO_PDF} "${filePath}"`,
+                    command: `${commandsMapping.RENDER_CANVAS_TO_PDF} ${filePath}`,
                   });
                 },
               },
@@ -234,7 +239,7 @@ export class MenuManager {
                   );
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.RENDER_CANVAS_TO_PS} "${filePath}"`,
+                    command: `${commandsMapping.RENDER_CANVAS_TO_PS} ${filePath}`,
                   });
                 },
               },
@@ -246,7 +251,7 @@ export class MenuManager {
                   );
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.LATEX} ["${filePath}",${
+                    command: `${commandsMapping.LATEX} [${filePath},${
                       StoreManager.store.get('preferences')
                         .wrapLongEquationsInLatexExport
                     }]`,
@@ -261,7 +266,7 @@ export class MenuManager {
                   );
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.MATLAB} "${filePath}"`,
+                    command: `${commandsMapping.MATLAB} ${filePath}`,
                   });
                 },
               },
@@ -283,14 +288,15 @@ export class MenuManager {
                     filters: [{ extensions: ['svg'], name: 'SVG' }],
                   });
 
-                  const { canceled, filePath } = exportPlotDialog;
+                  const { canceled, filePath: _filePath } = exportPlotDialog;
+                  const filePath = normalizeFilePathForPlatform(_filePath);
 
                   if (canceled || !filePath) {
                     return;
                   }
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.RENDER_ALL_PLOTS_AS_SVG} "${filePath}"`,
+                    command: `${commandsMapping.RENDER_ALL_PLOTS_AS_SVG} ${filePath}`,
                   });
                 },
               },
@@ -307,14 +313,15 @@ export class MenuManager {
                     filters: [{ extensions: ['csv'], name: 'CSV' }],
                   });
 
-                  const { canceled, filePath } = exportPlotDialog;
+                  const { canceled, filePath: _filePath } = exportPlotDialog;
+                  const filePath = normalizeFilePathForPlatform(_filePath);
 
                   if (canceled || !filePath) {
                     return;
                   }
 
                   await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.EXPORT_ALL_PLOTS_AS_CSV} "${filePath}"`,
+                    command: `${commandsMapping.EXPORT_ALL_PLOTS_AS_CSV} ${filePath}`,
                   });
                 },
               },

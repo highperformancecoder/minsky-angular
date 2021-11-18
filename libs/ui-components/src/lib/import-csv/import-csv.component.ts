@@ -362,7 +362,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   async doReport() {
     const {
       canceled,
-      filePath,
+      filePath: _filePath,
     } = await this.electronService.remote.dialog.showSaveDialog({
       defaultPath: `${this.url}-error-report.csv`,
       title: 'Save report',
@@ -370,12 +370,14 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       filters: [{ extensions: ['csv'], name: 'CSV' }],
     });
 
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
     if (canceled || !filePath) {
       return;
     }
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${this.variableValuesSubCommand}/csvDialog/reportFromFile ["${this.url}","${filePath}"]`,
+      command: `${this.variableValuesSubCommand}/csvDialog/reportFromFile ["${this.url}",${filePath}]`,
     });
 
     return;

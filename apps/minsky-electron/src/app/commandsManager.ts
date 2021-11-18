@@ -250,7 +250,9 @@ export class CommandsManager {
       filters: [{ extensions: [extension], name }],
     });
 
-    const { canceled, filePath } = exportImage;
+    const { canceled, filePath: _filePath } = exportImage;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
     if (canceled || !filePath) {
       return;
     }
@@ -258,25 +260,25 @@ export class CommandsManager {
     switch (extension?.toLowerCase()) {
       case 'svg':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_SVG} "${filePath}"`,
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_SVG} ${filePath}`,
         });
         break;
 
       case 'pdf':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PDF} "${filePath}"`,
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PDF} ${filePath}`,
         });
         break;
 
       case 'ps':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PS} "${filePath}"`,
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PS} ${filePath}`,
         });
         break;
 
       case 'emf':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_EMF} "${filePath}"`,
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_EMF} ${filePath}`,
         });
         break;
 
@@ -296,14 +298,15 @@ export class CommandsManager {
       ],
     });
 
-    const { canceled, filePath } = exportItemDialog;
+    const { canceled, filePath: _filePath } = exportItemDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
 
     if (canceled || !filePath) {
       return;
     }
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_EXPORT_AS_CSV} "${filePath}"`,
+      command: `${commandsMapping.CANVAS_EXPORT_AS_CSV} ${filePath}`,
     });
 
     return;
@@ -542,12 +545,15 @@ export class CommandsManager {
       defaultPath: 'selection.mky',
     });
 
-    if (saveDialog.canceled || !saveDialog.filePath) {
+    const { canceled, filePath: _filePath } = saveDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
+    if (canceled || !filePath) {
       return;
     }
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.SAVE_SELECTION_AS_FILE} "${saveDialog.filePath}"`,
+      command: `${commandsMapping.SAVE_SELECTION_AS_FILE} ${saveDialog.filePath}`,
     });
 
     return;
@@ -625,11 +631,14 @@ export class CommandsManager {
   static async getFilePathUsingSaveDialog(): Promise<string> {
     const saveDialog = await dialog.showSaveDialog({});
 
-    if (saveDialog.canceled || !saveDialog.filePath) {
+    const { canceled, filePath: _filePath } = saveDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
+    if (canceled || !filePath) {
       return null;
     }
 
-    return saveDialog.filePath;
+    return filePath;
   }
 
   static async getFilePathFromExportCanvasDialog(
@@ -641,7 +650,9 @@ export class CommandsManager {
       properties: ['showOverwriteConfirmation', 'createDirectory'],
     });
 
-    const { canceled, filePath } = exportCanvasDialog;
+    const { canceled, filePath: _filePath } = exportCanvasDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
     if (canceled || !filePath) {
       return;
     }
@@ -705,13 +716,15 @@ export class CommandsManager {
           properties: ['showOverwriteConfirmation', 'createDirectory'],
         });
 
-        const { canceled, filePath } = saveModelDialog;
+        const { canceled, filePath: _filePath } = saveModelDialog;
+        const filePath = normalizeFilePathForPlatform(_filePath);
+
         if (canceled || !filePath) {
           return;
         }
 
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.SAVE} "${filePath}"`,
+          command: `${commandsMapping.SAVE} ${filePath}`,
         });
       }
 
@@ -835,12 +848,15 @@ export class CommandsManager {
       properties: ['showOverwriteConfirmation'],
     });
 
-    if (saveDialog.canceled || !saveDialog.filePath) {
+    const { canceled, filePath: _filePath } = saveDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
+    if (canceled || !filePath) {
       return;
     }
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.SAVE_CANVAS_ITEM_AS_FILE} "${saveDialog.filePath}"`,
+      command: `${commandsMapping.SAVE_CANVAS_ITEM_AS_FILE} ${filePath}`,
     });
 
     return;
@@ -862,13 +878,16 @@ export class CommandsManager {
       properties: ['showOverwriteConfirmation'],
     });
 
-    if (saveDialog.canceled || !saveDialog.filePath) {
+    const { canceled, filePath: _filePath } = saveDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
+    if (canceled || !filePath) {
       return;
     }
 
     if (command) {
       await RestServiceManager.handleMinskyProcess({
-        command: `${command} "${saveDialog.filePath}"`,
+        command: `${command} ${filePath}`,
       });
       return;
     }
@@ -876,14 +895,14 @@ export class CommandsManager {
     switch (ext) {
       case 'csv':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.EXPORT_GODLEY_TO_CSV} "${saveDialog.filePath}"`,
+          command: `${commandsMapping.EXPORT_GODLEY_TO_CSV} ${filePath}`,
         });
 
         break;
 
       case 'tex':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.EXPORT_GODLEY_TO_LATEX} "${saveDialog.filePath}"`,
+          command: `${commandsMapping.EXPORT_GODLEY_TO_LATEX} ${filePath}`,
         });
         break;
 
@@ -907,7 +926,7 @@ export class CommandsManager {
     if (!autoBackupFileExists) {
       await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.LOAD,
-        filePath: filePath,
+        filePath,
       });
 
       ipcMain.emit(events.ADD_RECENT_FILE, null, filePath);
@@ -929,7 +948,7 @@ export class CommandsManager {
       } else {
         await RestServiceManager.handleMinskyProcess({
           command: commandsMapping.LOAD,
-          filePath: filePath,
+          filePath,
         });
 
         ipcMain.emit(events.ADD_RECENT_FILE, null, filePath);
@@ -1494,7 +1513,9 @@ export class CommandsManager {
       filters: [{ extensions: ['csv'], name: 'CSV' }],
     });
 
-    const { canceled, filePath } = logSimulation;
+    const { canceled, filePath: _filePath } = logSimulation;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
     if (canceled || !filePath) {
       return;
     }
@@ -1526,7 +1547,7 @@ export class CommandsManager {
     }
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.OPEN_LOG_FILE} "${filePath}"`,
+      command: `${commandsMapping.OPEN_LOG_FILE} ${filePath}`,
     });
 
     return;

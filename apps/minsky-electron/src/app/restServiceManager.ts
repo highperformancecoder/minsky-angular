@@ -256,12 +256,12 @@ export class RestServiceManager {
 
     switch (payload.command) {
       case commandsMapping.LOAD:
-        stdinCommand = `${payload.command} "${payload.filePath}"`;
+        stdinCommand = `${payload.command} ${payload.filePath}`;
         this.render = true;
         break;
 
       case commandsMapping.SAVE:
-        stdinCommand = `${payload.command} "${payload.filePath}"`;
+        stdinCommand = `${payload.command} ${payload.filePath}`;
         this.currentMinskyModelFilePath = payload.filePath;
         ipcMain.emit(events.ADD_RECENT_FILE, null, payload.filePath);
         break;
@@ -299,7 +299,7 @@ export class RestServiceManager {
             ? `${join(__dirname, 'assets/godley.svg')}`
             : `${join(process.resourcesPath, 'assets/godley.svg')}`
         );
-        stdinCommand = `${payload.command} "${godleyIconFilePath}"`;
+        stdinCommand = `${payload.command} ${godleyIconFilePath}`;
 
         break;
 
@@ -311,7 +311,7 @@ export class RestServiceManager {
             : `${join(process.resourcesPath, 'assets/group.svg')}`
         );
 
-        stdinCommand = `${payload.command} "${groupIconFilePath}"`;
+        stdinCommand = `${payload.command} ${groupIconFilePath}`;
         break;
 
       case commandsMapping.REQUEST_REDRAW_SUBCOMMAND:

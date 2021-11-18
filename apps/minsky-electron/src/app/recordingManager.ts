@@ -45,12 +45,15 @@ export class RecordingManager {
     if (options.buttons[index] === positiveResponseText) {
       const saveDialog = await dialog.showSaveDialog({});
 
-      if (saveDialog.canceled) {
+      const { canceled, filePath: _filePath } = saveDialog;
+      const filePath = normalizeFilePathForPlatform(_filePath);
+
+      if (canceled || !filePath) {
         return;
       }
 
       ipcMain.emit(events.MINSKY_PROCESS_FOR_IPC_MAIN, null, {
-        command: `${commandsMapping.SAVE} "${saveDialog.filePath}"`,
+        command: `${commandsMapping.SAVE} ${saveDialog.filePath}`,
       });
 
       await this.replay(replayRecordingDialog);
@@ -138,7 +141,10 @@ export class RecordingManager {
       defaultPath: 'recording.json',
     });
 
-    if (saveRecordingDialog.canceled || !saveRecordingDialog.filePath) {
+    const { canceled, filePath: _filePath } = saveRecordingDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
+    if (canceled || !filePath) {
       WindowManager.getMainWindow().webContents.send(
         events.RECORDING_STATUS_CHANGED,
         {
@@ -151,7 +157,7 @@ export class RecordingManager {
 
     this.isRecording = true;
 
-    this.recordingFilePath = saveRecordingDialog.filePath;
+    this.recordingFilePath = filePath;
     WindowManager.getMainWindow().webContents.send(
       events.RECORDING_STATUS_CHANGED,
       {
