@@ -69,9 +69,7 @@ export class RecordingManager {
   private static async replay(
     replayRecordingDialog: Electron.OpenDialogReturnValue
   ) {
-    const filePath = normalizeFilePathForPlatform(
-      replayRecordingDialog.filePaths[0]
-    );
+    const filePath = replayRecordingDialog.filePaths[0];
     const replayFile = readFileSync(filePath, {
       encoding: 'utf8',
       flag: 'r',
@@ -141,8 +139,7 @@ export class RecordingManager {
       defaultPath: 'recording.json',
     });
 
-    const { canceled, filePath: _filePath } = saveRecordingDialog;
-    const filePath = normalizeFilePathForPlatform(_filePath);
+    const { canceled, filePath } = saveRecordingDialog;
 
     if (canceled || !filePath) {
       WindowManager.getMainWindow().webContents.send(

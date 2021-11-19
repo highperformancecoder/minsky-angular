@@ -7,6 +7,7 @@ import {
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
+import * as log from 'electron-log';
 import { join } from 'path';
 import { format } from 'url';
 import { CommandsManager } from './commandsManager';
@@ -239,11 +240,13 @@ export default class App {
     App.application.on('activate', App.onActivate); // App is activated
 
     process.on('uncaughtException', (err) => {
-      console.error(
+      log.error(
         red(
           `🚀 ~ file: app.ts ~ line 265 ~ App ~ process.on('uncaughtException') ~ err: ${err}`
         )
       );
+
+      if (err?.message) dialog.showErrorBox(err.message, '');
     });
   }
 }
