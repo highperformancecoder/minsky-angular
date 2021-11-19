@@ -330,14 +330,14 @@ export class ContextMenuManager {
       case ClassType.PlotWidget:
         menuItems = [
           ...menuItems,
-          ...(await ContextMenuManager.buildContextMenuForPlotWidget()),
+          ...(await ContextMenuManager.buildContextMenuForPlotWidget(itemInfo)),
         ];
         break;
 
       case ClassType.GodleyIcon:
         menuItems = [
           ...menuItems,
-          ...ContextMenuManager.buildContextMenuForGodleyIcon(),
+          ...ContextMenuManager.buildContextMenuForGodleyIcon(itemInfo),
         ];
 
         break;
@@ -405,9 +405,16 @@ export class ContextMenuManager {
     return menuItems;
   }
 
-  private static async buildContextMenuForPlotWidget(): Promise<MenuItem[]> {
+  private static async buildContextMenuForPlotWidget(
+    itemInfo: CanvasItem
+  ): Promise<MenuItem[]> {
     const menuItems = [
-      new MenuItem({ label: 'Expand' }),
+      new MenuItem({
+        label: 'Expand',
+        click: async () => {
+          await CommandsManager.expandPlot(itemInfo);
+        },
+      }),
       new MenuItem({
         label: 'Make Group Plot',
         click: async () => {
@@ -476,9 +483,16 @@ export class ContextMenuManager {
     return menuItems;
   }
 
-  private static buildContextMenuForGodleyIcon(): MenuItem[] {
+  private static buildContextMenuForGodleyIcon(
+    itemInfo: CanvasItem
+  ): MenuItem[] {
     const menuItems = [
-      new MenuItem({ label: 'Open Godley Table' }),
+      new MenuItem({
+        label: 'Open Godley Table',
+        click: async () => {
+          await CommandsManager.openGodleyTable(itemInfo);
+        },
+      }),
       new MenuItem({
         label: 'Title',
         click: () => {

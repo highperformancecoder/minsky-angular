@@ -1138,67 +1138,11 @@ export class CommandsManager {
     if (itemInfo?.classType) {
       switch (itemInfo?.classType) {
         case ClassType.GodleyIcon:
-          if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
-            let systemWindowId = null;
-            const window = await this.initializePopupWindow(
-              itemInfo,
-              `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
-            );
-
-            systemWindowId = WindowManager.getWindowByUid(itemInfo.id)
-              .systemWindowId;
-
-            window.loadURL(
-              WindowManager.getWindowUrl(
-                `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
-              )
-            );
-
-            CommandsManager.createMenusForGodleyView(window, itemInfo);
-
-            this.activeGodleyWindowItems.set(itemInfo.id, itemInfo);
-          }
+          await CommandsManager.openGodleyTable(itemInfo);
           break;
 
         case ClassType.PlotWidget:
-          if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
-            let systemWindowId = null;
-            const window = await this.initializePopupWindow(
-              itemInfo,
-              `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
-            );
-
-            systemWindowId = WindowManager.getWindowByUid(itemInfo.id)
-              .systemWindowId;
-
-            window.loadURL(
-              WindowManager.getWindowUrl(
-                `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
-              )
-            );
-
-            // window.setMenu(
-            //   Menu.buildFromTemplate([
-            //     new MenuItem({
-            //       label: 'Options',
-            //       submenu: [
-            //         {
-            //           label: 'Options',
-            //           click: () => {
-            //             WindowManager.createMenuPopUpWithRouting({
-            //               title: 'Plot Window Options',
-            //               url: `#/headless/plot-widget-options?itemId=${itemInfo.id}`,
-            //               uid: itemInfo.id,
-            //               height: 500,
-            //               width: 500,
-            //             });
-            //           },
-            //         },
-            //       ],
-            //     }),
-            //   ])
-            // );
-          }
+          await CommandsManager.expandPlot(itemInfo);
           break;
 
         case ClassType.Variable:
@@ -1233,6 +1177,68 @@ export class CommandsManager {
         default:
           break;
       }
+    }
+  }
+
+  static async openGodleyTable(itemInfo: CanvasItem) {
+    if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
+      let systemWindowId = null;
+      const window = await this.initializePopupWindow(
+        itemInfo,
+        `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+      );
+
+      systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
+
+      window.loadURL(
+        WindowManager.getWindowUrl(
+          `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+        )
+      );
+
+      CommandsManager.createMenusForGodleyView(window, itemInfo);
+
+      this.activeGodleyWindowItems.set(itemInfo.id, itemInfo);
+    }
+  }
+
+  static async expandPlot(itemInfo: CanvasItem) {
+    if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
+      let systemWindowId = null;
+      const window = await this.initializePopupWindow(
+        itemInfo,
+        `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+      );
+
+      systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
+
+      window.loadURL(
+        WindowManager.getWindowUrl(
+          `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+        )
+      );
+
+      // window.setMenu(
+      //   Menu.buildFromTemplate([
+      //     new MenuItem({
+      //       label: 'Options',
+      //       submenu: [
+      //         {
+      //           label: 'Options',
+      //           click: () => {
+      //             WindowManager.createMenuPopUpWithRouting({
+      //               title: 'Plot Window Options',
+      //               url: `#/headless/plot-widget-options?itemId=${itemInfo.id}`,
+      //               uid: itemInfo.id,
+      //               height: 500,
+      //               width: 500,
+      //             });
+      //           },
+      //         },
+      //       ],
+      //     }),
+      //   ])
+      // );
     }
   }
 
