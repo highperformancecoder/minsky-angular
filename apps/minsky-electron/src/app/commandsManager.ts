@@ -1603,24 +1603,27 @@ export class CommandsManager {
   }
 
   static changeWindowBackgroundColor = async (color: string) => {
-    const { style, r, g, b, a } = getBackgroundStyle(color);
-
+    const { style, r, g, b } = getBackgroundStyle(color);
+    const a = 1;
     WindowManager.activeWindows.forEach((window) => {
       window.context.webContents.insertCSS(style);
     });
 
     // change backgroundColor of for other windows as well
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/r ${r}`,
+      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/r ${r / 255}`,
     });
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/g ${g}`,
+      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/g ${g / 255}`,
     });
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/b ${b}`,
+      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/b ${b / 255}`,
     });
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/a ${a}`,
+    });
+    await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
     });
   };
 }

@@ -15,7 +15,6 @@ export const getBackgroundStyle = (color) => {
 
   let colorArray;
   let r, g, b;
-  const a = 1;
   // Check the format of the color, HEX or RGB?
   if (color.match(/^rgb/)) {
     // If RGB --> store the red, green, blue values in separate variables
@@ -47,7 +46,6 @@ export const getBackgroundStyle = (color) => {
       r,
       g,
       b,
-      a,
     };
   }
 
@@ -56,7 +54,6 @@ export const getBackgroundStyle = (color) => {
     r,
     g,
     b,
-    a,
   };
 };
 
