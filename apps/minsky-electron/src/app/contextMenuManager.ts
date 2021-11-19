@@ -3,6 +3,7 @@ import {
   ClassType,
   commandsMapping,
   isEmptyObject,
+  isWindows,
 } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
 import { CommandsManager } from './commandsManager';
@@ -472,6 +473,7 @@ export class ContextMenuManager {
           },
           {
             label: 'LaTeX',
+            visible: isWindows(),
             click: async () => {
               CommandsManager.exportItemAsImage('emf', 'LaTeX');
             },
