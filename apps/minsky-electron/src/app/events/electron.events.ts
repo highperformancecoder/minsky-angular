@@ -37,11 +37,11 @@ ipcMain.handle(events.GET_APP_VERSION, () => {
   return environment.version;
 });
 
-ipcMain.on(events.SET_BACKGROUND_COLOR, (event, { color }) => {
+ipcMain.on(events.SET_BACKGROUND_COLOR, async (event, { color }) => {
   if (color) {
     StoreManager.store.set('backgroundColor', color);
   }
-  WindowManager.changeWindowBackgroundColor(
+  await CommandsManager.changeWindowBackgroundColor(
     StoreManager.store.get('backgroundColor')
   );
 });

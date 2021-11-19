@@ -15,7 +15,7 @@ export const getBackgroundStyle = (color) => {
 
   let colorArray;
   let r, g, b;
-
+  const a = 1;
   // Check the format of the color, HEX or RGB?
   if (color.match(/^rgb/)) {
     // If RGB --> store the red, green, blue values in separate variables
@@ -42,10 +42,22 @@ export const getBackgroundStyle = (color) => {
 
   // Using the HSP value, determine whether the color is light or dark
   if (hsp > 127.5) {
-    return 'body { background-color: ' + color + '; color: black; }';
+    return {
+      style: 'body { background-color: ' + color + '; color: black; }',
+      r,
+      g,
+      b,
+      a,
+    };
   }
 
-  return 'body { background-color: ' + color + '; color: white; }';
+  return {
+    style: 'body { background-color: ' + color + '; color: white; }',
+    r,
+    g,
+    b,
+    a,
+  };
 };
 
 export const isWindows = () =>

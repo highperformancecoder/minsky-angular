@@ -3,6 +3,7 @@ import {
   ClassType,
   commandsMapping,
   events,
+  getBackgroundStyle,
   GodleyTableOutputStyles,
   green,
   isEmptyObject,
@@ -1600,4 +1601,26 @@ export class CommandsManager {
     });
     await CommandsManager.requestRedraw();
   }
+
+  static changeWindowBackgroundColor = async (color: string) => {
+    const { style, r, g, b, a } = getBackgroundStyle(color);
+
+    WindowManager.activeWindows.forEach((window) => {
+      window.context.webContents.insertCSS(style);
+    });
+
+    // change backgroundColor of for other windows as well
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/r ${r}`,
+    });
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/g ${g}`,
+    });
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/b ${b}`,
+    });
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/a ${a}`,
+    });
+  };
 }

@@ -233,6 +233,7 @@ export const commandsMapping = {
   REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP: '/minsky/namedItems/@erase', // TODO:: Check syntax, call when any item is deleted
   GET_NAMED_ITEM: '/minsky/namedItems/@elem',
   CANVAS_ITEM_IMPORT_FROM_CSV: '/minsky/canvas/item/importFromCSV',
+  CANVAS_BACKGROUND_COLOR: '/minsky/canvas/backgroundColour',
 };
 
 export const availableOperations = {
