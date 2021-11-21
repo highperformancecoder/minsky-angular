@@ -119,6 +119,10 @@ export class RestServiceManager {
 
   public static async setCurrentTab(tab: MainRenderingTabs) {
     if (tab !== this.currentTab) {
+      // disable the old tab
+      this.handleMinskyProcess({
+        command: this.currentTab+"/enabled false",
+      });
       this.currentTab = tab;
       this.render = true;
       this.lastMouseMovePayload = null;
