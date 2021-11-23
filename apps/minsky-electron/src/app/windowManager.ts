@@ -151,7 +151,7 @@ export class WindowManager {
       event.preventDefault();
     });
 
-    // if (Utility.isDevelopmentMode()) {
+    //   if (Utility.isDevelopmentMode()) {
     //   childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
     // }
 
@@ -216,8 +216,7 @@ export class WindowManager {
     );
 
     this.electronTopOffset = Math.round(
-      payload.offset.electronMenuBarHeight * this.scaleFactor +
-        payload.offset.top
+      payload.offset.electronMenuBarHeight + payload.offset.top
     );
 
     this.canvasHeight = payload.drawableArea.height;
