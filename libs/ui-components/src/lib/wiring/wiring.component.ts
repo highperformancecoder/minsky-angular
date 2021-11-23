@@ -81,11 +81,11 @@ export class WiringComponent implements OnInit, OnDestroy {
         });
         minskyCanvasContainer.onwheel = this.cmService.onMouseWheelZoom;
 
-        minskyCanvasContainer.addEventListener('keydown', async (event) => {
+        document.body.addEventListener('keydown', async (event) => {
           await this.cmService.handleKeyDown(event);
         });
 
-        minskyCanvasContainer.addEventListener('keyup', async (event) => {
+        document.body.addEventListener('keyup', async (event) => {
           await this.cmService.handleKeyUp(event);
         });
 
