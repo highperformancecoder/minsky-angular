@@ -6,8 +6,11 @@ import {
   getBackgroundStyle,
   GodleyTableOutputStyles,
   green,
+  InitializePopupWindowPayload,
   isEmptyObject,
   normalizeFilePathForPlatform,
+  ZOOM_IN_FACTOR,
+  ZOOM_OUT_FACTOR
 } from '@minsky/shared';
 import { dialog, ipcMain, Menu, MenuItem } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
@@ -554,7 +557,7 @@ export class CommandsManager {
     }
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.SAVE_SELECTION_AS_FILE} ${saveDialog.filePath}`,
+      command: `${commandsMapping.SAVE_SELECTION_AS_FILE} ${filePath}`,
     });
 
     return;
@@ -1106,11 +1109,9 @@ export class CommandsManager {
   }
 
   private static async initializePopupWindow(
-    itemInfo: CanvasItem,
-    url: string,
-    height = 600,
-    width = 800
+    payload: InitializePopupWindowPayload
   ): Promise<Electron.BrowserWindow> {
+    const { itemInfo, url, height = 600, width = 800, modal = true } = payload;
     // Pushing the current item to namedItems map
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.ADD_ENTRY_TO_NAMED_ITEMS_MAP} "${itemInfo.id}"`,
@@ -1123,6 +1124,7 @@ export class CommandsManager {
         uid: itemInfo.id,
         height,
         width,
+        modal,
       },
       () => {
         this.onPopupWindowClose(itemInfo.id);
@@ -1184,10 +1186,11 @@ export class CommandsManager {
   static async openGodleyTable(itemInfo: CanvasItem) {
     if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
       let systemWindowId = null;
-      const window = await this.initializePopupWindow(
+      const window = await this.initializePopupWindow({
         itemInfo,
-        `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
-      );
+        url: `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
+        modal: false,
+      });
 
       systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
 
@@ -1206,10 +1209,11 @@ export class CommandsManager {
   static async expandPlot(itemInfo: CanvasItem) {
     if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
       let systemWindowId = null;
-      const window = await this.initializePopupWindow(
+      const window = await this.initializePopupWindow({
         itemInfo,
-        `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
-      );
+        url: `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
+        modal: false,
+      });
 
       systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
 
@@ -1219,28 +1223,32 @@ export class CommandsManager {
         )
       );
 
-      // window.setMenu(
-      //   Menu.buildFromTemplate([
-      //     new MenuItem({
-      //       label: 'Options',
-      //       submenu: [
-      //         {
-      //           label: 'Options',
-      //           click: () => {
-      //             WindowManager.createMenuPopUpWithRouting({
-      //               title: 'Plot Window Options',
-      //               url: `#/headless/plot-widget-options?itemId=${itemInfo.id}`,
-      //               uid: itemInfo.id,
-      //               height: 500,
-      //               width: 500,
-      //             });
-      //           },
-      //         },
-      //       ],
-      //     }),
-      //   ])
-      // );
+      window.setMenu(
+        Menu.buildFromTemplate([
+          new MenuItem({
+            label: 'Options',
+            submenu: [
+              {
+                label: 'Options',
+                click: () => {
+                  CommandsManager.openPlotWindowOptions(itemInfo);
+                },
+              },
+            ],
+          }),
+        ])
+      );
     }
+  }
+
+  static openPlotWindowOptions(itemInfo: CanvasItem) {
+    WindowManager.createMenuPopUpWithRouting({
+      title: 'Plot Window Options',
+      url: `#/headless/plot-widget-options?itemId=${itemInfo.id}`,
+      uid: itemInfo.id,
+      height: 500,
+      width: 500,
+    });
   }
 
   private static async toggleMultipleEquitiesColumn() {
@@ -1363,14 +1371,12 @@ export class CommandsManager {
             label: 'Zoom In',
             accelerator: 'CmdOrCtrl + Plus',
             click: async () => {
-              const zoomFactor = (await RestServiceManager.handleMinskyProcess({
-                command: `${itemAccessor}/popup/zoomFactor`,
-              })) as number;
+              const [x, y] = window.getContentSize();
 
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.GET_NAMED_ITEM}/${
                   itemInfo.id
-                }/second/popup/zoomFactor ${zoomFactor * 1.1}`,
+                }/second/popup/zoom [${x / 2},${y / 2},${ZOOM_IN_FACTOR}]`,
               });
             },
           },
@@ -1378,14 +1384,11 @@ export class CommandsManager {
             label: 'Zoom Out',
             accelerator: 'CmdOrCtrl + Minus',
             click: async () => {
-              const zoomFactor = (await RestServiceManager.handleMinskyProcess({
-                command: `${itemAccessor}/popup/zoomFactor`,
-              })) as number;
-
+              const [x, y] = window.getContentSize();
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.GET_NAMED_ITEM}/${
                   itemInfo.id
-                }/second/popup/zoomFactor ${zoomFactor / 1.1}`,
+                }/second/popup/zoom [${x / 2},${y / 2},${ZOOM_OUT_FACTOR}]`,
               });
             },
           },
@@ -1564,12 +1567,13 @@ export class CommandsManager {
     if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
       let systemWindowId = null;
 
-      const window = await this.initializePopupWindow(
+      const window = await this.initializePopupWindow({
         itemInfo,
-        `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
-        600,
-        1100
-      );
+        url: `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
+        height: 600,
+        width: 1100,
+        modal: false,
+      });
 
       systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
 
@@ -1604,23 +1608,16 @@ export class CommandsManager {
 
   static changeWindowBackgroundColor = async (color: string) => {
     const { style, r, g, b } = getBackgroundStyle(color);
-    const a = 1;
     WindowManager.activeWindows.forEach((window) => {
       window.context.webContents.insertCSS(style);
     });
 
-    // change backgroundColor of for other windows as well
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/r ${r / 255}`,
-    });
-    await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/g ${g / 255}`,
-    });
-    await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/b ${b / 255}`,
-    });
-    await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR}/a ${a}`,
+      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR} ${JSON.stringify({
+        r: r / 255,
+        g: g / 255,
+        b: b / 255,
+      })}`,
     });
     await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,

@@ -1,5 +1,11 @@
 import { MainRenderingTabs } from '../constants/MainRenderingTabs';
-
+export interface InitializePopupWindowPayload {
+  itemInfo: CanvasItem;
+  url: string;
+  height?: number;
+  width?: number;
+  modal?: boolean;
+}
 export interface MinskyProcessPayload {
   mouseX?: number;
   mouseY?: number;

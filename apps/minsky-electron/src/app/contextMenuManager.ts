@@ -424,7 +424,12 @@ export class ContextMenuManager {
           });
         },
       }),
-      new MenuItem({ label: 'Options' }),
+      new MenuItem({
+        label: 'Options',
+        click: () => {
+          CommandsManager.openPlotWindowOptions(itemInfo);
+        },
+      }),
       new MenuItem({
         label: 'Pen Styles',
         click: () => {

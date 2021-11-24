@@ -120,7 +120,7 @@ export class WindowManager {
     // eslint-disable-next-line @typescript-eslint/ban-types
     onCloseCallback?: Function
   ) {
-    const { width, height, title, modal, backgroundColor } = payload;
+    const { width, height, title, modal = true, backgroundColor } = payload;
 
     const mainWindow = WindowManager.getMainWindow();
 
@@ -128,10 +128,10 @@ export class WindowManager {
       width,
       height,
       title,
-      resizable: false,
+      resizable: true,
       minimizable: false,
       show: false,
-      parent: mainWindow,
+      parent: modal ? mainWindow : null,
       modal,
       backgroundColor,
       webPreferences: {

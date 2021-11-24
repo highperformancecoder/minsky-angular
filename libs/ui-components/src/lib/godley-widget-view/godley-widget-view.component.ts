@@ -11,7 +11,13 @@ import {
   ElectronService,
   WindowUtilityService,
 } from '@minsky/core';
-import { commandsMapping, events, MinskyProcessPayload } from '@minsky/shared';
+import {
+  commandsMapping,
+  events,
+  MinskyProcessPayload,
+  ZOOM_IN_FACTOR,
+  ZOOM_OUT_FACTOR,
+} from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
@@ -167,26 +173,24 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
 
     await this.redraw();
   };
+
   onMouseWheelZoom = async (event: WheelEvent) => {
     event.preventDefault();
     const { deltaY } = event;
     const zoomIn = deltaY < 0;
 
-    const command = `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/popup/zoomFactor`;
+    const command = `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/popup/zoom`;
 
-    let zoomFactor = (await this.electronService.sendMinskyCommandAndRender({
-      command,
-    })) as number;
+    const zoomFactor = zoomIn ? ZOOM_IN_FACTOR : ZOOM_OUT_FACTOR;
 
-    if (zoomIn) {
-      zoomFactor = zoomFactor * 1.1;
-    } else {
-      zoomFactor = zoomFactor / 1.1;
-    }
+    const [
+      x,
+      y,
+    ] = this.electronService.remote.getCurrentWindow().getContentSize();
 
     //TODO: throttle here if required
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${command} ${zoomFactor}`,
+      command: `${command} [${x / 2},${y / 2},${zoomFactor}]`,
     });
   };
 
