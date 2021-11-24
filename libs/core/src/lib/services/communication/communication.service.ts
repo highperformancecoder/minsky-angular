@@ -546,6 +546,7 @@ export class CommunicationService {
       alt: event.altKey,
       mouseX: this.mouseX,
       mouseY: this.mouseY,
+      location: event.location,
     };
 
     // console.table(payload);
@@ -555,10 +556,12 @@ export class CommunicationService {
       this.showDragCursor$.next(true);
     }
 
-    await this.electronService.sendMinskyCommandAndRender(
+    const multipleKeyString = (await this.electronService.sendMinskyCommandAndRender(
       payload,
       events.KEY_PRESS
-    );
+    )) as string;
+
+    localStorage.setItem('multipleKeyString', multipleKeyString);
   }
 
   handleDblClick() {
