@@ -84,7 +84,10 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
       this.height &&
       this.width
     ) {
-      const command = `${this.namedItemSubCommand}/renderFrame [${this.systemWindowId},${this.leftOffset},${this.topOffset},${this.width},${this.height}]`;
+      const scaleFactor = this.electronService.remote.screen.getPrimaryDisplay()
+        .scaleFactor;
+
+      const command = `${this.namedItemSubCommand}/renderFrame [${this.systemWindowId},${this.leftOffset},${this.topOffset},${this.width},${this.height},${scaleFactor}]`;
 
       this.electronService.sendMinskyCommandAndRender({
         command,

@@ -10,10 +10,11 @@ import {
   isEmptyObject,
   normalizeFilePathForPlatform,
   ZOOM_IN_FACTOR,
-  ZOOM_OUT_FACTOR
+  ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
 import { dialog, ipcMain, Menu, MenuItem } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
+import * as JSON5 from 'json5';
 import { join } from 'path';
 import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './restServiceManager';
@@ -160,7 +161,7 @@ export class CommandsManager {
     const id = await this.getCurrentItemId();
 
     const itemInfo: CanvasItem = { classType, value, id };
-    console.log(green(JSON.stringify(itemInfo)));
+    console.log(green(JSON5.stringify(itemInfo)));
     return itemInfo;
   }
 
@@ -473,7 +474,7 @@ export class CommandsManager {
   }
 
   static async getLockGroup(): Promise<unknown[]> {
-    const lockGroup = JSON.parse(
+    const lockGroup = JSON5.parse(
       (await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_LOCK_GROUP,
       })) as string
@@ -1428,7 +1429,7 @@ export class CommandsManager {
               });
 
               await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"}]`,
+                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"]`,
               });
             },
           },
@@ -1455,7 +1456,7 @@ export class CommandsManager {
               });
 
               await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${newGodleyTableOutputStyle}"}]`,
+                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${newGodleyTableOutputStyle}"]`,
               });
             },
           },

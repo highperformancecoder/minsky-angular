@@ -11,6 +11,7 @@ import {
   MenuItemConstructorOptions,
   shell,
 } from 'electron';
+import * as JSON5 from 'json5';
 import { CommandsManager } from './commandsManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
@@ -195,7 +196,7 @@ export class MenuManager {
                 command: commandsMapping.DIMENSIONAL_ANALYSIS,
               });
 
-              if (JSON.stringify(res) === JSON.stringify({})) {
+              if (JSON5.stringify(res) === JSON5.stringify({})) {
                 dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
                   type: 'info',
                   title: 'Dimensional Analysis',

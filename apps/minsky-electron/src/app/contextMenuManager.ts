@@ -13,7 +13,10 @@ import { WindowManager } from './windowManager';
 export class ContextMenuManager {
   private static x: number = null;
   private static y: number = null;
-
+  private static rowColButtonsChecked = false;
+  private static showAllPlotsOnTabChecked = false;
+  private static displayPlotOnTabChecked = false;
+  private static displayVariableChecked = false;
   public static async initContextMenu(x: number, y: number) {
     const mainWindow = WindowManager.getMainWindow();
 
@@ -225,12 +228,14 @@ export class ContextMenuManager {
 
       new MenuItem({
         label: 'Show all plots on tab',
-        checked: false,
+        type: 'checkbox',
+        checked: this.showAllPlotsOnTabChecked,
         click: async () => {
-          // TODO: make this toggle on click with a checkbox
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_SHOW_ALL_PLOTS_ON_TAB,
           });
+
+          this.showAllPlotsOnTabChecked = !this.showAllPlotsOnTabChecked;
         },
       }),
       new MenuItem({
@@ -443,10 +448,14 @@ export class ContextMenuManager {
       }),
       new MenuItem({
         label: 'Display plot on tab',
+        type: 'checkbox',
+        checked: this.displayPlotOnTabChecked,
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY,
           });
+
+          this.displayPlotOnTabChecked = !this.displayPlotOnTabChecked;
         },
       }),
       new MenuItem({
@@ -522,18 +531,24 @@ export class ContextMenuManager {
       }),
       new MenuItem({
         label: 'Row/Col buttons',
+        checked: this.rowColButtonsChecked,
+        type: 'checkbox',
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_TOGGLE_BUTTONS,
           });
+          this.rowColButtonsChecked = !this.rowColButtonsChecked;
         },
       }),
       new MenuItem({
         label: 'Display variables',
+        type: 'checkbox',
+        checked: this.displayVariableChecked,
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_TOGGLE_VARIABLE_DISPLAY,
           });
+          this.displayVariableChecked = !this.displayVariableChecked;
         },
       }),
       new MenuItem({
