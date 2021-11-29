@@ -28,9 +28,11 @@ export class ContextMenuManager {
 
       const isWirePresent = !isEmptyObject(wire);
 
-      const isWireVisible = (await RestServiceManager.handleMinskyProcess({
+      const isWireVisibleRes = await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_WIRE_VISIBLE,
-      })) as boolean;
+      });
+
+      const isWireVisible = !isEmptyObject(isWireVisibleRes);
 
       if (isWirePresent && isWireVisible) {
         ContextMenuManager.buildAndDisplayContextMenu(

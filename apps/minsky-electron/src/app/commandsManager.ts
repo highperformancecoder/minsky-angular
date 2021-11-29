@@ -994,7 +994,7 @@ export class CommandsManager {
   }
 
   static async help(x: number, y: number) {
-    let classType = (await this.getCurrentItemClassType(true)) as string;
+    let classType = (await this.getItemClassType(x, y, true)) as string;
 
     if (isEmptyObject(classType)) {
       const wire = await CommandsManager.getWireAt(x, y);
