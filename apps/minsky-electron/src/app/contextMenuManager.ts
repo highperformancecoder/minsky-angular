@@ -488,10 +488,10 @@ export class ContextMenuManager {
             },
           },
           {
-            label: 'LaTeX',
+            label: 'EMF',
             visible: isWindows(),
             click: async () => {
-              CommandsManager.exportItemAsImage('emf', 'LaTeX');
+              CommandsManager.exportItemAsImage('emf', 'EMF');
             },
           },
         ],
