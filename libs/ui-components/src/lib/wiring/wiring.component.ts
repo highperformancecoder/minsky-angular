@@ -32,7 +32,7 @@ export class WiringComponent implements OnInit, OnDestroy {
     private windowUtilityService: WindowUtilityService,
     private zone: NgZone,
     private changeDetectorRef: ChangeDetectorRef
-  ) { }
+  ) {}
 
   async ngOnInit() {
     const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
@@ -81,18 +81,18 @@ export class WiringComponent implements OnInit, OnDestroy {
         });
         minskyCanvasContainer.onwheel = this.cmService.onMouseWheelZoom;
 
-        minskyCanvasContainer.addEventListener('keydown', async (event) => {
+        document.body.addEventListener('keydown', async (event) => {
           await this.cmService.handleKeyDown(event);
         });
 
-        minskyCanvasContainer.addEventListener('keyup', async (event) => {
+        document.body.addEventListener('keyup', async (event) => {
           await this.cmService.handleKeyUp(event);
         });
 
         this.mouseMove$ = fromEvent<MouseEvent>(
           minskyCanvasElement,
           'mousemove'
-        ).pipe(sampleTime(30)); /// FPS=1000/sampleTime
+        ).pipe(sampleTime(1)); /// FPS=1000/sampleTime
 
         this.mouseMove$.subscribe(async (event: MouseEvent) => {
           await this.cmService.mouseEvents('CANVAS_EVENT', event);
@@ -101,7 +101,6 @@ export class WiringComponent implements OnInit, OnDestroy {
         minskyCanvasElement.addEventListener(
           'mousedown',
           async (event: MouseEvent) => {
-
             await this.cmService.mouseEvents('CANVAS_EVENT', event);
           }
         );
@@ -128,5 +127,5 @@ export class WiringComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
-  ngOnDestroy() { }
+  ngOnDestroy() {}
 }

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ElectronService } from '@minsky/core';
-import { commandsMapping, events } from '@minsky/shared';
+import { ElectronService, WindowUtilityService } from '@minsky/core';
+import { commandsMapping } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
 @AutoUnsubscribe()
@@ -15,13 +15,14 @@ export class PlotWidgetViewComponent implements OnInit, OnDestroy {
   systemWindowId: number;
 
   leftOffset = 0;
-  topOffset: number;
+  topOffset = 0;
   height: number;
   width: number;
 
   constructor(
     private electronService: ElectronService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private windowUtilityService: WindowUtilityService
   ) {
     this.route.queryParams.subscribe((params) => {
       this.itemId = params.itemId;
@@ -35,7 +36,10 @@ export class PlotWidgetViewComponent implements OnInit, OnDestroy {
     const clientRect = plotCanvasContainer.getBoundingClientRect();
 
     this.leftOffset = Math.round(clientRect.left);
-    this.topOffset = Math.round(clientRect.top);
+
+    this.topOffset = Math.round(
+      this.windowUtilityService.getElectronMenuBarHeight()
+    );
 
     this.height = Math.round(plotCanvasContainer.clientHeight);
     this.width = Math.round(plotCanvasContainer.clientWidth);
@@ -47,28 +51,12 @@ export class PlotWidgetViewComponent implements OnInit, OnDestroy {
       this.height &&
       this.width
     ) {
-      const command = `${commandsMapping.GET_NAMED_ITEM}/${
-        this.itemId
-      }/second/renderFrame [${this.systemWindowId},${this.leftOffset},${22},${
-        this.width
-      },${this.height}]`;
-      // TODO:: Remove hardcoding of the number (22) above
-
+      const scaleFactor = this.electronService.remote.screen.getPrimaryDisplay()
+        .scaleFactor;
+      const command = `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/renderFrame [${this.systemWindowId},${this.leftOffset},${this.topOffset},${this.width},${this.height},${scaleFactor}]`;
 
       this.electronService.sendMinskyCommandAndRender({
         command,
-      });
-    }
-  }
-
-  openOptionsWindow() {
-    if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
-        title: 'Plot Window Options',
-        url: `#/headless/plot-widget-options?itemId=${this.itemId}`,
-        uid: this.itemId,
-        height: 500,
-        width: 500,
       });
     }
   }
