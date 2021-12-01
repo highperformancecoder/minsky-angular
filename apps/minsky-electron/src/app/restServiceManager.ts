@@ -35,10 +35,6 @@ try {
   log.error(error);
 }
 
-log.info(restService.call('/minsky/minskyVersion', ''));
-
-console.log(JSON.parse('1E1024'));
-
 interface QueueItem {
   promise: Deferred;
   payload: MinskyProcessPayload;
@@ -56,6 +52,10 @@ class Deferred {
     });
   }
 }
+
+restService.setMessageCallback(function(msg: string, buttons: string[]) {
+   if (msg) dialog.showMessageBoxSync({"message":msg,"type":"info","buttons":buttons});
+});
 
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string) {
