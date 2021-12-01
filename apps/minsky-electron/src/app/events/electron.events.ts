@@ -37,11 +37,11 @@ ipcMain.handle(events.GET_APP_VERSION, () => {
   return environment.version;
 });
 
-ipcMain.on(events.SET_BACKGROUND_COLOR, (event, { color }) => {
+ipcMain.on(events.SET_BACKGROUND_COLOR, async (event, { color }) => {
   if (color) {
     StoreManager.store.set('backgroundColor', color);
   }
-  WindowManager.changeWindowBackgroundColor(
+  await CommandsManager.changeWindowBackgroundColor(
     StoreManager.store.get('backgroundColor')
   );
 });
@@ -130,10 +130,6 @@ ipcMain.handle(
     return;
   }
 );
-
-ipcMain.on(events.TOGGLE_MINSKY_SERVICE, async () => {
-  await RestServiceManager.toggleMinskyService();
-});
 
 ipcMain.on(events.AUTO_START_MINSKY_SERVICE, async () => {
   await RestServiceManager.startMinskyService();

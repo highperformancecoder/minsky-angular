@@ -80,15 +80,6 @@ export class KeyBindingManager {
     let executed = true;
     const { key } = payload;
 
-    // console.log(
-    //   '🚀 ~ file: keyBindingManager.ts ~ line 184 ~ KeyBindingManager ~ handleOnKeyPressFallback ~ key',
-    //   key
-    // );
-    // console.log(
-    //   '🚀 ~ file: keyBindingManager.ts ~ line 185 ~ KeyBindingManager ~ handleOnKeyPressFallback ~ this.multipleKeyString',
-    //   this.multipleKeyString
-    // );
-
     switch (key) {
       case 'Backspace':
       case 'Delete':
@@ -100,7 +91,11 @@ export class KeyBindingManager {
         break;
 
       case '-':
-        await this.handleMinusKey(payload);
+        if (payload.location !== 3) {
+          executed = false;
+        } else {
+          await this.handleMinusKey(payload);
+        }
         break;
 
       case '*':
@@ -199,37 +194,37 @@ export class KeyBindingManager {
     if (!executed && key.length === 1 && key.match(asciiRegex)) {
       this.multipleKeyString += key;
 
-      if (!this.isMultipleKeyModalOpen) {
-        this.multipleKeyWindow = WindowManager.createMenuPopUpWithRouting({
-          title: 'Text Input',
-          url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
-          width: 300,
-          height: 130,
-        });
-
-        this.isMultipleKeyModalOpen = true;
-
-        this.multipleKeyWindow.on('close', () => {
-          this.isMultipleKeyModalOpen = false;
-          this.multipleKeyString = '';
-          this.multipleKeyWindow = null;
-        });
-      }
-
-      if (this.multipleKeyWindow) {
-        this.multipleKeyWindow.loadURL(
-          `${rendererAppURL}#/headless/multiple-key-operation?input=${encodeURIComponent(
-            this.multipleKeyString
-          )}`
-        );
-        // console.log(
-        //   '🚀 ~ file: keyBindingManager.ts ~ line 226 ~ KeyBindingManager ~ handleOnKeyPressFallback ~ this.multipleKeyString',
-        //   green(this.multipleKeyString)
-        // );
-      }
+      KeyBindingManager.openMultipleKeyStringPopup();
     }
 
-    return executed;
+    return this.multipleKeyString;
+  }
+
+  private static openMultipleKeyStringPopup() {
+    if (!this.isMultipleKeyModalOpen) {
+      this.multipleKeyWindow = WindowManager.createMenuPopUpWithRouting({
+        title: 'Text Input',
+        url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
+        width: 300,
+        height: 130,
+      });
+
+      this.isMultipleKeyModalOpen = true;
+
+      this.multipleKeyWindow.on('close', () => {
+        this.isMultipleKeyModalOpen = false;
+        this.multipleKeyString = '';
+        this.multipleKeyWindow = null;
+      });
+    }
+
+    if (this.multipleKeyWindow) {
+      this.multipleKeyWindow.loadURL(
+        `${rendererAppURL}#/headless/multiple-key-operation?input=${encodeURIComponent(
+          this.multipleKeyString
+        )}`
+      );
+    }
   }
 
   private static async handlePlusKey(payload: MinskyProcessPayload) {
@@ -247,23 +242,15 @@ export class KeyBindingManager {
   }
 
   private static async handleMinusKey(payload: MinskyProcessPayload) {
-    if (payload.shift) {
-      // <Key-minus>
-      // TODO: ask @janak
-      return;
-    }
-
     // <Key-KP_Subtract>
     await this.zoom(ZOOM_OUT_FACTOR);
     return;
   }
 
   private static async zoom(factor: number) {
-    const cBounds = JSON.parse(
-      (await RestServiceManager.handleMinskyProcess({
-        command: commandsMapping.C_BOUNDS,
-      })) as string
-    );
+    const cBounds = await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.C_BOUNDS,
+    });
 
     const x = 0.5 * (cBounds[2] + cBounds[0]);
     const y = 0.5 * (cBounds[3] + cBounds[1]);

@@ -288,7 +288,6 @@ export class CommunicationService {
 
   private async pauseSimulation() {
     this.isSimulationOn = false;
-    this.showPlayButton$.next(true);
   }
 
   private async stopSimulation() {
@@ -379,8 +378,6 @@ export class CommunicationService {
   public async mouseEvents(event, message: MouseEvent) {
     const { type, clientX, clientY, button } = message;
     const offset = this.windowUtilityService.getMinskyCanvasOffset();
-
-    console.log("Mouse move =", window.innerHeight, window.innerWidth, clientX, clientY);
 
     this.mouseX = clientX;
     this.mouseY = clientY - Math.round(offset.top);
@@ -549,6 +546,7 @@ export class CommunicationService {
       alt: event.altKey,
       mouseX: this.mouseX,
       mouseY: this.mouseY,
+      location: event.location,
     };
 
     // console.table(payload);
@@ -558,10 +556,12 @@ export class CommunicationService {
       this.showDragCursor$.next(true);
     }
 
-    await this.electronService.sendMinskyCommandAndRender(
+    const multipleKeyString = (await this.electronService.sendMinskyCommandAndRender(
       payload,
       events.KEY_PRESS
-    );
+    )) as string;
+
+    localStorage.setItem('multipleKeyString', multipleKeyString);
   }
 
   handleDblClick() {

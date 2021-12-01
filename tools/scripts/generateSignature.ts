@@ -1,69 +1,36 @@
-import axios from 'axios';
-import { spawn } from 'child_process';
 import { promises } from 'fs';
-import * as getPort from 'get-port';
-import { promisify } from 'util';
-import {
-  commandsMapping,
-  green,
-  MINSKY_SYSTEM_HTTP_SERVER_PATH,
-  red,
-} from './../../libs/shared/src';
-
-let minskyHttpServer = null;
-let url = null;
-
-const sleep = promisify(setTimeout);
-async function initMinskyHttpService() {
-  const filePath = MINSKY_SYSTEM_HTTP_SERVER_PATH;
-
-  const port = await getPort({ port: [7777, 7778, 9999] });
-
-  url = `http://localhost:${port}`;
-
-  minskyHttpServer = spawn(filePath, [`${port}`]);
-
-  minskyHttpServer.stdout.on('data', (data) => {
-    console.info(`http: ${data}`);
-  });
-
-  minskyHttpServer.stderr.on('data', (data) => {
-    console.error(red(`error: ${data}`));
-  });
-
-  minskyHttpServer.on('error', (error) => {
-    console.error(red(`error: ${error.message}`));
-  });
-
-  minskyHttpServer.on('close', (code) => {
-    console.warn(red(`"http-server" child process exited with code ${code}`));
-  });
-
-  await sleep(3000);
-
-  return minskyHttpServer;
-}
+import { join } from 'path';
+import { commandsMapping, green } from './../../libs/shared/src';
+const JSON5 = require('json5');
 
 async function generateSignature() {
-  if (!minskyHttpServer) {
-    minskyHttpServer = await initMinskyHttpService();
+  const addonDir = '../../../node-addons';
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  let restService = null;
+  try {
+    restService = require('bindings')(join(addonDir, 'minskyRESTService.node'));
+  } catch (error) {
+    console.error(error);
   }
 
   const listSignatures = {};
 
-  const list = (await axios.get(`${url}${commandsMapping.LIST_V2}`))
-    .data as string[];
+  const list = JSON5.parse(
+    restService.call(commandsMapping.LIST_V2, '')
+  ) as string[];
 
   for (const l of list) {
-    const signature = (await axios.get(`${url}${`/minsky${l}/@signature`}`))
-      .data as Record<string, unknown>;
+    const signature = JSON5.parse(
+      restService.call(`/minsky${l}/@signature`, '')
+    ) as Record<string, unknown>;
 
     listSignatures[l] = signature;
   }
 
   await promises.writeFile(
     'signature.json',
-    JSON.stringify(listSignatures, null, 4)
+    JSON5.stringify(listSignatures, null, 4)
   );
 
   console.log(

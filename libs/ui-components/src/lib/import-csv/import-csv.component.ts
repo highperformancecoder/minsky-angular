@@ -8,8 +8,8 @@ import {
   normalizeFilePathForPlatform,
 } from '@minsky/shared';
 import { MessageBoxSyncOptions } from 'electron/renderer';
+import * as JSON5 from 'json5';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-
 @AutoUnsubscribe()
 @Component({
   selector: 'minsky-import-csv',
@@ -57,9 +57,6 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   public get missingValue(): AbstractControl {
     return this.form.get('missingValue');
   }
-  public get columnWidth(): AbstractControl {
-    return this.form.get('columnWidth');
-  }
   public get duplicateKeyAction(): AbstractControl {
     return this.form.get('duplicateKeyAction');
   }
@@ -92,13 +89,12 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       escape: new FormControl(''),
       horizontalDimName: new FormControl('?'),
       mergeDelimiters: new FormControl(false),
-      missingValue: new FormControl('nan'),
+      missingValue: new FormControl(NaN),
       quote: new FormControl('"'),
       separator: new FormControl(','),
 
       // review
       url: new FormControl(''),
-      columnWidth: new FormControl(50),
       horizontalDimension: new FormGroup({
         type: new FormControl('string'),
         format: new FormControl(''),
@@ -107,8 +103,6 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    // this.updateColumnWidth();
-
     // ??
     this.form.valueChanges.subscribe(async (_form) => {
       if (this.url === _form.url) {
@@ -162,9 +156,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const filePath = normalizeFilePathForPlatform(
-      fileDialog.filePaths[0].toString()
-    );
+    const filePath = fileDialog.filePaths[0].toString();
 
     this.url.setValue(filePath);
   }
@@ -180,7 +172,9 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (fileUrl !== fileUrlOnServer) {
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/url "${fileUrl}"`,
+        command: `${
+          this.variableValuesSubCommand
+        }/csvDialog/url ${normalizeFilePathForPlatform(fileUrl)}`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({
@@ -197,12 +191,11 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async getCSVDialogSpec() {
-    this.spec = JSON.parse(
-      ((await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand}/csvDialog/spec`,
-      })) as string).replace(/\bnan\b/g, '"nan"')
-    );
+    this.spec = (await this.electronService.sendMinskyCommandAndRender({
+      command: `${this.variableValuesSubCommand}/csvDialog/spec`,
+    })) as Record<string, unknown>;
     this.initialDimensionNames = this.spec.dimensionNames as string[];
+
     console.log('🚀 this.CSVDialogSpec', this.spec);
   }
 
@@ -282,17 +275,6 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     this.updateDimColsAndNames();
   }
 
-  // TODO: do we need this?
-  // updateColumnWidth() {
-  //   this.columnWidth.valueChanges.subscribe(async (v) => {
-  //     await this.electronService.sendMinskyCommandAndRender({
-  //       command: `${this.variableValuesSubCommand}/csvDialog/colWidth ${v}`,
-  //     });
-
-  //     // await this.redraw();
-  //   });
-  // }
-
   async handleSubmit() {
     const {
       columnar,
@@ -329,7 +311,9 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       .sendMinskyCommandAndRender({
         command: `${
           commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
-        } "${JSON.stringify(spec).replace(/\b"nan"\b/g, 'nan')}"`,
+        } [${normalizeFilePathForPlatform(this.url.value)},${JSON5.stringify(
+          spec
+        )}]`,
       })
       .catch(async (error) => {
         console.log(
@@ -362,7 +346,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   async doReport() {
     const {
       canceled,
-      filePath,
+      filePath: _filePath,
     } = await this.electronService.remote.dialog.showSaveDialog({
       defaultPath: `${this.url}-error-report.csv`,
       title: 'Save report',
@@ -370,12 +354,14 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       filters: [{ extensions: ['csv'], name: 'CSV' }],
     });
 
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
     if (canceled || !filePath) {
       return;
     }
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${this.variableValuesSubCommand}/csvDialog/reportFromFile ["${this.url}","${filePath}"]`,
+      command: `${this.variableValuesSubCommand}/csvDialog/reportFromFile ["${this.url}",${filePath}]`,
     });
 
     return;

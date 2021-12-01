@@ -3,13 +3,18 @@ import {
   ClassType,
   commandsMapping,
   events,
+  getBackgroundStyle,
   GodleyTableOutputStyles,
   green,
+  InitializePopupWindowPayload,
   isEmptyObject,
   normalizeFilePathForPlatform,
+  ZOOM_IN_FACTOR,
+  ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
 import { dialog, ipcMain, Menu, MenuItem } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
+import * as JSON5 from 'json5';
 import { join } from 'path';
 import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './restServiceManager';
@@ -41,7 +46,7 @@ export class CommandsManager {
     if (itemId) {
       WindowManager.closeWindowByUid(itemId);
       await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP}/${itemId}`,
+        command: `${commandsMapping.REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP} "${itemId}"`,
       });
       await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_DELETE_ITEM,
@@ -156,7 +161,7 @@ export class CommandsManager {
     const id = await this.getCurrentItemId();
 
     const itemInfo: CanvasItem = { classType, value, id };
-    console.log(green(JSON.stringify(itemInfo)));
+    console.log(green(JSON5.stringify(itemInfo)));
     return itemInfo;
   }
 
@@ -250,7 +255,9 @@ export class CommandsManager {
       filters: [{ extensions: [extension], name }],
     });
 
-    const { canceled, filePath } = exportImage;
+    const { canceled, filePath: _filePath } = exportImage;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
     if (canceled || !filePath) {
       return;
     }
@@ -258,25 +265,25 @@ export class CommandsManager {
     switch (extension?.toLowerCase()) {
       case 'svg':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_SVG} "${filePath}"`,
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_SVG} ${filePath}`,
         });
         break;
 
       case 'pdf':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PDF} "${filePath}"`,
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PDF} ${filePath}`,
         });
         break;
 
       case 'ps':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PS} "${filePath}"`,
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_PS} ${filePath}`,
         });
         break;
 
       case 'emf':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_EMF} "${filePath}"`,
+          command: `${commandsMapping.CANVAS_ITEM_RENDER_TO_EMF} ${filePath}`,
         });
         break;
 
@@ -296,14 +303,15 @@ export class CommandsManager {
       ],
     });
 
-    const { canceled, filePath } = exportItemDialog;
+    const { canceled, filePath: _filePath } = exportItemDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
 
     if (canceled || !filePath) {
       return;
     }
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_EXPORT_AS_CSV} "${filePath}"`,
+      command: `${commandsMapping.CANVAS_EXPORT_AS_CSV} ${filePath}`,
     });
 
     return;
@@ -466,7 +474,7 @@ export class CommandsManager {
   }
 
   static async getLockGroup(): Promise<unknown[]> {
-    const lockGroup = JSON.parse(
+    const lockGroup = JSON5.parse(
       (await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_ITEM_LOCK_GROUP,
       })) as string
@@ -542,12 +550,15 @@ export class CommandsManager {
       defaultPath: 'selection.mky',
     });
 
-    if (saveDialog.canceled || !saveDialog.filePath) {
+    const { canceled, filePath: _filePath } = saveDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
+    if (canceled || !filePath) {
       return;
     }
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.SAVE_SELECTION_AS_FILE} "${saveDialog.filePath}"`,
+      command: `${commandsMapping.SAVE_SELECTION_AS_FILE} ${filePath}`,
     });
 
     return;
@@ -625,11 +636,14 @@ export class CommandsManager {
   static async getFilePathUsingSaveDialog(): Promise<string> {
     const saveDialog = await dialog.showSaveDialog({});
 
-    if (saveDialog.canceled || !saveDialog.filePath) {
+    const { canceled, filePath: _filePath } = saveDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
+    if (canceled || !filePath) {
       return null;
     }
 
-    return saveDialog.filePath;
+    return filePath;
   }
 
   static async getFilePathFromExportCanvasDialog(
@@ -641,7 +655,9 @@ export class CommandsManager {
       properties: ['showOverwriteConfirmation', 'createDirectory'],
     });
 
-    const { canceled, filePath } = exportCanvasDialog;
+    const { canceled, filePath: _filePath } = exportCanvasDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
     if (canceled || !filePath) {
       return;
     }
@@ -705,13 +721,15 @@ export class CommandsManager {
           properties: ['showOverwriteConfirmation', 'createDirectory'],
         });
 
-        const { canceled, filePath } = saveModelDialog;
+        const { canceled, filePath: _filePath } = saveModelDialog;
+        const filePath = normalizeFilePathForPlatform(_filePath);
+
         if (canceled || !filePath) {
           return;
         }
 
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.SAVE} "${filePath}"`,
+          command: `${commandsMapping.SAVE} ${filePath}`,
         });
       }
 
@@ -835,12 +853,15 @@ export class CommandsManager {
       properties: ['showOverwriteConfirmation'],
     });
 
-    if (saveDialog.canceled || !saveDialog.filePath) {
+    const { canceled, filePath: _filePath } = saveDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
+    if (canceled || !filePath) {
       return;
     }
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.SAVE_CANVAS_ITEM_AS_FILE} "${saveDialog.filePath}"`,
+      command: `${commandsMapping.SAVE_CANVAS_ITEM_AS_FILE} ${filePath}`,
     });
 
     return;
@@ -862,13 +883,16 @@ export class CommandsManager {
       properties: ['showOverwriteConfirmation'],
     });
 
-    if (saveDialog.canceled || !saveDialog.filePath) {
+    const { canceled, filePath: _filePath } = saveDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
+    if (canceled || !filePath) {
       return;
     }
 
     if (command) {
       await RestServiceManager.handleMinskyProcess({
-        command: `${command} "${saveDialog.filePath}"`,
+        command: `${command} ${filePath}`,
       });
       return;
     }
@@ -876,14 +900,14 @@ export class CommandsManager {
     switch (ext) {
       case 'csv':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.EXPORT_GODLEY_TO_CSV} "${saveDialog.filePath}"`,
+          command: `${commandsMapping.EXPORT_GODLEY_TO_CSV} ${filePath}`,
         });
 
         break;
 
       case 'tex':
         await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.EXPORT_GODLEY_TO_LATEX} "${saveDialog.filePath}"`,
+          command: `${commandsMapping.EXPORT_GODLEY_TO_LATEX} ${filePath}`,
         });
         break;
 
@@ -907,7 +931,7 @@ export class CommandsManager {
     if (!autoBackupFileExists) {
       await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.LOAD,
-        filePath: filePath,
+        filePath,
       });
 
       ipcMain.emit(events.ADD_RECENT_FILE, null, filePath);
@@ -929,7 +953,7 @@ export class CommandsManager {
       } else {
         await RestServiceManager.handleMinskyProcess({
           command: commandsMapping.LOAD,
-          filePath: filePath,
+          filePath,
         });
 
         ipcMain.emit(events.ADD_RECENT_FILE, null, filePath);
@@ -978,7 +1002,7 @@ export class CommandsManager {
   }
 
   static async help(x: number, y: number) {
-    let classType = (await this.getCurrentItemClassType(true)) as string;
+    let classType = (await this.getItemClassType(x, y, true)) as string;
 
     if (isEmptyObject(classType)) {
       const wire = await CommandsManager.getWireAt(x, y);
@@ -1094,11 +1118,9 @@ export class CommandsManager {
   }
 
   private static async initializePopupWindow(
-    itemInfo: CanvasItem,
-    url: string,
-    height = 600,
-    width = 800
+    payload: InitializePopupWindowPayload
   ): Promise<Electron.BrowserWindow> {
+    const { itemInfo, url, height = 600, width = 800, modal = true } = payload;
     // Pushing the current item to namedItems map
     await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.ADD_ENTRY_TO_NAMED_ITEMS_MAP} "${itemInfo.id}"`,
@@ -1111,6 +1133,7 @@ export class CommandsManager {
         uid: itemInfo.id,
         height,
         width,
+        modal,
       },
       () => {
         this.onPopupWindowClose(itemInfo.id);
@@ -1127,67 +1150,11 @@ export class CommandsManager {
     if (itemInfo?.classType) {
       switch (itemInfo?.classType) {
         case ClassType.GodleyIcon:
-          if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
-            let systemWindowId = null;
-            const window = await this.initializePopupWindow(
-              itemInfo,
-              `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
-            );
-
-            systemWindowId = WindowManager.getWindowByUid(itemInfo.id)
-              .systemWindowId;
-
-            window.loadURL(
-              WindowManager.getWindowUrl(
-                `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
-              )
-            );
-
-            CommandsManager.createMenusForGodleyView(window, itemInfo);
-
-            this.activeGodleyWindowItems.set(itemInfo.id, itemInfo);
-          }
+          await CommandsManager.openGodleyTable(itemInfo);
           break;
 
         case ClassType.PlotWidget:
-          if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
-            let systemWindowId = null;
-            const window = await this.initializePopupWindow(
-              itemInfo,
-              `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
-            );
-
-            systemWindowId = WindowManager.getWindowByUid(itemInfo.id)
-              .systemWindowId;
-
-            window.loadURL(
-              WindowManager.getWindowUrl(
-                `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
-              )
-            );
-
-            // window.setMenu(
-            //   Menu.buildFromTemplate([
-            //     new MenuItem({
-            //       label: 'Options',
-            //       submenu: [
-            //         {
-            //           label: 'Options',
-            //           click: () => {
-            //             WindowManager.createMenuPopUpWithRouting({
-            //               title: 'Plot Window Options',
-            //               url: `#/headless/plot-widget-options?itemId=${itemInfo.id}`,
-            //               uid: itemInfo.id,
-            //               height: 500,
-            //               width: 500,
-            //             });
-            //           },
-            //         },
-            //       ],
-            //     }),
-            //   ])
-            // );
-          }
+          await CommandsManager.expandPlot(itemInfo);
           break;
 
         case ClassType.Variable:
@@ -1223,6 +1190,74 @@ export class CommandsManager {
           break;
       }
     }
+  }
+
+  static async openGodleyTable(itemInfo: CanvasItem) {
+    if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
+      let systemWindowId = null;
+      const window = await this.initializePopupWindow({
+        itemInfo,
+        url: `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
+        modal: false,
+      });
+
+      systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
+
+      window.loadURL(
+        WindowManager.getWindowUrl(
+          `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+        )
+      );
+
+      CommandsManager.createMenusForGodleyView(window, itemInfo);
+
+      this.activeGodleyWindowItems.set(itemInfo.id, itemInfo);
+    }
+  }
+
+  static async expandPlot(itemInfo: CanvasItem) {
+    if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
+      let systemWindowId = null;
+      const window = await this.initializePopupWindow({
+        itemInfo,
+        url: `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
+        modal: false,
+      });
+
+      systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
+
+      window.loadURL(
+        WindowManager.getWindowUrl(
+          `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+        )
+      );
+
+      window.setMenu(
+        Menu.buildFromTemplate([
+          new MenuItem({
+            label: 'Options',
+            submenu: [
+              {
+                label: 'Options',
+                click: () => {
+                  CommandsManager.openPlotWindowOptions(itemInfo);
+                },
+              },
+            ],
+          }),
+        ])
+      );
+    }
+  }
+
+  static openPlotWindowOptions(itemInfo: CanvasItem) {
+    WindowManager.createMenuPopUpWithRouting({
+      title: 'Plot Window Options',
+      url: `#/headless/plot-widget-options?itemId=${itemInfo.id}`,
+      uid: itemInfo.id,
+      height: 500,
+      width: 500,
+    });
   }
 
   private static async toggleMultipleEquitiesColumn() {
@@ -1345,14 +1380,12 @@ export class CommandsManager {
             label: 'Zoom In',
             accelerator: 'CmdOrCtrl + Plus',
             click: async () => {
-              const zoomFactor = (await RestServiceManager.handleMinskyProcess({
-                command: `${itemAccessor}/popup/zoomFactor`,
-              })) as number;
+              const [x, y] = window.getContentSize();
 
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.GET_NAMED_ITEM}/${
                   itemInfo.id
-                }/second/popup/zoomFactor ${zoomFactor * 1.1}`,
+                }/second/popup/zoom [${x / 2},${y / 2},${ZOOM_IN_FACTOR}]`,
               });
             },
           },
@@ -1360,14 +1393,11 @@ export class CommandsManager {
             label: 'Zoom Out',
             accelerator: 'CmdOrCtrl + Minus',
             click: async () => {
-              const zoomFactor = (await RestServiceManager.handleMinskyProcess({
-                command: `${itemAccessor}/popup/zoomFactor`,
-              })) as number;
-
+              const [x, y] = window.getContentSize();
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.GET_NAMED_ITEM}/${
                   itemInfo.id
-                }/second/popup/zoomFactor ${zoomFactor / 1.1}`,
+                }/second/popup/zoom [${x / 2},${y / 2},${ZOOM_OUT_FACTOR}]`,
               });
             },
           },
@@ -1407,7 +1437,7 @@ export class CommandsManager {
               });
 
               await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"}]`,
+                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"]`,
               });
             },
           },
@@ -1434,7 +1464,7 @@ export class CommandsManager {
               });
 
               await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${newGodleyTableOutputStyle}"}]`,
+                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${newGodleyTableOutputStyle}"]`,
               });
             },
           },
@@ -1502,7 +1532,9 @@ export class CommandsManager {
       filters: [{ extensions: ['csv'], name: 'CSV' }],
     });
 
-    const { canceled, filePath } = logSimulation;
+    const { canceled, filePath: _filePath } = logSimulation;
+    const filePath = normalizeFilePathForPlatform(_filePath);
+
     if (canceled || !filePath) {
       return;
     }
@@ -1534,7 +1566,7 @@ export class CommandsManager {
     }
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.OPEN_LOG_FILE} "${filePath}"`,
+      command: `${commandsMapping.OPEN_LOG_FILE} ${filePath}`,
     });
 
     return;
@@ -1544,12 +1576,13 @@ export class CommandsManager {
     if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
       let systemWindowId = null;
 
-      const window = await this.initializePopupWindow(
+      const window = await this.initializePopupWindow({
         itemInfo,
-        `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
-        600,
-        1100
-      );
+        url: `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
+        height: 600,
+        width: 1100,
+        modal: false,
+      });
 
       systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
 
@@ -1581,4 +1614,22 @@ export class CommandsManager {
     });
     await CommandsManager.requestRedraw();
   }
+
+  static changeWindowBackgroundColor = async (color: string) => {
+    const { style, r, g, b } = getBackgroundStyle(color);
+    WindowManager.activeWindows.forEach((window) => {
+      window.context.webContents.insertCSS(style);
+    });
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.CANVAS_BACKGROUND_COLOR} ${JSON.stringify({
+        r: r / 255,
+        g: g / 255,
+        b: b / 255,
+      })}`,
+    });
+    await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
+    });
+  };
 }

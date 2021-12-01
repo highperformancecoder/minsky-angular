@@ -19,6 +19,7 @@ import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 export class CreateVariableComponent implements OnInit, OnDestroy {
   variableType: string;
   _name: string;
+  _value: string;
 
   isEditMode = false;
 
@@ -76,12 +77,13 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
       this.variableType = params.type;
       this._name = params?.name || '';
       this.isEditMode = params?.isEditMode || false;
+      this._value = params?.value || '';
     });
 
     this.form = new FormGroup({
       variableName: new FormControl(this._name, Validators.required),
       type: new FormControl(this.variableType, Validators.required),
-      value: new FormControl(''),
+      value: new FormControl(this._value),
       units: new FormControl(''),
       rotation: new FormControl(0),
       shortDescription: new FormControl(''),
@@ -91,6 +93,10 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
       sliderStepSize: new FormControl(null),
       sliderStepRel: new FormControl(false),
     });
+
+    this.type.value === 'constant'
+      ? this.variableName.disable()
+      : this.variableName.enable();
 
     this.type.valueChanges.subscribe((type) => {
       type === 'constant'
@@ -226,7 +232,7 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
     await this.electronService.sendMinskyCommandAndRender({
       command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${
         this.units.value || ''
-      } "`,
+      }"`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({

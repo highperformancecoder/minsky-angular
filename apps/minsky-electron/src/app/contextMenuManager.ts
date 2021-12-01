@@ -3,6 +3,7 @@ import {
   ClassType,
   commandsMapping,
   isEmptyObject,
+  isWindows,
 } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
 import { CommandsManager } from './commandsManager';
@@ -12,7 +13,10 @@ import { WindowManager } from './windowManager';
 export class ContextMenuManager {
   private static x: number = null;
   private static y: number = null;
-
+  private static rowColButtonsChecked = false;
+  private static showAllPlotsOnTabChecked = false;
+  private static displayPlotOnTabChecked = false;
+  private static displayVariableChecked = false;
   public static async initContextMenu(x: number, y: number) {
     const mainWindow = WindowManager.getMainWindow();
 
@@ -24,9 +28,11 @@ export class ContextMenuManager {
 
       const isWirePresent = !isEmptyObject(wire);
 
-      const isWireVisible = (await RestServiceManager.handleMinskyProcess({
+      const isWireVisibleRes = await RestServiceManager.handleMinskyProcess({
         command: commandsMapping.CANVAS_WIRE_VISIBLE,
-      })) as boolean;
+      });
+
+      const isWireVisible = !isEmptyObject(isWireVisibleRes);
 
       if (isWirePresent && isWireVisible) {
         ContextMenuManager.buildAndDisplayContextMenu(
@@ -221,12 +227,17 @@ export class ContextMenuManager {
           await CommandsManager.requestRedraw();
         },
       }),
+
       new MenuItem({
         label: 'Show all plots on tab',
+        type: 'checkbox',
+        checked: this.showAllPlotsOnTabChecked,
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_SHOW_ALL_PLOTS_ON_TAB,
           });
+
+          this.showAllPlotsOnTabChecked = !this.showAllPlotsOnTabChecked;
         },
       }),
       new MenuItem({
@@ -327,14 +338,14 @@ export class ContextMenuManager {
       case ClassType.PlotWidget:
         menuItems = [
           ...menuItems,
-          ...(await ContextMenuManager.buildContextMenuForPlotWidget()),
+          ...(await ContextMenuManager.buildContextMenuForPlotWidget(itemInfo)),
         ];
         break;
 
       case ClassType.GodleyIcon:
         menuItems = [
           ...menuItems,
-          ...ContextMenuManager.buildContextMenuForGodleyIcon(),
+          ...ContextMenuManager.buildContextMenuForGodleyIcon(itemInfo),
         ];
 
         break;
@@ -402,9 +413,16 @@ export class ContextMenuManager {
     return menuItems;
   }
 
-  private static async buildContextMenuForPlotWidget(): Promise<MenuItem[]> {
+  private static async buildContextMenuForPlotWidget(
+    itemInfo: CanvasItem
+  ): Promise<MenuItem[]> {
     const menuItems = [
-      new MenuItem({ label: 'Expand' }),
+      new MenuItem({
+        label: 'Expand',
+        click: async () => {
+          await CommandsManager.expandPlot(itemInfo);
+        },
+      }),
       new MenuItem({
         label: 'Make Group Plot',
         click: async () => {
@@ -413,7 +431,12 @@ export class ContextMenuManager {
           });
         },
       }),
-      new MenuItem({ label: 'Options' }),
+      new MenuItem({
+        label: 'Options',
+        click: () => {
+          CommandsManager.openPlotWindowOptions(itemInfo);
+        },
+      }),
       new MenuItem({
         label: 'Pen Styles',
         click: () => {
@@ -427,10 +450,14 @@ export class ContextMenuManager {
       }),
       new MenuItem({
         label: 'Display plot on tab',
+        type: 'checkbox',
+        checked: this.displayPlotOnTabChecked,
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY,
           });
+
+          this.displayPlotOnTabChecked = !this.displayPlotOnTabChecked;
         },
       }),
       new MenuItem({
@@ -461,9 +488,10 @@ export class ContextMenuManager {
             },
           },
           {
-            label: 'LaTeX',
+            label: 'EMF',
+            visible: isWindows(),
             click: async () => {
-              CommandsManager.exportItemAsImage('emf', 'LaTeX');
+              CommandsManager.exportItemAsImage('emf', 'EMF');
             },
           },
         ],
@@ -473,9 +501,16 @@ export class ContextMenuManager {
     return menuItems;
   }
 
-  private static buildContextMenuForGodleyIcon(): MenuItem[] {
+  private static buildContextMenuForGodleyIcon(
+    itemInfo: CanvasItem
+  ): MenuItem[] {
     const menuItems = [
-      new MenuItem({ label: 'Open Godley Table' }),
+      new MenuItem({
+        label: 'Open Godley Table',
+        click: async () => {
+          await CommandsManager.openGodleyTable(itemInfo);
+        },
+      }),
       new MenuItem({
         label: 'Title',
         click: () => {
@@ -498,18 +533,24 @@ export class ContextMenuManager {
       }),
       new MenuItem({
         label: 'Row/Col buttons',
+        checked: this.rowColButtonsChecked,
+        type: 'checkbox',
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_TOGGLE_BUTTONS,
           });
+          this.rowColButtonsChecked = !this.rowColButtonsChecked;
         },
       }),
       new MenuItem({
         label: 'Display variables',
+        type: 'checkbox',
+        checked: this.displayVariableChecked,
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_TOGGLE_VARIABLE_DISPLAY,
           });
+          this.displayVariableChecked = !this.displayVariableChecked;
         },
       }),
       new MenuItem({
@@ -581,7 +622,7 @@ export class ContextMenuManager {
 
             if (filePath) {
               await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.CANVAS_ITEM_READ_DATA} "${filePath}"`,
+                command: `${commandsMapping.CANVAS_ITEM_READ_DATA} ${filePath}`,
               });
             }
           },

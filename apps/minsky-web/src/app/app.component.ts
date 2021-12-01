@@ -77,12 +77,6 @@ export class AppComponent implements AfterViewInit {
     this.cmService.setWindowSizeAndCanvasOffsets(true);
   }
 
-  toggleMinskyService() {
-    if (this.electronService.isElectron) {
-      this.electronService.ipcRenderer.send(events.TOGGLE_MINSKY_SERVICE);
-    }
-  }
-
   changeTab(tab: MainRenderingTabs) {
     if (this.electronService.isElectron) {
       const payload = { newTab: tab };

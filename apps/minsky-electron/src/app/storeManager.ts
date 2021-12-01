@@ -12,7 +12,6 @@ interface Preferences {
 interface MinskyStore {
   recentFiles: Array<string>;
   backgroundColor: string;
-  minskyHttpServerPath: string;
   preferences: Preferences;
 }
 
@@ -21,7 +20,6 @@ export class StoreManager {
     defaults: {
       recentFiles: [],
       backgroundColor: defaultBackgroundColor,
-      minskyHttpServerPath: '',
       preferences: {
         godleyTableShowValues: false,
         godleyTableOutputStyle: 'sign',
