@@ -54,7 +54,7 @@ class Deferred {
 }
 
 restService.setMessageCallback(function(msg: string, buttons: string[]) {
-   if (msg) dialog.showMessageBoxSync({"message":msg,"type":"info","buttons":buttons});
+   if (msg) return dialog.showMessageBoxSync({"message":msg,"type":"info","buttons":buttons});
 });
 
 // TODO refactor to use command and arguments separately
