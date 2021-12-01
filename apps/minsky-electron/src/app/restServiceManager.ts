@@ -57,6 +57,11 @@ restService.setMessageCallback(function(msg: string, buttons: string[]) {
    if (msg) return dialog.showMessageBoxSync({"message":msg,"type":"info","buttons":buttons});
 });
 
+restService.setBusyCursorCallback(function(busy: boolean) {
+    WindowManager.getMainWindow().webContents.insertCSS
+    (busy? "html body {cursor: wait}": "html body {cursor: default}");
+});
+
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string) {
   const {
