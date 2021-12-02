@@ -82,13 +82,17 @@ export class WindowUtilityService {
 
     const electronMenuBarHeight = currentWindowSize - currentWindowContentSize;
 
-    const windowsMenuBarHeightDifference = 47;
+    const scaleFactor = this.electronService.remote.screen.getPrimaryDisplay()
+      .scaleFactor;
+
+    // const windowsMenuBarHeightDifference = 47;
     //https://github.com/electron/electron/issues/17580
     //https://github.com/electron/electron/issues/4045
 
+    const electronMenuBarHeightForWindows = 20;
     return isWindows()
-      ? electronMenuBarHeight - windowsMenuBarHeightDifference
-      : electronMenuBarHeight;
+      ? electronMenuBarHeightForWindows
+      : electronMenuBarHeight * scaleFactor;
   }
 
   public scrollToCenter() {

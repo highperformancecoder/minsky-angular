@@ -1,5 +1,11 @@
 import { MainRenderingTabs } from '../constants/MainRenderingTabs';
-
+export interface InitializePopupWindowPayload {
+  itemInfo: CanvasItem;
+  url: string;
+  height?: number;
+  width?: number;
+  modal?: boolean;
+}
 export interface MinskyProcessPayload {
   mouseX?: number;
   mouseY?: number;
@@ -14,8 +20,8 @@ export interface MinskyProcessPayload {
   alt?: boolean;
   args?: Record<string, unknown>;
   render?: boolean;
+  location?: number;
 }
-
 
 export interface ElectronCanvasOffset {
   left: number;
@@ -24,12 +30,12 @@ export interface ElectronCanvasOffset {
 }
 
 export interface AppLayoutPayload {
-  isResizeEvent : boolean,
-  drawableArea : {
-    width : number,
-    height : number
-  },
-  offset : ElectronCanvasOffset
+  isResizeEvent: boolean;
+  drawableArea: {
+    width: number;
+    height: number;
+  };
+  offset: ElectronCanvasOffset;
 }
 
 export interface ChangeTabPayload {

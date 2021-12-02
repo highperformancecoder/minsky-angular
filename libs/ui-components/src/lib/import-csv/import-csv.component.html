@@ -62,25 +62,13 @@
     <span>
       <label for="missing-value">Missing Value</label>
       <select id="missing-value" formControlName="missingValue">
-        <option value="nan">nan</option>
+        <option value="NaN">NaN</option>
         <option value="0">0</option>
       </select>
     </span>
   </div>
 
   <div class="option-column-two">
-    <span>
-      <label for="column-width">Column Width</label>
-      <input
-        id="column-width"
-        type="number"
-        min="10"
-        max="500"
-        step="10"
-        formControlName="columnWidth"
-      />
-    </span>
-
     <span>
       <label for="duplicate-key-action">Duplicate Key Action</label>
       <select id="duplicate-key-action" formControlName="duplicateKeyAction">
@@ -234,10 +222,6 @@
         >
           {{ rowElement }}
         </td>
-
-        <!-- <ng-container *ngIf="!row.length">
-          <td *ngFor="let col of csvCols" [innerHtml]="'&nbsp'"></td>
-        </ng-container> -->
       </tr>
     </table>
   </div>

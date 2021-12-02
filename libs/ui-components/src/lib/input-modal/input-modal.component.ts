@@ -33,6 +33,8 @@ export class InputModalComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.inputHtmlElement = this.inputElement.nativeElement as HTMLElement;
 
+    // this.input = localStorage.getItem('multipleKeyString');
+
     this.inputHtmlElement.focus();
   }
 

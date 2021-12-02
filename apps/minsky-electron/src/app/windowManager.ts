@@ -2,7 +2,6 @@ import {
   ActiveWindow,
   AppLayoutPayload,
   CreateWindowPayload,
-  getBackgroundStyle,
   green,
   rendererAppName,
   rendererAppURL,
@@ -23,7 +22,7 @@ export class WindowManager {
   static leftOffset: number;
   static canvasHeight: number;
   static canvasWidth: number;
-  static scaleFactor : number;
+  static scaleFactor: number;
 
   static activeWindows = new Map<number, ActiveWindow>();
   private static uidToWindowMap = new Map<number, ActiveWindow>();
@@ -121,7 +120,7 @@ export class WindowManager {
     // eslint-disable-next-line @typescript-eslint/ban-types
     onCloseCallback?: Function
   ) {
-    const { width, height, title, modal, backgroundColor } = payload;
+    const { width, height, title, modal = true, backgroundColor } = payload;
 
     const mainWindow = WindowManager.getMainWindow();
 
@@ -129,10 +128,10 @@ export class WindowManager {
       width,
       height,
       title,
-      resizable: false,
+      resizable: true,
       minimizable: false,
       show: false,
-      parent: mainWindow,
+      parent: modal ? mainWindow : null,
       modal,
       backgroundColor,
       webPreferences: {
@@ -152,7 +151,7 @@ export class WindowManager {
       event.preventDefault();
     });
 
-    // if (Utility.isDevelopmentMode()) {
+    //   if (Utility.isDevelopmentMode()) {
     //   childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
     // }
 
@@ -200,14 +199,6 @@ export class WindowManager {
     );
   }
 
-  public static changeWindowBackgroundColor = (color: string) => {
-    const style = getBackgroundStyle(color);
-
-    WindowManager.activeWindows.forEach((window) => {
-      window.context.webContents.insertCSS(style);
-    });
-  };
-
   static onAppLayoutChanged(payload: AppLayoutPayload) {
     console.log(green('Setting the offset and height width of canvas'));
 
@@ -225,7 +216,7 @@ export class WindowManager {
     );
 
     this.electronTopOffset = Math.round(
-      payload.offset.electronMenuBarHeight * this.scaleFactor + payload.offset.top
+      payload.offset.electronMenuBarHeight + payload.offset.top
     );
 
     this.canvasHeight = payload.drawableArea.height;
