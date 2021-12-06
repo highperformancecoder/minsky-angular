@@ -969,25 +969,7 @@ export class CommandsManager {
     RestServiceManager.currentMinskyModelFilePath = filePath;
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.PUSH_HISTORY} 0`,
-    });
-
-    await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.PUSH_FLAGS,
-    });
-
-    // TODO:
-    // # minsky.load resets minsky.multipleEquities, so restore it to preferences
-    // minsky.multipleEquities $preferences(multipleEquities)
-    // canvas.focusFollowsMouse $preferences(focusFollowsMouse)
-    // pushFlags
-
-    await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.RECENTER,
-    });
-
-    await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
     });
 
     WindowManager.getMainWindow().setTitle(filePath);
