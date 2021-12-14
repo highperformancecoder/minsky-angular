@@ -1094,16 +1094,9 @@ export class CommandsManager {
   }
 
     static async destroyFrame(uid: number) {
-      var classType=await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/classType`
-      });
-      switch (classType)
-      {
-          case "PlotWidget":
-          await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/destroyFrame`
-          });
-      }                 
+           await RestServiceManager.handleMinskyProcess({
+                    command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/destroyFrame`
+          });  
     }
     
     private static onPopupWindowClose(uid: number) {
