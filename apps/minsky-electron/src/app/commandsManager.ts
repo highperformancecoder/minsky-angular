@@ -1093,12 +1093,19 @@ export class CommandsManager {
     });
   }
 
-  private static onPopupWindowClose(uid: number) {
-    if (uid in this.activeGodleyWindowItems) {
-      this.activeGodleyWindowItems.delete(uid);
+    static async destroyFrame(uid: number) {
+           await RestServiceManager.handleMinskyProcess({
+                    command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/destroyFrame`
+          });  
     }
+    
+    private static onPopupWindowClose(uid: number) {
+        this.destroyFrame(uid);
+      if (uid in this.activeGodleyWindowItems) {
+          this.activeGodleyWindowItems.delete(uid);
+      }
   }
-
+    
   private static async initializePopupWindow(
     payload: InitializePopupWindowPayload
   ): Promise<Electron.BrowserWindow> {
