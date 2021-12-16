@@ -1190,6 +1190,10 @@ export class CommandsManager {
         modal: false,
       });
 
+      await RestServiceManager.handleMinskyProcess({
+         command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/adjustWidgets`
+      });  
+
       systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
 
       window.loadURL(
