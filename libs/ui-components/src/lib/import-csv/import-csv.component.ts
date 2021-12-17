@@ -70,7 +70,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.horizontalDimension.get('type');
   }
   public get format(): AbstractControl {
-    return this.horizontalDimension.get('format');
+    return this.horizontalDimension.get('units');
   }
 
   constructor(
@@ -97,7 +97,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       url: new FormControl(''),
       horizontalDimension: new FormGroup({
         type: new FormControl('string'),
-        format: new FormControl(''),
+        units: new FormControl(''),
       }),
     });
   }
@@ -218,16 +218,14 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async selectRowAndCol(rowIndex: number, colIndex: number) {
     this.selectedRow = rowIndex;
+    this.spec.dataRowOffset = rowIndex;
 
     this.selectedCol = colIndex;
+    this.spec.dataColOffset = colIndex;
 
     for (let i = this.selectedCol + 1; i <= this.parsedLines.length - 1; i++) {
       this.checkboxes[i] = false;
     }
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${this.variableValuesSubCommand}/csvDialog/spec/setDataArea [${rowIndex},${colIndex}]`,
-    });
   }
 
   getColorForCell(rowIndex: number, colIndex: number) {
