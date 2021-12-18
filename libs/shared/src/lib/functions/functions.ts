@@ -61,6 +61,7 @@ export const isWindows = () =>
   process && process.platform === 'win32' ? true : false;
 
 export const normalizeFilePathForPlatform = (filePath: string) => {
+  // TODO:: Why do we need stringification? Does our backend API require it? Is it needed only on windows?
   if (filePath && filePath.charAt(0) !== '"') {
     return JSON.stringify(filePath);
   }
