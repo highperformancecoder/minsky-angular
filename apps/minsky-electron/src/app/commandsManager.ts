@@ -662,7 +662,7 @@ export class CommandsManager {
       return;
     }
 
-    return filePath;
+      return normalizeFilePathForPlatform(filePath);
   }
 
   static async mouseDown(mouseX: number, mouseY: number): Promise<void> {
@@ -969,28 +969,18 @@ export class CommandsManager {
     RestServiceManager.currentMinskyModelFilePath = filePath;
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.PUSH_HISTORY} 0`,
-    });
-
-    await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.PUSH_FLAGS,
-    });
-
-    // TODO:
-    // # minsky.load resets minsky.multipleEquities, so restore it to preferences
-    // minsky.multipleEquities $preferences(multipleEquities)
-    // canvas.focusFollowsMouse $preferences(focusFollowsMouse)
-    // pushFlags
-
-    await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.RECENTER,
     });
 
-    await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
-    });
-
     WindowManager.getMainWindow().setTitle(filePath);
+  }
+
+  static async saveFile(filePath: string) {
+      filePath = normalizeFilePathForPlatform(filePath);
+      await RestServiceManager.handleMinskyProcess({
+          command: `${commandsMapping.SAVE}`,
+          filePath: filePath,
+      });
   }
 
   static async help(x: number, y: number) {
@@ -1103,12 +1093,19 @@ export class CommandsManager {
     });
   }
 
-  private static onPopupWindowClose(uid: number) {
-    if (uid in this.activeGodleyWindowItems) {
-      this.activeGodleyWindowItems.delete(uid);
+    static async destroyFrame(uid: number) {
+           await RestServiceManager.handleMinskyProcess({
+                    command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/destroyFrame`
+          });  
     }
+    
+    private static onPopupWindowClose(uid: number) {
+        this.destroyFrame(uid);
+      if (uid in this.activeGodleyWindowItems) {
+          this.activeGodleyWindowItems.delete(uid);
+      }
   }
-
+    
   private static async initializePopupWindow(
     payload: InitializePopupWindowPayload
   ): Promise<Electron.BrowserWindow> {
@@ -1192,6 +1189,10 @@ export class CommandsManager {
         url: `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
         modal: false,
       });
+
+      await RestServiceManager.handleMinskyProcess({
+         command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/adjustWidgets`
+      });  
 
       systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
 

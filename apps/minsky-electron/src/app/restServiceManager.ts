@@ -26,10 +26,6 @@ try {
   log.error(error);
 }
 
-log.info(restService.call('/minsky/minskyVersion', ''));
-
-console.log(JSON.parse('1E1024'));
-
 interface QueueItem {
   promise: Deferred;
   payload: MinskyProcessPayload;
@@ -47,6 +43,15 @@ class Deferred {
     });
   }
 }
+
+restService.setMessageCallback(function(msg: string, buttons: string[]) {
+   if (msg) return dialog.showMessageBoxSync({"message":msg,"type":"info","buttons":buttons});
+});
+
+restService.setBusyCursorCallback(function(busy: boolean) {
+    WindowManager.getMainWindow().webContents.insertCSS
+    (busy? "html body {cursor: wait}": "html body {cursor: default}");
+});
 
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string) {
@@ -109,6 +114,10 @@ export class RestServiceManager {
 
   public static async setCurrentTab(tab: MainRenderingTabs) {
     if (tab !== this.currentTab) {
+      // disable the old tab
+      this.handleMinskyProcess({
+        command: this.currentTab+"/enabled false",
+      });
       this.currentTab = tab;
       this.render = true;
       this.lastMouseMovePayload = null;
@@ -289,7 +298,7 @@ export class RestServiceManager {
         break;
 
       case commandsMapping.ZOOM_IN:
-        stdinCommand = `${payload.command} [${payload.args.x}, ${payload.args.y}, ${payload.args.zoomFactor}]`;
+        stdinCommand = `${this.currentTab}/zoom [${payload.args.x}, ${payload.args.y}, ${payload.args.zoomFactor}]`;
         break;
 
       case commandsMapping.SET_GODLEY_ICON_RESOURCE:
