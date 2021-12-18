@@ -1,0 +1,50 @@
+{
+  "search.exclude": {
+    ".cache-loader/**": true,
+    ".git/**": true
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/.cache-loader": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true
+  },
+  "cSpell.words": [
+    "Codegen",
+    "DRCR",
+    "Godley",
+    "Janak",
+    "Panopticon",
+    "binop",
+    "cget",
+    "cheight",
+    "constop",
+    "cut",
+    "cwidth",
+    "devkit",
+    "exitzero",
+    "httpd",
+    "infimum",
+    "intop",
+    "keysym",
+    "keyvalue",
+    "lindex",
+    "minimizable",
+    "ngcc",
+    "nrwl",
+    "recentre",
+    "scrollable",
+    "submenu",
+    "supremum",
+    "tmax",
+    "ungroup",
+    "userfunction",
+    "winfo"
+  ],
+  "angular.enable-strict-mode-prompt": false
+}

@@ -1,0 +1,160 @@
+/**
+ * This module is responsible on handling all the inter process communications
+ * between the frontend to the electron backend.
+ */
+
+import {
+  AppLayoutPayload,
+  ChangeTabPayload,
+  commandsMapping,
+  events,
+  MinskyProcessPayload,
+} from '@minsky/shared';
+import * as debug from 'debug';
+import { ipcMain } from 'electron';
+import { environment } from '../../environments/environment';
+import { BookmarkManager } from '../bookmarkManager';
+import { CommandsManager } from '../commandsManager';
+import { ContextMenuManager } from '../contextMenuManager';
+import { KeyBindingManager } from '../keyBindingManager';
+import { RecentFilesManager } from '../recentFilesManager';
+import { RestServiceManager } from '../restServiceManager';
+import { StoreManager } from '../storeManager';
+import { WindowManager } from '../windowManager';
+
+const logUpdateEvent = debug('minsky:electron_update_event');
+
+export default class ElectronEvents {
+  static bootstrapElectronEvents(): Electron.IpcMain {
+    return ipcMain;
+  }
+}
+
+// Retrieve app version
+ipcMain.handle(events.GET_APP_VERSION, () => {
+  logUpdateEvent(`Fetching application version... [v${environment.version}]`);
+
+  return environment.version;
+});
+
+ipcMain.on(events.SET_BACKGROUND_COLOR, async (event, { color }) => {
+  if (color) {
+    StoreManager.store.set('backgroundColor', color);
+  }
+  await CommandsManager.changeWindowBackgroundColor(
+    StoreManager.store.get('backgroundColor')
+  );
+});
+
+ipcMain.on(events.CREATE_MENU_POPUP, (event, data) => {
+  WindowManager.createMenuPopUpWithRouting(data);
+});
+
+// MINSKY_PROCESS_FOR_IPC_MAIN won't reply with the response
+ipcMain.on(
+  events.MINSKY_PROCESS_FOR_IPC_MAIN,
+  async (event, payload: MinskyProcessPayload) => {
+    await RestServiceManager.handleMinskyProcess(payload);
+  }
+);
+
+ipcMain.handle(
+  events.MINSKY_PROCESS,
+  async (event, payload: MinskyProcessPayload) => {
+    return await RestServiceManager.handleMinskyProcess(payload);
+  }
+);
+
+ipcMain.on(
+  events.APP_LAYOUT_CHANGED,
+  async (event, payload: AppLayoutPayload) => {
+    if (event.sender.id === WindowManager.getMainWindow().id) {
+      WindowManager.onAppLayoutChanged(payload);
+    }
+
+    if (payload.isResizeEvent) {
+      // TODO:: We need to throttle the re-invocation of renderFrame
+      await RestServiceManager.reInvokeRenderFrame();
+    }
+  }
+);
+
+ipcMain.on(events.CHANGE_MAIN_TAB, async (event, payload: ChangeTabPayload) => {
+  await RestServiceManager.setCurrentTab(payload.newTab);
+});
+
+ipcMain.on(events.POPULATE_BOOKMARKS, async (event, bookmarks: string[]) => {
+  await BookmarkManager.populateBookmarks(bookmarks);
+});
+
+ipcMain.on(events.ADD_RECENT_FILE, (event, filePath: string) => {
+  RecentFilesManager.addFileToRecentFiles(filePath);
+});
+
+ipcMain.handle(
+  events.KEY_PRESS,
+  async (event, payload: MinskyProcessPayload) => {
+    return await KeyBindingManager.handleOnKeyPress(payload);
+  }
+);
+
+ipcMain.handle(events.GET_PREFERENCES, () => {
+  return StoreManager.store.get('preferences');
+});
+
+ipcMain.handle(
+  events.UPDATE_PREFERENCES,
+  async (event, preferencesPayload: Record<string, unknown>) => {
+    const { font, ...preferences } = preferencesPayload;
+    const {
+      enableMultipleEquityColumns,
+      godleyTableShowValues,
+      godleyTableOutputStyle,
+    } = preferences;
+
+    StoreManager.store.set('preferences', preferences);
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"}]`,
+    });
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.MULTIPLE_EQUITIES} ${enableMultipleEquityColumns}`,
+    });
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.DEFAULT_FONT} "${font}"`,
+    });
+
+    RecentFilesManager.updateNumberOfRecentFilesToDisplay();
+    return;
+  }
+);
+
+ipcMain.on(events.AUTO_START_MINSKY_SERVICE, async () => {
+  await RestServiceManager.startMinskyService();
+});
+
+ipcMain.handle(events.NEW_SYSTEM, async () => {
+  await CommandsManager.createNewSystem();
+  return;
+});
+
+ipcMain.on(events.CONTEXT_MENU, async (event, { x, y }) => {
+  await ContextMenuManager.initContextMenu(x, y);
+});
+
+ipcMain.on(
+  events.DISPLAY_MOUSE_COORDINATES,
+  async (event, { mouseX, mouseY }) => {
+    WindowManager.showMouseCoordinateWindow({ mouseX, mouseY });
+  }
+);
+
+ipcMain.on(events.DOUBLE_CLICK, async (event, payload) => {
+  await CommandsManager.handleDoubleClick(payload);
+});
+
+ipcMain.on(events.LOG_SIMULATION, async (event, selectedItems: string[]) => {
+  await CommandsManager.logSimulation(selectedItems);
+});
