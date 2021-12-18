@@ -646,6 +646,8 @@ export class CommandsManager {
     return filePath;
   }
 
+
+
   static async getFilePathFromExportCanvasDialog(
     type: string
   ): Promise<string> {
@@ -1421,17 +1423,20 @@ export class CommandsManager {
                 godleyTableOutputStyle,
                 godleyTableShowValues,
               } = preferences;
+              const newGodleyTableShowValues = !godleyTableShowValues;
 
               StoreManager.store.set({
                 preferences: {
                   ...preferences,
-                  godleyTableShowValues: !godleyTableShowValues,
+                  godleyTableShowValues: newGodleyTableShowValues,
                 },
               });
 
               await RestServiceManager.handleMinskyProcess({
-                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${godleyTableOutputStyle}"]`,
+                command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${newGodleyTableShowValues},"${godleyTableOutputStyle}"]`,
               });
+              // CAVEAT:: Check that redrawing menus doesn't lead to memory leak (it is required because of this issue: https://github.com/electron/electron/issues/5055)
+              CommandsManager.createMenusForGodleyView(window, itemInfo);
             },
           },
           {
@@ -1459,6 +1464,8 @@ export class CommandsManager {
               await RestServiceManager.handleMinskyProcess({
                 command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${godleyTableShowValues},"${newGodleyTableOutputStyle}"]`,
               });
+              // CAVEAT:: Check that redrawing menus doesn't lead to memory leak (it is required because of this issue: https://github.com/electron/electron/issues/5055)
+              CommandsManager.createMenusForGodleyView(window, itemInfo);
             },
           },
           {
@@ -1471,6 +1478,8 @@ export class CommandsManager {
               await RestServiceManager.handleMinskyProcess({
                 command: `${itemAccessor}/popup/requestRedraw`,
               });
+              // CAVEAT:: Check that redrawing menus doesn't lead to memory leak (it is required because of this issue: https://github.com/electron/electron/issues/5055)
+              CommandsManager.createMenusForGodleyView(window, itemInfo);
             },
           },
         ],

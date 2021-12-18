@@ -16,6 +16,7 @@ interface MinskyStore {
 }
 
 export class StoreManager {
+  // TODO:: We should sync the initial values with backend
   static store = new Store<MinskyStore>({
     defaults: {
       recentFiles: [],

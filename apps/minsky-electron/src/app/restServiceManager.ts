@@ -65,7 +65,8 @@ function callRESTApi(command: string) {
 
   console.log(
     'In callRESTApi::',
-    'left offset = ',
+    command,
+    'WINDOW VALUES:: left offset = ',
     leftOffset,
     '| CDims =',
     canvasWidth,
@@ -78,6 +79,10 @@ function callRESTApi(command: string) {
 
   if (!command) {
     log.error('callRESTApi called without any command');
+    return {};
+  }
+  if(!restService) {
+    log.error("Rest Service not ready");
     return {};
   }
   const commandMetaData = command.split(' ');
@@ -116,7 +121,7 @@ export class RestServiceManager {
     if (tab !== this.currentTab) {
       // disable the old tab
       this.handleMinskyProcess({
-        command: this.currentTab+"/enabled false",
+        command: this.currentTab + "/enabled false",
       });
       this.currentTab = tab;
       this.render = true;
@@ -389,11 +394,10 @@ export class RestServiceManager {
     }
 
     const mainWindowId = activeWindows.get(1).systemWindowId;
-    const renderCommand = `${tab}/${
-      commandsMapping.RENDER_FRAME_SUBCOMMAND
-    } [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}, ${scaleFactor.toPrecision(
-      5
-    )}}]`; // TODO:: Remove this and fix backend to accept integer values
+    const renderCommand = `${tab}/${commandsMapping.RENDER_FRAME_SUBCOMMAND
+      } [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}, ${scaleFactor.toPrecision(
+        5
+      )}}]`; // TODO:: Remove this and fix backend to accept integer values
     return renderCommand;
   }
 
