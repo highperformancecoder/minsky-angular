@@ -131,13 +131,12 @@ export class MenuManager {
             },
           },
           {
-            label: 'SaveAs',
+            label: 'Save As',
             accelerator: 'CmdOrCtrl + Shift + S',
             async click() {
               const defaultExtension = (await RestServiceManager.handleMinskyProcess(
                 { command: commandsMapping.DEFAULT_EXTENSION }
               )) as string;
-
               const saveDialog = await dialog.showSaveDialog({
                 filters: [
                   {
