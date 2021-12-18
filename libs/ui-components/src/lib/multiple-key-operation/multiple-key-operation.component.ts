@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
 import { commandsMapping, events } from '@minsky/shared';
@@ -14,27 +14,33 @@ export class MultipleKeyOperationComponent implements OnInit {
   constructor(
     private electronService: ElectronService,
     private route: ActivatedRoute,
-    private changeDetectorRef: ChangeDetectorRef,
     private communicationService: CommunicationService
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe((params) => {
-      this.multipleKeyString = decodeURIComponent(params['input'] as string);
-      this.changeDetectorRef.detectChanges();
-    });
+    this.multipleKeyString = localStorage.getItem('multipleKeyString');
   }
 
-  async handleSave(string) {
+  async handleSave(string: string) {
     if (this.electronService.isElectron) {
       if (!string) {
         return;
       }
 
       if (string.charAt(0) === '#') {
-        const note = string;
+        const note = string.slice(1);
 
         this.communicationService.insertElement('ADD_NOTE', note, 'string');
+        return;
+      }
+
+      if (string.charAt(0) === '-') {
+        this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
+          width: 500,
+          height: 650,
+          title: 'Create Constant',
+          url: `#/headless/menu/insert/create-variable?type=constant&value=${string}`,
+        });
         return;
       }
 

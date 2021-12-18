@@ -11,7 +11,13 @@ import {
   ElectronService,
   WindowUtilityService,
 } from '@minsky/core';
-import { commandsMapping, events, MinskyProcessPayload } from '@minsky/shared';
+import {
+  commandsMapping,
+  events,
+  MinskyProcessPayload,
+  ZOOM_IN_FACTOR,
+  ZOOM_OUT_FACTOR,
+} from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
@@ -78,7 +84,10 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
       this.height &&
       this.width
     ) {
-      const command = `${this.namedItemSubCommand}/renderFrame [${this.systemWindowId},${this.leftOffset},${this.topOffset},${this.width},${this.height}]`;
+      const scaleFactor = this.electronService.remote.screen.getPrimaryDisplay()
+        .scaleFactor;
+
+      const command = `${this.namedItemSubCommand}/renderFrame [${this.systemWindowId},${this.leftOffset},${this.topOffset},${this.width},${this.height},${scaleFactor}]`;
 
       this.electronService.sendMinskyCommandAndRender({
         command,
@@ -97,7 +106,7 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
     this.mouseMove$ = fromEvent<MouseEvent>(
       this.godleyCanvasContainer,
       'mousemove'
-    ).pipe(sampleTime(30)); /// FPS=1000/sampleTime
+    ).pipe(sampleTime(1)); /// FPS=1000/sampleTime
 
     this.mouseMove$.subscribe(async (event: MouseEvent) => {
       const { clientX, clientY } = event;
@@ -167,26 +176,24 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
 
     await this.redraw();
   };
+
   onMouseWheelZoom = async (event: WheelEvent) => {
     event.preventDefault();
     const { deltaY } = event;
     const zoomIn = deltaY < 0;
 
-    const command = `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/popup/zoomFactor`;
+    const command = `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/popup/zoom`;
 
-    let zoomFactor = (await this.electronService.sendMinskyCommandAndRender({
-      command,
-    })) as number;
+    const zoomFactor = zoomIn ? ZOOM_IN_FACTOR : ZOOM_OUT_FACTOR;
 
-    if (zoomIn) {
-      zoomFactor = zoomFactor * 1.1;
-    } else {
-      zoomFactor = zoomFactor / 1.1;
-    }
+    const [
+      x,
+      y,
+    ] = this.electronService.remote.getCurrentWindow().getContentSize();
 
     //TODO: throttle here if required
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${command} ${zoomFactor}`,
+      command: `${command} [${x / 2},${y / 2},${zoomFactor}]`,
     });
   };
 

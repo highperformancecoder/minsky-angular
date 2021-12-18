@@ -11,10 +11,7 @@ export const ZOOM_IN_FACTOR = 1.1;
 export const ZOOM_OUT_FACTOR = 0.91;
 export const RESET_ZOOM_FACTOR = 1;
 
-export const USE_MINSKY_SYSTEM_BINARY = true;
 export const USE_FRONTEND_DRIVEN_RENDERING = false;
-
-export const MINSKY_SYSTEM_HTTP_SERVER_PATH = 'minsky-httpd';
 
 export const commandsMapping = {
   ADD_BOOKMARK: '/minsky/model/addBookmark',
@@ -81,9 +78,9 @@ export const commandsMapping = {
   TIME_UNIT: '/minsky/timeUnit',
   UNDO: `/minsky/undo`,
   MOVE_TO: `/minsky/canvas/moveTo`,
-  ZOOM_IN: `/minsky/canvas/model/zoom`,
-  ZOOM_OUT: `/minsky/canvas/model/zoom`,
-  ZOOM_TO_FIT: `/minsky/canvas/model/zoom`,
+  ZOOM_IN: `/minsky/canvas/zoom`,
+  ZOOM_OUT: `/minsky/canvas/zoom`,
+  ZOOM_TO_FIT: `/minsky/canvas/zoom`,
   INSERT_GROUP_FROM_FILE: '/minsky/insertGroupFromFile',
   PUSH_HISTORY: '/minsky/doPushHistory',
   CLEAR_ALL_MAPS: '/minsky/clearAllMaps',
@@ -198,7 +195,7 @@ export const commandsMapping = {
   VARIABLE_INSTANCE_LIST_GOTO_INSTANCE:
     '/minsky/variableInstanceList/gotoInstance',
   CANVAS_ITEM_RETYPE: '/minsky/canvas/item/retype',
-  RENAME_ITEM: '/minsky/renameItem',
+  RENAME_ITEM: '/minsky/canvas/renameItem',
   CANVAS_ITEM_INIT: '/minsky/canvas/item/init',
   CANVAS_ITEM_TOOLTIP: '/minsky/canvas/item/tooltip',
   CANVAS_ITEM_DETAILED_TEXT: '/minsky/canvas/item/detailedText',
@@ -236,6 +233,7 @@ export const commandsMapping = {
   REMOVE_ENTRY_FROM_NAMED_ITEMS_MAP: '/minsky/namedItems/@erase', // TODO:: Check syntax, call when any item is deleted
   GET_NAMED_ITEM: '/minsky/namedItems/@elem',
   CANVAS_ITEM_IMPORT_FROM_CSV: '/minsky/canvas/item/importFromCSV',
+  CANVAS_BACKGROUND_COLOR: '/minsky/canvas/backgroundColour',
 };
 
 export const availableOperations = {

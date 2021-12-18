@@ -15,7 +15,6 @@ export const getBackgroundStyle = (color) => {
 
   let colorArray;
   let r, g, b;
-
   // Check the format of the color, HEX or RGB?
   if (color.match(/^rgb/)) {
     // If RGB --> store the red, green, blue values in separate variables
@@ -42,30 +41,28 @@ export const getBackgroundStyle = (color) => {
 
   // Using the HSP value, determine whether the color is light or dark
   if (hsp > 127.5) {
-    return 'body { background-color: ' + color + '; color: black; }';
+    return {
+      style: 'body { background-color: ' + color + '; color: black; }',
+      r,
+      g,
+      b,
+    };
   }
 
-  return 'body { background-color: ' + color + '; color: white; }';
+  return {
+    style: 'body { background-color: ' + color + '; color: white; }',
+    r,
+    g,
+    b,
+  };
 };
 
 export const isWindows = () =>
   process && process.platform === 'win32' ? true : false;
 
 export const normalizeFilePathForPlatform = (filePath: string) => {
-  if (isWindows()) {
-    // quoted special characters for JSON encoding
-
-    const character = {
-      '\\': '\\\\',
-      '"': '\\"',
-    };
-
-    const normalizedFilePath = filePath.replace(/[\\"]/g, function (c) {
-      return character[c];
-    });
-
-    return normalizedFilePath;
+  if (filePath && filePath.charAt(0) !== '"') {
+    return JSON.stringify(filePath);
   }
-
   return filePath;
 };

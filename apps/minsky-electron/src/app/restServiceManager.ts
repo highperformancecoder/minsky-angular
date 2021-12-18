@@ -1,28 +1,19 @@
 import {
   commandsMapping,
   events,
-  green,
   MainRenderingTabs,
   MinskyProcessPayload,
-  MINSKY_SYSTEM_HTTP_SERVER_PATH,
   normalizeFilePathForPlatform,
-  red,
   USE_FRONTEND_DRIVEN_RENDERING,
-  USE_MINSKY_SYSTEM_BINARY,
 } from '@minsky/shared';
-import { ChildProcess, spawn } from 'child_process';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
-// import { HttpManager } from './httpManager';
 import { join } from 'path';
-import { PortsManager } from './portsManager';
 import { RecordingManager } from './recordingManager';
-import { StoreManager } from './storeManager';
 import { Utility } from './utility';
 import { WindowManager } from './windowManager';
 const JSON5 = require('json5');
 
-log.info('resources path=' + process.resourcesPath);
 const addonDir = Utility.isPackaged()
   ? '../../node-addons'
   : '../../../node-addons';
@@ -34,10 +25,6 @@ try {
 } catch (error) {
   log.error(error);
 }
-
-log.info(restService.call('/minsky/minskyVersion', ''));
-
-console.log(JSON.parse('1E1024'));
 
 interface QueueItem {
   promise: Deferred;
@@ -57,6 +44,15 @@ class Deferred {
   }
 }
 
+restService.setMessageCallback(function(msg: string, buttons: string[]) {
+   if (msg) return dialog.showMessageBoxSync({"message":msg,"type":"info","buttons":buttons});
+});
+
+restService.setBusyCursorCallback(function(busy: boolean) {
+    WindowManager.getMainWindow().webContents.insertCSS
+    (busy? "html body {cursor: wait}": "html body {cursor: default}");
+});
+
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string) {
   const {
@@ -64,7 +60,7 @@ function callRESTApi(command: string) {
     canvasWidth,
     canvasHeight,
     electronTopOffset,
-    scaleFactor
+    scaleFactor,
   } = WindowManager;
 
   console.log(
@@ -79,6 +75,7 @@ function callRESTApi(command: string) {
     '| Scale Factor = ',
     scaleFactor
   );
+
   if (!command) {
     log.error('callRESTApi called without any command');
     return {};
@@ -95,15 +92,13 @@ function callRESTApi(command: string) {
     log.info('response: ' + response);
     return JSON5.parse(response);
   } catch (error) {
-      if (error?.message)
-          dialog.showErrorBox(error.message,'');
-      log.error('Exception caught: ' + error?.message);
-      return {};
+    if (error?.message) dialog.showErrorBox(error.message, '');
+    log.error('Exception caught: ' + error?.message);
+    return error?.message;
   }
 }
 
 export class RestServiceManager {
-  static minskyHttpServer: ChildProcess;
   static currentMinskyModelFilePath: string;
 
   private static lastMouseMovePayload: MinskyProcessPayload = null;
@@ -119,6 +114,10 @@ export class RestServiceManager {
 
   public static async setCurrentTab(tab: MainRenderingTabs) {
     if (tab !== this.currentTab) {
+      // disable the old tab
+      this.handleMinskyProcess({
+        command: this.currentTab+"/enabled false",
+      });
       this.currentTab = tab;
       this.render = true;
       this.lastMouseMovePayload = null;
@@ -159,13 +158,6 @@ export class RestServiceManager {
     return;
   }
 
-  public static async onQuit() {
-    console.log('Please complete onQuit Actions!');
-    //TODO:
-    // 1. Flush commands queue
-    // 2. Kill  Minsky process (wait for it to be killed)
-  }
-
   private static async resumeQueueProcessing(): Promise<unknown> {
     this.runningCommand = false;
     return await this.processCommandsInQueueNew();
@@ -174,19 +166,6 @@ export class RestServiceManager {
   public static async handleMinskyProcess(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
-    //    const isStartProcessCommand =
-    //      payload.command === commandsMapping.START_MINSKY_PROCESS;
-    //
-    //    if (isStartProcessCommand) {
-    //      await this.startHttpServer(payload);
-    //      return;
-    //    }
-    //
-    //    if (!this.minskyHttpServer) {
-    //      console.error('Minsky HTTP server is not running yet.');
-    //      return;
-    //    }
-
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
 
     const shouldProcessQueue = this.isQueueEnabled
@@ -286,12 +265,12 @@ export class RestServiceManager {
 
     switch (payload.command) {
       case commandsMapping.LOAD:
-        stdinCommand = `${payload.command} "${payload.filePath}"`;
+        stdinCommand = `${payload.command} ${payload.filePath}`;
         this.render = true;
         break;
 
       case commandsMapping.SAVE:
-        stdinCommand = `${payload.command} "${payload.filePath}"`;
+        stdinCommand = `${payload.command} ${payload.filePath}`;
         this.currentMinskyModelFilePath = payload.filePath;
         ipcMain.emit(events.ADD_RECENT_FILE, null, payload.filePath);
         break;
@@ -319,7 +298,7 @@ export class RestServiceManager {
         break;
 
       case commandsMapping.ZOOM_IN:
-        stdinCommand = `${payload.command} [${payload.args.x}, ${payload.args.y}, ${payload.args.zoomFactor}]`;
+        stdinCommand = `${this.currentTab}/zoom [${payload.args.x}, ${payload.args.y}, ${payload.args.zoomFactor}]`;
         break;
 
       case commandsMapping.SET_GODLEY_ICON_RESOURCE:
@@ -329,7 +308,7 @@ export class RestServiceManager {
             ? `${join(__dirname, 'assets/godley.svg')}`
             : `${join(process.resourcesPath, 'assets/godley.svg')}`
         );
-        stdinCommand = `${payload.command} "${godleyIconFilePath}"`;
+        stdinCommand = `${payload.command} ${godleyIconFilePath}`;
 
         break;
 
@@ -341,7 +320,7 @@ export class RestServiceManager {
             : `${join(process.resourcesPath, 'assets/group.svg')}`
         );
 
-        stdinCommand = `${payload.command} "${groupIconFilePath}"`;
+        stdinCommand = `${payload.command} ${groupIconFilePath}`;
         break;
 
       case commandsMapping.REQUEST_REDRAW_SUBCOMMAND:
@@ -360,26 +339,20 @@ export class RestServiceManager {
       if (payload.command === commandsMapping.RENDER_FRAME_SUBCOMMAND) {
         // Render called explicitly
         this.render = false;
-        await callRESTApi(this.getRenderCommand());
-        return await callRESTApi(this.getRequestRedrawCommand());
-        //          await HttpManager.handleMinskyCommand(this.getRenderCommand());
-        //        return await HttpManager.handleMinskyCommand(
-        //          this.getRequestRedrawCommand()
-        //        );
+        callRESTApi(this.getRenderCommand());
+        return callRESTApi(this.getRequestRedrawCommand());
         // TODO:: Check which of the above command's response we should return
       }
 
-      const res = callRESTApi(stdinCommand); //await HttpManager.handleMinskyCommand(stdinCommand);
+      const res = callRESTApi(stdinCommand);
       const { render = true } = payload;
 
       if ((USE_FRONTEND_DRIVEN_RENDERING && render) || this.render) {
         const renderCommand = this.getRenderCommand();
 
         if (renderCommand) {
-          //          await HttpManager.handleMinskyCommand(renderCommand);
-          //          await HttpManager.handleMinskyCommand(this.getRequestRedrawCommand());
-          await callRESTApi(this.getRenderCommand());
-          await callRESTApi(this.getRequestRedrawCommand());
+          callRESTApi(this.getRenderCommand());
+          callRESTApi(this.getRequestRedrawCommand());
           this.render = false;
         }
       }
@@ -402,7 +375,7 @@ export class RestServiceManager {
       canvasHeight,
       activeWindows,
       electronTopOffset,
-      scaleFactor
+      scaleFactor,
     } = WindowManager;
 
     if (!tab) {
@@ -416,27 +389,17 @@ export class RestServiceManager {
     }
 
     const mainWindowId = activeWindows.get(1).systemWindowId;
-    const renderCommand = `${tab}/${commandsMapping.RENDER_FRAME_SUBCOMMAND} [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}, ${scaleFactor.toPrecision(5)}}]`; // TODO:: Remove this and fix backend to accept integer values
+    const renderCommand = `${tab}/${
+      commandsMapping.RENDER_FRAME_SUBCOMMAND
+    } [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}, ${scaleFactor.toPrecision(
+      5
+    )}}]`; // TODO:: Remove this and fix backend to accept integer values
     return renderCommand;
   }
 
-  static async startMinskyService(
-    filePath: string = null,
-    showServiceStartedDialog = false
-  ) {
-    if (USE_MINSKY_SYSTEM_BINARY) {
-      filePath = MINSKY_SYSTEM_HTTP_SERVER_PATH;
-    } else {
-      filePath = filePath || StoreManager.store.get('minskyHttpServerPath');
-    }
-
-    if (!filePath) {
-      return;
-    }
-
+  static async startMinskyService(showServiceStartedDialog = false) {
     const initPayload: MinskyProcessPayload = {
       command: commandsMapping.START_MINSKY_PROCESS,
-      filePath,
       showServiceStartedDialog,
       render: false,
     };
@@ -465,95 +428,5 @@ export class RestServiceManager {
       await setGodleyIconResource();
       await setGroupIconResource();
     }, 100);
-  }
-
-  static async toggleMinskyService() {
-    try {
-      const _dialog = await dialog.showOpenDialog({
-        properties: ['openFile'],
-        filters: [{ name: 'minsky-RESTService', extensions: ['*'] }],
-      });
-
-      if (_dialog.canceled) {
-        return;
-      }
-      const filePath = normalizeFilePathForPlatform(_dialog.filePaths[0]);
-      this.startMinskyService(filePath, true);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  static async startHttpServer(payload: MinskyProcessPayload) {
-    if (this.minskyHttpServer) {
-      this.minskyHttpServer.stdout.emit('close');
-      this.minskyHttpServer.kill();
-      this.minskyHttpServer = null;
-      this.payloadDataQueue = [];
-      this.lastMouseMovePayload = null;
-      this.lastModelMoveToPayload = null;
-    }
-    try {
-      let { filePath } = payload;
-      const { showServiceStartedDialog = true } = payload;
-
-      if (USE_MINSKY_SYSTEM_BINARY) {
-        filePath = MINSKY_SYSTEM_HTTP_SERVER_PATH;
-      } else {
-        filePath = filePath || StoreManager.store.get('minskyHttpServerPath');
-      }
-
-      if (!filePath) {
-        return;
-      }
-
-      if (!USE_MINSKY_SYSTEM_BINARY) {
-        StoreManager.store.set('minskyHttpServerPath', filePath);
-      }
-
-      this.minskyHttpServer = spawn(filePath, [
-        `${
-          PortsManager.MINSKY_HTTP_SERVER_PORT ||
-          (await PortsManager.generateHttpServerPort())
-        }`,
-      ]);
-
-      console.log(
-        green(
-          `🚀🚀🚀 HTTP server "${filePath}" started on port ${PortsManager.MINSKY_HTTP_SERVER_PORT}`
-        )
-      );
-
-      if (this.minskyHttpServer) {
-        this.minskyHttpServer.stdout.on('data', (data) => {
-          log.info(`http: ${data}`);
-        });
-
-        this.minskyHttpServer.stderr.on('data', (data) => {
-          log.error(red(`error: ${data}`));
-        });
-
-        this.minskyHttpServer.on('error', (error) => {
-          log.error(red(`error: ${error.message}`));
-        });
-
-        this.minskyHttpServer.on('close', (code) => {
-          log.warn(red(`"http-server" child process exited with code ${code}`));
-        });
-
-        if (!showServiceStartedDialog) {
-          return;
-        }
-        dialog.showMessageBoxSync({
-          type: 'info',
-          title: 'Minsky HTTP Service Started',
-          message: 'You can now choose model files to be loaded',
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      dialog.showErrorBox('Execution error', 'Could not start the HTTP Server');
-      this.minskyHttpServer = null;
-    }
   }
 }
