@@ -19,18 +19,21 @@
     }
   }
 
-  .option-column-one {
-    padding-left: $padding;
+ .options-row {
+   padding: $padding;
+ }
+
+  .options-row-one {  
     span {
       input[type='checkbox'] {
         width: 2rem;
         padding-left: 0.5rem;
       }
     }
-    margin-bottom: $padding;
+    margin-bottom: 2*$padding;
   }
-  .option-column-two {
-    padding-left: $padding;
+
+  .options-row-two {
     input[type='number'] {
       width: 3rem;
     }
