@@ -67,8 +67,8 @@ export default class App {
 
     Utility.isPackaged()
       ? await HelpFilesManager.initialize(
-          join(process.resourcesPath, 'minsky-docs')
-        )
+        join(process.resourcesPath, 'minsky-docs')
+      )
       : await HelpFilesManager.initialize(__dirname + '/../../../minsky-docs/');
 
     App.initMainWindow();
