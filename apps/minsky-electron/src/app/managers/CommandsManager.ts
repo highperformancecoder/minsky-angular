@@ -457,9 +457,8 @@ export class CommandsManager {
     );
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
-        numCases + delta
-      }`,
+      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${numCases + delta
+        }`,
     });
 
     CommandsManager.requestRedraw();
@@ -658,7 +657,7 @@ export class CommandsManager {
       return;
     }
 
-      return normalizeFilePathForPlatform(filePath);
+    return normalizeFilePathForPlatform(filePath);
   }
 
   static async mouseDown(mouseX: number, mouseY: number): Promise<void> {
@@ -698,40 +697,49 @@ export class CommandsManager {
     return;
   }
 
-  static async createNewSystem() {
+  static async canCurrentSystemBeClosed(): Promise<boolean> {
     const isCanvasEdited = await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.EDITED,
     });
+    if (!isCanvasEdited) {
+      return true;
+    }
 
-    if (isCanvasEdited) {
-      const choice = dialog.showMessageBoxSync(WindowManager.getMainWindow(), {
-        type: 'question',
-        buttons: ['Yes', 'No', 'Cancel'],
-        title: 'Confirm',
-        message: 'Save?',
-      });
+    const choice = await dialog.showMessageBox(WindowManager.getMainWindow(), {
+      type: 'question',
+      buttons: ['Yes', 'No', 'Cancel'],
+      title: 'Confirm',
+      message: 'Save Current Model?',
+    });
 
-      if (choice === 0) {
-        const saveModelDialog = await dialog.showSaveDialog({
-          title: 'Save Model?',
-          properties: ['showOverwriteConfirmation', 'createDirectory'],
-        });
+    if (choice.response === 1) { // No
+      return true;
+    }
+    if (choice.response === 2) { // Cancel
+      return false;
+    }
+    const saveModelDialog = await dialog.showSaveDialog({
+      title: 'Save Model?',
+      properties: ['showOverwriteConfirmation', 'createDirectory'],
+    });
 
-        const { canceled, filePath: _filePath } = saveModelDialog;
-        const filePath = normalizeFilePathForPlatform(_filePath);
+    const { canceled, filePath: _filePath } = saveModelDialog;
+    const filePath = normalizeFilePathForPlatform(_filePath);
 
-        if (canceled || !filePath) {
-          return;
-        }
+    if (canceled || !filePath) {
+      return false;
+    }
 
-        await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.SAVE} ${filePath}`,
-        });
-      }
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.SAVE} ${filePath}`,
+    });
+    return true;
+  }
 
-      if (choice === 2) {
-        return;
-      }
+  static async createNewSystem() {
+    const canProceed = await this.canCurrentSystemBeClosed();
+    if (!canProceed) {
+      return;
     }
 
     WindowManager.activeWindows.forEach((window) => {
@@ -972,11 +980,11 @@ export class CommandsManager {
   }
 
   static async saveFile(filePath: string) {
-      filePath = normalizeFilePathForPlatform(filePath);
-      await RestServiceManager.handleMinskyProcess({
-          command: `${commandsMapping.SAVE}`,
-          filePath: filePath,
-      });
+    filePath = normalizeFilePathForPlatform(filePath);
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.SAVE}`,
+      filePath: filePath,
+    });
   }
 
   static async help(x: number, y: number) {
@@ -1010,7 +1018,7 @@ export class CommandsManager {
     return;
   }
 
-  static async loadHelpFile(classType : string) {
+  static async loadHelpFile(classType: string) {
     const fileName = HelpFilesManager.getHelpFileForType(classType);
 
     const path = !Utility.isPackaged()
@@ -1060,9 +1068,8 @@ export class CommandsManager {
       width: 500,
       height: 650,
       title: `Edit ${itemName || ''}`,
-      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
-        itemName || ''
-      }&isEditMode=true`,
+      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${itemName || ''
+        }&isEditMode=true`,
     });
   }
 
@@ -1091,19 +1098,19 @@ export class CommandsManager {
     });
   }
 
-    static async destroyFrame(uid: number) {
-           await RestServiceManager.handleMinskyProcess({
-                    command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/destroyFrame`
-          });  
-    }
-    
-    private static onPopupWindowClose(uid: number) {
-        this.destroyFrame(uid);
-      if (uid in this.activeGodleyWindowItems) {
-          this.activeGodleyWindowItems.delete(uid);
-      }
+  static async destroyFrame(uid: number) {
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/destroyFrame`
+    });
   }
-    
+
+  private static onPopupWindowClose(uid: number) {
+    this.destroyFrame(uid);
+    if (uid in this.activeGodleyWindowItems) {
+      this.activeGodleyWindowItems.delete(uid);
+    }
+  }
+
   private static async initializePopupWindow(
     payload: InitializePopupWindowPayload
   ): Promise<Electron.BrowserWindow> {
@@ -1189,9 +1196,10 @@ export class CommandsManager {
       });
 
       await RestServiceManager.handleMinskyProcess({
-         command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/adjustWidgets`
-      });  
+        command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/adjustWidgets`
+      });
 
+      
       systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
 
       window.loadURL(

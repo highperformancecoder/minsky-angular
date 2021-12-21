@@ -11,7 +11,7 @@ export const ZOOM_IN_FACTOR = 1.1;
 export const ZOOM_OUT_FACTOR = 0.91;
 export const RESET_ZOOM_FACTOR = 1;
 
-export const USE_FRONTEND_DRIVEN_RENDERING = false;
+export const USE_FRONTEND_DRIVEN_RENDERING = false; // We can retire this now?
 
 export const commandsMapping = {
   ADD_BOOKMARK: '/minsky/model/addBookmark',
