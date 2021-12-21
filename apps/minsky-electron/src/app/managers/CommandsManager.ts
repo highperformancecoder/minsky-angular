@@ -17,7 +17,7 @@ import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './RestServiceManager';
 import { Utility } from '../utility';
 import { WindowManager } from './WindowManager';
-import { MenuManager } from './MenuManager';
+import { GodleyMenuManager } from './GodleyMenuManager';
 
 
 export class CommandsManager {
@@ -1200,8 +1200,7 @@ export class CommandsManager {
         )
       );
 
-      MenuManager.createMenusForGodleyView(window, itemInfo);
-
+      GodleyMenuManager.createMenusForGodleyView(window, itemInfo);
       this.activeGodleyWindowItems.set(itemInfo.id, itemInfo);
     }
   }

@@ -14,7 +14,7 @@ import { CommandsManager } from './CommandsManager';
 import { RestServiceManager } from './RestServiceManager';
 import { WindowManager } from './WindowManager';
 
-export class KeyBindingManager {
+export class KeyBindingsManager {
   static multipleKeyString = '';
   static multipleKeyWindow: BrowserWindow = null;
   static isMultipleKeyModalOpen = false;
@@ -194,7 +194,7 @@ export class KeyBindingManager {
     if (!executed && key.length === 1 && key.match(asciiRegex)) {
       this.multipleKeyString += key;
 
-      KeyBindingManager.openMultipleKeyStringPopup();
+      KeyBindingsManager.openMultipleKeyStringPopup();
     }
 
     return this.multipleKeyString;

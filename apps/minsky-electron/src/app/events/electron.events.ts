@@ -16,7 +16,7 @@ import { environment } from '../../environments/environment';
 import { BookmarkManager } from '../managers/BookmarkManager';
 import { CommandsManager } from '../managers/CommandsManager';
 import { ContextMenuManager } from '../managers/ContextMenuManager';
-import { KeyBindingManager } from '../managers/keyBindingManager';
+import { KeyBindingsManager } from '../managers/KeyBindingsManager';
 import { RecentFilesManager } from '../managers/RecentFilesManager';
 import { RestServiceManager } from '../managers/RestServiceManager';
 import { StoreManager } from '../managers/StoreManager';
@@ -94,7 +94,7 @@ ipcMain.on(events.ADD_RECENT_FILE, (event, filePath: string) => {
 ipcMain.handle(
   events.KEY_PRESS,
   async (event, payload: MinskyProcessPayload) => {
-    return await KeyBindingManager.handleOnKeyPress(payload);
+    return await KeyBindingsManager.handleOnKeyPress(payload);
   }
 );
 

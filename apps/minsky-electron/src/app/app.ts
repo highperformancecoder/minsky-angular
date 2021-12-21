@@ -12,7 +12,7 @@ import { join } from 'path';
 import { format } from 'url';
 import { CommandsManager } from './managers/CommandsManager';
 import { HelpFilesManager } from './managers/HelpFilesManager';
-import { MenuManager } from './managers/MenuManager';
+import { ApplicationMenuManager } from './managers/ApplicationMenuManager';
 import { RecentFilesManager } from './managers/RecentFilesManager';
 import { RestServiceManager } from './managers/RestServiceManager';
 import { StoreManager } from './managers/StoreManager';
@@ -80,7 +80,7 @@ export default class App {
   }
 
   private static initMenu() {
-    MenuManager.createMainApplicationMenu();
+    ApplicationMenuManager.createMainApplicationMenu();
 
     RecentFilesManager.initRecentFiles();
 
@@ -89,7 +89,7 @@ export default class App {
     });
 
     (async () => {
-      await MenuManager.buildMenuForInsertOperations();
+      await ApplicationMenuManager.buildMenuForInsertOperations();
     })();
   }
 
