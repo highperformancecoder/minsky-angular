@@ -10,9 +10,9 @@ import {
 import { BrowserWindow } from 'electron';
 import * as keysym from 'keysym';
 import * as utf8 from 'utf8';
-import { CommandsManager } from './commandsManager';
-import { RestServiceManager } from './restServiceManager';
-import { WindowManager } from './windowManager';
+import { CommandsManager } from './CommandsManager';
+import { RestServiceManager } from './RestServiceManager';
+import { WindowManager } from './WindowManager';
 
 export class KeyBindingManager {
   static multipleKeyString = '';

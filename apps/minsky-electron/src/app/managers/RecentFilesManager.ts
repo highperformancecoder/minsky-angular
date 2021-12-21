@@ -1,6 +1,6 @@
 import { Menu, MenuItem } from 'electron';
-import { CommandsManager } from './commandsManager';
-import { StoreManager } from './storeManager';
+import { CommandsManager } from './CommandsManager';
+import { StoreManager } from './StoreManager';
 
 export class RecentFilesManager {
   static addFileToRecentFiles(filepath: string) {

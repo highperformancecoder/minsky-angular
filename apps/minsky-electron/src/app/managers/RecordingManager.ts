@@ -8,7 +8,7 @@ import { ipcMain } from 'electron';
 import { dialog, MessageBoxSyncOptions } from 'electron/main';
 import { createWriteStream, readFileSync, WriteStream } from 'fs';
 import * as JSONStream from 'JSONStream';
-import { WindowManager } from './windowManager';
+import { WindowManager } from './WindowManager';
 
 export class RecordingManager {
   static isRecording = false;

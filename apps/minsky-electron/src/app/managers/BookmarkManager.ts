@@ -1,7 +1,7 @@
 import { commandsMapping } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
-import { CommandsManager } from './commandsManager';
-import { RestServiceManager } from './restServiceManager';
+import { CommandsManager } from './CommandsManager';
+import { RestServiceManager } from './RestServiceManager';
 
 export class BookmarkManager {
   static async populateBookmarks(bookmarks: string[]) {

@@ -6,9 +6,9 @@ import {
   isWindows,
 } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
-import { CommandsManager } from './commandsManager';
-import { RestServiceManager } from './restServiceManager';
-import { WindowManager } from './windowManager';
+import { CommandsManager } from './CommandsManager';
+import { RestServiceManager } from './RestServiceManager';
+import { WindowManager } from './WindowManager';
 
 export class ContextMenuManager {
   private static x: number = null;

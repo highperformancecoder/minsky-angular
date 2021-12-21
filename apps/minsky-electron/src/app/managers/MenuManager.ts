@@ -12,10 +12,10 @@ import {
   shell,
 } from 'electron';
 import * as JSON5 from 'json5';
-import { CommandsManager } from './commandsManager';
-import { RestServiceManager } from './restServiceManager';
-import { StoreManager } from './storeManager';
-import { WindowManager } from './windowManager';
+import { CommandsManager } from './CommandsManager';
+import { RestServiceManager } from './RestServiceManager';
+import { StoreManager } from './StoreManager';
+import { WindowManager } from './WindowManager';
 
 const logError = debug('minsky:electron_error');
 

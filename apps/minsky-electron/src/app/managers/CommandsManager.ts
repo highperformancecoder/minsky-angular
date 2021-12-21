@@ -17,10 +17,10 @@ import { existsSync, unlinkSync } from 'fs';
 import * as JSON5 from 'json5';
 import { join } from 'path';
 import { HelpFilesManager } from './HelpFilesManager';
-import { RestServiceManager } from './restServiceManager';
-import { StoreManager } from './storeManager';
-import { Utility } from './../utility';
-import { WindowManager } from './windowManager';
+import { RestServiceManager } from './RestServiceManager';
+import { StoreManager } from './StoreManager';
+import { Utility } from '../utility';
+import { WindowManager } from './WindowManager';
 
 const GodleyPopupMenuItemIds = {
   toggleMultipleEquities: 'multiple-equity-column-toggler',

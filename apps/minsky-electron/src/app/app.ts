@@ -10,14 +10,14 @@ import { BrowserWindow, dialog, screen, shell } from 'electron';
 import * as log from 'electron-log';
 import { join } from 'path';
 import { format } from 'url';
-import { CommandsManager } from './managers/commandsManager';
+import { CommandsManager } from './managers/CommandsManager';
 import { HelpFilesManager } from './managers/HelpFilesManager';
-import { MenuManager } from './managers/menuManager';
-import { RecentFilesManager } from './managers/recentFilesManager';
-import { RestServiceManager } from './managers/restServiceManager';
-import { StoreManager } from './managers/storeManager';
+import { MenuManager } from './managers/MenuManager';
+import { RecentFilesManager } from './managers/RecentFilesManager';
+import { RestServiceManager } from './managers/RestServiceManager';
+import { StoreManager } from './managers/StoreManager';
 import { Utility } from './utility';
-import { WindowManager } from './managers/windowManager';
+import { WindowManager } from './managers/WindowManager';
 
 const logWindows = debug('minsky:electron_windows');
 
