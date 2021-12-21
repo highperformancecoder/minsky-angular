@@ -75,7 +75,6 @@ export default class App {
   private static async initMinskyService() {
     const windowId = WindowManager.activeWindows.get(1).systemWindowId;
     console.log('🚀🚀🚀🚀🚀' + green(` WindowId -> ${windowId}`));
-
     await RestServiceManager.startMinskyService();
   }
 

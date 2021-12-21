@@ -10,6 +10,8 @@ import { WindowManager } from './WindowManager';
 
 const logError = debug('minsky:electron_error');
 
+//TODO:: Remove hardcoding of popup dimensions
+
 export class ApplicationMenuManager {
   public static createMainApplicationMenu() {
     const menu = Menu.buildFromTemplate([
