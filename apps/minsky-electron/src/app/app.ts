@@ -48,16 +48,7 @@ export default class App {
     if (choice === 0) {
       App.mainWindow.destroy();
     }
-
     App.mainWindow = null;
-  }
-
-  private static onRedirect(event, url: string) {
-    if (url !== App.mainWindow.webContents.getURL()) {
-      // this is a normal external redirect, open it in a new browser window
-      event.preventDefault();
-      shell.openExternal(url);
-    }
   }
 
   private static async onReady() {
@@ -88,7 +79,7 @@ export default class App {
   }
 
   private static initMenu() {
-    MenuManager.createMenu();
+    MenuManager.createMainApplicationMenu();
 
     RecentFilesManager.initRecentFiles();
 
@@ -156,12 +147,6 @@ export default class App {
     App.mainWindow.once('ready-to-show', () => {
       App.mainWindow.show();
     });
-
-    // handle all external redirects in a new browser window
-    // App.mainWindow.webContents.on('will-navigate', App.onRedirect);
-    // App.mainWindow.webContents.on('new-window', (event, url, frameName, disposition, options) => {
-    //     App.onRedirect(event, url);
-    // });
 
     // Emitted when the window is closed.
 
