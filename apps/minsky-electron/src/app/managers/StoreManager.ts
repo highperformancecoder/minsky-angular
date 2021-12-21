@@ -1,7 +1,7 @@
 import { defaultBackgroundColor } from '@minsky/shared';
 import * as Store from 'electron-store';
 
-interface Preferences {
+interface MinskyPreferences {
   godleyTableShowValues: boolean;
   godleyTableOutputStyle: string;
   enableMultipleEquityColumns: boolean;
@@ -9,13 +9,14 @@ interface Preferences {
   wrapLongEquationsInLatexExport: boolean;
   // focusFollowsMouse: boolean;
 }
+
 interface MinskyStore {
   recentFiles: Array<string>;
   backgroundColor: string;
-  preferences: Preferences;
+  preferences: MinskyPreferences;
 }
 
-export class StoreManager {
+class StoreManager {
   // TODO:: We should sync the initial values with backend
   static store = new Store<MinskyStore>({
     defaults: {
@@ -32,3 +33,5 @@ export class StoreManager {
     },
   });
 }
+
+export { StoreManager, MinskyPreferences }

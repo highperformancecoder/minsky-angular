@@ -1,24 +1,17 @@
-import {
-  commandsMapping,
-  events,
-  MainRenderingTabs,
-  MinskyProcessPayload,
-  normalizeFilePathForPlatform,
-  USE_FRONTEND_DRIVEN_RENDERING,
-} from '@minsky/shared';
+import { commandsMapping, events, MainRenderingTabs, MinskyProcessPayload, normalizeFilePathForPlatform, USE_FRONTEND_DRIVEN_RENDERING } from '@minsky/shared';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
 import { join } from 'path';
 import { RecordingManager } from './RecordingManager';
 import { Utility } from '../utility';
 import { WindowManager } from './WindowManager';
+import { MinskyPreferences, StoreManager } from './StoreManager';
 const JSON5 = require('json5');
 
-const addonDir = Utility.isPackaged()
-  ? '../../node-addons'
-  : '../../../node-addons';
+const addonDir = Utility.isPackaged()? '../../node-addons' : '../../../node-addons';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+
 let restService = null;
 try {
   restService = require('bindings')(join(addonDir, 'minskyRESTService.node'));
@@ -44,44 +37,26 @@ class Deferred {
   }
 }
 
-restService.setMessageCallback(function(msg: string, buttons: string[]) {
-   if (msg) return dialog.showMessageBoxSync({"message":msg,"type":"info","buttons":buttons});
+restService.setMessageCallback(function (msg: string, buttons: string[]) {
+  if (msg) return dialog.showMessageBoxSync({ "message": msg, "type": "info", "buttons": buttons });
 });
 
-restService.setBusyCursorCallback(function(busy: boolean) {
-    WindowManager.getMainWindow().webContents.insertCSS
-    (busy? "html body {cursor: wait}": "html body {cursor: default}");
+restService.setBusyCursorCallback(function (busy: boolean) {
+  WindowManager.getMainWindow().webContents.insertCSS
+    (busy ? "html body {cursor: wait}" : "html body {cursor: default}");
 });
 
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string) {
-  const {
-    leftOffset,
-    canvasWidth,
-    canvasHeight,
-    electronTopOffset,
-    scaleFactor,
-  } = WindowManager;
+  const { leftOffset, canvasWidth, canvasHeight, electronTopOffset, scaleFactor } = WindowManager;
 
-  console.log(
-    'In callRESTApi::',
-    command,
-    'WINDOW VALUES:: left offset = ',
-    leftOffset,
-    '| CDims =',
-    canvasWidth,
-    canvasHeight,
-    '| ETO=',
-    electronTopOffset,
-    '| Scale Factor = ',
-    scaleFactor
-  );
+  console.log('In callRESTApi::', command, ' | Window Values: left offset = ', leftOffset, '| Canvas Dims =', canvasWidth, canvasHeight, '| ETO=', electronTopOffset, '| Scale Factor = ', scaleFactor);
 
   if (!command) {
     log.error('callRESTApi called without any command');
     return {};
   }
-  if(!restService) {
+  if (!restService) {
     log.error("Rest Service not ready");
     return {};
   }
@@ -354,7 +329,6 @@ export class RestServiceManager {
 
       if ((USE_FRONTEND_DRIVEN_RENDERING && render) || this.render) {
         const renderCommand = this.getRenderCommand();
-
         if (renderCommand) {
           callRESTApi(this.getRenderCommand());
           callRESTApi(this.getRequestRedrawCommand());
@@ -374,14 +348,7 @@ export class RestServiceManager {
   }
 
   private static getRenderCommand(tab?: MainRenderingTabs) {
-    const {
-      leftOffset,
-      canvasWidth,
-      canvasHeight,
-      activeWindows,
-      electronTopOffset,
-      scaleFactor,
-    } = WindowManager;
+    const { leftOffset, canvasWidth, canvasHeight, activeWindows, electronTopOffset, scaleFactor } = WindowManager;
 
     if (!tab) {
       tab = this.currentTab;
@@ -401,14 +368,26 @@ export class RestServiceManager {
     return renderCommand;
   }
 
+
+  static async setPreferences() {
+    const preferences: MinskyPreferences = StoreManager.store.get('preferences');
+    await this.handleMinskyProcess({
+      command: `${commandsMapping.MULTIPLE_EQUITIES} ${preferences.enableMultipleEquityColumns}`,
+    });
+    await this.handleMinskyProcess({
+      command: `${commandsMapping.SET_GODLEY_DISPLAY_VALUE} [${preferences.godleyTableShowValues},"${preferences.godleyTableOutputStyle}"]`,
+    });
+  }
+
   static async startMinskyService(showServiceStartedDialog = false) {
+    const scope = this;
     const initPayload: MinskyProcessPayload = {
       command: commandsMapping.START_MINSKY_PROCESS,
       showServiceStartedDialog,
       render: false,
     };
 
-    await this.handleMinskyProcess(initPayload);
+    await scope.handleMinskyProcess(initPayload);
 
     const setGroupIconResource = async () => {
       const groupIconResourcePayload: MinskyProcessPayload = {
@@ -416,7 +395,7 @@ export class RestServiceManager {
         render: false,
       };
 
-      await this.handleMinskyProcess(groupIconResourcePayload);
+      await scope.handleMinskyProcess(groupIconResourcePayload);
     };
 
     const setGodleyIconResource = async () => {
@@ -425,12 +404,13 @@ export class RestServiceManager {
         render: false,
       };
 
-      await this.handleMinskyProcess(godleyIconPayload);
+      await scope.handleMinskyProcess(godleyIconPayload);
     };
 
     setTimeout(async () => {
       await setGodleyIconResource();
       await setGroupIconResource();
+      await scope.setPreferences();
     }, 100);
   }
 }
