@@ -19,7 +19,7 @@ import { join } from 'path';
 import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './restServiceManager';
 import { StoreManager } from './storeManager';
-import { Utility } from './utility';
+import { Utility } from './../utility';
 import { WindowManager } from './windowManager';
 
 const GodleyPopupMenuItemIds = {

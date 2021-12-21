@@ -10,7 +10,7 @@ import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
 import { join } from 'path';
 import { RecordingManager } from './recordingManager';
-import { Utility } from './utility';
+import { Utility } from './../utility';
 import { WindowManager } from './windowManager';
 const JSON5 = require('json5');
 
@@ -44,14 +44,14 @@ class Deferred {
   }
 }
 
-// restService.setMessageCallback(function(msg: string, buttons: string[]) {
-//    if (msg) return dialog.showMessageBoxSync({"message":msg,"type":"info","buttons":buttons});
-// });
+restService.setMessageCallback(function(msg: string, buttons: string[]) {
+   if (msg) return dialog.showMessageBoxSync({"message":msg,"type":"info","buttons":buttons});
+});
 
-// restService.setBusyCursorCallback(function(busy: boolean) {
-//     WindowManager.getMainWindow().webContents.insertCSS
-//     (busy? "html body {cursor: wait}": "html body {cursor: default}");
-// });
+restService.setBusyCursorCallback(function(busy: boolean) {
+    WindowManager.getMainWindow().webContents.insertCSS
+    (busy? "html body {cursor: wait}": "html body {cursor: default}");
+});
 
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string) {

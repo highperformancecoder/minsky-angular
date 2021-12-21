@@ -13,14 +13,14 @@ import {
 import * as debug from 'debug';
 import { ipcMain } from 'electron';
 import { environment } from '../../environments/environment';
-import { BookmarkManager } from '../bookmarkManager';
-import { CommandsManager } from '../commandsManager';
-import { ContextMenuManager } from '../contextMenuManager';
-import { KeyBindingManager } from '../keyBindingManager';
-import { RecentFilesManager } from '../recentFilesManager';
-import { RestServiceManager } from '../restServiceManager';
-import { StoreManager } from '../storeManager';
-import { WindowManager } from '../windowManager';
+import { BookmarkManager } from '../managers/bookmarkManager';
+import { CommandsManager } from '../managers/commandsManager';
+import { ContextMenuManager } from '../managers/contextMenuManager';
+import { KeyBindingManager } from '../managers/keyBindingManager';
+import { RecentFilesManager } from '../managers/recentFilesManager';
+import { RestServiceManager } from '../managers/restServiceManager';
+import { StoreManager } from '../managers/storeManager';
+import { WindowManager } from '../managers/windowManager';
 
 const logUpdateEvent = debug('minsky:electron_update_event');
 

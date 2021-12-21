@@ -12,7 +12,7 @@ import * as log from 'electron-log';
 import * as os from 'os';
 import { join } from 'path';
 import { format } from 'url';
-import { Utility } from './utility';
+import { Utility } from '../utility';
 
 const logWindows = debug('minsky:electron_windows');
 
