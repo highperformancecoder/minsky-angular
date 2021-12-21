@@ -13,10 +13,9 @@ import { WindowManager } from './WindowManager';
 export class ContextMenuManager {
   private static x: number = null;
   private static y: number = null;
-  private static rowColButtonsChecked = false;
+
   private static showAllPlotsOnTabChecked = false;
-  private static displayPlotOnTabChecked = false;
-  private static displayVariableChecked = false;
+
   public static async initContextMenu(x: number, y: number) {
     const mainWindow = WindowManager.getMainWindow();
 
@@ -345,7 +344,7 @@ export class ContextMenuManager {
       case ClassType.GodleyIcon:
         menuItems = [
           ...menuItems,
-          ...ContextMenuManager.buildContextMenuForGodleyIcon(itemInfo),
+          ... await ContextMenuManager.buildContextMenuForGodleyIcon(itemInfo),
         ];
 
         break;
@@ -416,6 +415,10 @@ export class ContextMenuManager {
   private static async buildContextMenuForPlotWidget(
     itemInfo: CanvasItem
   ): Promise<MenuItem[]> {
+    const displayPlotOnTabChecked = await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.CANVAS_ITEM_GET_PLOT_TAB_DISPLAY,
+    }) as boolean;
+
     const menuItems = [
       new MenuItem({
         label: 'Expand',
@@ -451,13 +454,11 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Display plot on tab',
         type: 'checkbox',
-        checked: this.displayPlotOnTabChecked,
+        checked: displayPlotOnTabChecked,
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY,
           });
-
-          this.displayPlotOnTabChecked = !this.displayPlotOnTabChecked;
         },
       }),
       new MenuItem({
@@ -501,9 +502,23 @@ export class ContextMenuManager {
     return menuItems;
   }
 
-  private static buildContextMenuForGodleyIcon(
+  private static async buildContextMenuForGodleyIcon(
     itemInfo: CanvasItem
-  ): MenuItem[] {
+  ): Promise<MenuItem[]> {
+    const displayVariableChecked = await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.CANVAS_ITEM_GET_VARIABLE_DISPLAY,
+    }) as boolean;
+
+    const rowColButtonsChecked = await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.CANVAS_ITEM_GET_BUTTON_DISPLAY,
+    }) as boolean;
+
+    const editorModeChecked = await RestServiceManager.handleMinskyProcess({
+      command: commandsMapping.CANVAS_ITEM_GET_EDITOR_MODE,
+    }) as boolean;
+
+    console.log(displayVariableChecked, rowColButtonsChecked, editorModeChecked);
+
     const menuItems = [
       new MenuItem({
         label: 'Open Godley Table',
@@ -525,6 +540,8 @@ export class ContextMenuManager {
       }),
       new MenuItem({
         label: 'Editor mode',
+        checked: editorModeChecked,
+        type: 'checkbox',
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_TOGGLE_EDITOR_MODE,
@@ -533,24 +550,22 @@ export class ContextMenuManager {
       }),
       new MenuItem({
         label: 'Row/Col buttons',
-        checked: this.rowColButtonsChecked,
+        checked: rowColButtonsChecked,
         type: 'checkbox',
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_TOGGLE_BUTTONS,
           });
-          this.rowColButtonsChecked = !this.rowColButtonsChecked;
         },
       }),
       new MenuItem({
         label: 'Display variables',
         type: 'checkbox',
-        checked: this.displayVariableChecked,
+        checked: displayVariableChecked,
         click: async () => {
           await RestServiceManager.handleMinskyProcess({
             command: commandsMapping.CANVAS_ITEM_TOGGLE_VARIABLE_DISPLAY,
           });
-          this.displayVariableChecked = !this.displayVariableChecked;
         },
       }),
       new MenuItem({
