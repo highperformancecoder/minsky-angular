@@ -24,7 +24,7 @@ export class KeyBindingsManager {
   ): Promise<unknown> {
     const { key, shift, capsLock, ctrl, alt, mouseX, mouseY, location, command = '' } = payload;
 
-    let keySymAndName = this.getKeysymAndName(key, location);
+    let keySymAndName = this.getX11KeysymAndName(key, location);
     let _utf8 = this.getUtf8(key, ctrl);
 
     const __payload = { 
@@ -35,9 +35,6 @@ export class KeyBindingsManager {
     };
 
     console.table(__payload);
-
-    // Keysyms needed in Minsky: https://gitlab.com/varun_coditas/minsky-angular/-/issues/174
-    // Backspace, Escape, Return, KP_Enter, 4 arrow keys, Tab, BackTab, Page Up, Page Down
 
     let modifierKeyCode = 0;
     if (shift) {
@@ -95,13 +92,13 @@ export class KeyBindingsManager {
     return _utf8;
   }
 
-  private static getKeysymAndName(keyName : string, location : number) {
-    // location:: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
-    // DOM_KEY_LOCATION_STANDARD -> 0
-    // DOM_KEY_LOCATION_LEFT -> 1,
-    // DOM_KEY_LOCATION_RIGHT -> 2,
-    // DOM_KEY_LOCATION_NUMPAD -> 3
+  private static getX11KeysymAndName(keyName : string, location : number) {
+    // Returns X11 Keysym and a mapped name. Events that we need are especially handled.
+    // Keysyms needed in Minsky: https://gitlab.com/varun_coditas/minsky-angular/-/issues/174
+    // Backspace, Escape, Return, KP_Enter, 4 arrow keys, Tab, BackTab, Page Up, Page Down
 
+
+    
     const JSToX11KeynameMap = {
       'ArrowLeft': { 0 : 'Left' },
       'ArrowUp': { 0 : 'Up' },
@@ -111,10 +108,18 @@ export class KeyBindingsManager {
       'Enter' : { 0 : 'Return', 3 : 'KP_Enter' }
     }
 
-    const renameOptions = JSToX11KeynameMap[keyName];
-    if(renameOptions) {
-      if(location in renameOptions) {
-        keyName = renameOptions[location];
+    /* The numeric parameter in the map above is "location" returned by Javascript */
+    // location:: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
+    // DOM_KEY_LOCATION_STANDARD -> 0
+    // DOM_KEY_LOCATION_LEFT -> 1,
+    // DOM_KEY_LOCATION_RIGHT -> 2,
+    // DOM_KEY_LOCATION_NUMPAD -> 3
+
+
+    const renameKeyOptions = JSToX11KeynameMap[keyName];
+    if(renameKeyOptions) {
+      if(location in renameKeyOptions) {
+        keyName = renameKeyOptions[location];
       }
     }
     
@@ -136,7 +141,7 @@ export class KeyBindingsManager {
       'Shift_R' : 0xffe2
     }
 
-    // We irst lookup in our customKeysymMap, else fallback to what keysym library provides
+    // We first lookup in our customKeysymMap, else fallback to what keysym library provides
     let _keysym = customKeysymMap[keyName];
     if(!_keysym) {
       _keysym = KeysymMapper.fromName(keyName)?.keysym;
