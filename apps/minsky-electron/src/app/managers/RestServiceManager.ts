@@ -50,7 +50,7 @@ restService.setBusyCursorCallback(function (busy: boolean) {
 function callRESTApi(command: string) {
   const { leftOffset, canvasWidth, canvasHeight, electronTopOffset, scaleFactor } = WindowManager;
 
-  console.log('In callRESTApi::', command, ' | Window Values: left offset = ', leftOffset, '| Canvas Dims =', canvasWidth, canvasHeight, '| ETO=', electronTopOffset, '| Scale Factor = ', scaleFactor);
+  //console.log('In callRESTApi::', command, ' | Window Values: left offset = ', leftOffset, '| Canvas Dims =', canvasWidth, canvasHeight, '| ETO=', electronTopOffset, '| Scale Factor = ', scaleFactor);
 
   if (!command) {
     log.error('callRESTApi called without any command');
@@ -67,9 +67,9 @@ function callRESTApi(command: string) {
     arg = command.substring(command.indexOf(' ') + 1);
   }
   try {
-    log.info('calling: ' + cmd + ': ' + arg);
+    log.info('Rest API Call: ' + cmd + ': ' + arg);
     const response = restService.call(cmd, arg);
-    log.info('response: ' + response);
+    log.info('Rest API Response: ' + response);
     return JSON5.parse(response);
   } catch (error) {
     if (error?.message) dialog.showErrorBox(error.message, '');
@@ -234,9 +234,9 @@ export class RestServiceManager {
         break;
     }
     await this.resumeQueueProcessing();
-
     return res;
   }
+
 
   private static async executeCommandOnMinskyServer(
     payload: MinskyProcessPayload
@@ -328,6 +328,7 @@ export class RestServiceManager {
       const { render = true } = payload;
 
       if ((USE_FRONTEND_DRIVEN_RENDERING && render) || this.render) {
+        // TODO:: Let us retire unused flags and clean the flow
         const renderCommand = this.getRenderCommand();
         if (renderCommand) {
           callRESTApi(this.getRenderCommand());

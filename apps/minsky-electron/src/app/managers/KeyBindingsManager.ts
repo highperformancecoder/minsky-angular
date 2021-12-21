@@ -8,7 +8,7 @@ import {
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
 import { BrowserWindow } from 'electron';
-import * as keysym from 'keysym';
+import * as KeysymMapper from 'keysym';
 import * as utf8 from 'utf8';
 import { CommandsManager } from './CommandsManager';
 import { RestServiceManager } from './RestServiceManager';
@@ -22,23 +22,22 @@ export class KeyBindingsManager {
   static async handleOnKeyPress(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
-    const {
-      key,
-      shift,
-      capsLock,
-      ctrl,
-      alt,
-      mouseX,
-      mouseY,
-      command = '',
-    } = payload;
+    const { key, shift, capsLock, ctrl, alt, mouseX, mouseY, location, command = '' } = payload;
 
-    const _keysym = keysym.fromName(key)?.keysym;
+    let keySymAndName = this.getKeysymAndName(key, location);
+    let _utf8 = this.getUtf8(key, ctrl);
 
-    const _utf8 = utf8.encode(key);
+    const __payload = { 
+      ...payload, 
+      keySym: keySymAndName.keysym, 
+      utf8: _utf8, 
+      key : keySymAndName.name 
+    };
 
-    const __payload = { ...payload, keySym: _keysym, utf8: _utf8 };
     console.table(__payload);
+
+    // Keysyms needed in Minsky: https://gitlab.com/varun_coditas/minsky-angular/-/issues/174
+    // Backspace, Escape, Return, KP_Enter, 4 arrow keys, Tab, BackTab, Page Up, Page Down
 
     let modifierKeyCode = 0;
     if (shift) {
@@ -54,12 +53,12 @@ export class KeyBindingsManager {
       modifierKeyCode += 8;
     }
 
-    if (_keysym) {
+    if (keySymAndName.keysym) {
       const _payload: MinskyProcessPayload = {};
 
       _payload.command = command
-        ? `${command}/keyPress [${_keysym},"${_utf8}",${modifierKeyCode},${mouseX},${mouseY}]`
-        : `${commandsMapping.KEY_PRESS} [${_keysym},"${_utf8}",${modifierKeyCode},${mouseX},${mouseY}]`;
+        ? `${command}/keyPress [${keySymAndName.keysym},"${_utf8}",${modifierKeyCode},${mouseX},${mouseY}]`
+        : `${commandsMapping.KEY_PRESS} [${keySymAndName.keysym},"${_utf8}",${modifierKeyCode},${mouseX},${mouseY}]`;
 
       const isKeyPressHandled = await RestServiceManager.handleMinskyProcess(
         _payload
@@ -68,12 +67,84 @@ export class KeyBindingsManager {
       if (!isKeyPressHandled && !command) {
         return await this.handleOnKeyPressFallback(payload);
       }
-
       return isKeyPressHandled;
     }
     const res = command ? false : await this.handleOnKeyPressFallback(payload);
 
     return res;
+  }
+
+  private static getUtf8(keyName : string, ctrl : boolean) {
+    let _utf8 = null;
+    if(ctrl) {
+      const lowerCharCodeRange = { min : 'a'.charCodeAt(0), max : 'z'.charCodeAt(0) };
+      const upperCharCodeRange = { min : 'A'.charCodeAt(0), max : 'Z'.charCodeAt(0) };
+
+      let keyCharCode = keyName.charCodeAt(0);
+      if(keyCharCode >= lowerCharCodeRange.min && keyCharCode <= lowerCharCodeRange.max) {
+        keyCharCode = (keyCharCode - lowerCharCodeRange.min) + 1;
+        
+      } else if(keyCharCode >= upperCharCodeRange.min && keyCharCode <= upperCharCodeRange.max) {
+        keyCharCode = (keyCharCode - upperCharCodeRange.min) + 1;
+      }
+      _utf8 = String.fromCharCode(keyCharCode);
+    }
+    if(!_utf8) {
+      _utf8 = utf8.encode(keyName); // TODO:: Review - do we need this?
+    }
+    return _utf8;
+  }
+
+  private static getKeysymAndName(keyName : string, location : number) {
+    // location:: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
+    // DOM_KEY_LOCATION_STANDARD -> 0
+    // DOM_KEY_LOCATION_LEFT -> 1,
+    // DOM_KEY_LOCATION_RIGHT -> 2,
+    // DOM_KEY_LOCATION_NUMPAD -> 3
+
+    const JSToX11KeynameMap = {
+      'ArrowLeft': { 0 : 'Left' },
+      'ArrowUp': { 0 : 'Up' },
+      'ArrowRight': { 0 : 'Right' },
+      'ArrowDown': { 0 : 'Down' } ,
+      'Shift' : { 1 : 'Shift_L', 2 : 'Shift_R' },
+      'Enter' : { 0 : 'Return', 3 : 'KP_Enter' }
+    }
+
+    const renameOptions = JSToX11KeynameMap[keyName];
+    if(renameOptions) {
+      if(location in renameOptions) {
+        keyName = renameOptions[location];
+      }
+    }
+    
+    /* Taken from https://www.cl.cam.ac.uk/~mgk25/ucs/keysymdef.h */
+    const customKeysymMap = {
+      'Backspace': 0xff08,
+      'Left': 0xff51,
+      'Up': 0xff52,
+      'Right': 0xff53,
+      'Down': 0xff54,
+      'PageUp': 0xff55,
+      'PageDown': 0xff56,
+      'Tab': 0xff09,
+      'BackTab': 0xfd05, /*TODO:: How do we detect BackTab? */
+      'Escape': 0xff1b,
+      'Return': 0xff0d,
+      'KP_Enter': 0xff8d,
+      'Shift_L' : 0xffe1,
+      'Shift_R' : 0xffe2
+    }
+
+    // We irst lookup in our customKeysymMap, else fallback to what keysym library provides
+    let _keysym = customKeysymMap[keyName];
+    if(!_keysym) {
+      _keysym = KeysymMapper.fromName(keyName)?.keysym;
+    }
+    return { 
+      keysym : _keysym,
+      name : keyName
+    };
   }
 
   private static async handleOnKeyPressFallback(payload: MinskyProcessPayload) {
