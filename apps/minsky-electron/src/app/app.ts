@@ -27,6 +27,7 @@ export default class App {
   static mainWindow: Electron.BrowserWindow;
   static application: Electron.App;
   static BrowserWindow;
+  static directlyClose: boolean = false;
 
   private static onWindowAllClosed() {
     if (process.platform !== 'darwin') {
@@ -34,41 +35,17 @@ export default class App {
     }
   }
 
-  private static onClose() {
-    //TODO:: Need to check /minsky/dirty flag
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    const choice = dialog.showMessageBoxSync(App.mainWindow, {
-      type: 'question',
-      buttons: ['Yes', 'No'],
-      title: 'Confirm',
-      message: 'Are you sure you want to quit?',
-    });
-
-    if (choice === 0) {
-      App.mainWindow.destroy();
-    }
-    App.mainWindow = null;
-  }
-
   private static async onReady() {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
 
-    Utility.isPackaged()
-      ? await HelpFilesManager.initialize(
-        join(process.resourcesPath, 'minsky-docs')
-      )
-      : await HelpFilesManager.initialize(__dirname + '/../../../minsky-docs/');
-
+    const helpFilesFolder = Utility.isPackaged()? join(process.resourcesPath, 'minsky-docs') : (__dirname + '/../../../minsky-docs/');
+    
+    await HelpFilesManager.initialize(helpFilesFolder);
     App.initMainWindow();
-
     await App.initMinskyService();
-
     App.initMenu();
-
     App.loadMainWindow();
   }
 
@@ -99,6 +76,7 @@ export default class App {
       App.onReady();
     }
   }
+
 
   private static initMainWindow() {
     const display = screen.getPrimaryDisplay();
@@ -162,8 +140,16 @@ export default class App {
 
     logWindows(WindowManager.activeWindows);
 
-    // ContextMenuManager.buildContextMenu();
-    App.mainWindow.on('close', () => {
+    App.mainWindow.on('close', async (e) => {
+      if (!App.directlyClose) {
+        e.preventDefault();
+        const canProceed = await CommandsManager.canCurrentSystemBeClosed();
+        if (!canProceed) {
+          return;
+        }
+        App.directlyClose = true;
+        App.mainWindow.close();
+      }
       WindowManager.activeWindows.delete(App.mainWindow.id);
     });
 
@@ -231,7 +217,6 @@ export default class App {
           `🚀 ~ file: app.ts ~ line 265 ~ App ~ process.on('uncaughtException') ~ err: ${err}`
         )
       );
-
       if (err?.message) dialog.showErrorBox(err.message, '');
     });
   }
