@@ -994,7 +994,7 @@ export class CommandsManager {
       return;
     }
 
-    // TODO: come up with a better solution
+    // TODO: come up with a better solution rather than mapping manually
     switch (classType) {
       case ClassType.VarConstant:
         classType = 'Variable:constant';
@@ -1006,7 +1006,11 @@ export class CommandsManager {
       default:
         break;
     }
+    this.loadHelpFile(classType);
+    return;
+  }
 
+  static async loadHelpFile(classType : string) {
     const fileName = HelpFilesManager.getHelpFileForType(classType);
 
     const path = !Utility.isPackaged()
@@ -1020,8 +1024,6 @@ export class CommandsManager {
       modal: true,
       url: path,
     });
-
-    return;
   }
 
   static async findAllInstances() {
