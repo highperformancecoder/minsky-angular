@@ -334,6 +334,7 @@ export const events = {
   DOUBLE_CLICK: 'double-click',
   LOG_SIMULATION: 'log-simulation',
   CHANGE_MAIN_TAB: 'change-main-tab',
+  IMPORT_CSV: 'import-csv',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup

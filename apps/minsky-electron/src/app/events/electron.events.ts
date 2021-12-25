@@ -140,6 +140,17 @@ ipcMain.handle(events.NEW_SYSTEM, async () => {
   return;
 });
 
+ipcMain.handle(
+  events.IMPORT_CSV,
+  async (event, payload: MinskyProcessPayload) => {
+    const { mouseX, mouseY } = payload;
+
+    const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
+    CommandsManager.importCSV(itemInfo, true);
+    return;
+  }
+);
+
 ipcMain.on(events.CONTEXT_MENU, async (event, { x, y }) => {
   await ContextMenuManager.initContextMenu(x, y);
 });

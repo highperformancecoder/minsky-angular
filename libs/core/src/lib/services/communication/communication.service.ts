@@ -9,7 +9,6 @@ import {
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
-
 import { BehaviorSubject } from 'rxjs';
 import { WindowUtilityService } from '../WindowUtility/window-utility.service';
 import { ElectronService } from './../electron/electron.service';
@@ -478,7 +477,65 @@ export class CommunicationService {
     }
   }
 
-  async importData() {}
+  async importData() {
+    /*
+      1. Add a parameter with name set to "dataimport"
+      2. Automatically open the CSV import dialog.
+      3. If CSV import is successfully completed / saved -> rename the parameter to the name of the csv file
+      4. If CSV import fails or is cancelled -> delete the parameter.
+    */
+    const variableName = 'dataImport';
+    const variableType = 'parameter';
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ADD_VARIABLE} ["${variableName}","${variableType}"]`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} ""`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_INIT} ""`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_ROTATION} 0`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_TOOLTIP} ""`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_DETAILED_TEXT} ""`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MAX} 0`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MIN} 0`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP} 0`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.MOUSEUP_SUBCOMMAND,
+      mouseX: this.mouseX,
+      mouseY: this.mouseY,
+    });
+
+    // 2
+    const payload: MinskyProcessPayload = {
+      mouseX: this.mouseX,
+      mouseY: this.mouseY,
+    };
+    await this.electronService.ipcRenderer.invoke(events.IMPORT_CSV, payload);
+  }
 
   async nop(arg) {}
 

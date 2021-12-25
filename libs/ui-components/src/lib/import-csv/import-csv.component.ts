@@ -21,6 +21,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
   itemId: number;
   systemWindowId: number;
+  isInvokedUsingToolbar: boolean;
   valueId: number;
   variableValuesSubCommand: string;
   timeFormatStrings = dateTimeFormats;
@@ -80,6 +81,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     this.route.queryParams.subscribe((params) => {
       this.itemId = params.itemId;
       this.systemWindowId = params.systemWindowId;
+      this.isInvokedUsingToolbar = params.isInvokedUsingToolbar;
     });
 
     this.form = new FormGroup({
@@ -304,38 +306,49 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       '🚀 ~ file: import-csv.component.ts ~ line 327 ~ ImportCsvComponent ~ handleSubmit ~ spec',
       spec
     );
-
-    await this.electronService
-      .sendMinskyCommandAndRender({
+    try {
+      await this.electronService.sendMinskyCommandAndRender({
         command: `${
           commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
         } [${normalizeFilePathForPlatform(this.url.value)},${JSON5.stringify(
           spec
         )}]`,
-      })
-      .catch(async (error) => {
-        console.log(
-          '🚀 ~ file: import-csv.component.ts ~ line 325 ~ ImportCsvComponent ~ handleSubmit ~ error',
-          error
-        );
-
-        const positiveResponseText = 'Yes';
-        const negativeResponseText = 'No';
-
-        const options: MessageBoxSyncOptions = {
-          buttons: [positiveResponseText, negativeResponseText],
-          message: 'Something went wrong... Do you want to generate a report?',
-          title: 'Generate Report ?',
-        };
-
-        const index = this.electronService.remote.dialog.showMessageBoxSync(
-          options
-        );
-
-        if (options.buttons[index] === positiveResponseText) {
-          await this.doReport();
-        }
       });
+
+      /*
+      TODO:
+
+      if(isInvokedUsingToolbar){
+      renameVariableWithTheFileName()
+      }else{
+      noop()
+      }
+      */
+    } catch (error) {
+      //TODO: the backend is handling the error in a catch block and not sending it as an error.
+      //  make error available in this catch block
+      console.log(
+        '🚀 ~ file: import-csv.component.ts ~ line 325 ~ ImportCsvComponent ~ handleSubmit ~ error',
+        error
+      );
+
+      const positiveResponseText = 'Yes';
+      const negativeResponseText = 'No';
+
+      const options: MessageBoxSyncOptions = {
+        buttons: [positiveResponseText, negativeResponseText],
+        message: 'Something went wrong... Do you want to generate a report?',
+        title: 'Generate Report ?',
+      };
+
+      const index = this.electronService.remote.dialog.showMessageBoxSync(
+        options
+      );
+
+      if (options.buttons[index] === positiveResponseText) {
+        await this.doReport();
+      }
+    }
 
     //TODO: uncomment this
     // this.closeWindow();

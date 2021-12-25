@@ -9,10 +9,10 @@ import {
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
 import { join } from 'path';
-import { RecordingManager } from './RecordingManager';
 import { Utility } from '../utility';
-import { WindowManager } from './WindowManager';
+import { RecordingManager } from './RecordingManager';
 import { MinskyPreferences, StoreManager } from './StoreManager';
+import { WindowManager } from './WindowManager';
 const JSON5 = require('json5');
 
 const addonDir = Utility.isPackaged()

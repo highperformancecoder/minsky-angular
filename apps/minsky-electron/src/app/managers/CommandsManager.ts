@@ -13,11 +13,11 @@ import { dialog, ipcMain, Menu, MenuItem } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
 import * as JSON5 from 'json5';
 import { join } from 'path';
+import { Utility } from '../utility';
+import { GodleyMenuManager } from './GodleyMenuManager';
 import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './RestServiceManager';
-import { Utility } from '../utility';
 import { WindowManager } from './WindowManager';
-import { GodleyMenuManager } from './GodleyMenuManager';
 
 export class CommandsManager {
   static activeGodleyWindowItems = new Map<number, CanvasItem>();
@@ -1310,13 +1310,13 @@ export class CommandsManager {
     return;
   }
 
-  static async importCSV(itemInfo: CanvasItem) {
+  static async importCSV(itemInfo: CanvasItem, isInvokedUsingToolbar = false) {
     if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
       let systemWindowId = null;
 
       const window = await this.initializePopupWindow({
         itemInfo,
-        url: `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
+        url: `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}&isInvokedUsingToolbar=${isInvokedUsingToolbar}`,
         height: 600,
         width: 1100,
         modal: false,
@@ -1326,9 +1326,16 @@ export class CommandsManager {
 
       window.loadURL(
         WindowManager.getWindowUrl(
-          `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+          `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}&isInvokedUsingToolbar=${isInvokedUsingToolbar}`
         )
       );
+
+      window.on('close', async () => {
+        // TODO:
+        //  getItemById or anyway possible
+        // check if the name is dataImport
+        // if yes then delete else keep it
+      });
     }
   }
 
