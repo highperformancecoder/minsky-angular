@@ -1,6 +1,17 @@
-import { availableOperations, commandsMapping, normalizeFilePathForPlatform, isWindows } from '@minsky/shared';
+import {
+  availableOperations,
+  commandsMapping,
+  normalizeFilePathForPlatform,
+  isWindows,
+} from '@minsky/shared';
 import * as debug from 'debug';
-import { dialog, Menu, MenuItem, MenuItemConstructorOptions, shell } from 'electron';
+import {
+  dialog,
+  Menu,
+  MenuItem,
+  MenuItemConstructorOptions,
+  shell,
+} from 'electron';
 import * as JSON5 from 'json5';
 import { CommandsManager } from './CommandsManager';
 import { RestServiceManager } from './RestServiceManager';
@@ -21,12 +32,11 @@ export class ApplicationMenuManager {
       scope.getInsertMenu(),
       scope.getOptionsMenu(),
       scope.getSimulationMenu(),
-      scope.getHelpMenu()
+      scope.getHelpMenu(),
     ]);
 
     Menu.setApplicationMenu(menu);
   }
-
 
   private static getFileMenu(): MenuItemConstructorOptions {
     const scope = this;
@@ -118,7 +128,9 @@ export class ApplicationMenuManager {
           accelerator: 'CmdOrCtrl + S',
           async click() {
             if (RestServiceManager.currentMinskyModelFilePath) {
-              await CommandsManager.saveFile(RestServiceManager.currentMinskyModelFilePath);
+              await CommandsManager.saveFile(
+                RestServiceManager.currentMinskyModelFilePath
+              );
             } else {
               const saveDialog = await dialog.showSaveDialog({});
 
@@ -128,7 +140,6 @@ export class ApplicationMenuManager {
               if (canceled || !filePath) {
                 return;
               }
-
 
               await RestServiceManager.handleMinskyProcess({
                 command: commandsMapping.SAVE,
@@ -265,7 +276,6 @@ export class ApplicationMenuManager {
       ],
     };
   }
-
 
   private static getEditMenu(): MenuItemConstructorOptions {
     return {
@@ -492,7 +502,7 @@ export class ApplicationMenuManager {
         },
         { type: 'separator' },
       ],
-    }
+    };
   }
 
   private static getExportCanvasMenu(): MenuItemConstructorOptions {
@@ -502,7 +512,9 @@ export class ApplicationMenuManager {
         {
           label: 'SVG',
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog('svg');
+            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+              'svg'
+            );
             await RestServiceManager.handleMinskyProcess({
               command: `${commandsMapping.RENDER_CANVAS_TO_SVG} ${filePath}`,
             });
@@ -511,7 +523,9 @@ export class ApplicationMenuManager {
         {
           label: 'PDF',
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog('pdf');
+            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+              'pdf'
+            );
             await RestServiceManager.handleMinskyProcess({
               command: `${commandsMapping.RENDER_CANVAS_TO_PDF} ${filePath}`,
             });
@@ -521,7 +535,9 @@ export class ApplicationMenuManager {
           label: 'EMF',
           visible: isWindows(),
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog('emf');
+            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+              'emf'
+            );
             await RestServiceManager.handleMinskyProcess({
               command: `${commandsMapping.RENDER_CANVAS_TO_EMF} ${filePath}`,
             });
@@ -530,7 +546,9 @@ export class ApplicationMenuManager {
         {
           label: 'PostScript',
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog('eps');
+            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+              'eps'
+            );
             await RestServiceManager.handleMinskyProcess({
               command: `${commandsMapping.RENDER_CANVAS_TO_PS} ${filePath}`,
             });
@@ -539,24 +557,29 @@ export class ApplicationMenuManager {
         {
           label: 'LaTeX',
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog('tex');
+            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+              'tex'
+            );
             await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.LATEX} [${filePath},${StoreManager.store.get('preferences')
-                .wrapLongEquationsInLatexExport
-                }]`,
+              command: `${commandsMapping.LATEX} [${filePath},${
+                StoreManager.store.get('preferences')
+                  .wrapLongEquationsInLatexExport
+              }]`,
             });
           },
         },
         {
           label: 'Matlab',
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog('m');
+            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+              'm'
+            );
             await RestServiceManager.handleMinskyProcess({
               command: `${commandsMapping.MATLAB} ${filePath}`,
             });
           },
-        }
-      ]
+        },
+      ],
     };
   }
 
@@ -570,10 +593,7 @@ export class ApplicationMenuManager {
             const exportPlotDialog = await dialog.showSaveDialog({
               title: 'Export plot as svg',
               defaultPath: 'plot',
-              properties: [
-                'showOverwriteConfirmation',
-                'createDirectory',
-              ],
+              properties: ['showOverwriteConfirmation', 'createDirectory'],
               filters: [{ extensions: ['svg'], name: 'SVG' }],
             });
 
@@ -595,10 +615,7 @@ export class ApplicationMenuManager {
             const exportPlotDialog = await dialog.showSaveDialog({
               title: 'Export plot as csv',
               defaultPath: 'plot',
-              properties: [
-                'showOverwriteConfirmation',
-                'createDirectory',
-              ],
+              properties: ['showOverwriteConfirmation', 'createDirectory'],
               filters: [{ extensions: ['csv'], name: 'CSV' }],
             });
 
@@ -615,7 +632,7 @@ export class ApplicationMenuManager {
           },
         },
       ],
-    }
+    };
   }
 
   private static getOptionsMenu(): MenuItemConstructorOptions {

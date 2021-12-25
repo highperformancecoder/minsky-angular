@@ -8,9 +8,8 @@ describe('PenStylesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PenStylesComponent ]
-    })
-    .compileComponents();
+      declarations: [PenStylesComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

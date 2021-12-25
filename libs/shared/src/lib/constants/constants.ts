@@ -166,17 +166,13 @@ export const commandsMapping = {
   CANVAS_ITEM_GET_BUTTON_DISPLAY: '/minsky/canvas/item/buttonDisplay',
   CANVAS_ITEM_TOGGLE_BUTTONS: '/minsky/canvas/item/toggleButtons',
 
-
-  CANVAS_ITEM_GET_VARIABLE_DISPLAY:
-    '/minsky/canvas/item/variableDisplay',
+  CANVAS_ITEM_GET_VARIABLE_DISPLAY: '/minsky/canvas/item/variableDisplay',
   CANVAS_ITEM_TOGGLE_VARIABLE_DISPLAY:
     '/minsky/canvas/item/toggleVariableDisplay',
 
   CANVAS_ITEM_MAKE_DISPLAY_PLOT: '/minsky/canvas/item/makeDisplayPlot',
 
-
-  CANVAS_ITEM_GET_PLOT_TAB_DISPLAY:
-    '/minsky/canvas/item/plotTabDisplay',
+  CANVAS_ITEM_GET_PLOT_TAB_DISPLAY: '/minsky/canvas/item/plotTabDisplay',
   CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY:
     '/minsky/canvas/item/togglePlotTabDisplay',
 

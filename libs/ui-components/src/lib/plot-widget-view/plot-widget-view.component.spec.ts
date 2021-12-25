@@ -8,9 +8,8 @@ describe('PlotWidgetViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PlotWidgetViewComponent ]
-    })
-    .compileComponents();
+      declarations: [PlotWidgetViewComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

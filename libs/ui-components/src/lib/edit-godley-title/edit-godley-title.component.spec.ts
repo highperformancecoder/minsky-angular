@@ -8,9 +8,8 @@ describe('EditGodleyTitleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EditGodleyTitleComponent ]
-    })
-    .compileComponents();
+      declarations: [EditGodleyTitleComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

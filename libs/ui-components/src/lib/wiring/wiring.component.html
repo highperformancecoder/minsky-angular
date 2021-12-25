@@ -1,7 +1,11 @@
 <div class="wrapper">
   <div class="wiring-tabs">
     <button class="tab" (click)="cmService.importData()">
-      <img src="assets/images/icons/data.png" alt="Import Data" title="Import Data" />
+      <img
+        src="assets/images/icons/data.png"
+        alt="Import Data"
+        title="Import Data"
+      />
     </button>
 
     <button class="tab" (click)="cmService.insertElement('ADD_RAVEL')">
@@ -9,7 +13,11 @@
     </button>
 
     <button class="tab" (click)="cmService.insertElement('ADD_PLOT')">
-      <img src="assets/images/icons/plot.gif" alt="PlotWidget" title="PlotWidget" />
+      <img
+        src="assets/images/icons/plot.gif"
+        alt="PlotWidget"
+        title="PlotWidget"
+      />
     </button>
 
     <button class="tab" (click)="cmService.insertElement('ADD_SHEET')">
@@ -22,7 +30,12 @@
       <img src="assets/images/icons/lock.gif" alt="Lock" title="Lock" />
     </button>
 
-    <button class="tab" (click)="cmService.insertElement('ADD_NOTE', 'Enter your note here', 'string')">
+    <button
+      class="tab"
+      (click)="
+        cmService.insertElement('ADD_NOTE', 'Enter your note here', 'string')
+      "
+    >
       <img src="assets/images/icons/note.gif" alt="Note" title="Note" />
     </button>
 
@@ -30,8 +43,13 @@
       <img src="assets/images/icons/time.gif" alt="Time" title="Time" />
     </button>
 
-    <ng-container *ngFor="let operation of availableOperationsMapping | keyvalue">
-      <minsky-available-operations [title]="operation.key" [operations]="operation.value"></minsky-available-operations>
+    <ng-container
+      *ngFor="let operation of availableOperationsMapping | keyvalue"
+    >
+      <minsky-available-operations
+        [title]="operation.key"
+        [operations]="operation.value"
+      ></minsky-available-operations>
     </ng-container>
 
     <button class="tab" (click)="cmService.insertElement('ADD_SWITCH')">
@@ -39,23 +57,46 @@
     </button>
 
     <button class="tab" (click)="cmService.addOperation('userFunction')">
-      <img src="assets/images/icons/userFunction.gif" alt="User Defined Function" title="User Defined Function" />
+      <img
+        src="assets/images/icons/userFunction.gif"
+        alt="User Defined Function"
+        title="User Defined Function"
+      />
     </button>
 
     <button class="tab" (click)="cmService.insertElement('ADD_GODLEY')">
-      <img src="assets/images/icons/bank.gif" alt="Godley table" title="Godley table" />
+      <img
+        src="assets/images/icons/bank.gif"
+        alt="Godley table"
+        title="Godley table"
+      />
     </button>
 
     <button class="tab" (click)="cmService.addOperation('integrate')">
-      <img src="assets/images/icons/integrate.gif" alt="Integrate" title="Integrate" />
+      <img
+        src="assets/images/icons/integrate.gif"
+        alt="Integrate"
+        title="Integrate"
+      />
     </button>
 
     <button class="tab" (click)="cmService.addOperation('differentiate')">
-      <img src="assets/images/icons/differentiate.gif" alt="Differentiate" title="Differentiate" />
+      <img
+        src="assets/images/icons/differentiate.gif"
+        alt="Differentiate"
+        title="Differentiate"
+      />
     </button>
   </div>
 
-  <div class="minsky-canvas-container" id="minsky-canvas-container" tabindex="0">
-    <canvas [ngClass]="{ 'cursor-grab': showDragCursor }" id="main-minsky-canvas"></canvas>
+  <div
+    class="minsky-canvas-container"
+    id="minsky-canvas-container"
+    tabindex="0"
+  >
+    <canvas
+      [ngClass]="{ 'cursor-grab': showDragCursor }"
+      id="main-minsky-canvas"
+    ></canvas>
   </div>
 </div>

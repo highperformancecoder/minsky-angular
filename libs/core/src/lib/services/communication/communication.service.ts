@@ -153,8 +153,9 @@ export class CommunicationService {
           case 'ZOOM_OUT':
             autoHandleMinskyProcess = false;
             await this.electronService.sendMinskyCommandAndRender({
-              command: `${command} [${canvasWidth / 2}, ${canvasHeight / 2
-                }, ${ZOOM_OUT_FACTOR}]`,
+              command: `${command} [${canvasWidth / 2}, ${
+                canvasHeight / 2
+              }, ${ZOOM_OUT_FACTOR}]`,
             });
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
@@ -163,8 +164,9 @@ export class CommunicationService {
           case 'ZOOM_IN':
             autoHandleMinskyProcess = false;
             await this.electronService.sendMinskyCommandAndRender({
-              command: `${command} [${canvasWidth / 2}, ${canvasHeight / 2
-                }, ${ZOOM_IN_FACTOR}]`,
+              command: `${command} [${canvasWidth / 2}, ${
+                canvasHeight / 2
+              }, ${ZOOM_IN_FACTOR}]`,
             });
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
@@ -332,8 +334,9 @@ export class CommunicationService {
       })) as number;
 
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
-      command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${1 / (relZoom || 1)
-        }]`;
+      command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
+        1 / (relZoom || 1)
+      }]`;
     } else {
       command = `${commandsMapping.SET_ZOOM} 1`;
     }
@@ -475,13 +478,9 @@ export class CommunicationService {
     }
   }
 
-  async importData() {
+  async importData() {}
 
-  }
-
-  async nop(arg) {
-
-  }
+  async nop(arg) {}
 
   async insertElement(command, arg = null, type = null) {
     if (this.electronService.isElectron) {

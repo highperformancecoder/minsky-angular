@@ -19,7 +19,6 @@ import { Utility } from '../utility';
 import { WindowManager } from './WindowManager';
 import { GodleyMenuManager } from './GodleyMenuManager';
 
-
 export class CommandsManager {
   static activeGodleyWindowItems = new Map<number, CanvasItem>();
 
@@ -457,8 +456,9 @@ export class CommandsManager {
     );
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${numCases + delta
-        }`,
+      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
+        numCases + delta
+      }`,
     });
 
     CommandsManager.requestRedraw();
@@ -639,8 +639,6 @@ export class CommandsManager {
     return filePath;
   }
 
-
-
   static async getFilePathFromExportCanvasDialog(
     type: string
   ): Promise<string> {
@@ -712,10 +710,12 @@ export class CommandsManager {
       message: 'Save Current Model?',
     });
 
-    if (choice.response === 1) { // No
+    if (choice.response === 1) {
+      // No
       return true;
     }
-    if (choice.response === 2) { // Cancel
+    if (choice.response === 2) {
+      // Cancel
       return false;
     }
     const saveModelDialog = await dialog.showSaveDialog({
@@ -1068,8 +1068,9 @@ export class CommandsManager {
       width: 500,
       height: 650,
       title: `Edit ${itemName || ''}`,
-      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${itemName || ''
-        }&isEditMode=true`,
+      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
+        itemName || ''
+      }&isEditMode=true`,
     });
   }
 
@@ -1100,7 +1101,7 @@ export class CommandsManager {
 
   static async destroyFrame(uid: number) {
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/destroyFrame`
+      command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/destroyFrame`,
     });
   }
 
@@ -1196,10 +1197,9 @@ export class CommandsManager {
       });
 
       await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/adjustWidgets`
+        command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/adjustWidgets`,
       });
 
-      
       systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
 
       window.loadURL(
@@ -1257,8 +1257,6 @@ export class CommandsManager {
       width: 500,
     });
   }
-
-
 
   static async logSimulation(selectedItems: string[]) {
     if (!Array.isArray(selectedItems) || !selectedItems.length) {

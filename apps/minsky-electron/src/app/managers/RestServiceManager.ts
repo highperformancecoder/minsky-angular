@@ -1,4 +1,11 @@
-import { commandsMapping, events, MainRenderingTabs, MinskyProcessPayload, normalizeFilePathForPlatform, USE_FRONTEND_DRIVEN_RENDERING } from '@minsky/shared';
+import {
+  commandsMapping,
+  events,
+  MainRenderingTabs,
+  MinskyProcessPayload,
+  normalizeFilePathForPlatform,
+  USE_FRONTEND_DRIVEN_RENDERING,
+} from '@minsky/shared';
 import { dialog, ipcMain } from 'electron';
 import * as log from 'electron-log';
 import { join } from 'path';
@@ -8,7 +15,9 @@ import { WindowManager } from './WindowManager';
 import { MinskyPreferences, StoreManager } from './StoreManager';
 const JSON5 = require('json5');
 
-const addonDir = Utility.isPackaged()? '../../node-addons' : '../../../node-addons';
+const addonDir = Utility.isPackaged()
+  ? '../../node-addons'
+  : '../../../node-addons';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
@@ -38,17 +47,29 @@ class Deferred {
 }
 
 restService.setMessageCallback(function (msg: string, buttons: string[]) {
-  if (msg) return dialog.showMessageBoxSync({ "message": msg, "type": "info", "buttons": buttons });
+  if (msg)
+    return dialog.showMessageBoxSync({
+      message: msg,
+      type: 'info',
+      buttons: buttons,
+    });
 });
 
 restService.setBusyCursorCallback(function (busy: boolean) {
-  WindowManager.getMainWindow().webContents.insertCSS
-    (busy ? "html body {cursor: wait}" : "html body {cursor: default}");
+  WindowManager.getMainWindow().webContents.insertCSS(
+    busy ? 'html body {cursor: wait}' : 'html body {cursor: default}'
+  );
 });
 
 // TODO refactor to use command and arguments separately
 function callRESTApi(command: string) {
-  const { leftOffset, canvasWidth, canvasHeight, electronTopOffset, scaleFactor } = WindowManager;
+  const {
+    leftOffset,
+    canvasWidth,
+    canvasHeight,
+    electronTopOffset,
+    scaleFactor,
+  } = WindowManager;
 
   //console.log('In callRESTApi::', command, ' | Window Values: left offset = ', leftOffset, '| Canvas Dims =', canvasWidth, canvasHeight, '| ETO=', electronTopOffset, '| Scale Factor = ', scaleFactor);
 
@@ -57,7 +78,7 @@ function callRESTApi(command: string) {
     return {};
   }
   if (!restService) {
-    log.error("Rest Service not ready");
+    log.error('Rest Service not ready');
     return {};
   }
   const commandMetaData = command.split(' ');
@@ -96,7 +117,7 @@ export class RestServiceManager {
     if (tab !== this.currentTab) {
       // disable the old tab
       this.handleMinskyProcess({
-        command: this.currentTab + "/enabled false",
+        command: this.currentTab + '/enabled false',
       });
       this.currentTab = tab;
       this.render = true;
@@ -237,7 +258,6 @@ export class RestServiceManager {
     return res;
   }
 
-
   private static async executeCommandOnMinskyServer(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
@@ -349,7 +369,14 @@ export class RestServiceManager {
   }
 
   private static getRenderCommand(tab?: MainRenderingTabs) {
-    const { leftOffset, canvasWidth, canvasHeight, activeWindows, electronTopOffset, scaleFactor } = WindowManager;
+    const {
+      leftOffset,
+      canvasWidth,
+      canvasHeight,
+      activeWindows,
+      electronTopOffset,
+      scaleFactor,
+    } = WindowManager;
 
     if (!tab) {
       tab = this.currentTab;
@@ -362,16 +389,18 @@ export class RestServiceManager {
     }
 
     const mainWindowId = activeWindows.get(1).systemWindowId;
-    const renderCommand = `${tab}/${commandsMapping.RENDER_FRAME_SUBCOMMAND
-      } [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}, ${scaleFactor.toPrecision(
-        5
-      )}}]`; // TODO:: Remove this and fix backend to accept integer values
+    const renderCommand = `${tab}/${
+      commandsMapping.RENDER_FRAME_SUBCOMMAND
+    } [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}, ${scaleFactor.toPrecision(
+      5
+    )}}]`; // TODO:: Remove this and fix backend to accept integer values
     return renderCommand;
   }
 
-
   static async setPreferences() {
-    const preferences: MinskyPreferences = StoreManager.store.get('preferences');
+    const preferences: MinskyPreferences = StoreManager.store.get(
+      'preferences'
+    );
     await this.handleMinskyProcess({
       command: `${commandsMapping.MULTIPLE_EQUITIES} ${preferences.enableMultipleEquityColumns}`,
     });

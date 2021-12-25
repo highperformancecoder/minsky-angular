@@ -344,7 +344,7 @@ export class ContextMenuManager {
       case ClassType.GodleyIcon:
         menuItems = [
           ...menuItems,
-          ... await ContextMenuManager.buildContextMenuForGodleyIcon(itemInfo),
+          ...(await ContextMenuManager.buildContextMenuForGodleyIcon(itemInfo)),
         ];
 
         break;
@@ -415,9 +415,11 @@ export class ContextMenuManager {
   private static async buildContextMenuForPlotWidget(
     itemInfo: CanvasItem
   ): Promise<MenuItem[]> {
-    const displayPlotOnTabChecked = await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.CANVAS_ITEM_GET_PLOT_TAB_DISPLAY,
-    }) as boolean;
+    const displayPlotOnTabChecked = (await RestServiceManager.handleMinskyProcess(
+      {
+        command: commandsMapping.CANVAS_ITEM_GET_PLOT_TAB_DISPLAY,
+      }
+    )) as boolean;
 
     const menuItems = [
       new MenuItem({
@@ -505,19 +507,25 @@ export class ContextMenuManager {
   private static async buildContextMenuForGodleyIcon(
     itemInfo: CanvasItem
   ): Promise<MenuItem[]> {
-    const displayVariableChecked = await RestServiceManager.handleMinskyProcess({
-      command: commandsMapping.CANVAS_ITEM_GET_VARIABLE_DISPLAY,
-    }) as boolean;
+    const displayVariableChecked = (await RestServiceManager.handleMinskyProcess(
+      {
+        command: commandsMapping.CANVAS_ITEM_GET_VARIABLE_DISPLAY,
+      }
+    )) as boolean;
 
-    const rowColButtonsChecked = await RestServiceManager.handleMinskyProcess({
+    const rowColButtonsChecked = (await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_GET_BUTTON_DISPLAY,
-    }) as boolean;
+    })) as boolean;
 
-    const editorModeChecked = await RestServiceManager.handleMinskyProcess({
+    const editorModeChecked = (await RestServiceManager.handleMinskyProcess({
       command: commandsMapping.CANVAS_ITEM_GET_EDITOR_MODE,
-    }) as boolean;
+    })) as boolean;
 
-    console.log(displayVariableChecked, rowColButtonsChecked, editorModeChecked);
+    console.log(
+      displayVariableChecked,
+      rowColButtonsChecked,
+      editorModeChecked
+    );
 
     const menuItems = [
       new MenuItem({

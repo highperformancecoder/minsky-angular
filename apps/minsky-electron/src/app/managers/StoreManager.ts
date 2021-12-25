@@ -34,4 +34,4 @@ class StoreManager {
   });
 }
 
-export { StoreManager, MinskyPreferences }
+export { StoreManager, MinskyPreferences };
