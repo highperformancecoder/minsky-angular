@@ -5,6 +5,7 @@ import { ElectronService } from '@minsky/core';
 import {
   commandsMapping,
   dateTimeFormats,
+  importCSVerrorMessage,
   importCSVvariableName,
   isWindows,
   normalizeFilePathForPlatform,
@@ -335,67 +336,15 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       '🚀 ~ file: import-csv.component.ts ~ line 327 ~ ImportCsvComponent ~ handleSubmit ~ spec',
       spec
     );
-    try {
-      await this.electronService.sendMinskyCommandAndRender({
-        command: `${
-          commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
-        } [${normalizeFilePathForPlatform(this.url.value)},${JSON5.stringify(
-          spec
-        )}]`,
-      });
+    const res = await this.electronService.sendMinskyCommandAndRender({
+      command: `${
+        commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
+      } [${normalizeFilePathForPlatform(this.url.value)},${JSON5.stringify(
+        spec
+      )}]`,
+    });
 
-      const currentItemId = await this.electronService.sendMinskyCommandAndRender(
-        {
-          command: commandsMapping.CANVAS_ITEM_ID,
-        }
-      );
-      const currentItemName = await this.electronService.sendMinskyCommandAndRender(
-        {
-          command: commandsMapping.CANVAS_ITEM_NAME,
-        }
-      );
-
-      if (
-        this.isInvokedUsingToolbar &&
-        currentItemId === this.itemId &&
-        currentItemName === importCSVvariableName &&
-        this.url.value
-      ) {
-        const path = this.url.value as string;
-        const pathArray = isWindows() ? path.split(`\\`) : path.split(`/`);
-
-        const fileName = pathArray[pathArray.length - 1].split(`.`)[0];
-        console.log(
-          '🚀 ~ file: import-csv.component.ts ~ line 348 ~ ImportCsvComponent ~ handleSubmit ~ this.url.value',
-          this.url.value
-        );
-        console.log(
-          '🚀 ~ file: import-csv.component.ts ~ line 366 ~ ImportCsvComponent ~ handleSubmit ~ fileName',
-          fileName
-        );
-
-        await this.electronService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.RENAME_ITEM} "${fileName}"`,
-        });
-      }
-
-      /*
-      TODO:
-
-      if(isInvokedUsingToolbar){
-      renameVariableWithTheFileName()
-      }else{
-      noop()
-      }
-      */
-    } catch (error) {
-      //TODO: the backend is handling the error in a catch block and not sending it as an error.
-      //  make error available in this catch block
-      console.log(
-        '🚀 ~ file: import-csv.component.ts ~ line 325 ~ ImportCsvComponent ~ handleSubmit ~ error',
-        error
-      );
-
+    if (res === importCSVerrorMessage) {
       const positiveResponseText = 'Yes';
       const negativeResponseText = 'No';
 
@@ -412,10 +361,39 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       if (options.buttons[index] === positiveResponseText) {
         await this.doReport();
       }
+      this.closeWindow();
+
+      return;
     }
 
-    //TODO: uncomment this
-    // this.closeWindow();
+    const currentItemId = await this.electronService.sendMinskyCommandAndRender(
+      {
+        command: commandsMapping.CANVAS_ITEM_ID,
+      }
+    );
+    const currentItemName = await this.electronService.sendMinskyCommandAndRender(
+      {
+        command: commandsMapping.CANVAS_ITEM_NAME,
+      }
+    );
+
+    if (
+      this.isInvokedUsingToolbar &&
+      currentItemId === this.itemId &&
+      currentItemName === importCSVvariableName &&
+      this.url.value
+    ) {
+      const path = this.url.value as string;
+      const pathArray = isWindows() ? path.split(`\\`) : path.split(`/`);
+
+      const fileName = pathArray[pathArray.length - 1].split(`.`)[0];
+
+      await this.electronService.sendMinskyCommandAndRender({
+        command: `${commandsMapping.RENAME_ITEM} "${fileName}"`,
+      });
+    }
+
+    this.closeWindow();
   }
 
   async doReport() {
@@ -423,20 +401,20 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       canceled,
       filePath: _filePath,
     } = await this.electronService.remote.dialog.showSaveDialog({
-      defaultPath: `${this.url}-error-report.csv`,
+      defaultPath: `${this.url.value}-error-report.csv`,
       title: 'Save report',
       properties: ['showOverwriteConfirmation', 'createDirectory'],
       filters: [{ extensions: ['csv'], name: 'CSV' }],
     });
 
     const filePath = normalizeFilePathForPlatform(_filePath);
-
+    const url = normalizeFilePathForPlatform(this.url.value);
     if (canceled || !filePath) {
       return;
     }
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${this.variableValuesSubCommand}/csvDialog/reportFromFile ["${this.url}",${filePath}]`,
+      command: `${this.variableValuesSubCommand}/csvDialog/reportFromFile [${url},${filePath}]`,
     });
 
     return;

@@ -1,6 +1,7 @@
 import {
   commandsMapping,
   events,
+  importCSVerrorMessage,
   MainRenderingTabs,
   MinskyProcessPayload,
   normalizeFilePathForPlatform,
@@ -93,9 +94,13 @@ function callRESTApi(command: string) {
     log.info('Rest API Response: ' + response);
     return JSON5.parse(response);
   } catch (error) {
-    if (error?.message) dialog.showErrorBox(error.message, '');
-    log.error('Exception caught: ' + error?.message);
-    return error?.message;
+    if (cmd === commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV) {
+      return importCSVerrorMessage;
+    } else {
+      if (error?.message) dialog.showErrorBox(error.message, '');
+      log.error('Exception caught: ' + error?.message);
+      return error?.message;
+    }
   }
 }
 
