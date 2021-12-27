@@ -58,6 +58,18 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.namedItemSubCommand = `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/popup`;
+    this.getWindowRectInfo();
+    this.renderFrame();
+    this.initEvents();
+
+    this.electronService.remote.getCurrentWindow().on('resized', () => {
+      this.getWindowRectInfo();
+      this.renderFrame();
+    });
+  }
+
+  private getWindowRectInfo() {
     this.godleyCanvasContainer = this.godleyCanvasElemWrapper
       .nativeElement as HTMLElement;
 
@@ -70,10 +82,6 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
 
     this.height = Math.round(this.godleyCanvasContainer.clientHeight);
     this.width = Math.round(this.godleyCanvasContainer.clientWidth);
-
-    this.namedItemSubCommand = `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/popup`;
-    this.renderFrame();
-    this.initEvents();
   }
 
   renderFrame() {

@@ -455,9 +455,11 @@ export class CommunicationService {
     // }
   }
 
-  setWindowSizeAndCanvasOffsets(isResizeEvent: boolean) {
+  async setWindowSizeAndCanvasOffsets(isResizeEvent: boolean) {
+    const isMainWindow =
+      this.electronService.remote.getCurrentWindow().id === 1;
     // Code for canvas offset values
-    if (this.electronService.isElectron) {
+    if (this.electronService.isElectron && isMainWindow) {
       this.windowUtilityService.reInitialize();
       const offset = this.windowUtilityService.getMinskyCanvasOffset();
       const drawableArea = this.windowUtilityService.getDrawableArea();
