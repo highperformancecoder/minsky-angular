@@ -14,7 +14,6 @@ import { existsSync, unlinkSync } from 'fs';
 import * as JSON5 from 'json5';
 import { join } from 'path';
 import { Utility } from '../utility';
-import { GodleyMenuManager } from './GodleyMenuManager';
 import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './RestServiceManager';
 import { WindowManager } from './WindowManager';
@@ -1208,7 +1207,11 @@ export class CommandsManager {
         )
       );
 
-      GodleyMenuManager.createMenusForGodleyView(window, itemInfo);
+      ipcMain.emit(events.INIT_MENU_FOR_GODLEY_VIEW, null, {
+        window,
+        itemInfo,
+      });
+
       this.activeGodleyWindowItems.set(itemInfo.id, itemInfo);
     }
   }

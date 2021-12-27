@@ -335,6 +335,7 @@ export const events = {
   LOG_SIMULATION: 'log-simulation',
   CHANGE_MAIN_TAB: 'change-main-tab',
   IMPORT_CSV: 'import-csv',
+  INIT_MENU_FOR_GODLEY_VIEW: 'init-menu-for-godley-view',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup
