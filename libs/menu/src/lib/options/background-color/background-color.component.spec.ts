@@ -8,9 +8,8 @@ describe('BackgroundColorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BackgroundColorComponent ]
-    })
-    .compileComponents();
+      declarations: [BackgroundColorComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

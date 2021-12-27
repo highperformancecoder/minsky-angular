@@ -166,17 +166,13 @@ export const commandsMapping = {
   CANVAS_ITEM_GET_BUTTON_DISPLAY: '/minsky/canvas/item/buttonDisplay',
   CANVAS_ITEM_TOGGLE_BUTTONS: '/minsky/canvas/item/toggleButtons',
 
-
-  CANVAS_ITEM_GET_VARIABLE_DISPLAY:
-    '/minsky/canvas/item/variableDisplay',
+  CANVAS_ITEM_GET_VARIABLE_DISPLAY: '/minsky/canvas/item/variableDisplay',
   CANVAS_ITEM_TOGGLE_VARIABLE_DISPLAY:
     '/minsky/canvas/item/toggleVariableDisplay',
 
   CANVAS_ITEM_MAKE_DISPLAY_PLOT: '/minsky/canvas/item/makeDisplayPlot',
 
-
-  CANVAS_ITEM_GET_PLOT_TAB_DISPLAY:
-    '/minsky/canvas/item/plotTabDisplay',
+  CANVAS_ITEM_GET_PLOT_TAB_DISPLAY: '/minsky/canvas/item/plotTabDisplay',
   CANVAS_ITEM_TOGGLE_PLOT_TAB_DISPLAY:
     '/minsky/canvas/item/togglePlotTabDisplay',
 
@@ -338,6 +334,8 @@ export const events = {
   DOUBLE_CLICK: 'double-click',
   LOG_SIMULATION: 'log-simulation',
   CHANGE_MAIN_TAB: 'change-main-tab',
+  IMPORT_CSV: 'import-csv',
+  INIT_MENU_FOR_GODLEY_VIEW: 'init-menu-for-godley-view',
 };
 
 // add non exposed commands here to get intellisense on the terminal popup
@@ -387,3 +385,6 @@ export const dateTimeFormats = [
   { label: 'December', value: '%B' },
   { label: '4th quarter 99', value: '%Qth quarter %y' },
 ];
+
+export const importCSVvariableName = 'dataImport';
+export const importCSVerrorMessage = 'SOMETHING_WENT_WRONG_WHILE_IMPORTING_CSV';

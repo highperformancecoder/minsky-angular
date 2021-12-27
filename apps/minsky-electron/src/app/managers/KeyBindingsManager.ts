@@ -22,16 +22,26 @@ export class KeyBindingsManager {
   static async handleOnKeyPress(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
-    const { key, shift, capsLock, ctrl, alt, mouseX, mouseY, location, command = '' } = payload;
+    const {
+      key,
+      shift,
+      capsLock,
+      ctrl,
+      alt,
+      mouseX,
+      mouseY,
+      location,
+      command = '',
+    } = payload;
 
     let keySymAndName = this.getX11KeysymAndName(key, location);
     let _utf8 = this.getUtf8(key, ctrl);
 
-    const __payload = { 
-      ...payload, 
-      keySym: keySymAndName.keysym, 
-      utf8: _utf8, 
-      key : keySymAndName.name 
+    const __payload = {
+      ...payload,
+      keySym: keySymAndName.keysym,
+      utf8: _utf8,
+      key: keySymAndName.name,
     };
 
     console.table(__payload);
@@ -71,42 +81,51 @@ export class KeyBindingsManager {
     return res;
   }
 
-  private static getUtf8(keyName : string, ctrl : boolean) {
+  private static getUtf8(keyName: string, ctrl: boolean) {
     let _utf8 = null;
-    if(ctrl) {
-      const lowerCharCodeRange = { min : 'a'.charCodeAt(0), max : 'z'.charCodeAt(0) };
-      const upperCharCodeRange = { min : 'A'.charCodeAt(0), max : 'Z'.charCodeAt(0) };
+    if (ctrl) {
+      const lowerCharCodeRange = {
+        min: 'a'.charCodeAt(0),
+        max: 'z'.charCodeAt(0),
+      };
+      const upperCharCodeRange = {
+        min: 'A'.charCodeAt(0),
+        max: 'Z'.charCodeAt(0),
+      };
 
       let keyCharCode = keyName.charCodeAt(0);
-      if(keyCharCode >= lowerCharCodeRange.min && keyCharCode <= lowerCharCodeRange.max) {
-        keyCharCode = (keyCharCode - lowerCharCodeRange.min) + 1;
-        
-      } else if(keyCharCode >= upperCharCodeRange.min && keyCharCode <= upperCharCodeRange.max) {
-        keyCharCode = (keyCharCode - upperCharCodeRange.min) + 1;
+      if (
+        keyCharCode >= lowerCharCodeRange.min &&
+        keyCharCode <= lowerCharCodeRange.max
+      ) {
+        keyCharCode = keyCharCode - lowerCharCodeRange.min + 1;
+      } else if (
+        keyCharCode >= upperCharCodeRange.min &&
+        keyCharCode <= upperCharCodeRange.max
+      ) {
+        keyCharCode = keyCharCode - upperCharCodeRange.min + 1;
       }
       _utf8 = String.fromCharCode(keyCharCode);
     }
-    if(!_utf8) {
+    if (!_utf8) {
       _utf8 = utf8.encode(keyName); // TODO:: Review - do we need this?
     }
     return _utf8;
   }
 
-  private static getX11KeysymAndName(keyName : string, location : number) {
+  private static getX11KeysymAndName(keyName: string, location: number) {
     // Returns X11 Keysym and a mapped name. Events that we need are especially handled.
     // Keysyms needed in Minsky: https://gitlab.com/varun_coditas/minsky-angular/-/issues/174
     // Backspace, Escape, Return, KP_Enter, 4 arrow keys, Tab, BackTab, Page Up, Page Down
 
-
-    
     const JSToX11KeynameMap = {
-      'ArrowLeft': { 0 : 'Left' },
-      'ArrowUp': { 0 : 'Up' },
-      'ArrowRight': { 0 : 'Right' },
-      'ArrowDown': { 0 : 'Down' } ,
-      'Shift' : { 1 : 'Shift_L', 2 : 'Shift_R' },
-      'Enter' : { 0 : 'Return', 3 : 'KP_Enter' }
-    }
+      ArrowLeft: { 0: 'Left' },
+      ArrowUp: { 0: 'Up' },
+      ArrowRight: { 0: 'Right' },
+      ArrowDown: { 0: 'Down' },
+      Shift: { 1: 'Shift_L', 2: 'Shift_R' },
+      Enter: { 0: 'Return', 3: 'KP_Enter' },
+    };
 
     /* The numeric parameter in the map above is "location" returned by Javascript */
     // location:: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
@@ -115,40 +134,39 @@ export class KeyBindingsManager {
     // DOM_KEY_LOCATION_RIGHT -> 2,
     // DOM_KEY_LOCATION_NUMPAD -> 3
 
-
     const renameKeyOptions = JSToX11KeynameMap[keyName];
-    if(renameKeyOptions) {
-      if(location in renameKeyOptions) {
+    if (renameKeyOptions) {
+      if (location in renameKeyOptions) {
         keyName = renameKeyOptions[location];
       }
     }
-    
+
     /* Taken from https://www.cl.cam.ac.uk/~mgk25/ucs/keysymdef.h */
     const customKeysymMap = {
-      'Backspace': 0xff08,
-      'Left': 0xff51,
-      'Up': 0xff52,
-      'Right': 0xff53,
-      'Down': 0xff54,
-      'PageUp': 0xff55,
-      'PageDown': 0xff56,
-      'Tab': 0xff09,
-      'BackTab': 0xfd05, /*TODO:: How do we detect BackTab? */
-      'Escape': 0xff1b,
-      'Return': 0xff0d,
-      'KP_Enter': 0xff8d,
-      'Shift_L' : 0xffe1,
-      'Shift_R' : 0xffe2
-    }
+      Backspace: 0xff08,
+      Left: 0xff51,
+      Up: 0xff52,
+      Right: 0xff53,
+      Down: 0xff54,
+      PageUp: 0xff55,
+      PageDown: 0xff56,
+      Tab: 0xff09,
+      BackTab: 0xfd05 /*TODO:: How do we detect BackTab? */,
+      Escape: 0xff1b,
+      Return: 0xff0d,
+      KP_Enter: 0xff8d,
+      Shift_L: 0xffe1,
+      Shift_R: 0xffe2,
+    };
 
     // We first lookup in our customKeysymMap, else fallback to what keysym library provides
     let _keysym = customKeysymMap[keyName];
-    if(!_keysym) {
+    if (!_keysym) {
       _keysym = KeysymMapper.fromName(keyName)?.keysym;
     }
-    return { 
-      keysym : _keysym,
-      name : keyName
+    return {
+      keysym: _keysym,
+      name: keyName,
     };
   }
 

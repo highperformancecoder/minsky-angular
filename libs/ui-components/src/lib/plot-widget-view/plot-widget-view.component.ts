@@ -31,6 +31,10 @@ export class PlotWidgetViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.render();
+  }
+
+  render() {
     const plotCanvasContainer = document.getElementById('plot-cairo-canvas');
 
     const clientRect = plotCanvasContainer.getBoundingClientRect();

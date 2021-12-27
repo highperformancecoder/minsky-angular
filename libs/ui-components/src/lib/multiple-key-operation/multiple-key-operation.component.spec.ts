@@ -8,9 +8,8 @@ describe('MultipleKeyOperationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MultipleKeyOperationComponent ]
-    })
-    .compileComponents();
+      declarations: [MultipleKeyOperationComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -13,12 +13,10 @@ import { dialog, ipcMain, Menu, MenuItem } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
 import * as JSON5 from 'json5';
 import { join } from 'path';
+import { Utility } from '../utility';
 import { HelpFilesManager } from './HelpFilesManager';
 import { RestServiceManager } from './RestServiceManager';
-import { Utility } from '../utility';
 import { WindowManager } from './WindowManager';
-import { GodleyMenuManager } from './GodleyMenuManager';
-
 
 export class CommandsManager {
   static activeGodleyWindowItems = new Map<number, CanvasItem>();
@@ -457,8 +455,9 @@ export class CommandsManager {
     );
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${numCases + delta
-        }`,
+      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
+        numCases + delta
+      }`,
     });
 
     CommandsManager.requestRedraw();
@@ -639,8 +638,6 @@ export class CommandsManager {
     return filePath;
   }
 
-
-
   static async getFilePathFromExportCanvasDialog(
     type: string
   ): Promise<string> {
@@ -712,10 +709,12 @@ export class CommandsManager {
       message: 'Save Current Model?',
     });
 
-    if (choice.response === 1) { // No
+    if (choice.response === 1) {
+      // No
       return true;
     }
-    if (choice.response === 2) { // Cancel
+    if (choice.response === 2) {
+      // Cancel
       return false;
     }
     const saveModelDialog = await dialog.showSaveDialog({
@@ -1068,8 +1067,9 @@ export class CommandsManager {
       width: 500,
       height: 650,
       title: `Edit ${itemName || ''}`,
-      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${itemName || ''
-        }&isEditMode=true`,
+      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
+        itemName || ''
+      }&isEditMode=true`,
     });
   }
 
@@ -1100,7 +1100,7 @@ export class CommandsManager {
 
   static async destroyFrame(uid: number) {
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/destroyFrame`
+      command: `${commandsMapping.GET_NAMED_ITEM}/${uid}/second/destroyFrame`,
     });
   }
 
@@ -1196,10 +1196,9 @@ export class CommandsManager {
       });
 
       await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/adjustWidgets`
+        command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id}/second/popup/adjustWidgets`,
       });
 
-      
       systemWindowId = WindowManager.getWindowByUid(itemInfo.id).systemWindowId;
 
       window.loadURL(
@@ -1208,7 +1207,11 @@ export class CommandsManager {
         )
       );
 
-      GodleyMenuManager.createMenusForGodleyView(window, itemInfo);
+      ipcMain.emit(events.INIT_MENU_FOR_GODLEY_VIEW, null, {
+        window,
+        itemInfo,
+      });
+
       this.activeGodleyWindowItems.set(itemInfo.id, itemInfo);
     }
   }
@@ -1257,8 +1260,6 @@ export class CommandsManager {
       width: 500,
     });
   }
-
-
 
   static async logSimulation(selectedItems: string[]) {
     if (!Array.isArray(selectedItems) || !selectedItems.length) {
@@ -1312,15 +1313,15 @@ export class CommandsManager {
     return;
   }
 
-  static async importCSV(itemInfo: CanvasItem) {
+  static async importCSV(itemInfo: CanvasItem, isInvokedUsingToolbar = false) {
     if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
       let systemWindowId = null;
 
       const window = await this.initializePopupWindow({
         itemInfo,
-        url: `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
+        url: `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}&isInvokedUsingToolbar=${isInvokedUsingToolbar}`,
         height: 600,
-        width: 1100,
+        width: 1200,
         modal: false,
       });
 
@@ -1328,7 +1329,7 @@ export class CommandsManager {
 
       window.loadURL(
         WindowManager.getWindowUrl(
-          `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
+          `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}&isInvokedUsingToolbar=${isInvokedUsingToolbar}`
         )
       );
     }

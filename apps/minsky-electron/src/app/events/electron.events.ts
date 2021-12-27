@@ -16,6 +16,7 @@ import { environment } from '../../environments/environment';
 import { BookmarkManager } from '../managers/BookmarkManager';
 import { CommandsManager } from '../managers/CommandsManager';
 import { ContextMenuManager } from '../managers/ContextMenuManager';
+import { GodleyMenuManager } from '../managers/GodleyMenuManager';
 import { KeyBindingsManager } from '../managers/KeyBindingsManager';
 import { RecentFilesManager } from '../managers/RecentFilesManager';
 import { RestServiceManager } from '../managers/RestServiceManager';
@@ -87,6 +88,13 @@ ipcMain.on(events.POPULATE_BOOKMARKS, async (event, bookmarks: string[]) => {
   await BookmarkManager.populateBookmarks(bookmarks);
 });
 
+ipcMain.on(
+  events.INIT_MENU_FOR_GODLEY_VIEW,
+  async (event, { window, itemInfo }) => {
+    GodleyMenuManager.createMenusForGodleyView(window, itemInfo);
+  }
+);
+
 ipcMain.on(events.ADD_RECENT_FILE, (event, filePath: string) => {
   RecentFilesManager.addFileToRecentFiles(filePath);
 });
@@ -139,6 +147,17 @@ ipcMain.handle(events.NEW_SYSTEM, async () => {
   await CommandsManager.createNewSystem();
   return;
 });
+
+ipcMain.handle(
+  events.IMPORT_CSV,
+  async (event, payload: MinskyProcessPayload) => {
+    const { mouseX, mouseY } = payload;
+
+    const itemInfo = await CommandsManager.getItemInfo(mouseX, mouseY);
+    CommandsManager.importCSV(itemInfo, true);
+    return;
+  }
+);
 
 ipcMain.on(events.CONTEXT_MENU, async (event, { x, y }) => {
   await ContextMenuManager.initContextMenu(x, y);

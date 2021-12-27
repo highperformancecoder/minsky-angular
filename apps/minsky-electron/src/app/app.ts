@@ -40,8 +40,10 @@ export default class App {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
 
-    const helpFilesFolder = Utility.isPackaged()? join(process.resourcesPath, 'minsky-docs') : (__dirname + '/../../../minsky-docs/');
-    
+    const helpFilesFolder = Utility.isPackaged()
+      ? join(process.resourcesPath, 'minsky-docs')
+      : __dirname + '/../../../minsky-docs/';
+
     await HelpFilesManager.initialize(helpFilesFolder);
     App.initMainWindow();
     await App.initMinskyService();
@@ -76,7 +78,6 @@ export default class App {
       App.onReady();
     }
   }
-
 
   private static initMainWindow() {
     const display = screen.getPrimaryDisplay();
@@ -197,7 +198,6 @@ export default class App {
 
     App.application.commandLine.appendSwitch('disable-gpu');
     // Rendering was not working on some window's machines without disabling gpu
-
 
     App.application.commandLine.appendSwitch('high-dpi-support', '1');
     // This probably supports high-res fonts, but we don't know exactly what implications it has!

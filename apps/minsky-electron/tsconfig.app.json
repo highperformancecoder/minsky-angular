@@ -4,7 +4,5 @@
     "outDir": "../../dist/out-tsc",
     "types": []
   },
-  "files": [
-    "src/main.ts"
-  ]
+  "files": ["src/main.ts"]
 }

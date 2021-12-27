@@ -1,5 +1,4 @@
-export
-//namespace RESTService
+export //namespace RESTService
 //{
-  function call(cmd: string, args: string): string;
+function call(cmd: string, args: string): string;
 //  };

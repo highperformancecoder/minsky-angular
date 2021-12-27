@@ -4,12 +4,12 @@ import {
   commandsMapping,
   events,
   HeaderEvent,
+  importCSVvariableName,
   MinskyProcessPayload,
   ReplayRecordingStatus,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
-
 import { BehaviorSubject } from 'rxjs';
 import { WindowUtilityService } from '../WindowUtility/window-utility.service';
 import { ElectronService } from './../electron/electron.service';
@@ -153,8 +153,9 @@ export class CommunicationService {
           case 'ZOOM_OUT':
             autoHandleMinskyProcess = false;
             await this.electronService.sendMinskyCommandAndRender({
-              command: `${command} [${canvasWidth / 2}, ${canvasHeight / 2
-                }, ${ZOOM_OUT_FACTOR}]`,
+              command: `${command} [${canvasWidth / 2}, ${
+                canvasHeight / 2
+              }, ${ZOOM_OUT_FACTOR}]`,
             });
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
@@ -163,8 +164,9 @@ export class CommunicationService {
           case 'ZOOM_IN':
             autoHandleMinskyProcess = false;
             await this.electronService.sendMinskyCommandAndRender({
-              command: `${command} [${canvasWidth / 2}, ${canvasHeight / 2
-                }, ${ZOOM_IN_FACTOR}]`,
+              command: `${command} [${canvasWidth / 2}, ${
+                canvasHeight / 2
+              }, ${ZOOM_IN_FACTOR}]`,
             });
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
@@ -332,8 +334,9 @@ export class CommunicationService {
       })) as number;
 
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
-      command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${1 / (relZoom || 1)
-        }]`;
+      command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
+        1 / (relZoom || 1)
+      }]`;
     } else {
       command = `${commandsMapping.SET_ZOOM} 1`;
     }
@@ -453,9 +456,11 @@ export class CommunicationService {
     // }
   }
 
-  setWindowSizeAndCanvasOffsets(isResizeEvent: boolean) {
+  async setWindowSizeAndCanvasOffsets(isResizeEvent: boolean) {
+    const isMainWindow =
+      this.electronService.remote.getCurrentWindow().id === 1;
     // Code for canvas offset values
-    if (this.electronService.isElectron) {
+    if (this.electronService.isElectron && isMainWindow) {
       this.windowUtilityService.reInitialize();
       const offset = this.windowUtilityService.getMinskyCanvasOffset();
       const drawableArea = this.windowUtilityService.getDrawableArea();
@@ -476,12 +481,65 @@ export class CommunicationService {
   }
 
   async importData() {
+    /*
+      1. Add a parameter with name set to "dataimport"
+      2. Automatically open the CSV import dialog.
+      3. If CSV import is successfully completed / saved -> rename the parameter to the name of the csv file
+      4. If CSV import fails or is cancelled -> delete the parameter.
+    */
+    const variableType = 'parameter';
 
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ADD_VARIABLE} ["${importCSVvariableName}","${variableType}"]`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} ""`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_INIT} ""`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_ROTATION} 0`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_TOOLTIP} ""`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_DETAILED_TEXT} ""`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MAX} 0`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MIN} 0`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP} 0`,
+    });
+
+    await this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.MOUSEUP_SUBCOMMAND,
+      mouseX: this.mouseX,
+      mouseY: this.mouseY,
+    });
+
+    // 2
+    const payload: MinskyProcessPayload = {
+      mouseX: this.mouseX,
+      mouseY: this.mouseY,
+    };
+    await this.electronService.ipcRenderer.invoke(events.IMPORT_CSV, payload);
   }
 
-  async nop(arg) {
-
-  }
+  async nop(arg) {}
 
   async insertElement(command, arg = null, type = null) {
     if (this.electronService.isElectron) {

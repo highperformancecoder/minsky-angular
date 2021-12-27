@@ -5,11 +5,13 @@ describe('WiringComponent', () => {
   let component: WiringComponent;
   let fixture: ComponentFixture<WiringComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [WiringComponent],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [WiringComponent],
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WiringComponent);

@@ -5,6 +5,9 @@ import { ElectronService } from '@minsky/core';
 import {
   commandsMapping,
   dateTimeFormats,
+  importCSVerrorMessage,
+  importCSVvariableName,
+  isWindows,
   normalizeFilePathForPlatform,
 } from '@minsky/shared';
 import { MessageBoxSyncOptions } from 'electron/renderer';
@@ -21,6 +24,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
   itemId: number;
   systemWindowId: number;
+  isInvokedUsingToolbar: boolean;
   valueId: number;
   variableValuesSubCommand: string;
   timeFormatStrings = dateTimeFormats;
@@ -80,6 +84,7 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
     this.route.queryParams.subscribe((params) => {
       this.itemId = params.itemId;
       this.systemWindowId = params.systemWindowId;
+      this.isInvokedUsingToolbar = params.isInvokedUsingToolbar;
     });
 
     this.form = new FormGroup({
@@ -119,7 +124,34 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       await this.getCSVDialogSpec();
       this.updateForm();
       this.selectedHeader = this.spec.headerRow as number;
+
+      this.setupListenerForCleanup();
     })();
+  }
+
+  private setupListenerForCleanup() {
+    this.electronService.remote.getCurrentWindow().on('close', async () => {
+      const currentItemId = await this.electronService.sendMinskyCommandAndRender(
+        {
+          command: commandsMapping.CANVAS_ITEM_ID,
+        }
+      );
+      const currentItemName = await this.electronService.sendMinskyCommandAndRender(
+        {
+          command: commandsMapping.CANVAS_ITEM_NAME,
+        }
+      );
+
+      if (
+        this.isInvokedUsingToolbar &&
+        currentItemId === this.itemId &&
+        currentItemName === importCSVvariableName
+      ) {
+        await this.electronService.sendMinskyCommandAndRender({
+          command: commandsMapping.CANVAS_DELETE_ITEM,
+        });
+      }
+    });
   }
 
   updateForm() {
@@ -304,40 +336,63 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       '🚀 ~ file: import-csv.component.ts ~ line 327 ~ ImportCsvComponent ~ handleSubmit ~ spec',
       spec
     );
+    const res = await this.electronService.sendMinskyCommandAndRender({
+      command: `${
+        commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
+      } [${normalizeFilePathForPlatform(this.url.value)},${JSON5.stringify(
+        spec
+      )}]`,
+    });
 
-    await this.electronService
-      .sendMinskyCommandAndRender({
-        command: `${
-          commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
-        } [${normalizeFilePathForPlatform(this.url.value)},${JSON5.stringify(
-          spec
-        )}]`,
-      })
-      .catch(async (error) => {
-        console.log(
-          '🚀 ~ file: import-csv.component.ts ~ line 325 ~ ImportCsvComponent ~ handleSubmit ~ error',
-          error
-        );
+    if (res === importCSVerrorMessage) {
+      const positiveResponseText = 'Yes';
+      const negativeResponseText = 'No';
 
-        const positiveResponseText = 'Yes';
-        const negativeResponseText = 'No';
+      const options: MessageBoxSyncOptions = {
+        buttons: [positiveResponseText, negativeResponseText],
+        message: 'Something went wrong... Do you want to generate a report?',
+        title: 'Generate Report ?',
+      };
 
-        const options: MessageBoxSyncOptions = {
-          buttons: [positiveResponseText, negativeResponseText],
-          message: 'Something went wrong... Do you want to generate a report?',
-          title: 'Generate Report ?',
-        };
+      const index = this.electronService.remote.dialog.showMessageBoxSync(
+        options
+      );
 
-        const index = this.electronService.remote.dialog.showMessageBoxSync(
-          options
-        );
+      if (options.buttons[index] === positiveResponseText) {
+        await this.doReport();
+      }
+      // this.closeWindow();
 
-        if (options.buttons[index] === positiveResponseText) {
-          await this.doReport();
-        }
+      return;
+    }
+
+    const currentItemId = await this.electronService.sendMinskyCommandAndRender(
+      {
+        command: commandsMapping.CANVAS_ITEM_ID,
+      }
+    );
+    const currentItemName = await this.electronService.sendMinskyCommandAndRender(
+      {
+        command: commandsMapping.CANVAS_ITEM_NAME,
+      }
+    );
+
+    if (
+      this.isInvokedUsingToolbar &&
+      currentItemId === this.itemId &&
+      currentItemName === importCSVvariableName &&
+      this.url.value
+    ) {
+      const path = this.url.value as string;
+      const pathArray = isWindows() ? path.split(`\\`) : path.split(`/`);
+
+      const fileName = pathArray[pathArray.length - 1].split(`.`)[0];
+
+      await this.electronService.sendMinskyCommandAndRender({
+        command: `${commandsMapping.RENAME_ITEM} "${fileName}"`,
       });
+    }
 
-    //TODO: uncomment this
     // this.closeWindow();
   }
 
@@ -346,20 +401,20 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       canceled,
       filePath: _filePath,
     } = await this.electronService.remote.dialog.showSaveDialog({
-      defaultPath: `${this.url}-error-report.csv`,
+      defaultPath: `${this.url.value}-error-report.csv`,
       title: 'Save report',
       properties: ['showOverwriteConfirmation', 'createDirectory'],
       filters: [{ extensions: ['csv'], name: 'CSV' }],
     });
 
     const filePath = normalizeFilePathForPlatform(_filePath);
-
+    const url = normalizeFilePathForPlatform(this.url.value);
     if (canceled || !filePath) {
       return;
     }
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${this.variableValuesSubCommand}/csvDialog/reportFromFile ["${this.url}",${filePath}]`,
+      command: `${this.variableValuesSubCommand}/csvDialog/reportFromFile [${url},${filePath}]`,
     });
 
     return;

@@ -1,17 +1,16 @@
 import {
   CanvasItem,
+  ClassType,
+  commandsMapping,
   GodleyTableOutputStyles,
+  green,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
-  commandsMapping,
-  ClassType,
 } from '@minsky/shared';
-
 import { Menu, MenuItem } from 'electron';
 import { CommandsManager } from './CommandsManager';
 import { RestServiceManager } from './RestServiceManager';
 import { StoreManager } from './StoreManager';
-
 
 export class GodleyMenuManager {
   public static createMenusForGodleyView(
@@ -42,12 +41,18 @@ export class GodleyMenuManager {
     return menu;
   }
 
-  private static async setGodleyPreferences(property: 'enableMultipleEquityColumns' | 'godleyTableShowValues' | 'godleyTableOutputStyle', value: boolean | GodleyTableOutputStyles) {
+  private static async setGodleyPreferences(
+    property:
+      | 'enableMultipleEquityColumns'
+      | 'godleyTableShowValues'
+      | 'godleyTableOutputStyle',
+    value: boolean | GodleyTableOutputStyles
+  ) {
     const preferences = StoreManager.store.get('preferences');
     let {
       enableMultipleEquityColumns,
       godleyTableShowValues,
-      godleyTableOutputStyle
+      godleyTableOutputStyle,
     } = preferences;
 
     if (property === 'enableMultipleEquityColumns') {
@@ -71,7 +76,7 @@ export class GodleyMenuManager {
         ...preferences,
         godleyTableShowValues: godleyTableShowValues,
         godleyTableOutputStyle: godleyTableOutputStyle,
-        enableMultipleEquityColumns: enableMultipleEquityColumns
+        enableMultipleEquityColumns: enableMultipleEquityColumns,
       },
     });
   }
@@ -79,7 +84,7 @@ export class GodleyMenuManager {
   private static getGodleyOptionsMenuItem(itemAccessor: string) {
     const scope = this;
     // CAVEAT:: Electron does not support dynamic menu labels  https://github.com/electron/electron/issues/5055)
-    // Recreating menus from scratch leads to glitches after few clicks. Hence we have added submenus instead of providing toggle options / checkboxes 
+    // Recreating menus from scratch leads to glitches after few clicks. Hence we have added submenus instead of providing toggle options / checkboxes
 
     return new MenuItem({
       label: 'Options',
@@ -91,15 +96,18 @@ export class GodleyMenuManager {
               label: 'Show',
               click: async () => {
                 await scope.setGodleyPreferences('godleyTableShowValues', true);
-              }
+              },
             },
             {
               label: 'Hide',
               click: async () => {
-                await scope.setGodleyPreferences('godleyTableShowValues', false);
-              }
-            }
-          ]
+                await scope.setGodleyPreferences(
+                  'godleyTableShowValues',
+                  false
+                );
+              },
+            },
+          ],
         },
         {
           label: 'DR/CR Style',
@@ -107,16 +115,22 @@ export class GodleyMenuManager {
             {
               label: 'Sign',
               click: async () => {
-                await scope.setGodleyPreferences('godleyTableOutputStyle', GodleyTableOutputStyles.SIGN);
-              }
+                await scope.setGodleyPreferences(
+                  'godleyTableOutputStyle',
+                  GodleyTableOutputStyles.SIGN
+                );
+              },
             },
             {
               label: 'DR/CR',
               click: async () => {
-                await scope.setGodleyPreferences('godleyTableOutputStyle', GodleyTableOutputStyles.DRCR);
-              }
-            }
-          ]
+                await scope.setGodleyPreferences(
+                  'godleyTableOutputStyle',
+                  GodleyTableOutputStyles.DRCR
+                );
+              },
+            },
+          ],
         },
         {
           label: 'Multiple Equity Column',
@@ -124,22 +138,32 @@ export class GodleyMenuManager {
             {
               label: 'Enable',
               click: async () => {
-                await scope.setGodleyPreferences('enableMultipleEquityColumns', true);
-              }
+                await scope.setGodleyPreferences(
+                  'enableMultipleEquityColumns',
+                  true
+                );
+              },
             },
             {
               label: 'Disable',
               click: async () => {
-                await scope.setGodleyPreferences('enableMultipleEquityColumns', false);
-              }
-            }
-          ]
+                await scope.setGodleyPreferences(
+                  'enableMultipleEquityColumns',
+                  false
+                );
+              },
+            },
+          ],
         },
       ],
     });
   }
 
-  private static getGodleyViewMenuItem(window: Electron.BrowserWindow, itemInfo: CanvasItem, itemAccessor: string) {
+  private static getGodleyViewMenuItem(
+    window: Electron.BrowserWindow,
+    itemInfo: CanvasItem,
+    itemAccessor: string
+  ) {
     return new MenuItem({
       label: 'View',
       submenu: [
@@ -150,8 +174,9 @@ export class GodleyMenuManager {
             const [x, y] = window.getContentSize();
 
             await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id
-                }/second/popup/zoom [${x / 2},${y / 2},${ZOOM_IN_FACTOR}]`,
+              command: `${commandsMapping.GET_NAMED_ITEM}/${
+                itemInfo.id
+              }/second/popup/zoom [${x / 2},${y / 2},${ZOOM_IN_FACTOR}]`,
             });
           },
         },
@@ -161,8 +186,9 @@ export class GodleyMenuManager {
           click: async () => {
             const [x, y] = window.getContentSize();
             await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.GET_NAMED_ITEM}/${itemInfo.id
-                }/second/popup/zoom [${x / 2},${y / 2},${ZOOM_OUT_FACTOR}]`,
+              command: `${commandsMapping.GET_NAMED_ITEM}/${
+                itemInfo.id
+              }/second/popup/zoom [${x / 2},${y / 2},${ZOOM_OUT_FACTOR}]`,
             });
           },
         },
@@ -181,7 +207,10 @@ export class GodleyMenuManager {
     });
   }
 
-  private static getGodleyEditMenuItem(itemInfo: CanvasItem, itemAccessor: string) {
+  private static getGodleyEditMenuItem(
+    itemInfo: CanvasItem,
+    itemAccessor: string
+  ) {
     return new MenuItem({
       label: 'Edit',
       submenu: [
@@ -213,12 +242,12 @@ export class GodleyMenuManager {
         },
         {
           label: 'Cut',
-          role: 'cut',
           accelerator: 'CmdOrCtrl + x',
           click: async () => {
             await RestServiceManager.handleMinskyProcess({
               command: `${itemAccessor}/popup/cut`,
             });
+            console.log(green('here'));
           },
         },
         {
@@ -269,6 +298,6 @@ export class GodleyMenuManager {
           ],
         },
       ],
-    })
+    });
   }
 }

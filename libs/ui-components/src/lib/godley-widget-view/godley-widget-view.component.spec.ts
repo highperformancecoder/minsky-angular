@@ -8,9 +8,8 @@ describe('GodleyWidgetViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GodleyWidgetViewComponent ]
-    })
-    .compileComponents();
+      declarations: [GodleyWidgetViewComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
