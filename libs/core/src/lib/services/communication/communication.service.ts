@@ -4,6 +4,7 @@ import {
   commandsMapping,
   events,
   HeaderEvent,
+  importCSVvariableName,
   MinskyProcessPayload,
   ReplayRecordingStatus,
   ZOOM_IN_FACTOR,
@@ -486,11 +487,10 @@ export class CommunicationService {
       3. If CSV import is successfully completed / saved -> rename the parameter to the name of the csv file
       4. If CSV import fails or is cancelled -> delete the parameter.
     */
-    const variableName = 'dataImport';
     const variableType = 'parameter';
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ADD_VARIABLE} ["${variableName}","${variableType}"]`,
+      command: `${commandsMapping.ADD_VARIABLE} ["${importCSVvariableName}","${variableType}"]`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({

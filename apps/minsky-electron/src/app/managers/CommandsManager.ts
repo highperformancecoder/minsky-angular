@@ -1329,13 +1329,6 @@ export class CommandsManager {
           `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}&isInvokedUsingToolbar=${isInvokedUsingToolbar}`
         )
       );
-
-      window.on('close', async () => {
-        // TODO:
-        //  getItemById or anyway possible
-        // check if the name is dataImport
-        // if yes then delete else keep it
-      });
     }
   }
 

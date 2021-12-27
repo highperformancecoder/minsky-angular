@@ -5,6 +5,7 @@ import { ElectronService } from '@minsky/core';
 import {
   commandsMapping,
   dateTimeFormats,
+  importCSVvariableName,
   normalizeFilePathForPlatform,
 } from '@minsky/shared';
 import { MessageBoxSyncOptions } from 'electron/renderer';
@@ -121,7 +122,34 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       await this.getCSVDialogSpec();
       this.updateForm();
       this.selectedHeader = this.spec.headerRow as number;
+
+      this.setupListenerForCleanup();
     })();
+  }
+
+  private setupListenerForCleanup() {
+    this.electronService.remote.getCurrentWindow().on('close', async () => {
+      const currentItemId = await this.electronService.sendMinskyCommandAndRender(
+        {
+          command: commandsMapping.CANVAS_ITEM_ID,
+        }
+      );
+      const currentItemName = await this.electronService.sendMinskyCommandAndRender(
+        {
+          command: commandsMapping.CANVAS_ITEM_NAME,
+        }
+      );
+
+      if (
+        this.isInvokedUsingToolbar &&
+        currentItemId === this.itemId &&
+        currentItemName === importCSVvariableName
+      ) {
+        await this.electronService.sendMinskyCommandAndRender({
+          command: commandsMapping.CANVAS_DELETE_ITEM,
+        });
+      }
+    });
   }
 
   updateForm() {
@@ -314,6 +342,13 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
           spec
         )}]`,
       });
+
+      if (this.isInvokedUsingToolbar) {
+        console.log(
+          '🚀 ~ file: import-csv.component.ts ~ line 348 ~ ImportCsvComponent ~ handleSubmit ~ this.url.value',
+          this.url.value
+        );
+      }
 
       /*
       TODO:

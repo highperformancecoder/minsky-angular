@@ -384,3 +384,5 @@ export const dateTimeFormats = [
   { label: 'December', value: '%B' },
   { label: '4th quarter 99', value: '%Qth quarter %y' },
 ];
+
+export const importCSVvariableName = 'dataImport';
