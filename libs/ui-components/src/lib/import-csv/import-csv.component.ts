@@ -131,25 +131,24 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private setupListenerForCleanup() {
     this.electronService.remote.getCurrentWindow().on('close', async () => {
-      const currentItemId = await this.electronService.sendMinskyCommandAndRender(
-        {
-          command: commandsMapping.CANVAS_ITEM_ID,
-        }
-      );
-      const currentItemName = await this.electronService.sendMinskyCommandAndRender(
-        {
-          command: commandsMapping.CANVAS_ITEM_NAME,
-        }
-      );
+      if (this.isInvokedUsingToolbar) {
+        const currentItemId = await this.electronService.sendMinskyCommandAndRender(
+          {
+            command: commandsMapping.CANVAS_ITEM_ID,
+          }
+        );
+        const currentItemName = await this.electronService.sendMinskyCommandAndRender(
+          {
+            command: commandsMapping.CANVAS_ITEM_NAME,
+          }
+        );
+        // We do this check because item focus might have changed when importing csv if user decided to work on something else
 
-      if (
-        this.isInvokedUsingToolbar &&
-        currentItemId === this.itemId &&
-        currentItemName === importCSVvariableName
-      ) {
-        await this.electronService.sendMinskyCommandAndRender({
-          command: commandsMapping.CANVAS_DELETE_ITEM,
-        });
+        if ((currentItemId === this.itemId) && (currentItemName === importCSVvariableName)) {
+          await this.electronService.sendMinskyCommandAndRender({
+            command: commandsMapping.CANVAS_DELETE_ITEM,
+          });
+        }
       }
     });
   }
@@ -204,9 +203,8 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (fileUrl !== fileUrlOnServer) {
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${
-          this.variableValuesSubCommand
-        }/csvDialog/url ${normalizeFilePathForPlatform(fileUrl)}`,
+        command: `${this.variableValuesSubCommand
+          }/csvDialog/url ${normalizeFilePathForPlatform(fileUrl)}`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({
@@ -337,11 +335,10 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       spec
     );
     const res = await this.electronService.sendMinskyCommandAndRender({
-      command: `${
-        commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
-      } [${normalizeFilePathForPlatform(this.url.value)},${JSON5.stringify(
-        spec
-      )}]`,
+      command: `${commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
+        } [${normalizeFilePathForPlatform(this.url.value)},${JSON5.stringify(
+          spec
+        )}]`,
     });
 
     if (res === importCSVerrorMessage) {
@@ -427,5 +424,5 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
