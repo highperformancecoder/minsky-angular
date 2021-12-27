@@ -1,12 +1,12 @@
 import {
   CanvasItem,
+  ClassType,
+  commandsMapping,
   GodleyTableOutputStyles,
+  green,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
-  commandsMapping,
-  ClassType,
 } from '@minsky/shared';
-
 import { Menu, MenuItem } from 'electron';
 import { CommandsManager } from './CommandsManager';
 import { RestServiceManager } from './RestServiceManager';
@@ -242,12 +242,12 @@ export class GodleyMenuManager {
         },
         {
           label: 'Cut',
-          role: 'cut',
           accelerator: 'CmdOrCtrl + x',
           click: async () => {
             await RestServiceManager.handleMinskyProcess({
               command: `${itemAccessor}/popup/cut`,
             });
+            console.log(green('here'));
           },
         },
         {
