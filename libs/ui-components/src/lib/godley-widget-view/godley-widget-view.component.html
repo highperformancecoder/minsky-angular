@@ -1,4 +1,8 @@
-<div id="godley-cairo-canvas-wrapper" #godleyCanvasElemWrapper>
+<div
+  id="godley-cairo-canvas-wrapper"
+  #godleyCanvasElemWrapper
+  (window:resize)="windowResize()"
+>
   <div id="godley-cairo-canvas" class="godley-cairo-canvas">
     <p>&nbsp;</p>
   </div>

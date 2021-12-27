@@ -62,13 +62,12 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
     this.getWindowRectInfo();
     this.renderFrame();
     this.initEvents();
-
-    this.electronService.remote.getCurrentWindow().on('resized', () => {
-      this.getWindowRectInfo();
-      this.renderFrame();
-    });
   }
 
+  windowResize() {
+    this.getWindowRectInfo();
+    this.renderFrame();
+  }
   private getWindowRectInfo() {
     this.godleyCanvasContainer = this.godleyCanvasElemWrapper
       .nativeElement as HTMLElement;
