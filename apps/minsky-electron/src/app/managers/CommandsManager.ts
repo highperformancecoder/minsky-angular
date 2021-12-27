@@ -1318,7 +1318,7 @@ export class CommandsManager {
         itemInfo,
         url: `#/headless/import-csv?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}&isInvokedUsingToolbar=${isInvokedUsingToolbar}`,
         height: 600,
-        width: 1100,
+        width: 1200,
         modal: false,
       });
 

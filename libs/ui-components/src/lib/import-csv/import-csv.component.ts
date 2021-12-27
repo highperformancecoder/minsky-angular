@@ -6,6 +6,7 @@ import {
   commandsMapping,
   dateTimeFormats,
   importCSVvariableName,
+  isWindows,
   normalizeFilePathForPlatform,
 } from '@minsky/shared';
 import { MessageBoxSyncOptions } from 'electron/renderer';
@@ -343,11 +344,39 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
         )}]`,
       });
 
-      if (this.isInvokedUsingToolbar) {
+      const currentItemId = await this.electronService.sendMinskyCommandAndRender(
+        {
+          command: commandsMapping.CANVAS_ITEM_ID,
+        }
+      );
+      const currentItemName = await this.electronService.sendMinskyCommandAndRender(
+        {
+          command: commandsMapping.CANVAS_ITEM_NAME,
+        }
+      );
+
+      if (
+        this.isInvokedUsingToolbar &&
+        currentItemId === this.itemId &&
+        currentItemName === importCSVvariableName &&
+        this.url.value
+      ) {
+        const path = this.url.value as string;
+        const pathArray = isWindows() ? path.split(`\\`) : path.split(`/`);
+
+        const fileName = pathArray[pathArray.length - 1].split(`.`)[0];
         console.log(
           '🚀 ~ file: import-csv.component.ts ~ line 348 ~ ImportCsvComponent ~ handleSubmit ~ this.url.value',
           this.url.value
         );
+        console.log(
+          '🚀 ~ file: import-csv.component.ts ~ line 366 ~ ImportCsvComponent ~ handleSubmit ~ fileName',
+          fileName
+        );
+
+        await this.electronService.sendMinskyCommandAndRender({
+          command: `${commandsMapping.RENAME_ITEM} "${fileName}"`,
+        });
       }
 
       /*
