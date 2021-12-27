@@ -398,7 +398,7 @@ export class RestServiceManager {
       commandsMapping.RENDER_FRAME_SUBCOMMAND
     } [${mainWindowId},${leftOffset},${electronTopOffset},${canvasWidth},${canvasHeight}, ${scaleFactor.toPrecision(
       5
-    )}}]`; // TODO:: Remove this and fix backend to accept integer values
+    )}]`; // TODO:: Remove this and fix backend to accept integer values
     return renderCommand;
   }
 
