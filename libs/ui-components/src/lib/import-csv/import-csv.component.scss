@@ -21,9 +21,15 @@
 
   .options-row {
     padding: $padding;
+    input[type='text'] {
+      width: 5.5rem;
+    }
+    margin: 1rem;
   }
 
   .options-row-one {
+    display: flex;
+    justify-content: space-between;
     span {
       input[type='checkbox'] {
         width: 2rem;
@@ -34,11 +40,13 @@
   }
 
   .options-row-two {
+    display: flex;
+    justify-content: space-between;
     input[type='number'] {
       width: 3rem;
     }
-    input[type='text'] {
-      width: 5.5rem;
+    #duplicate-key-action {
+      width: 8rem;
     }
   }
 

@@ -19,35 +19,66 @@
 
     <span>
       <label for="separator">Separator</label>
-      <select id="separator" formControlName="separator">
-        <option value=",">,</option>
-        <option value=";">;</option>
-        <option [innerText]="'<tab>'" value="'<tab>'"></option>
-        <option [innerText]="'<space>'" value="'<space>'"></option>
-      </select>
+      <input
+        id="separator"
+        type="text"
+        formControlName="separator"
+        [matAutocomplete]="autocompleteSeparator"
+        class="form-control autocomplete"
+      />
+      <mat-autocomplete
+        [panelWidth]="'10rem'"
+        #autocompleteSeparator="matAutocomplete"
+      >
+        <mat-option value=",">,</mat-option>
+        <mat-option value=";">;</mat-option>
+        <mat-option [innerText]="'<tab>'" value="'<tab>'"></mat-option>
+        <mat-option [innerText]="'<space>'" value="'<space>'"></mat-option>
+      </mat-autocomplete>
     </span>
 
     <span>
       <label for="decimal-separator">Decimal Separator</label>
-      <select id="decimal-separator" formControlName="decSeparator">
-        <option value=".">.</option>
-        <option value=",">,</option>
-      </select>
+      <input
+        id="decimal-separator"
+        type="text"
+        formControlName="decSeparator"
+        [matAutocomplete]="decSeparator"
+        class="form-control autocomplete"
+      />
+      <mat-autocomplete [panelWidth]="'10rem'" #decSeparator="matAutocomplete">
+        <mat-option value=".">.</mat-option>
+        <mat-option value=",">,</mat-option>
+      </mat-autocomplete>
     </span>
 
     <span>
       <label for="escape">Escape</label>
-      <select id="escape" formControlName="escape">
-        <option value="\">\</option>
-      </select>
+      <input
+        id="escape"
+        type="text"
+        formControlName="escape"
+        [matAutocomplete]="escape"
+        class="form-control autocomplete"
+      />
+      <mat-autocomplete [panelWidth]="'10rem'" #escape="matAutocomplete">
+        <mat-option value="\">\</mat-option>
+      </mat-autocomplete>
     </span>
 
     <span>
       <label for="quote">Quote</label>
-      <select id="quote" formControlName="quote">
-        <option value="'">'</option>
-        <option value='"'>"</option>
-      </select>
+      <input
+        id="quote"
+        type="text"
+        formControlName="quote"
+        [matAutocomplete]="quote"
+        class="form-control autocomplete"
+      />
+      <mat-autocomplete [panelWidth]="'10rem'" #quote="matAutocomplete">
+        <mat-option value="'">'</mat-option>
+        <mat-option value='"'>"</mat-option>
+      </mat-autocomplete>
     </span>
 
     <span>
@@ -58,26 +89,43 @@
         formControlName="mergeDelimiters"
       />
     </span>
-
-    <span>
-      <label for="missing-value">Missing Value</label>
-      <select id="missing-value" formControlName="missingValue">
-        <option value="NaN">NaN</option>
-        <option value="0">0</option>
-      </select>
-    </span>
   </div>
 
   <div class="options-row-two options-row">
     <span>
+      <label for="missing-value">Missing Value</label>
+      <input
+        id="missing-value"
+        type="text"
+        formControlName="missingValue"
+        [matAutocomplete]="missingValue"
+        class="form-control autocomplete"
+      />
+      <mat-autocomplete [panelWidth]="'10rem'" #missingValue="matAutocomplete">
+        <mat-option value="NaN">NaN</mat-option>
+        <mat-option value="0">0</mat-option>
+      </mat-autocomplete>
+    </span>
+
+    <span>
       <label for="duplicate-key-action">Duplicate Key Action</label>
-      <select id="duplicate-key-action" formControlName="duplicateKeyAction">
-        <option value="throwException">throwException</option>
-        <option value="sumProducts">sumProducts</option>
-        <option value="min">min</option>
-        <option value="max">max</option>
-        <option value="av">av</option>
-      </select>
+      <input
+        id="duplicate-key-action"
+        type="text"
+        formControlName="duplicateKeyAction"
+        [matAutocomplete]="duplicateKeyAction"
+        class="form-control autocomplete"
+      />
+      <mat-autocomplete
+        [panelWidth]="'10rem'"
+        #duplicateKeyAction="matAutocomplete"
+      >
+        <mat-option value="throwException">throwException</mat-option>
+        <mat-option value="sumProducts">sumProducts</mat-option>
+        <mat-option value="min">min</mat-option>
+        <mat-option value="max">max</mat-option>
+        <mat-option value="av">av</mat-option>
+      </mat-autocomplete>
     </span>
 
     <span>
