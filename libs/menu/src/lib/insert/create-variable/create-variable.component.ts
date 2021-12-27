@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { ElectronService } from '@minsky/core';
+import { ElectronService, CommunicationService } from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
@@ -70,6 +70,7 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
   }
 
   constructor(
+    public commService: CommunicationService,
     private electronService: ElectronService,
     private route: ActivatedRoute
   ) {
@@ -162,11 +163,10 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
       await this.editVariable();
       return;
     }
-
-    this.createVariable();
+    await this.createVariable();
   }
 
-  async editVariable() {
+  async editVariable() {    
     await this.electronService.sendMinskyCommandAndRender({
       command: `${commandsMapping.RENAME_ITEM} "${this.variableName.value}"`,
     });
@@ -225,52 +225,18 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
   }
 
   async createVariable() {
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ADD_VARIABLE} ["${this.variableName.value}","${this.type.value}"]`,
+    await this.commService.createVariable({
+      variableName : this.variableName.value,
+      type : this.type.value,
+      units : this.units.value || '',
+      value : this.value.value,
+      rotation : this.rotation.value || 0,
+      shortDescription : this.shortDescription.value,
+      detailedDescription : this.detailedDescription.value,
+      sliderStepSize : this.sliderStepSize.value || 0,
+      sliderBoundsMax : this.sliderBoundsMax.value || 0,
+      sliderBoundsMin : this.sliderBoundsMin.value || 0
     });
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${
-        this.units.value || ''
-      }"`,
-    });
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_INIT} "${this.value.value}"`,
-    });
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_ROTATION} ${
-        this.rotation.value || 0
-      }`,
-    });
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_TOOLTIP} "${this.shortDescription.value}"`,
-    });
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_DETAILED_TEXT} "${this.detailedDescription.value}"`,
-    });
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MAX} ${
-        this.sliderBoundsMax.value || 0
-      }`,
-    });
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MIN} ${
-        this.sliderBoundsMin.value || 0
-      }`,
-    });
-
-    await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP} ${
-        this.sliderStepSize.value || 0
-      }`,
-    });
-
     this.closeWindow();
   }
 
