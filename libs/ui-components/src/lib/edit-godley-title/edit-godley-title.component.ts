@@ -36,7 +36,7 @@ export class EditGodleyTitleComponent implements OnDestroy {
         });
 
         await this.electronService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.REQUEST_REDRAW_SUBCOMMAND}"`,
+          command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
         });
       }
 

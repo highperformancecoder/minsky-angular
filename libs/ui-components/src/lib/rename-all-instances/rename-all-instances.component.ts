@@ -29,7 +29,7 @@ export class RenameAllInstancesComponent implements OnInit {
       });
 
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.REQUEST_REDRAW_SUBCOMMAND}"`,
+        command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
       });
 
       this.electronService.remote.getCurrentWindow().close();
