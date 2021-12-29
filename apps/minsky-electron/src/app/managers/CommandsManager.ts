@@ -929,7 +929,7 @@ export class CommandsManager {
 
     WindowManager.scrollToCenter();
 
-    const autoBackupFileExists = existsSync(`${autoBackupFileName}`);
+    const autoBackupFileExists = existsSync(autoBackupFileName);
 
     if (!autoBackupFileExists) {
       await RestServiceManager.handleMinskyProcess({
