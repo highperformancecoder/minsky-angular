@@ -16,6 +16,7 @@ export const USE_FRONTEND_DRIVEN_RENDERING = false; // We can retire this now?
 export const commandsMapping = {
   ADD_BOOKMARK: '/minsky/model/addBookmark',
   ADD_GODLEY: '/minsky/canvas/addGodley',
+  ADD_LOCK: '/minsky/canvas/addLock',
   ADD_GROUP: '/minsky/canvas/addGroup',
   ADD_NOTE: '/minsky/canvas/addNote',
   ADD_OPERATION: '/minsky/canvas/addOperation',
@@ -68,6 +69,7 @@ export const commandsMapping = {
   SAVE: '/minsky/save',
   SET_GODLEY_ICON_RESOURCE: '/minsky/setGodleyIconResource',
   SET_GROUP_ICON_RESOURCE: '/minsky/setGroupIconResource',
+  SET_LOCK_ICON_RESOURCE: '/minsky/setLockIconResource',
   START_MINSKY_PROCESS: 'startMinskyProcess',
   STEP_MAX: '/minsky/stepMax',
   STEP_MIN: '/minsky/stepMin',
