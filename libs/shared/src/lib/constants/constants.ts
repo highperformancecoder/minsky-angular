@@ -139,6 +139,7 @@ export const commandsMapping = {
   CANVAS_ITEM_RENDER_TO_PS: '/minsky/canvas/item/renderToPS',
   CANVAS_ITEM_DIMS: '/minsky/canvas/item/dims',
   CANVAS_ITEM_TOGGLE_LOCKED: '/minsky/canvas/item/toggleLocked',
+  CANVAS_ITEM_LOCKED: '/minsky/canvas/item/locked',
   CANVAS_ITEM_NUM_CASES: '/minsky/canvas/item/numCases',
   CANVAS_ITEM_SET_NUM_CASES: '/minsky/canvas/item/setNumCases',
   CANVAS_ITEM_LOCK_GROUP: '/minsky/canvas/item/lockGroup',
