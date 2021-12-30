@@ -328,6 +328,24 @@ export class RestServiceManager {
         stdinCommand = `${payload.command} ${groupIconFilePath}`;
         break;
 
+      case commandsMapping.SET_LOCK_ICON_RESOURCE:
+        // eslint-disable-next-line no-case-declarations
+        const lockIconFilePath = normalizeFilePathForPlatform(
+          Utility.isDevelopmentMode()
+            ? `${join(__dirname, 'assets/locked.svg')}`
+            : `${join(process.resourcesPath, 'assets/locked.svg')}`
+        );
+
+        // eslint-disable-next-line no-case-declarations
+        const unlockIconFilePath = normalizeFilePathForPlatform(
+          Utility.isDevelopmentMode()
+            ? `${join(__dirname, 'assets/unlocked.svg')}`
+            : `${join(process.resourcesPath, 'assets/unlocked.svg')}`
+        );
+
+        stdinCommand = `${payload.command} [${lockIconFilePath},${unlockIconFilePath}]`;
+        break;
+
       case commandsMapping.REQUEST_REDRAW_SUBCOMMAND:
         stdinCommand = this.getRequestRedrawCommand();
         break;
@@ -442,9 +460,19 @@ export class RestServiceManager {
       await scope.handleMinskyProcess(godleyIconPayload);
     };
 
+    const setLockIconResource = async () => {
+      const lockIconPayload: MinskyProcessPayload = {
+        command: commandsMapping.SET_LOCK_ICON_RESOURCE,
+        render: false,
+      };
+
+      await scope.handleMinskyProcess(lockIconPayload);
+    };
+
     setTimeout(async () => {
       await setGodleyIconResource();
       await setGroupIconResource();
+      await setLockIconResource();
       await scope.setPreferences();
     }, 100);
   }

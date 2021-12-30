@@ -1,8 +1,8 @@
 import {
   availableOperations,
   commandsMapping,
-  normalizeFilePathForPlatform,
   isWindows,
+  normalizeFilePathForPlatform,
 } from '@minsky/shared';
 import * as debug from 'debug';
 import {
@@ -88,6 +88,7 @@ export class ApplicationMenuManager {
                 return;
               }
               const filePath = _dialog.filePaths[0].toString();
+
               await CommandsManager.openNamedFile(filePath);
             } catch (error) {
               logError(error);
@@ -155,6 +156,7 @@ export class ApplicationMenuManager {
             const defaultExtension = (await RestServiceManager.handleMinskyProcess(
               { command: commandsMapping.DEFAULT_EXTENSION }
             )) as string;
+
             const saveDialog = await dialog.showSaveDialog({
               filters: [
                 {
@@ -164,7 +166,7 @@ export class ApplicationMenuManager {
                 { name: 'All', extensions: ['*'] },
               ],
               defaultPath:
-                RestServiceManager.currentMinskyModelFilePath ||
+                JSON5.parse(RestServiceManager.currentMinskyModelFilePath) ||
                 `model${defaultExtension}`,
               properties: ['showOverwriteConfirmation'],
             });

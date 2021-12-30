@@ -144,7 +144,10 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
         );
         // We do this check because item focus might have changed when importing csv if user decided to work on something else
 
-        if ((currentItemId === this.itemId) && (currentItemName === importCSVvariableName)) {
+        if (
+          currentItemId === this.itemId &&
+          currentItemName === importCSVvariableName
+        ) {
           await this.electronService.sendMinskyCommandAndRender({
             command: commandsMapping.CANVAS_DELETE_ITEM,
           });
@@ -203,8 +206,9 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (fileUrl !== fileUrlOnServer) {
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${this.variableValuesSubCommand
-          }/csvDialog/url ${normalizeFilePathForPlatform(fileUrl)}`,
+        command: `${
+          this.variableValuesSubCommand
+        }/csvDialog/url ${normalizeFilePathForPlatform(fileUrl)}`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({
@@ -335,10 +339,11 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
       spec
     );
     const res = await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
-        } [${normalizeFilePathForPlatform(this.url.value)},${JSON5.stringify(
-          spec
-        )}]`,
+      command: `${
+        commandsMapping.CANVAS_ITEM_IMPORT_FROM_CSV
+      } [${normalizeFilePathForPlatform(this.url.value)},${JSON5.stringify(
+        spec
+      )}]`,
     });
 
     if (res === importCSVerrorMessage) {
@@ -394,11 +399,15 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async doReport() {
+    const filePathWithoutExt = (this.url.value as string)
+      .toLowerCase()
+      .split('.csv')[0];
+
     const {
       canceled,
       filePath: _filePath,
     } = await this.electronService.remote.dialog.showSaveDialog({
-      defaultPath: `${this.url.value}-error-report.csv`,
+      defaultPath: `${filePathWithoutExt}-error-report.csv`,
       title: 'Save report',
       properties: ['showOverwriteConfirmation', 'createDirectory'],
       filters: [{ extensions: ['csv'], name: 'CSV' }],
@@ -424,5 +433,5 @@ export class ImportCsvComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
-  ngOnDestroy() { }
+  ngOnDestroy() {}
 }

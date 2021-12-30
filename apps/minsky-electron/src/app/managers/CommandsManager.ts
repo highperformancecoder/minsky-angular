@@ -433,11 +433,11 @@ export class CommandsManager {
         });
       }
 
-      const isLocked = await RestServiceManager.handleMinskyProcess({
-        command: commandsMapping.CANVAS_ITEM_DIMS,
-      });
+      const isLocked = (await RestServiceManager.handleMinskyProcess({
+        command: commandsMapping.CANVAS_ITEM_LOCKED,
+      })) as boolean;
 
-      return isLocked as boolean;
+      return isLocked;
     } catch (error) {
       console.error(
         '🚀 ~ file: commandsManager.ts ~ line 361 ~ CommandsManager ~ error',
@@ -929,7 +929,7 @@ export class CommandsManager {
 
     WindowManager.scrollToCenter();
 
-    const autoBackupFileExists = existsSync(`${autoBackupFileName}`);
+    const autoBackupFileExists = existsSync(autoBackupFileName);
 
     if (!autoBackupFileExists) {
       await RestServiceManager.handleMinskyProcess({
