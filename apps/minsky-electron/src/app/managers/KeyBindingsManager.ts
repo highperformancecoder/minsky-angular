@@ -2,6 +2,7 @@ import {
   availableOperations,
   commandsMapping,
   isEmptyObject,
+  MainRenderingTabs,
   MinskyProcessPayload,
   rendererAppURL,
   ZOOM_IN_FACTOR,
@@ -59,25 +60,29 @@ export class KeyBindingsManager {
     if (alt) {
       modifierKeyCode += 8;
     }
+    const currentTab = RestServiceManager.getCurrentTab();
 
     if (keySymAndName.keysym) {
       const _payload: MinskyProcessPayload = {};
-
+      // For godley popup, command sent by frontend is non-empty. It is the item accesor
       _payload.command = command
         ? `${command}/keyPress [${keySymAndName.keysym},"${_utf8}",${modifierKeyCode},${mouseX},${mouseY}]`
-        : `${commandsMapping.KEY_PRESS} [${keySymAndName.keysym},"${_utf8}",${modifierKeyCode},${mouseX},${mouseY}]`;
+        : `${currentTab}/${commandsMapping.KEY_PRESS_COMMON_SUBCOMMAND} [${keySymAndName.keysym},"${_utf8}",${modifierKeyCode},${mouseX},${mouseY}]`;
 
       const isKeyPressHandled = await RestServiceManager.handleMinskyProcess(
         _payload
       );
 
-      if (!isKeyPressHandled && !command) {
+      if (!isKeyPressHandled && !command && (currentTab === MainRenderingTabs.canvas)) {
         return await this.handleOnKeyPressFallback(payload);
       }
       return isKeyPressHandled;
     }
-    const res = command ? false : await this.handleOnKeyPressFallback(payload);
 
+    let res: boolean | string = false;
+    if (!command && (currentTab === MainRenderingTabs.canvas)) {
+      res = await this.handleOnKeyPressFallback(payload);
+    }
     return res;
   }
 

@@ -135,6 +135,10 @@ export class RestServiceManager {
     }
   }
 
+  public static getCurrentTab() : MainRenderingTabs {
+    return this.currentTab;
+  }
+
   public static async reInvokeRenderFrame() {
     await this.handleMinskyProcess({
       command: commandsMapping.RENDER_FRAME_SUBCOMMAND,

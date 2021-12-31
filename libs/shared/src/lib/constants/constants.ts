@@ -96,7 +96,7 @@ export const commandsMapping = {
   EDITED: '/minsky/edited',
   AUTO_LAYOUT: '/minsky/autoLayout',
   RANDOM_LAYOUT: '/minsky/randomLayout',
-  KEY_PRESS: '/minsky/canvas/keyPress',
+  KEY_PRESS_COMMON_SUBCOMMAND: 'keyPress',
   C_BOUNDS: '/minsky/model/cBounds',
   X: '/minsky/model/x',
   Y: '/minsky/model/y',
