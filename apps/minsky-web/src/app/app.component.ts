@@ -62,7 +62,6 @@ export class AppComponent implements AfterViewInit {
 
   // submits form with class="submit" when pressed Enter key
   private handleEnterKey() {
-    return;
     const buttons = Array.from(
       document.getElementsByClassName('submit')
     ) as HTMLElement[];

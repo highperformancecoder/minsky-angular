@@ -24,6 +24,7 @@ export class MultipleKeyOperationComponent implements OnInit {
   async handleSave(inputString: string) {
     if (this.electronService.isElectron) {
       this.electronService.closeCurrentWindowIfNotMain();
+      console.log("HANDLE SAVE CALLED WITH ", inputString);
 
       if (!inputString) {
         return;
