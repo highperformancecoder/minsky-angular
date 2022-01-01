@@ -32,15 +32,19 @@ export class WiringComponent implements OnInit, OnDestroy {
     private windowUtilityService: WindowUtilityService,
     private zone: NgZone,
     private changeDetectorRef: ChangeDetectorRef
-  ) { }
+  ) {}
 
   async ngOnInit() {
-    const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
-    this.cmService.showDragCursor$.subscribe((showDragCursor) => {
-      this.showDragCursor = showDragCursor;
-      this.changeDetectorRef.detectChanges();
-    });
-    this.setupEventListenersForCanvas(minskyCanvasContainer);
+    const isMainWindow = this.windowUtilityService.isMainWindow();
+    if (isMainWindow) {
+      const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
+      this.cmService.showDragCursor$.subscribe((showDragCursor) => {
+        this.showDragCursor = showDragCursor;
+        this.changeDetectorRef.detectChanges();
+      });
+
+      this.setupEventListenersForCanvas(minskyCanvasContainer);
+    }
 
     this.availableOperationsMapping = (await this.electronService.sendMinskyCommandAndRender(
       {
@@ -126,5 +130,5 @@ export class WiringComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
-  ngOnDestroy() { }
+  ngOnDestroy() {}
 }

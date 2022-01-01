@@ -135,4 +135,11 @@ export class WindowUtilityService {
     this.initializeIfNeeded();
     return this.minskyCanvasContainer;
   }
+
+  public isMainWindow(): boolean {
+    const isMainWindow =
+      this.electronService.remote.getCurrentWindow().id === 1;
+
+    return isMainWindow;
+  }
 }
