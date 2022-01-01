@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ElectronCanvasOffset, isWindows } from '@minsky/shared';
+import { delayBeforeClosingPopupWindow, ElectronCanvasOffset, electronMenuBarHeightForWindows, isWindows } from '@minsky/shared';
 import { ElectronService } from '../electron/electron.service';
 
 @Injectable({
@@ -89,7 +89,6 @@ export class WindowUtilityService {
     //https://github.com/electron/electron/issues/17580
     //https://github.com/electron/electron/issues/4045
 
-    const electronMenuBarHeightForWindows = 20;
     return isWindows()
       ? electronMenuBarHeightForWindows
       : electronMenuBarHeight * scaleFactor;
@@ -153,7 +152,7 @@ export class WindowUtilityService {
         if (currentWindow?.id !== 1) {
           currentWindow.close();
         }
-      }, 1000);
+      }, delayBeforeClosingPopupWindow);
     }
   }
 }
