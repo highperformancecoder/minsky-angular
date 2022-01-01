@@ -18,7 +18,7 @@ export class WindowUtilityService {
   private mainWindowId = 1;
   SCROLLABLE_AREA_FACTOR = 10;
 
-  constructor(private electronService: ElectronService) {}
+  constructor(private electronService: ElectronService) { }
 
   private initializeIfNeeded() {
     if (!this.minskyCanvasElement) {
@@ -153,7 +153,7 @@ export class WindowUtilityService {
         if (currentWindow?.id !== 1) {
           currentWindow.close();
         }
-      }, 2);
+      }, 1000);
     }
   }
 }

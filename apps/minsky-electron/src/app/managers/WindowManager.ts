@@ -5,6 +5,7 @@ import {
   green,
   rendererAppName,
   rendererAppURL,
+  OPEN_DEV_TOOLS_IN_DEV_BUILD
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen } from 'electron';
@@ -63,6 +64,7 @@ export class WindowManager {
     return false;
   }
 
+  
   static getWindowUrl(url: string) {
     if (!Utility.isPackaged()) {
       const initialURL = url ? rendererAppURL + url : rendererAppURL;
@@ -151,10 +153,10 @@ export class WindowManager {
     });
 
     /* Dev tools results in lag in handling multiple key inputs. Hence enable only temporarily when needed */
-    if (Utility.isDevelopmentMode()) {
+    if (Utility.isDevelopmentMode() && OPEN_DEV_TOOLS_IN_DEV_BUILD) {
       childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
     }
-
+    
     const windowId = WindowManager.getSystemWindowId(childWindow);
 
     const childWindowDetails: ActiveWindow = {

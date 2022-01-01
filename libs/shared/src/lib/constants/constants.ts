@@ -13,6 +13,8 @@ export const RESET_ZOOM_FACTOR = 1;
 
 export const USE_FRONTEND_DRIVEN_RENDERING = false; // We can retire this now?
 
+export const OPEN_DEV_TOOLS_IN_DEV_BUILD  = false;
+
 export const commandsMapping = {
   ADD_BOOKMARK: '/minsky/model/addBookmark',
   ADD_GODLEY: '/minsky/canvas/addGodley',

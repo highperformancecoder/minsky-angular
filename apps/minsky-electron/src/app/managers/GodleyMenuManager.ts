@@ -5,7 +5,7 @@ import {
   GodleyTableOutputStyles,
   green,
   ZOOM_IN_FACTOR,
-  ZOOM_OUT_FACTOR,
+  ZOOM_OUT_FACTOR
 } from '@minsky/shared';
 import { Menu, MenuItem } from 'electron';
 import { CommandsManager } from './CommandsManager';
