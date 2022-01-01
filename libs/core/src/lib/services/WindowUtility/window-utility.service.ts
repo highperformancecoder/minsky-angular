@@ -142,4 +142,18 @@ export class WindowUtilityService {
 
     return isMainWindow;
   }
+
+  public closeCurrentWindowIfNotMain() {
+    console.log(
+      '🚀 ~ file: window-utility.service.ts ~ line 147 ~ WindowUtilityService ~ closeCurrentWindowIfNotMain ~ closeCurrentWindowIfNotMain'
+    );
+    if (this.electronService.isElectron) {
+      setTimeout(() => {
+        const currentWindow = this.electronService.remote.getCurrentWindow();
+        if (currentWindow?.id !== 1) {
+          currentWindow.close();
+        }
+      }, 2);
+    }
+  }
 }

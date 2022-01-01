@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ElectronService } from '@minsky/core';
+import { ElectronService, WindowUtilityService } from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 
 @Component({
@@ -13,7 +13,8 @@ export class RenameAllInstancesComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private windowUtilityService: WindowUtilityService
   ) {}
 
   ngOnInit(): void {
@@ -31,7 +32,7 @@ export class RenameAllInstancesComponent implements OnInit {
       await this.electronService.sendMinskyCommandAndRender({
         command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
       });
-      this.electronService.closeCurrentWindowIfNotMain();
+      this.windowUtilityService.closeCurrentWindowIfNotMain();
     }
   }
 }

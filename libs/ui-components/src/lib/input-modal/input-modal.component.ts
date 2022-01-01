@@ -9,7 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ElectronService } from '@minsky/core';
+import { ElectronService, WindowUtilityService } from '@minsky/core';
 
 @Component({
   selector: 'minsky-input-modal',
@@ -24,7 +24,10 @@ export class InputModalComponent implements OnInit, AfterViewInit {
 
   nameControl: FormControl;
   inputHtmlElement: HTMLElement;
-  constructor(private electronService: ElectronService) { }
+  constructor(
+    private electronService: ElectronService,
+    private windowUtilityService: WindowUtilityService
+  ) {}
 
   ngOnInit(): void {
     this.nameControl = new FormControl(this.input);
@@ -41,6 +44,6 @@ export class InputModalComponent implements OnInit, AfterViewInit {
   }
 
   closeWindow() {
-    this.electronService.closeCurrentWindowIfNotMain();
+    this.windowUtilityService.closeCurrentWindowIfNotMain();
   }
 }

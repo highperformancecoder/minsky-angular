@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CommunicationService, ElectronService } from '@minsky/core';
+import {
+  CommunicationService,
+  ElectronService,
+  WindowUtilityService,
+} from '@minsky/core';
 import { commandsMapping, events } from '@minsky/shared';
 
 @Component({
@@ -14,7 +18,8 @@ export class MultipleKeyOperationComponent implements OnInit {
   constructor(
     private electronService: ElectronService,
     private route: ActivatedRoute,
-    private communicationService: CommunicationService
+    private communicationService: CommunicationService,
+    private windowUtilityService: WindowUtilityService
   ) {}
 
   ngOnInit() {
@@ -23,13 +28,13 @@ export class MultipleKeyOperationComponent implements OnInit {
 
   async handleSave(inputString: string) {
     if (this.electronService.isElectron) {
-      this.electronService.closeCurrentWindowIfNotMain();
-      console.log("HANDLE SAVE CALLED WITH ", inputString);
+      this.windowUtilityService.closeCurrentWindowIfNotMain();
+      console.log('HANDLE SAVE CALLED WITH ', inputString);
 
       if (!inputString) {
         return;
       }
-      
+
       if (inputString.charAt(0) === '#') {
         const note = inputString.slice(1);
 

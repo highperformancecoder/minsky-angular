@@ -6,7 +6,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { ElectronService, CommunicationService } from '@minsky/core';
+import {
+  CommunicationService,
+  ElectronService,
+  WindowUtilityService,
+} from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
@@ -72,7 +76,8 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
   constructor(
     public commService: CommunicationService,
     private electronService: ElectronService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private windowUtilityService: WindowUtilityService
   ) {
     this.route.queryParams.subscribe((params) => {
       this.variableType = params.type;
@@ -166,7 +171,7 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
     await this.createVariable();
   }
 
-  async editVariable() {    
+  async editVariable() {
     await this.electronService.sendMinskyCommandAndRender({
       command: `${commandsMapping.RENAME_ITEM} "${this.variableName.value}"`,
     });
@@ -226,23 +231,23 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
 
   async createVariable() {
     await this.commService.createVariable({
-      variableName : this.variableName.value,
-      type : this.type.value,
-      units : this.units.value || '',
-      value : this.value.value,
-      rotation : this.rotation.value || 0,
-      shortDescription : this.shortDescription.value,
-      detailedDescription : this.detailedDescription.value,
-      sliderStepSize : this.sliderStepSize.value || 0,
-      sliderBoundsMax : this.sliderBoundsMax.value || 0,
-      sliderBoundsMin : this.sliderBoundsMin.value || 0
+      variableName: this.variableName.value,
+      type: this.type.value,
+      units: this.units.value || '',
+      value: this.value.value,
+      rotation: this.rotation.value || 0,
+      shortDescription: this.shortDescription.value,
+      detailedDescription: this.detailedDescription.value,
+      sliderStepSize: this.sliderStepSize.value || 0,
+      sliderBoundsMax: this.sliderBoundsMax.value || 0,
+      sliderBoundsMin: this.sliderBoundsMin.value || 0,
     });
     this.closeWindow();
   }
 
   closeWindow() {
     if (this.electronService.isElectron) {
-      this.electronService.remote.getCurrentWindow().close();
+      this.windowUtilityService.closeCurrentWindowIfNotMain();
     }
   }
 

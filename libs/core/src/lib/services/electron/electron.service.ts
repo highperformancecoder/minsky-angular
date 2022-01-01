@@ -20,15 +20,6 @@ export class ElectronService {
     }
   }
 
-  public closeCurrentWindowIfNotMain() {
-    if (this.isElectron) {
-      const currentWindow = this.remote.getCurrentWindow();
-      if (currentWindow?.id !== 1) {
-        currentWindow.close();
-      }
-    }
-  }
-
   async sendMinskyCommandAndRender(
     payload: MinskyProcessPayload,
     customEvent: string = null

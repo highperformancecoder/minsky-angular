@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ElectronService } from '@minsky/core';
+import { ElectronService, WindowUtilityService } from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
@@ -16,7 +16,8 @@ export class EditGodleyTitleComponent implements OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private windowUtilityService: WindowUtilityService
   ) {
     this.route.queryParams.subscribe((params) => {
       this.title = params.title;
@@ -39,7 +40,7 @@ export class EditGodleyTitleComponent implements OnDestroy {
           command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
         });
       }
-      this.electronService.closeCurrentWindowIfNotMain();
+      this.windowUtilityService.closeCurrentWindowIfNotMain();
     }
   }
 

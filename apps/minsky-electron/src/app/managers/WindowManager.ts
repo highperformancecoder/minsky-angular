@@ -151,9 +151,9 @@ export class WindowManager {
     });
 
     /* Dev tools results in lag in handling multiple key inputs. Hence enable only temporarily when needed */
-    // if (Utility.isDevelopmentMode()) {
-    //   childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
-    // }
+    if (Utility.isDevelopmentMode()) {
+      childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
+    }
 
     const windowId = WindowManager.getSystemWindowId(childWindow);
 

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ElectronService } from '@minsky/core';
+import { ElectronService, WindowUtilityService } from '@minsky/core';
 import { commandsMapping } from '@minsky/shared';
 
 @Component({
@@ -10,14 +10,17 @@ import { commandsMapping } from '@minsky/shared';
 export class EditGodleyCurrencyComponent {
   currency = '';
 
-  constructor(private electronService: ElectronService) {}
+  constructor(
+    private electronService: ElectronService,
+    private windowUtilityService: WindowUtilityService
+  ) {}
 
   async handleSaveCurrency(newCurrency: string) {
     if (this.electronService.isElectron) {
       await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.CANVAS_ITEM_SET_CURRENCY} "${newCurrency}"`,
       });
-      this.electronService.closeCurrentWindowIfNotMain();
+      this.windowUtilityService.closeCurrentWindowIfNotMain();
     }
   }
 }
