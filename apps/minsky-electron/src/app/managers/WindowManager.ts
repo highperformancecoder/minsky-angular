@@ -62,7 +62,7 @@ export class WindowManager {
     }
     return false;
   }
-  
+
   static getWindowUrl(url: string) {
     if (!Utility.isPackaged()) {
       const initialURL = url ? rendererAppURL + url : rendererAppURL;
@@ -151,11 +151,10 @@ export class WindowManager {
     });
 
     /* Dev tools results in lag in handling multiple key inputs. Hence enable only temporarily when needed */
-    if (Utility.isDevelopmentMode()) {
-      childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
-    }
+    // if (Utility.isDevelopmentMode()) {
+    //   childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
+    // }
 
-    
     const windowId = WindowManager.getSystemWindowId(childWindow);
 
     const childWindowDetails: ActiveWindow = {
@@ -181,7 +180,7 @@ export class WindowManager {
         if (childWindow?.id) {
           this.activeWindows.delete(childWindow.id);
         }
-        if(onCloseCallback) {
+        if (onCloseCallback) {
           onCloseCallback();
         }
       } catch (error) {
@@ -194,7 +193,6 @@ export class WindowManager {
     });
     return childWindow;
   }
-  
 
   public static scrollToCenter() {
     // TODO:: Replace this with something cleaner
