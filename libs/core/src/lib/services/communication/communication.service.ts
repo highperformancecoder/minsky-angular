@@ -28,6 +28,15 @@ interface ReplayJSON {
   providedIn: 'root',
 })
 export class CommunicationService {
+  private scrollPositionAtMouseDown : {
+    x : number,
+    y : number
+  }
+  private mousePositionAtMouseDown : {
+    x : number,
+    y : number
+  }
+
   private isSimulationOn: boolean;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
   t = '0';
@@ -54,7 +63,8 @@ export class CommunicationService {
     private windowUtilityService: WindowUtilityService // private dialog: MatDialog
   ) {
     this.isSimulationOn = false;
-
+    this.scrollPositionAtMouseDown = null;
+    this.mousePositionAtMouseDown = null;
     this.initReplay();
   }
 
@@ -426,6 +436,14 @@ export class CommunicationService {
         this.isShiftPressed
       ) {
         this.drag = true;
+        this.scrollPositionAtMouseDown = {
+          x : this.windowUtilityService.getMinskyContainerElement().scrollLeft,
+          y : this.windowUtilityService.getMinskyContainerElement().scrollTop,
+        }
+        this.mousePositionAtMouseDown = {
+          x : this.mouseX,
+          y : this.mouseY
+        }
         return;
       }
 
@@ -435,11 +453,12 @@ export class CommunicationService {
       }
 
       if (command === commandsMapping.MOUSEMOVE_SUBCOMMAND && this.drag) {
-        this.windowUtilityService.getMinskyContainerElement().scrollTop -=
-          message.movementY;
-        this.windowUtilityService.getMinskyContainerElement().scrollLeft -=
-          message.movementX;
+        const deltaX = this.mousePositionAtMouseDown.x - this.mouseX;
+        const deltaY = this.mousePositionAtMouseDown.y - this.mouseY;
 
+        this.windowUtilityService.getMinskyContainerElement().scrollTop = this.scrollPositionAtMouseDown.y + deltaY;
+
+        this.windowUtilityService.getMinskyContainerElement().scrollLeft = this.scrollPositionAtMouseDown.x + deltaX;
         return;
       }
 

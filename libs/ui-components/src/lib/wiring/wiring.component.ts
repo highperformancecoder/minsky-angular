@@ -32,7 +32,7 @@ export class WiringComponent implements OnInit, OnDestroy {
     private windowUtilityService: WindowUtilityService,
     private zone: NgZone,
     private changeDetectorRef: ChangeDetectorRef
-  ) {}
+  ) { }
 
   async ngOnInit() {
     const minskyCanvasContainer = this.windowUtilityService.getMinskyContainerElement();
@@ -65,7 +65,6 @@ export class WiringComponent implements OnInit, OnDestroy {
         const handleScroll = async (scrollTop: number, scrollLeft: number) => {
           const posX = scrollableArea.width / 2 - scrollLeft;
           const posY = scrollableArea.height / 2 - scrollTop;
-
           await this.electronService.sendMinskyCommandAndRender({
             command: commandsMapping.MOVE_TO,
             mouseX: posX,
@@ -127,5 +126,5 @@ export class WiringComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
