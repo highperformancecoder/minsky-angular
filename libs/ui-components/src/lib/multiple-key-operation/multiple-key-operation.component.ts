@@ -23,16 +23,16 @@ export class MultipleKeyOperationComponent implements OnInit {
 
   async handleSave(inputString: string) {
     if (this.electronService.isElectron) {
+      this.electronService.closeCurrentWindowIfNotMain();
+
       if (!inputString) {
-        this.electronService.closeCurrentWindow();
         return;
       }
-
+      
       if (inputString.charAt(0) === '#') {
         const note = inputString.slice(1);
 
         this.communicationService.insertElement('ADD_NOTE', note, 'string');
-        this.electronService.closeCurrentWindow();
         return;
       }
 
@@ -43,7 +43,6 @@ export class MultipleKeyOperationComponent implements OnInit {
           title: 'Create Constant',
           url: `#/headless/menu/insert/create-variable?type=constant&value=${inputString}`,
         });
-        this.electronService.closeCurrentWindow();
         return;
       }
 
@@ -60,7 +59,6 @@ export class MultipleKeyOperationComponent implements OnInit {
 
       if (operation) {
         this.communicationService.addOperation(operation);
-        this.electronService.closeCurrentWindow();
         return;
       }
 
@@ -70,7 +68,6 @@ export class MultipleKeyOperationComponent implements OnInit {
         title: 'Specify variable name',
         url: `#/headless/menu/insert/create-variable?type=flow&name=${inputString}`,
       });
-      this.electronService.closeCurrentWindow();
       return;
     }
   }

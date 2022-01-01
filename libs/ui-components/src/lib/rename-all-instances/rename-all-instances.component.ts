@@ -31,7 +31,7 @@ export class RenameAllInstancesComponent implements OnInit {
       await this.electronService.sendMinskyCommandAndRender({
         command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
       });
-      this.electronService.closeCurrentWindow();
+      this.electronService.closeCurrentWindowIfNotMain();
     }
   }
 }

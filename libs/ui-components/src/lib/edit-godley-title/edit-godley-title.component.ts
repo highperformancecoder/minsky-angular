@@ -39,7 +39,7 @@ export class EditGodleyTitleComponent implements OnDestroy {
           command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
         });
       }
-      this.electronService.closeCurrentWindow();
+      this.electronService.closeCurrentWindowIfNotMain();
     }
   }
 

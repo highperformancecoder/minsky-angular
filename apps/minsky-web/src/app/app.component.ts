@@ -43,19 +43,18 @@ export class AppComponent implements AfterViewInit {
 
         case 'Enter':
           this.handleEnterKey();
-
           break;
 
         default:
           break;
       }
     });
+
   }
 
   // close modals with ESC
   private handleEscKey() {
     const currentWindow = this.electronService.remote.getCurrentWindow();
-
     if (currentWindow.id !== 1) {
       currentWindow.close();
     }

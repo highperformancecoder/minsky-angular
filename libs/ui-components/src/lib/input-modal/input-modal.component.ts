@@ -41,6 +41,6 @@ export class InputModalComponent implements OnInit, AfterViewInit {
   }
 
   closeWindow() {
-    this.electronService.closeCurrentWindow();
+    this.electronService.closeCurrentWindowIfNotMain();
   }
 }

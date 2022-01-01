@@ -17,7 +17,7 @@ export class EditGodleyCurrencyComponent {
       await this.electronService.sendMinskyCommandAndRender({
         command: `${commandsMapping.CANVAS_ITEM_SET_CURRENCY} "${newCurrency}"`,
       });
-      this.electronService.closeCurrentWindow();
+      this.electronService.closeCurrentWindowIfNotMain();
     }
   }
 }

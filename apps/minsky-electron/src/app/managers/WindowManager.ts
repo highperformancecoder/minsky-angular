@@ -49,7 +49,8 @@ export class WindowManager {
         return BigInt(0);
     }
   }
-
+  
+  
   static getMainWindow(): BrowserWindow {
     return this.activeWindows.get(1).context;
   }
@@ -155,6 +156,7 @@ export class WindowManager {
       childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
     }
 
+    
     const windowId = WindowManager.getSystemWindowId(childWindow);
 
     const childWindowDetails: ActiveWindow = {
@@ -191,9 +193,9 @@ export class WindowManager {
     childWindow.on('closed', () => {
       childWindow = null;
     });
-
     return childWindow;
   }
+  
 
   public static scrollToCenter() {
     // TODO:: Replace this with something cleaner

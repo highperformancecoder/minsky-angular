@@ -20,9 +20,12 @@ export class ElectronService {
     }
   }
 
-  public closeCurrentWindow() {
+  public closeCurrentWindowIfNotMain() {
     if (this.isElectron) {
-      this.remote.getCurrentWindow().close();
+      const currentWindow = this.remote.getCurrentWindow();
+      if (currentWindow?.id !== 1) {
+        currentWindow.close();
+      }
     }
   }
 
