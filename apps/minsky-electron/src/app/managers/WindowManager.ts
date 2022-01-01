@@ -151,7 +151,8 @@ export class WindowManager {
       event.preventDefault();
     });
 
-    //   if (Utility.isDevelopmentMode()) {
+    // if (Utility.isDevelopmentMode()) {
+      // Dev tools results in lag in handling multiple key inputs. Hence enable only temporarily when needed
     //   childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
     // }
 

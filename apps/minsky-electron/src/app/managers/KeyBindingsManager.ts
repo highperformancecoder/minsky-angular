@@ -60,6 +60,8 @@ export class KeyBindingsManager {
     if (alt) {
       modifierKeyCode += 8;
     }
+
+    
     const currentTab = RestServiceManager.getCurrentTab();
 
     if (keySymAndName.keysym) {

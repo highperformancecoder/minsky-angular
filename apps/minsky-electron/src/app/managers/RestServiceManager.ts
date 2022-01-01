@@ -104,6 +104,7 @@ function callRESTApi(command: string) {
   }
 }
 
+
 export class RestServiceManager {
   static currentMinskyModelFilePath: string;
 
@@ -145,7 +146,7 @@ export class RestServiceManager {
     });
   }
 
-  private static async processCommandsInQueueNew(): Promise<unknown> {
+  private static async processCommandsInQueue(): Promise<unknown> {
     // Should be on a separate thread......? Janak
     const shouldProcessQueue = this.isQueueEnabled
       ? !this.runningCommand && this.payloadDataQueue.length > 0
@@ -170,39 +171,40 @@ export class RestServiceManager {
 
   private static async resumeQueueProcessing(): Promise<unknown> {
     this.runningCommand = false;
-    return await this.processCommandsInQueueNew();
+    return await this.processCommandsInQueue();
   }
 
+
+  
   public static async handleMinskyProcess(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
 
-    const shouldProcessQueue = this.isQueueEnabled
-      ? !this.runningCommand && wasQueueEmpty
-      : true;
+    const shouldProcessQueue = this.isQueueEnabled? (!this.runningCommand && wasQueueEmpty) : true;
 
-    let queueItem: QueueItem = { payload, promise: new Deferred() };
+    let queueItem: QueueItem = null; 
 
     // TODO:: Take into account Tab when merging commands
-    if (payload.command === commandsMapping.MOUSEMOVE_SUBCOMMAND) {
+    if ((payload.command === commandsMapping.MOUSEMOVE_SUBCOMMAND)) {
       if (this.lastMouseMovePayload !== null) {
         // console.log("Merging mouse move commands");
         this.lastMouseMovePayload.mouseX = payload.mouseX;
         this.lastMouseMovePayload.mouseY = payload.mouseY;
-        queueItem = null;
       } else {
+        queueItem = { payload, promise: new Deferred() };
         this.lastMouseMovePayload = payload;
         this.payloadDataQueue.push(queueItem);
       }
       this.lastModelMoveToPayload = null;
       this.lastZoomPayload = null;
     } else if (payload.command === commandsMapping.MOVE_TO) {
+      console.log("MOVE TO ::", payload.mouseX, payload.mouseY);
       if (this.lastModelMoveToPayload !== null) {
         this.lastModelMoveToPayload.mouseX = payload.mouseX;
         this.lastModelMoveToPayload.mouseY = payload.mouseY;
-        queueItem = null;
       } else {
+        queueItem = { payload, promise: new Deferred() };
         this.lastModelMoveToPayload = payload;
         this.payloadDataQueue.push(queueItem);
       }
@@ -214,8 +216,8 @@ export class RestServiceManager {
         this.lastZoomPayload.args.y = payload.args.y;
         (this.lastZoomPayload.args.zoomFactor as number) *= payload.args
           .zoomFactor as number;
-        queueItem = null;
       } else {
+        queueItem = { payload, promise: new Deferred() };
         this.lastZoomPayload = payload;
         this.payloadDataQueue.push(queueItem);
       }
@@ -225,14 +227,12 @@ export class RestServiceManager {
       this.lastMouseMovePayload = null;
       this.lastModelMoveToPayload = null;
       this.lastZoomPayload = null;
-
-      if (queueItem) {
-        this.payloadDataQueue.push(queueItem);
-      }
+      queueItem = { payload, promise: new Deferred() };
+      this.payloadDataQueue.push(queueItem);
     }
     if (shouldProcessQueue) {
       // Control will come here when a new command comes after the whole queue was processed
-      await this.processCommandsInQueueNew();
+      await this.processCommandsInQueue();
     }
 
     if (queueItem) {
@@ -266,6 +266,7 @@ export class RestServiceManager {
     await this.resumeQueueProcessing();
     return res;
   }
+
 
   private static async executeCommandOnMinskyServer(
     payload: MinskyProcessPayload
@@ -423,6 +424,7 @@ export class RestServiceManager {
     )}]`; // TODO:: Remove this and fix backend to accept integer values
     return renderCommand;
   }
+
 
   static async setPreferences() {
     const preferences: MinskyPreferences = StoreManager.store.get(
