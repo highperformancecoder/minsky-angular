@@ -21,25 +21,25 @@ export class MultipleKeyOperationComponent implements OnInit {
     this.multipleKeyString = localStorage.getItem('multipleKeyString');
   }
 
-  async handleSave(string: string) {
+  async handleSave(inputString: string) {
     if (this.electronService.isElectron) {
-      if (!string) {
+      if (!inputString) {
         return;
       }
 
-      if (string.charAt(0) === '#') {
-        const note = string.slice(1);
+      if (inputString.charAt(0) === '#') {
+        const note = inputString.slice(1);
 
         this.communicationService.insertElement('ADD_NOTE', note, 'string');
         return;
       }
 
-      if (string.charAt(0) === '-') {
+      if (inputString.charAt(0) === '-') {
         this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
           width: 500,
           height: 650,
           title: 'Create Constant',
-          url: `#/headless/menu/insert/create-variable?type=constant&value=${string}`,
+          url: `#/headless/menu/insert/create-variable?type=constant&value=${inputString}`,
         });
         return;
       }
@@ -52,7 +52,7 @@ export class MultipleKeyOperationComponent implements OnInit {
       )) as string[];
 
       const operation = availableOperations.find(
-        (o) => o.toLowerCase() === string.toLowerCase()
+        (o) => o.toLowerCase() === inputString.toLowerCase()
       );
 
       if (operation) {
@@ -64,7 +64,7 @@ export class MultipleKeyOperationComponent implements OnInit {
         width: 500,
         height: 650,
         title: 'Specify variable name',
-        url: `#/headless/menu/insert/create-variable?type=flow&name=${string}`,
+        url: `#/headless/menu/insert/create-variable?type=flow&name=${inputString}`,
       });
 
       return;
