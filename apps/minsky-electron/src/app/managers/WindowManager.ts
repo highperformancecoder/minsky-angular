@@ -50,7 +50,6 @@ export class WindowManager {
     }
   }
 
-  
   static getMainWindow(): BrowserWindow {
     return this.activeWindows.get(1).context;
   }
@@ -67,7 +66,6 @@ export class WindowManager {
   static getWindowUrl(url: string) {
     if (!Utility.isPackaged()) {
       const initialURL = url ? rendererAppURL + url : rendererAppURL;
-
       return initialURL;
     }
 

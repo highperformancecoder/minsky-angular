@@ -20,6 +20,12 @@ export class ElectronService {
     }
   }
 
+  public closeCurrentWindow() {
+    if (this.isElectron) {
+      this.remote.getCurrentWindow().close();
+    }
+  }
+
   async sendMinskyCommandAndRender(
     payload: MinskyProcessPayload,
     customEvent: string = null
