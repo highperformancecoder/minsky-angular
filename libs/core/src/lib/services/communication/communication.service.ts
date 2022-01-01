@@ -28,14 +28,14 @@ interface ReplayJSON {
   providedIn: 'root',
 })
 export class CommunicationService {
-  private scrollPositionAtMouseDown : {
-    x : number,
-    y : number
-  }
-  private mousePositionAtMouseDown : {
-    x : number,
-    y : number
-  }
+  private scrollPositionAtMouseDown: {
+    x: number;
+    y: number;
+  };
+  private mousePositionAtMouseDown: {
+    x: number;
+    y: number;
+  };
 
   private isSimulationOn: boolean;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
@@ -437,13 +437,13 @@ export class CommunicationService {
       ) {
         this.drag = true;
         this.scrollPositionAtMouseDown = {
-          x : this.windowUtilityService.getMinskyContainerElement().scrollLeft,
-          y : this.windowUtilityService.getMinskyContainerElement().scrollTop,
-        }
+          x: this.windowUtilityService.getMinskyContainerElement().scrollLeft,
+          y: this.windowUtilityService.getMinskyContainerElement().scrollTop,
+        };
         this.mousePositionAtMouseDown = {
-          x : this.mouseX,
-          y : this.mouseY
-        }
+          x: this.mouseX,
+          y: this.mouseY,
+        };
         return;
       }
 
@@ -456,9 +456,11 @@ export class CommunicationService {
         const deltaX = this.mousePositionAtMouseDown.x - this.mouseX;
         const deltaY = this.mousePositionAtMouseDown.y - this.mouseY;
 
-        this.windowUtilityService.getMinskyContainerElement().scrollTop = this.scrollPositionAtMouseDown.y + deltaY;
+        this.windowUtilityService.getMinskyContainerElement().scrollTop =
+          this.scrollPositionAtMouseDown.y + deltaY;
 
-        this.windowUtilityService.getMinskyContainerElement().scrollLeft = this.scrollPositionAtMouseDown.x + deltaX;
+        this.windowUtilityService.getMinskyContainerElement().scrollLeft =
+          this.scrollPositionAtMouseDown.x + deltaX;
         return;
       }
 
@@ -476,8 +478,7 @@ export class CommunicationService {
   }
 
   async setWindowSizeAndCanvasOffsets(isResizeEvent: boolean) {
-    const isMainWindow =
-      this.electronService.remote.getCurrentWindow().id === 1;
+    const isMainWindow = this.windowUtilityService.isMainWindow();
     // Code for canvas offset values
     if (this.electronService.isElectron && isMainWindow) {
       this.windowUtilityService.reInitialize();
