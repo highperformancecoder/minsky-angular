@@ -50,6 +50,7 @@ export class WindowManager {
     }
   }
 
+  
   static getMainWindow(): BrowserWindow {
     return this.activeWindows.get(1).context;
   }
@@ -151,10 +152,10 @@ export class WindowManager {
       event.preventDefault();
     });
 
-    // if (Utility.isDevelopmentMode()) {
-      // Dev tools results in lag in handling multiple key inputs. Hence enable only temporarily when needed
-    //   childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
-    // }
+    /* Dev tools results in lag in handling multiple key inputs. Hence enable only temporarily when needed */
+    if (Utility.isDevelopmentMode()) {
+      childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
+    }
 
     const windowId = WindowManager.getSystemWindowId(childWindow);
 
@@ -167,22 +168,26 @@ export class WindowManager {
     };
 
     if (payload.uid) {
-      console.log('Adding to map :: ', payload.uid);
       this.uidToWindowMap.set(payload.uid, childWindowDetails);
     }
 
     this.activeWindows.set(childWindow.id, childWindowDetails);
-
     logWindows(WindowManager.activeWindows);
 
     childWindow.on('close', () => {
-      if (onCloseCallback) {
-        onCloseCallback();
+      try {
+        if (payload?.uid) {
+          this.uidToWindowMap.delete(payload.uid);
+        }
+        if (childWindow?.id) {
+          this.activeWindows.delete(childWindow.id);
+        }
+        if(onCloseCallback) {
+          onCloseCallback();
+        }
+      } catch (error) {
+        console.error(error);
       }
-      if (payload.uid) {
-        this.uidToWindowMap.delete(payload.uid);
-      }
-      this.activeWindows.delete(childWindow.id);
     });
 
     childWindow.on('closed', () => {

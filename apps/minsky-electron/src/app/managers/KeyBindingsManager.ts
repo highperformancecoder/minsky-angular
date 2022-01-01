@@ -302,24 +302,23 @@ export class KeyBindingsManager {
   }
 
   private static openMultipleKeyStringPopup() {
-    if (!this.isMultipleKeyModalOpen) {
-      this.multipleKeyWindow = WindowManager.createMenuPopUpWithRouting({
+    const scope = this;
+
+    if (!scope.isMultipleKeyModalOpen) {
+      scope.multipleKeyWindow = WindowManager.createMenuPopUpWithRouting({
         title: 'Text Input',
         url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
         width: 300,
         height: 130,
+      }, function() {
+        scope.isMultipleKeyModalOpen = false;
+        scope.multipleKeyString = '';
+        scope.multipleKeyWindow = null;
       });
-
-      this.isMultipleKeyModalOpen = true;
-
-      this.multipleKeyWindow.on('close', () => {
-        this.isMultipleKeyModalOpen = false;
-        this.multipleKeyString = '';
-        this.multipleKeyWindow = null;
-      });
+      scope.isMultipleKeyModalOpen = true;
     }
 
-    if (this.multipleKeyWindow) {
+    if (scope.isMultipleKeyModalOpen &&  scope.multipleKeyWindow) {
       this.multipleKeyWindow.loadURL(
         `${rendererAppURL}#/headless/multiple-key-operation?input=${encodeURIComponent(
           this.multipleKeyString
