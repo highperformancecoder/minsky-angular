@@ -57,8 +57,11 @@ export const getBackgroundStyle = (color) => {
   };
 };
 
-export const isWindows = () =>
-  process && process.platform === 'win32' ? true : false;
+export const isWindows = () => (process && process.platform === 'win32');
+export const isMacOS = () => (process && process.platform === 'darwin');
+
+
+
 
 export const normalizeFilePathForPlatform = (filePath: string) => {
   // TODO:: Why do we need stringification? Does our backend API require it? Is it needed only on windows?

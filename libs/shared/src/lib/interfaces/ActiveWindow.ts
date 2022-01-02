@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, Menu } from 'electron';
 
 export interface ActiveWindow {
   id: number;
@@ -6,4 +6,5 @@ export interface ActiveWindow {
   isMainWindow: boolean;
   context: BrowserWindow;
   systemWindowId: bigint;
+  menu : Menu
 }
