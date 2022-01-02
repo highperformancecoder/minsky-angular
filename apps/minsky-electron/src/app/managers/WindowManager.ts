@@ -198,6 +198,7 @@ export class WindowManager {
       false
     );
   }
+  
 
   static onAppLayoutChanged(payload: AppLayoutPayload) {
     console.log(green('Setting the offset and height width of canvas'));

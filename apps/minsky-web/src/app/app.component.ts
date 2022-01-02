@@ -53,7 +53,10 @@ export class AppComponent implements AfterViewInit {
   }
 
   // close modals with ESC
-  private handleEscKey(event : KeyboardEvent) {
+  private handleEscKey(event: KeyboardEvent) {
+    (document.activeElement as HTMLElement).blur();
+    //CAVEAT: The blur is needed to prevent main window close (If we try to close a child window when one of its inputs has focus - the main window closes and there is a crash)
+
     const currentWindow = this.electronService.remote.getCurrentWindow();
     if (currentWindow.id !== 1) {
       currentWindow.close();
@@ -62,10 +65,13 @@ export class AppComponent implements AfterViewInit {
   }
 
   // submits form with class="submit" when pressed Enter key
-  private handleEnterKey(event : KeyboardEvent) {
+  private handleEnterKey(event: KeyboardEvent) {
+    (document.activeElement as HTMLElement).blur();
+    //CAVEAT: The blur is needed to prevent main window close (If we try to close a child window when one of its inputs has focus - the main window closes and there is a crash)
+
     // TODO:: Are there scenarios where we need to pass Enter key to the backend?
     const buttons = Array.from(document.getElementsByClassName('submit')) as HTMLElement[];
-    if(buttons.length > 0) {
+    if (buttons.length > 0) {
       event.preventDefault();
     }
     buttons.forEach((b) => {

@@ -16,18 +16,8 @@ ipcMain.on(events.ADD_RECENT_FILE, (event, filePath: string) => {
 });
 ```
 
-3. We are closing the window after some delay because, it the closing of window was behavior was different on different system and resulted in a crash.
+3. When handling form submissions or escape key in popup windows, we need to first defocus from the input element before closing the popup window.
 
-```javascript
-// libs/core/src/lib/services/WindowUtility/window-utility.service.ts
- public closeCurrentWindowIfNotMain() {
-    if (this.electronService.isElectron) {
-      setTimeout(() => {
-        const currentWindow = this.electronService.remote.getCurrentWindow();
-        if (currentWindow?.id !== 1) {
-          currentWindow.close();
-        }
-      }, 1000);
-    }
-  }
-```
+
+
+We are closing the window after some delay because, it the closing of window was behavior was different on different system and resulted in a crash. See hsage of ```(document.activeElement as HTMLElement).blur()``` in  app.component.ts
