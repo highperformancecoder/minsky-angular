@@ -151,7 +151,7 @@ export default class App {
         App.directlyClose = true;
         App.mainWindow.close();
       }
-      WindowManager.activeWindows.delete(App.mainWindow.id);
+      //WindowManager.activeWindows.delete(App.mainWindow.id); // Is this needed?
     });
 
     // TODO: test it on Russell's machine
