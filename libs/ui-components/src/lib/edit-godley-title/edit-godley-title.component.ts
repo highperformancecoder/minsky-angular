@@ -26,6 +26,7 @@ export class EditGodleyTitleComponent implements OnDestroy {
   }
 
   async handleEditTitle(newTitle: string) {
+    console.log("EDITING THE GODLEY TITLE::", newTitle);
     if (this.electronService.isElectron) {
       if (this.itemId) {
         await this.electronService.sendMinskyCommandAndRender({

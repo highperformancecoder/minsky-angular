@@ -31,7 +31,7 @@ export class WindowManager {
   static getWindowByUid(uid: number): ActiveWindow {
     return this.uidToWindowMap.get(uid);
   }
-
+  
   static getSystemWindowId(menuWindow: BrowserWindow) {
     const nativeBuffer = menuWindow.getNativeWindowHandle();
     switch (nativeBuffer.length) {
@@ -82,7 +82,7 @@ export class WindowManager {
     return initialURL;
   }
 
-  static createMenuPopUpWithRouting(
+  static createPopupWindowWithRouting(
     payload: CreateWindowPayload,
     // eslint-disable-next-line @typescript-eslint/ban-types
     onCloseCallback?: Function
@@ -216,7 +216,7 @@ export class WindowManager {
       this.scaleFactor,
       ' Menu bar height = ',
       payload.offset.electronMenuBarHeight,
-      ' OFfsetTop=',
+      ' Offset Top=',
       payload.offset.top
     );
 

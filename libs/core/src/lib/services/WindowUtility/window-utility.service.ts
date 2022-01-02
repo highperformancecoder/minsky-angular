@@ -143,6 +143,8 @@ export class WindowUtilityService {
   }
 
   public closeCurrentWindowIfNotMain() {
+    const currentWindow = this.electronService.remote.getCurrentWindow();
+    console.log(`Scheduling closing of window id=${currentWindow?.id}`);
     console.log(
       '🚀 ~ file: window-utility.service.ts ~ line 147 ~ WindowUtilityService ~ closeCurrentWindowIfNotMain ~ closeCurrentWindowIfNotMain'
     );
@@ -150,6 +152,7 @@ export class WindowUtilityService {
       setTimeout(() => {
         const currentWindow = this.electronService.remote.getCurrentWindow();
         if (currentWindow?.id !== 1) {
+          console.log(`Closing window id=${currentWindow?.id}`);
           currentWindow.close();
         }
       }, delayBeforeClosingPopupWindow);
