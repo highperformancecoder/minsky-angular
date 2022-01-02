@@ -338,7 +338,7 @@ export class CommandsManager {
   }
 
   private static openRenameInstancesDialog(name: string) {
-    WindowManager.createMenuPopUpWithRouting({
+    WindowManager.createPopupWindowWithRouting({
       title: `Rename ${name}`,
       url: `#/headless/rename-all-instances?name=${name?.slice(1, 1) || ''}`,
       height: 100,
@@ -355,7 +355,7 @@ export class CommandsManager {
       title = '';
     }
 
-    WindowManager.createMenuPopUpWithRouting({
+    WindowManager.createPopupWindowWithRouting({
       title: `Edit godley title`,
       url: `#/headless/edit-godley-title?title=${title || ''}&itemId=${itemId}`,
       height: 100,
@@ -364,7 +364,7 @@ export class CommandsManager {
   }
 
   static async setGodleyCurrency(): Promise<void> {
-    WindowManager.createMenuPopUpWithRouting({
+    WindowManager.createPopupWindowWithRouting({
       title: `Edit godley currency`,
       url: `#/headless/edit-godley-currency`,
       height: 100,
@@ -383,7 +383,7 @@ export class CommandsManager {
         command: `/minsky/canvas/${type}/detailedText`,
       })) as string) || '';
 
-    WindowManager.createMenuPopUpWithRouting({
+    WindowManager.createPopupWindowWithRouting({
       title: `Description`,
       url: `#/headless/edit-description?type=${type}&tooltip=${tooltip}&detailedText=${detailedText}`,
     });
@@ -476,7 +476,7 @@ export class CommandsManager {
   }
 
   static bookmarkThisPosition(): void {
-    WindowManager.createMenuPopUpWithRouting({
+    WindowManager.createPopupWindowWithRouting({
       width: 420,
       height: 250,
       title: 'Bookmarks',
@@ -1046,7 +1046,7 @@ export class CommandsManager {
       return;
     }
 
-    WindowManager.createMenuPopUpWithRouting({
+    WindowManager.createPopupWindowWithRouting({
       title: `Instances`,
       height: 500,
       width: 300,
@@ -1063,7 +1063,7 @@ export class CommandsManager {
       itemType
     );
 
-    WindowManager.createMenuPopUpWithRouting({
+    WindowManager.createPopupWindowWithRouting({
       width: 500,
       height: 650,
       title: `Edit ${itemName || ''}`,
@@ -1090,7 +1090,7 @@ export class CommandsManager {
         height = 410;
         break;
     }
-    WindowManager.createMenuPopUpWithRouting({
+    WindowManager.createPopupWindowWithRouting({
       width: 500,
       height,
       title: `Edit ${classType || ''}`,
@@ -1120,7 +1120,7 @@ export class CommandsManager {
       command: `${commandsMapping.ADD_ENTRY_TO_NAMED_ITEMS_MAP} "${itemInfo.id}"`,
     });
 
-    const window = WindowManager.createMenuPopUpWithRouting(
+    const window = WindowManager.createPopupWindowWithRouting(
       {
         title: itemInfo.classType + ' : ' + itemInfo.id,
         url: url,
@@ -1252,7 +1252,7 @@ export class CommandsManager {
   }
 
   static openPlotWindowOptions(itemInfo: CanvasItem) {
-    WindowManager.createMenuPopUpWithRouting({
+    WindowManager.createPopupWindowWithRouting({
       title: 'Plot Window Options',
       url: `#/headless/plot-widget-options?itemId=${itemInfo.id}`,
       uid: itemInfo.id,
