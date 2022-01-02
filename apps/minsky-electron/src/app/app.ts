@@ -4,6 +4,7 @@ import {
   red,
   rendererAppName,
   rendererAppURL,
+  isMacOS
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
@@ -30,7 +31,7 @@ export default class App {
   static directlyClose: boolean = false;
 
   private static onWindowAllClosed() {
-    if (process.platform !== 'darwin') {
+    if (!isMacOS()) {
       App.application.quit();
     }
   }
@@ -58,7 +59,8 @@ export default class App {
   }
 
   private static initMenu() {
-    ApplicationMenuManager.createMainApplicationMenu();
+    const menu = ApplicationMenuManager.createMainApplicationMenu();
+    WindowManager.storeWindowMenu(App.mainWindow, menu);
 
     RecentFilesManager.initRecentFiles();
 
@@ -135,6 +137,7 @@ export default class App {
       isMainWindow: true,
       context: App.mainWindow,
       systemWindowId: WindowManager.getSystemWindowId(this.mainWindow),
+      menu : null
     };
 
     WindowManager.activeWindows.set(App.mainWindow.id, mainWindowDetails);

@@ -5,10 +5,11 @@ import {
   green,
   rendererAppName,
   rendererAppURL,
-  OPEN_DEV_TOOLS_IN_DEV_BUILD
+  OPEN_DEV_TOOLS_IN_DEV_BUILD,
+  isMacOS
 } from '@minsky/shared';
 import * as debug from 'debug';
-import { BrowserWindow, dialog, screen } from 'electron';
+import { BrowserWindow, dialog, screen, Menu } from 'electron';
 import * as log from 'electron-log';
 import * as os from 'os';
 import { join } from 'path';
@@ -30,6 +31,27 @@ export class WindowManager {
 
   static getWindowByUid(uid: number): ActiveWindow {
     return this.uidToWindowMap.get(uid);
+  }
+
+  static storeWindowMenu(win: BrowserWindow, menu: Menu) {
+    const details = this.activeWindows.get(win.id);
+    if (details) {
+      details.menu = menu;
+    }
+    if (isMacOS()) {
+      win.on('focus', function () {
+        Menu.setApplicationMenu(menu);
+      });
+    }
+  }
+
+  static setApplicationMenu(win: BrowserWindow) {
+    if (isMacOS()) {
+      const details = this.activeWindows.get(win.id);
+      if (details) {
+        Menu.setApplicationMenu(details.menu);
+      }
+    }
   }
 
   static getSystemWindowId(menuWindow: BrowserWindow) {
@@ -64,7 +86,7 @@ export class WindowManager {
     return false;
   }
 
-  
+
   static getWindowUrl(url: string) {
     if (!Utility.isPackaged()) {
       const initialURL = url ? rendererAppURL + url : rendererAppURL;
@@ -115,15 +137,12 @@ export class WindowManager {
     return window;
   }
 
-  
+
   private static createWindow(
     payload: CreateWindowPayload,
     onCloseCallback?: Function
   ) {
     const { width, height, title, modal = true, backgroundColor } = payload;
-
-    const mainWindow = WindowManager.getMainWindow();
-
     const childWindow = new BrowserWindow({
       width,
       height,
@@ -131,7 +150,7 @@ export class WindowManager {
       resizable: true,
       minimizable: false,
       show: false,
-      parent: modal ? mainWindow : null,
+      parent: null, /* modal ? mainWindow : null */ // Having a parent hides control on MacOS
       modal,
       backgroundColor,
       webPreferences: {
@@ -153,10 +172,10 @@ export class WindowManager {
 
     /* Dev tools results in lag in handling multiple key inputs. Hence enable only temporarily when needed */
     if (Utility.isDevelopmentMode() && OPEN_DEV_TOOLS_IN_DEV_BUILD) {
-      childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); 
+      childWindow.webContents.openDevTools({ mode: 'detach', activate: false });
       // command to inspect popup
     }
-    
+
     const windowId = WindowManager.getSystemWindowId(childWindow);
     const childWindowDetails: ActiveWindow = {
       id: childWindow.id,
@@ -164,6 +183,7 @@ export class WindowManager {
       isMainWindow: false,
       context: childWindow,
       systemWindowId: windowId,
+      menu: null
     };
 
     if (payload.uid) {
@@ -198,7 +218,7 @@ export class WindowManager {
       false
     );
   }
-  
+
 
   static onAppLayoutChanged(payload: AppLayoutPayload) {
     console.log(green('Setting the offset and height width of canvas'));

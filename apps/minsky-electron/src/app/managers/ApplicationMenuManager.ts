@@ -36,6 +36,7 @@ export class ApplicationMenuManager {
     ]);
 
     Menu.setApplicationMenu(menu);
+    return menu;
   }
 
   private static getFileMenu(): MenuItemConstructorOptions {

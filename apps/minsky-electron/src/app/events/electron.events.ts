@@ -5,13 +5,14 @@
 
 import {
   AppLayoutPayload,
+  CanvasItem,
   ChangeTabPayload,
   commandsMapping,
   events,
   MinskyProcessPayload,
 } from '@minsky/shared';
 import * as debug from 'debug';
-import { ipcMain } from 'electron';
+import { ipcMain, BrowserWindow } from 'electron';
 import { environment } from '../../environments/environment';
 import { BookmarkManager } from '../managers/BookmarkManager';
 import { CommandsManager } from '../managers/CommandsManager';
@@ -90,8 +91,9 @@ ipcMain.on(events.POPULATE_BOOKMARKS, async (event, bookmarks: string[]) => {
 
 ipcMain.on(
   events.INIT_MENU_FOR_GODLEY_VIEW,
-  async (event, { window, itemInfo }) => {
-    GodleyMenuManager.createMenusForGodleyView(window, itemInfo);
+  async (event, parameters : { win : BrowserWindow, itemInfo : CanvasItem }) => {
+    const menu = GodleyMenuManager.createMenusForGodleyView(parameters.win, parameters.itemInfo);
+    WindowManager.storeWindowMenu(parameters.win, menu);
   }
 );
 

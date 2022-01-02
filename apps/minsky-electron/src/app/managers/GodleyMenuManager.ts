@@ -4,6 +4,7 @@ import {
   commandsMapping,
   GodleyTableOutputStyles,
   green,
+  isMacOS,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR
 } from '@minsky/shared';
@@ -36,8 +37,11 @@ export class GodleyMenuManager {
         ],
       }),
     ]);
-
-    window.setMenu(menu);
+    if(isMacOS()) {
+      Menu.setApplicationMenu(menu);
+    } else {
+      window.setMenu(menu);
+    }
     return menu;
   }
 

@@ -7,6 +7,7 @@ import {
   green,
   InitializePopupWindowPayload,
   isEmptyObject,
+  isMacOS,
   normalizeFilePathForPlatform,
 } from '@minsky/shared';
 import { dialog, ipcMain, Menu, MenuItem } from 'electron';
@@ -1026,8 +1027,8 @@ export class CommandsManager {
 
     WindowManager.createMenuPopUpAndLoadFile({
       title: `Help: ${classType}`,
-      height: 800,
-      width: 1000,
+      height: 600,
+      width: 800,
       modal: true,
       url: path,
     });
@@ -1232,22 +1233,25 @@ export class CommandsManager {
           `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`
         )
       );
-
-      window.setMenu(
-        Menu.buildFromTemplate([
-          new MenuItem({
-            label: 'Options',
-            submenu: [
-              {
-                label: 'Options',
-                click: () => {
-                  CommandsManager.openPlotWindowOptions(itemInfo);
-                },
+      const menu = Menu.buildFromTemplate([
+        new MenuItem({
+          label: 'Options',
+          submenu: [
+            {
+              label: 'Options',
+              click: () => {
+                CommandsManager.openPlotWindowOptions(itemInfo);
               },
-            ],
-          }),
-        ])
-      );
+            },
+          ],
+        }),
+      ]);
+      WindowManager.storeWindowMenu(window, menu);
+      if(isMacOS()) {
+        Menu.setApplicationMenu(menu);
+      } else {
+        window.setMenu(menu);
+      }
     }
   }
 
