@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { events, MinskyProcessPayload } from '@minsky/shared';
-// If you import a module but never use any of the imported values other than as TypeScript types,
-// the resulting javascript file will look as if you never imported the module at all.
 import { ipcRenderer, remote } from 'electron';
 import isElectron from 'is-electron';
 

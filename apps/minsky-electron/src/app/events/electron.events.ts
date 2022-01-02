@@ -48,7 +48,7 @@ ipcMain.on(events.SET_BACKGROUND_COLOR, async (event, { color }) => {
 });
 
 ipcMain.on(events.CREATE_MENU_POPUP, (event, data) => {
-  WindowManager.createMenuPopUpWithRouting(data);
+  WindowManager.createPopupWindowWithRouting(data);
 });
 
 // MINSKY_PROCESS_FOR_IPC_MAIN won't reply with the response

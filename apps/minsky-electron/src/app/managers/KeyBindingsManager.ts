@@ -60,7 +60,6 @@ export class KeyBindingsManager {
     if (alt) {
       modifierKeyCode += 8;
     }
-
     
     const currentTab = RestServiceManager.getCurrentTab();
 
@@ -305,7 +304,7 @@ export class KeyBindingsManager {
     const scope = this;
 
     if (!scope.isMultipleKeyModalOpen) {
-      scope.multipleKeyWindow = WindowManager.createMenuPopUpWithRouting({
+      scope.multipleKeyWindow = WindowManager.createPopupWindowWithRouting({
         title: 'Text Input',
         url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
         width: 300,

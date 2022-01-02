@@ -26,7 +26,6 @@ export class EditGodleyTitleComponent implements OnDestroy {
   }
 
   async handleEditTitle(newTitle: string) {
-    console.log("EDITING THE GODLEY TITLE::", newTitle);
     if (this.electronService.isElectron) {
       if (this.itemId) {
         await this.electronService.sendMinskyCommandAndRender({
@@ -46,5 +45,7 @@ export class EditGodleyTitleComponent implements OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
-  ngOnDestroy() {}
+  ngOnDestroy() {
+
+  }
 }

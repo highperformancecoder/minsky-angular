@@ -46,7 +46,7 @@ export class ApplicationMenuManager {
         {
           label: 'About Minsky',
           click() {
-            WindowManager.createMenuPopUpWithRouting({
+            WindowManager.createPopupWindowWithRouting({
               width: 420,
               height: 440,
               title: '',
@@ -227,7 +227,7 @@ export class ApplicationMenuManager {
         {
           label: 'Log simulation',
           click() {
-            WindowManager.createMenuPopUpWithRouting({
+            WindowManager.createPopupWindowWithRouting({
               width: 250,
               height: 600,
               title: 'Log simulation',
@@ -338,7 +338,7 @@ export class ApplicationMenuManager {
         {
           label: 'Dimensions',
           click() {
-            WindowManager.createMenuPopUpWithRouting({
+            WindowManager.createPopupWindowWithRouting({
               width: 700,
               height: 500,
               title: 'Dimensions',
@@ -410,7 +410,7 @@ export class ApplicationMenuManager {
             {
               label: 'variable',
               click() {
-                WindowManager.createMenuPopUpWithRouting({
+                WindowManager.createPopupWindowWithRouting({
                   width: 500,
                   height: 650,
                   title: 'Specify variable name',
@@ -421,7 +421,7 @@ export class ApplicationMenuManager {
             {
               label: 'constant',
               click() {
-                WindowManager.createMenuPopUpWithRouting({
+                WindowManager.createPopupWindowWithRouting({
                   width: 500,
                   height: 650,
                   title: 'Specify variable name',
@@ -432,7 +432,7 @@ export class ApplicationMenuManager {
             {
               label: 'parameter',
               click() {
-                WindowManager.createMenuPopUpWithRouting({
+                WindowManager.createPopupWindowWithRouting({
                   width: 500,
                   height: 650,
                   title: 'Specify variable name',
@@ -644,7 +644,7 @@ export class ApplicationMenuManager {
         {
           label: 'Preferences',
           click() {
-            WindowManager.createMenuPopUpWithRouting({
+            WindowManager.createPopupWindowWithRouting({
               width: 500,
               height: 450,
               title: 'Preferences',
@@ -655,7 +655,7 @@ export class ApplicationMenuManager {
         {
           label: 'Background Colour',
           click() {
-            WindowManager.createMenuPopUpWithRouting({
+            WindowManager.createPopupWindowWithRouting({
               width: 450,
               height: 620,
               title: 'Background Colour',
@@ -674,7 +674,7 @@ export class ApplicationMenuManager {
         {
           label: 'Simulation',
           click() {
-            WindowManager.createMenuPopUpWithRouting({
+            WindowManager.createPopupWindowWithRouting({
               width: 550,
               height: 550,
               title: 'Simulation',

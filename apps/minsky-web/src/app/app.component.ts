@@ -38,11 +38,11 @@ export class AppComponent implements AfterViewInit {
     document.addEventListener('keydown', (event) => {
       switch (event.key) {
         case 'Escape':
-          this.handleEscKey();
+          this.handleEscKey(event);
           break;
 
         case 'Enter':
-          this.handleEnterKey();
+          this.handleEnterKey(event);
           break;
 
         default:
@@ -53,19 +53,21 @@ export class AppComponent implements AfterViewInit {
   }
 
   // close modals with ESC
-  private handleEscKey() {
+  private handleEscKey(event : KeyboardEvent) {
     const currentWindow = this.electronService.remote.getCurrentWindow();
     if (currentWindow.id !== 1) {
       currentWindow.close();
+      event.preventDefault();
     }
   }
 
   // submits form with class="submit" when pressed Enter key
-  private handleEnterKey() {
-    const buttons = Array.from(
-      document.getElementsByClassName('submit')
-    ) as HTMLElement[];
-
+  private handleEnterKey(event : KeyboardEvent) {
+    // TODO:: Are there scenarios where we need to pass Enter key to the backend?
+    const buttons = Array.from(document.getElementsByClassName('submit')) as HTMLElement[];
+    if(buttons.length > 0) {
+      event.preventDefault();
+    }
     buttons.forEach((b) => {
       b.click();
     });

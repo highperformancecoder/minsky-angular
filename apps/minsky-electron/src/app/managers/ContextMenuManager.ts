@@ -445,7 +445,7 @@ export class ContextMenuManager {
       new MenuItem({
         label: 'Pen Styles',
         click: () => {
-          WindowManager.createMenuPopUpWithRouting({
+          WindowManager.createPopupWindowWithRouting({
             title: `Pen Styles`,
             url: `#/headless/menu/context-menu/pen-styles`,
             height: 500,

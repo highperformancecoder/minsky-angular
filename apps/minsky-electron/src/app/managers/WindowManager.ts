@@ -31,7 +31,7 @@ export class WindowManager {
   static getWindowByUid(uid: number): ActiveWindow {
     return this.uidToWindowMap.get(uid);
   }
-  
+
   static getSystemWindowId(menuWindow: BrowserWindow) {
     const nativeBuffer = menuWindow.getNativeWindowHandle();
     switch (nativeBuffer.length) {
@@ -52,7 +52,7 @@ export class WindowManager {
   }
 
   static getMainWindow(): BrowserWindow {
-    return this.activeWindows.get(1).context;
+    return this.activeWindows.get(1).context; // TODO:: Is this accurate?
   }
 
   static focusIfWindowIsPresent(uid: number) {
@@ -78,7 +78,6 @@ export class WindowManager {
     });
 
     const initialURL = path + (url || '#/');
-
     return initialURL;
   }
 
@@ -116,16 +115,16 @@ export class WindowManager {
     return window;
   }
 
+  
   private static createWindow(
     payload: CreateWindowPayload,
-    // eslint-disable-next-line @typescript-eslint/ban-types
     onCloseCallback?: Function
   ) {
     const { width, height, title, modal = true, backgroundColor } = payload;
 
     const mainWindow = WindowManager.getMainWindow();
 
-    let childWindow = new BrowserWindow({
+    const childWindow = new BrowserWindow({
       width,
       height,
       title,
@@ -154,11 +153,11 @@ export class WindowManager {
 
     /* Dev tools results in lag in handling multiple key inputs. Hence enable only temporarily when needed */
     if (Utility.isDevelopmentMode() && OPEN_DEV_TOOLS_IN_DEV_BUILD) {
-      childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); // command to inspect popup
+      childWindow.webContents.openDevTools({ mode: 'detach', activate: false }); 
+      // command to inspect popup
     }
     
     const windowId = WindowManager.getSystemWindowId(childWindow);
-
     const childWindowDetails: ActiveWindow = {
       id: childWindow.id,
       size: childWindow.getSize(),
@@ -188,10 +187,6 @@ export class WindowManager {
       } catch (error) {
         console.error(error);
       }
-    });
-
-    childWindow.on('closed', () => {
-      childWindow = null;
     });
     return childWindow;
   }

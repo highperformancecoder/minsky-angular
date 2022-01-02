@@ -153,6 +153,7 @@ export class WindowUtilityService {
         const currentWindow = this.electronService.remote.getCurrentWindow();
         if (currentWindow?.id !== 1) {
           console.log(`Closing window id=${currentWindow?.id}`);
+          console.log(currentWindow);
           currentWindow.close();
         }
       }, delayBeforeClosingPopupWindow);
