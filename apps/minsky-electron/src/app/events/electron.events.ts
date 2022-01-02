@@ -91,9 +91,9 @@ ipcMain.on(events.POPULATE_BOOKMARKS, async (event, bookmarks: string[]) => {
 
 ipcMain.on(
   events.INIT_MENU_FOR_GODLEY_VIEW,
-  async (event, parameters : { win : BrowserWindow, itemInfo : CanvasItem }) => {
-    const menu = GodleyMenuManager.createMenusForGodleyView(parameters.win, parameters.itemInfo);
-    WindowManager.storeWindowMenu(parameters.win, menu);
+  async (event, parameters: { window: BrowserWindow, itemInfo: CanvasItem }) => {
+    const menu = GodleyMenuManager.createMenusForGodleyView(parameters.window, parameters.itemInfo);
+    WindowManager.storeWindowMenu(parameters.window, menu);
   }
 );
 

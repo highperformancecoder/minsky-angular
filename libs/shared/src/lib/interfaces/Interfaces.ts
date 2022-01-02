@@ -1,5 +1,6 @@
 import { MainRenderingTabs } from '../constants/MainRenderingTabs';
 export interface InitializePopupWindowPayload {
+  customTitle? : string,
   itemInfo: CanvasItem;
   url: string;
   height?: number;

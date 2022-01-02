@@ -456,9 +456,8 @@ export class CommandsManager {
     );
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
-        numCases + delta
-      }`,
+      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${numCases + delta
+        }`,
     });
 
     CommandsManager.requestRedraw();
@@ -1068,9 +1067,8 @@ export class CommandsManager {
       width: 500,
       height: 650,
       title: `Edit ${itemName || ''}`,
-      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
-        itemName || ''
-      }&isEditMode=true`,
+      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${itemName || ''
+        }&isEditMode=true`,
     });
   }
 
@@ -1123,7 +1121,7 @@ export class CommandsManager {
 
     const window = WindowManager.createPopupWindowWithRouting(
       {
-        title: itemInfo.classType + ' : ' + itemInfo.id,
+        title: (payload.customTitle? payload.customTitle : (itemInfo.classType + ' : ' + itemInfo.id)),
         url: url,
         uid: itemInfo.id,
         height,
@@ -1190,7 +1188,9 @@ export class CommandsManager {
   static async openGodleyTable(itemInfo: CanvasItem) {
     if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
       let systemWindowId = null;
+      // TODO:: Can use godley title (if set) in window title
       const window = await this.initializePopupWindow({
+        customTitle : `Godley Table : ${itemInfo.id}`,
         itemInfo,
         url: `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
         modal: false,
@@ -1221,6 +1221,7 @@ export class CommandsManager {
     if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
       let systemWindowId = null;
       const window = await this.initializePopupWindow({
+        customTitle : `Plot : ${itemInfo.id}`,
         itemInfo,
         url: `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
         modal: false,
@@ -1247,7 +1248,7 @@ export class CommandsManager {
         }),
       ]);
       WindowManager.storeWindowMenu(window, menu);
-      if(isMacOS()) {
+      if (isMacOS()) {
         Menu.setApplicationMenu(menu);
       } else {
         window.setMenu(menu);

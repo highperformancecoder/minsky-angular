@@ -4,7 +4,8 @@ import {
   red,
   rendererAppName,
   rendererAppURL,
-  isMacOS
+  isMacOS,
+  OPEN_DEV_TOOLS_IN_DEV_BUILD
 } from '@minsky/shared';
 import * as debug from 'debug';
 import { BrowserWindow, dialog, screen, shell } from 'electron';
@@ -117,7 +118,7 @@ export default class App {
 
     App.mainWindow.center();
 
-    if (Utility.isDevelopmentMode()) {
+    if (Utility.isDevelopmentMode() && OPEN_DEV_TOOLS_IN_DEV_BUILD) {
       App.mainWindow.webContents.openDevTools({
         mode: 'detach',
         activate: false,
