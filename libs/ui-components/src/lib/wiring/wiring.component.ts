@@ -77,6 +77,7 @@ export class WiringComponent implements OnInit, OnDestroy {
         };
 
         minskyCanvasContainer.addEventListener('scroll', async () => {
+          // TODO: handle scroll for different tabs
           await handleScroll(
             minskyCanvasContainer.scrollTop,
             minskyCanvasContainer.scrollLeft
@@ -123,6 +124,7 @@ export class WiringComponent implements OnInit, OnDestroy {
         );
 
         minskyCanvasElement.addEventListener('dblclick', () => {
+          // TODO: this should only work with wiring
           this.cmService.handleDblClick();
         });
       }

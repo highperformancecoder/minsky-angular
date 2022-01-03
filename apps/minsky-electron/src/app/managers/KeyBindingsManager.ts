@@ -24,7 +24,6 @@ export class KeyBindingsManager {
     payload: MinskyProcessPayload
   ): Promise<unknown> {
     const {
-      key,
       shift,
       capsLock,
       ctrl,
@@ -34,9 +33,13 @@ export class KeyBindingsManager {
       location,
       command = '',
     } = payload;
+    let { key } = payload;
 
-    let keySymAndName = this.getX11KeysymAndName(key, location);
-    let _utf8 = this.getUtf8(key, ctrl);
+    if (shift && key === 'Tab') {
+      key = 'BackTab';
+    }
+    const keySymAndName = this.getX11KeysymAndName(key, location);
+    const _utf8 = this.getUtf8(key, ctrl);
 
     const __payload = {
       ...payload,
@@ -60,7 +63,7 @@ export class KeyBindingsManager {
     if (alt) {
       modifierKeyCode += 8;
     }
-    
+
     const currentTab = RestServiceManager.getCurrentTab();
 
     if (keySymAndName.keysym) {
@@ -74,14 +77,18 @@ export class KeyBindingsManager {
         _payload
       );
 
-      if (!isKeyPressHandled && !command && (currentTab === MainRenderingTabs.canvas)) {
+      if (
+        !isKeyPressHandled &&
+        !command &&
+        currentTab === MainRenderingTabs.canvas
+      ) {
         return await this.handleOnKeyPressFallback(payload);
       }
       return isKeyPressHandled;
     }
 
     let res: boolean | string = false;
-    if (!command && (currentTab === MainRenderingTabs.canvas)) {
+    if (!command && currentTab === MainRenderingTabs.canvas) {
       res = await this.handleOnKeyPressFallback(payload);
     }
     return res;
@@ -304,20 +311,23 @@ export class KeyBindingsManager {
     const scope = this;
 
     if (!scope.isMultipleKeyModalOpen) {
-      scope.multipleKeyWindow = WindowManager.createPopupWindowWithRouting({
-        title: 'Text Input',
-        url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
-        width: 300,
-        height: 130,
-      }, function() {
-        scope.isMultipleKeyModalOpen = false;
-        scope.multipleKeyString = '';
-        scope.multipleKeyWindow = null;
-      });
+      scope.multipleKeyWindow = WindowManager.createPopupWindowWithRouting(
+        {
+          title: 'Text Input',
+          url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
+          width: 300,
+          height: 130,
+        },
+        function () {
+          scope.isMultipleKeyModalOpen = false;
+          scope.multipleKeyString = '';
+          scope.multipleKeyWindow = null;
+        }
+      );
       scope.isMultipleKeyModalOpen = true;
     }
 
-    if (scope.isMultipleKeyModalOpen &&  scope.multipleKeyWindow) {
+    if (scope.isMultipleKeyModalOpen && scope.multipleKeyWindow) {
       this.multipleKeyWindow.loadURL(
         `${rendererAppURL}#/headless/multiple-key-operation?input=${encodeURIComponent(
           this.multipleKeyString

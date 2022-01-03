@@ -648,6 +648,8 @@ export class CommunicationService {
   }
 
   async handleKeyDown(event: KeyboardEvent) {
+    event.preventDefault();
+
     const payload: MinskyProcessPayload = {
       command: '',
       key: event.key,

@@ -45,7 +45,7 @@ export class ContextMenuManager {
   private static async initContextMenuForVariableTab(
     mainWindow: BrowserWindow
   ) {
-    const r = await RestServiceManager.handleMinskyProcess({
+    const rowNumber = await RestServiceManager.handleMinskyProcess({
       command: `${commandsMapping.VARIABLE_TAB_ROW_Y} ${this.y}`,
     });
 
@@ -55,7 +55,7 @@ export class ContextMenuManager {
 
     if (clickType === `internal`) {
       const varName = await RestServiceManager.handleMinskyProcess({
-        command: `${commandsMapping.VARIABLE_TAB_GET_VAR_NAME} ${r}`,
+        command: `${commandsMapping.VARIABLE_TAB_GET_VAR_NAME} ${rowNumber}`,
       });
 
       const menuItems = [
@@ -63,7 +63,11 @@ export class ContextMenuManager {
           label: `Remove ${varName} from tab`,
           click: async () => {
             await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.VARIABLE_TAB_TOGGLE_VAR_DISPLAY} ${r}`,
+              command: `${commandsMapping.VARIABLE_TAB_TOGGLE_VAR_DISPLAY} ${rowNumber}`,
+            });
+
+            await RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
             });
           },
         }),
@@ -71,9 +75,6 @@ export class ContextMenuManager {
 
       ContextMenuManager.buildAndDisplayContextMenu(menuItems, mainWindow);
 
-      await RestServiceManager.handleMinskyProcess({
-        command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
-      });
       return;
     }
   }
@@ -91,15 +92,16 @@ export class ContextMenuManager {
             await RestServiceManager.handleMinskyProcess({
               command: commandsMapping.PLOT_TAB_TOGGLE_PLOT_DISPLAY,
             });
+
+            await RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
+            });
           },
         }),
       ];
 
       ContextMenuManager.buildAndDisplayContextMenu(menuItems, mainWindow);
 
-      await RestServiceManager.handleMinskyProcess({
-        command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
-      });
       return;
     }
   }
