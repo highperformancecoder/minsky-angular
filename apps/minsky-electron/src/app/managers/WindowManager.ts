@@ -3,13 +3,13 @@ import {
   AppLayoutPayload,
   CreateWindowPayload,
   green,
+  isMacOS,
+  OPEN_DEV_TOOLS_IN_DEV_BUILD,
   rendererAppName,
   rendererAppURL,
-  OPEN_DEV_TOOLS_IN_DEV_BUILD,
-  isMacOS
 } from '@minsky/shared';
 import * as debug from 'debug';
-import { BrowserWindow, dialog, screen, Menu } from 'electron';
+import { BrowserWindow, dialog, Menu, screen } from 'electron';
 import * as log from 'electron-log';
 import * as os from 'os';
 import { join } from 'path';
@@ -86,7 +86,6 @@ export class WindowManager {
     return false;
   }
 
-
   static getWindowUrl(url: string) {
     if (!Utility.isPackaged()) {
       const initialURL = url ? rendererAppURL + url : rendererAppURL;
@@ -137,7 +136,6 @@ export class WindowManager {
     return window;
   }
 
-
   private static createWindow(
     payload: CreateWindowPayload,
     onCloseCallback?: Function
@@ -150,7 +148,7 @@ export class WindowManager {
       resizable: true,
       minimizable: false,
       show: false,
-      parent: null, /* modal ? mainWindow : null */ // Having a parent hides control on MacOS
+      parent: null /* modal ? mainWindow : null */, // Having a parent hides control on MacOS
       modal,
       backgroundColor,
       webPreferences: {
@@ -183,7 +181,7 @@ export class WindowManager {
       isMainWindow: false,
       context: childWindow,
       systemWindowId: windowId,
-      menu: null
+      menu: null,
     };
 
     if (payload.uid) {

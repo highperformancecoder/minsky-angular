@@ -5,6 +5,7 @@ import {
   events,
   HeaderEvent,
   importCSVvariableName,
+  MainRenderingTabs,
   MinskyProcessPayload,
   ReplayRecordingStatus,
   ZOOM_IN_FACTOR,
@@ -37,6 +38,7 @@ export class CommunicationService {
     y: number;
   };
 
+  currentTab = MainRenderingTabs.canvas;
   private isSimulationOn: boolean;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
   t = '0';

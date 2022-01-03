@@ -57,6 +57,7 @@ body {
 .wiring-tabs {
   display: flex;
   flex-wrap: wrap;
+  height: 36px;
   /* TODO:: Create a tabs component or utility. Atleast for SCSS */
   .tab {
     cursor: pointer;
