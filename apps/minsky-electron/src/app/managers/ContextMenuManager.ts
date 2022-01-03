@@ -438,8 +438,8 @@ export class ContextMenuManager {
       }),
       new MenuItem({
         label: 'Options',
-        click: () => {
-          CommandsManager.openPlotWindowOptions(itemInfo);
+        click: async () => {
+          await CommandsManager.openPlotWindowOptions(itemInfo);
         },
       }),
       new MenuItem({
