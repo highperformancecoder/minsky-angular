@@ -20,7 +20,7 @@ export class MultipleKeyOperationComponent implements OnInit {
     private route: ActivatedRoute,
     private communicationService: CommunicationService,
     private windowUtilityService: WindowUtilityService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.multipleKeyString = localStorage.getItem('multipleKeyString');
@@ -29,15 +29,12 @@ export class MultipleKeyOperationComponent implements OnInit {
   async handleSave(inputString: string) {
     if (this.electronService.isElectron) {
       this.windowUtilityService.closeCurrentWindowIfNotMain();
-      console.log('HANDLE SAVE CALLED WITH ', inputString);
-
       if (!inputString) {
         return;
       }
 
       if (inputString.charAt(0) === '#') {
         const note = inputString.slice(1);
-
         this.communicationService.insertElement('ADD_NOTE', note, 'string');
         return;
       }
@@ -68,11 +65,16 @@ export class MultipleKeyOperationComponent implements OnInit {
         return;
       }
 
+      const value = parseFloat(inputString);
+      const isConstant = !isNaN(value);
+      const variableType = isConstant ? 'constant' : 'flow';
+      const valueParam = isConstant ? `&value=${value}` : '';
+
       this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
         width: 500,
         height: 650,
         title: 'Specify variable name',
-        url: `#/headless/menu/insert/create-variable?type=flow&name=${inputString}`,
+        url: `#/headless/menu/insert/create-variable?type=${variableType}&name=${inputString}${valueParam}`,
       });
       return;
     }
