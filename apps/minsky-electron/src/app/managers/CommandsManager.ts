@@ -648,13 +648,11 @@ export class CommandsManager {
     });
 
     const { canceled, filePath: _filePath } = exportCanvasDialog;
-
     if (canceled) {
       return null;
     }
 
     const filePath = normalizeFilePathForPlatform(_filePath);
-
     if(!filePath) {
       return null;
     }

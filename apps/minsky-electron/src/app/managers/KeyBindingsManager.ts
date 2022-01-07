@@ -60,7 +60,7 @@ export class KeyBindingsManager {
     if (alt) {
       modifierKeyCode += 8;
     }
-    
+
     const currentTab = RestServiceManager.getCurrentTab();
 
     if (keySymAndName.keysym) {
@@ -176,6 +176,13 @@ export class KeyBindingsManager {
     };
   }
 
+  private static isCtrlPayload(payload: MinskyProcessPayload) {
+    return (!this.multipleKeyString &&
+      payload.ctrl &&
+      !payload.alt &&
+      !payload.shift);
+  }
+
   private static async handleOnKeyPressFallback(payload: MinskyProcessPayload) {
     let executed = true;
     const { key } = payload;
@@ -236,12 +243,7 @@ export class KeyBindingsManager {
 
       case 'x':
       case 'X':
-        if (
-          !this.multipleKeyString &&
-          payload.ctrl &&
-          !payload.alt &&
-          !payload.shift
-        ) {
+        if (this.isCtrlPayload(payload)) {
           await CommandsManager.cut();
         } else {
           executed = false;
@@ -251,12 +253,7 @@ export class KeyBindingsManager {
 
       case 'c':
       case 'C':
-        if (
-          !this.multipleKeyString &&
-          payload.ctrl &&
-          !payload.alt &&
-          !payload.shift
-        ) {
+        if (this.isCtrlPayload(payload)) {
           await CommandsManager.copy();
         } else {
           executed = false;
@@ -266,12 +263,7 @@ export class KeyBindingsManager {
 
       case 'v':
       case 'V':
-        if (
-          !this.multipleKeyString &&
-          payload.ctrl &&
-          !payload.alt &&
-          !payload.shift
-        ) {
+        if (this.isCtrlPayload(payload)) {
           await CommandsManager.paste();
         } else {
           executed = false;
@@ -309,7 +301,7 @@ export class KeyBindingsManager {
         url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
         width: 300,
         height: 130,
-      }, function() {
+      }, function () {
         scope.isMultipleKeyModalOpen = false;
         scope.multipleKeyString = '';
         scope.multipleKeyWindow = null;
@@ -317,7 +309,7 @@ export class KeyBindingsManager {
       scope.isMultipleKeyModalOpen = true;
     }
 
-    if (scope.isMultipleKeyModalOpen &&  scope.multipleKeyWindow) {
+    if (scope.isMultipleKeyModalOpen && scope.multipleKeyWindow) {
       this.multipleKeyWindow.loadURL(
         `${rendererAppURL}#/headless/multiple-key-operation?input=${encodeURIComponent(
           this.multipleKeyString
@@ -331,7 +323,6 @@ export class KeyBindingsManager {
       // <Key-plus>
       await CommandsManager.addOperation(availableOperations.ADD);
       await CommandsManager.mouseUp(payload.mouseX, payload.mouseY);
-
       return;
     }
 
