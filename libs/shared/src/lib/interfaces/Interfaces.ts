@@ -98,3 +98,10 @@ export interface CreateWindowPayload {
   backgroundColor?: string;
   url?: string;
 }
+
+
+export interface TypeValueName {
+  type : string,
+  value? : string | number,
+  name? : string
+}
