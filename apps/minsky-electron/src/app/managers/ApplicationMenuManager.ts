@@ -508,130 +508,97 @@ export class ApplicationMenuManager {
     };
   }
 
+  private static async exportCanvas(extension: string, command: string, extraArgs: Array<any> = []) {
+    const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(extension);
+    if (filePath) {
+      const args = (extraArgs.length > 0) ? `[${filePath}, ${extraArgs.join(",")}]` : filePath;
+      await RestServiceManager.handleMinskyProcess({ command: `${command} ${args}` });
+    }
+  }
+
   private static getExportCanvasMenu(): MenuItemConstructorOptions {
+    const scope = this;
     return {
       label: 'Export Canvas as',
       submenu: [
         {
           label: 'SVG',
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
-              'svg'
-            );
-            await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.RENDER_CANVAS_TO_SVG} ${filePath}`,
-            });
+            await scope.exportCanvas('svg', commandsMapping.RENDER_CANVAS_TO_SVG);
           },
         },
         {
           label: 'PDF',
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
-              'pdf'
-            );
-            await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.RENDER_CANVAS_TO_PDF} ${filePath}`,
-            });
+            await scope.exportCanvas('psd', commandsMapping.RENDER_CANVAS_TO_PDF);
           },
         },
         {
           label: 'EMF',
           visible: isWindows(),
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
-              'emf'
-            );
-            await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.RENDER_CANVAS_TO_EMF} ${filePath}`,
-            });
+            await scope.exportCanvas('emf', commandsMapping.RENDER_CANVAS_TO_EMF);
           },
         },
         {
           label: 'PostScript',
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
-              'eps'
-            );
-            await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.RENDER_CANVAS_TO_PS} ${filePath}`,
-            });
+            await scope.exportCanvas('eps', commandsMapping.RENDER_CANVAS_TO_PS);
           },
         },
         {
           label: 'LaTeX',
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
-              'tex'
-            );
-            await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.LATEX} [${filePath},${
-                StoreManager.store.get('preferences')
-                  .wrapLongEquationsInLatexExport
-              }]`,
-            });
+            await scope.exportCanvas('tex', commandsMapping.LATEX, [StoreManager.store.get('preferences').wrapLongEquationsInLatexExport]);
           },
         },
         {
           label: 'Matlab',
           click: async () => {
-            const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
-              'm'
-            );
-            await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.MATLAB} ${filePath}`,
-            });
+            await scope.exportCanvas('m', commandsMapping.MATLAB);
           },
         },
       ],
     };
   }
 
+  private static async exportPlot(extension: string, command: string) {
+    const exportPlotDialog = await dialog.showSaveDialog({
+      title: `Export plot as ${extension}`,
+      defaultPath: 'plot',
+      properties: ['showOverwriteConfirmation', 'createDirectory'],
+      filters: [{ extensions: [extension], name: extension.toUpperCase() }]
+    });
+
+    const { canceled, filePath: _filePath } = exportPlotDialog;
+    if (canceled) {
+      return;
+    }
+    const filePath = normalizeFilePathForPlatform(_filePath);
+    if (!filePath) {
+      return;
+    }
+    await RestServiceManager.handleMinskyProcess({
+      command: `${command} ${filePath}`,
+    });
+  }
+
+
   private static getExportPlotMenu(): MenuItemConstructorOptions {
+    const scope = this;
     return {
       label: 'Export Plots as',
       submenu: [
         {
           label: 'SVG',
           async click() {
-            const exportPlotDialog = await dialog.showSaveDialog({
-              title: 'Export plot as svg',
-              defaultPath: 'plot',
-              properties: ['showOverwriteConfirmation', 'createDirectory'],
-              filters: [{ extensions: ['svg'], name: 'SVG' }],
-            });
-
-            const { canceled, filePath: _filePath } = exportPlotDialog;
-            const filePath = normalizeFilePathForPlatform(_filePath);
-
-            if (canceled || !filePath) {
-              return;
-            }
-
-            await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.RENDER_ALL_PLOTS_AS_SVG} ${filePath}`,
-            });
+            await scope.exportPlot('svg', commandsMapping.RENDER_ALL_PLOTS_AS_SVG);
           },
         },
         {
           label: 'CSV',
           async click() {
-            const exportPlotDialog = await dialog.showSaveDialog({
-              title: 'Export plot as csv',
-              defaultPath: 'plot',
-              properties: ['showOverwriteConfirmation', 'createDirectory'],
-              filters: [{ extensions: ['csv'], name: 'CSV' }],
-            });
-
-            const { canceled, filePath: _filePath } = exportPlotDialog;
-            const filePath = normalizeFilePathForPlatform(_filePath);
-
-            if (canceled || !filePath) {
-              return;
-            }
-
-            await RestServiceManager.handleMinskyProcess({
-              command: `${commandsMapping.EXPORT_ALL_PLOTS_AS_CSV} ${filePath}`,
-            });
+            await scope.exportPlot('csv', commandsMapping.EXPORT_ALL_PLOTS_AS_CSV);
           },
         },
       ],
