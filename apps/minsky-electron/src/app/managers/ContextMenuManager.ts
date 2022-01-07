@@ -677,7 +677,7 @@ export class ContextMenuManager {
           label: 'Toggle var binding',
           click: async () => {
             await RestServiceManager.handleMinskyProcess({
-              command: commandsMapping.CANVAS_TOGGLE_COUPLED,
+              command: commandsMapping.CANVAS_ITEM_TOGGLE_COUPLED,
             });
             CommandsManager.requestRedraw();
           },
