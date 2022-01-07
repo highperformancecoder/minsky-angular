@@ -89,15 +89,20 @@ export interface CanvasItem {
   id: number;
 }
 
-export interface CreateWindowPayload {
-  uid?: number;
-  width?: number;
-  height?: number;
-  title: string;
-  modal?: boolean;
-  backgroundColor?: string;
-  url?: string;
+export interface CreateWindowPayload extends Electron.BrowserWindowConstructorOptions {
+  uid? : number,
+  url? : string
 }
+
+// export interface CreateWindowPayload {
+//   uid?: number;
+//   width?: number;
+//   height?: number;
+//   title: string;
+//   modal?: boolean;
+//   backgroundColor?: string;
+//   url?: string;
+// }
 
 
 export interface TypeValueName {

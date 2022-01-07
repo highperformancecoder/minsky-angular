@@ -20,6 +20,7 @@ import { RestServiceManager } from './managers/RestServiceManager';
 import { StoreManager } from './managers/StoreManager';
 import { Utility } from './utility';
 import { WindowManager } from './managers/WindowManager';
+import { KeyBindingsManager } from './managers/KeyBindingsManager';
 
 const logWindows = debug('minsky:electron_windows');
 
@@ -152,6 +153,7 @@ export default class App {
         if (!canProceed) {
           return;
         }
+        KeyBindingsManager.closeWindow();
         App.directlyClose = true;
         App.mainWindow.close();
       }

@@ -106,7 +106,7 @@ export class WindowManager {
   static createPopupWindowWithRouting(
     payload: CreateWindowPayload,
     // eslint-disable-next-line @typescript-eslint/ban-types
-    onCloseCallback?: Function
+    onCloseCallback?: (ev : Electron.Event) => void
   ): BrowserWindow {
     const window = WindowManager.createWindow(payload, onCloseCallback);
     const url = this.getWindowUrl(payload.url);
@@ -140,7 +140,7 @@ export class WindowManager {
 
   private static createWindow(
     payload: CreateWindowPayload,
-    onCloseCallback?: Function
+    onCloseCallback?: (ev : Electron.Event) => void
   ) {
     const { width, height, title, modal = true, backgroundColor } = payload;
     const childWindow = new BrowserWindow({
@@ -193,7 +193,7 @@ export class WindowManager {
     this.activeWindows.set(childWindow.id, childWindowDetails);
     logWindows(WindowManager.activeWindows);
 
-    childWindow.on('close', () => {
+    childWindow.on('close', (ev : Electron.Event) => {
       try {
         if (payload?.uid) {
           this.uidToWindowMap.delete(payload.uid);
@@ -202,7 +202,7 @@ export class WindowManager {
           this.activeWindows.delete(childWindow.id);
         }
         if (onCloseCallback) {
-          onCloseCallback();
+          onCloseCallback(ev);
         }
       } catch (error) {
         console.error(error);

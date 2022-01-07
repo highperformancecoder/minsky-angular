@@ -18,7 +18,7 @@ import { WindowManager } from './WindowManager';
 export class KeyBindingsManager {
   static multipleKeyString = '';
   static multipleKeyWindow: BrowserWindow = null;
-  static isMultipleKeyModalOpen = false;
+  private static closeInsteadOfHiding = false;
 
   static async handleOnKeyPress(
     payload: MinskyProcessPayload
@@ -285,31 +285,47 @@ export class KeyBindingsManager {
 
     if (!executed && key.length === 1 && key.match(asciiRegex)) {
       this.multipleKeyString += key;
-
       KeyBindingsManager.openMultipleKeyStringPopup();
     }
-
     return this.multipleKeyString;
+  }
+
+
+  public static closeWindow() {
+    this.closeInsteadOfHiding = true;
+    if(this.multipleKeyWindow) {
+      this.multipleKeyWindow.close();
+    }
   }
 
   private static openMultipleKeyStringPopup() {
     const scope = this;
 
-    if (!scope.isMultipleKeyModalOpen) {
+    if(!scope.multipleKeyWindow) {
       scope.multipleKeyWindow = WindowManager.createPopupWindowWithRouting({
         title: 'Text Input',
         url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
         width: 300,
-        height: 130,
-      }, function () {
-        scope.isMultipleKeyModalOpen = false;
+        height: 130
+      }, function (event : Electron.Event) {
+        if(!scope.closeInsteadOfHiding) {
+          event.preventDefault();
+          scope.multipleKeyWindow.hide();
+        } else {
+          scope.multipleKeyWindow = null;
+        }
         scope.multipleKeyString = '';
-        scope.multipleKeyWindow = null;
       });
-      scope.isMultipleKeyModalOpen = true;
+    }
+    
+
+    if (!scope.multipleKeyWindow.isVisible()) {
+      scope.multipleKeyWindow.show();
+      scope.multipleKeyWindow.focus();
     }
 
-    if (scope.isMultipleKeyModalOpen && scope.multipleKeyWindow) {
+
+    if (scope.multipleKeyWindow && scope.multipleKeyWindow.isVisible()) {
       this.multipleKeyWindow.loadURL(
         `${rendererAppURL}#/headless/multiple-key-operation?input=${encodeURIComponent(
           this.multipleKeyString
