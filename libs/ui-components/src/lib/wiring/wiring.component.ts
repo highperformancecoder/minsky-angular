@@ -6,11 +6,12 @@ import {
   OnInit,
 } from '@angular/core';
 import {
+  TextInputUtilities,
   CommunicationService,
   ElectronService,
   WindowUtilityService,
 } from '@minsky/core';
-import { commandsMapping } from '@minsky/shared';
+import { commandsMapping, MainRenderingTabs } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { fromEvent, Observable } from 'rxjs';
 import { sampleTime } from 'rxjs/operators';
@@ -26,6 +27,7 @@ export class WiringComponent implements OnInit, OnDestroy {
   canvasContainerHeight: string;
   availableOperationsMapping: Record<string, string[]> = {};
   showDragCursor = false;
+  wiringTab = MainRenderingTabs.canvas;
   constructor(
     public cmService: CommunicationService,
     private electronService: ElectronService,
@@ -77,6 +79,7 @@ export class WiringComponent implements OnInit, OnDestroy {
         };
 
         minskyCanvasContainer.addEventListener('scroll', async () => {
+          // TODO: handle scroll for different tabs
           await handleScroll(
             minskyCanvasContainer.scrollTop,
             minskyCanvasContainer.scrollLeft
@@ -84,7 +87,11 @@ export class WiringComponent implements OnInit, OnDestroy {
         });
         minskyCanvasContainer.onwheel = this.cmService.onMouseWheelZoom;
 
+        TextInputUtilities.bindEvents();
+
+
         document.body.addEventListener('keydown', async (event) => {
+          TextInputUtilities.show();
           await this.cmService.handleKeyDown(event);
         });
 
@@ -123,7 +130,9 @@ export class WiringComponent implements OnInit, OnDestroy {
         );
 
         minskyCanvasElement.addEventListener('dblclick', () => {
-          this.cmService.handleDblClick();
+          if (this.cmService.currentTab === MainRenderingTabs.canvas) {
+            this.cmService.handleDblClick();
+          }
         });
       }
     });

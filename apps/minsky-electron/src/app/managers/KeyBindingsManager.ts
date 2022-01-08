@@ -17,7 +17,6 @@ export class KeyBindingsManager {
     payload: MinskyProcessPayload
   ): Promise<unknown> {
     const {
-      key,
       shift,
       capsLock,
       ctrl,
@@ -27,18 +26,13 @@ export class KeyBindingsManager {
       location,
       command = '',
     } = payload;
+    let { key } = payload;
 
+    if (shift && key === 'Tab') {
+      key = 'BackTab';
+    }
     const keySymAndName = this.getX11KeysymAndName(key, location);
     const _utf8 = this.getUtf8(key, ctrl);
-
-    const __payload = {
-      ...payload,
-      keySym: keySymAndName.keysym,
-      utf8: _utf8,
-      key: keySymAndName.name,
-    };
-
-    console.table(__payload);
 
     let modifierKeyCode = 0;
     if (shift) {
@@ -275,45 +269,8 @@ export class KeyBindingsManager {
       return;
     }
 
-    // const asciiRegex = /[ -~]/;
-
-    // if (!executed && key.length === 1 && key.match(asciiRegex)) {
-    //   this.multipleKeyString += key;
-
-    //   KeyBindingsManager.openMultipleKeyStringPopup();
-    // }
-
     return executed;
   }
-
-  // private static openMultipleKeyStringPopup() {
-  //   const scope = this;
-
-  //   if (!scope.isMultipleKeyModalOpen) {
-  //     scope.multipleKeyWindow = WindowManager.createPopupWindowWithRouting(
-  //       {
-  //         title: 'Text Input',
-  //         url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
-  //         width: 300,
-  //         height: 130,
-  //       },
-  //       function () {
-  //         scope.isMultipleKeyModalOpen = false;
-  //         scope.multipleKeyString = '';
-  //         scope.multipleKeyWindow = null;
-  //       }
-  //     );
-  //     scope.isMultipleKeyModalOpen = true;
-  //   }
-
-  //   if (scope.isMultipleKeyModalOpen && scope.multipleKeyWindow) {
-  //     this.multipleKeyWindow.loadURL(
-  //       `${rendererAppURL}#/headless/multiple-key-operation?input=${encodeURIComponent(
-  //         this.multipleKeyString
-  //       )}`
-  //     );
-  //   }
-  // }
 
   private static async handlePlusKey(payload: MinskyProcessPayload) {
     if (payload.shift) {

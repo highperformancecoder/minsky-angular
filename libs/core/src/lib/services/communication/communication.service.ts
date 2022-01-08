@@ -6,6 +6,7 @@ import {
   events,
   HeaderEvent,
   importCSVvariableName,
+  MainRenderingTabs,
   MinskyProcessPayload,
   ReplayRecordingStatus,
   ZOOM_IN_FACTOR,
@@ -39,6 +40,7 @@ export class CommunicationService {
     y: number;
   };
 
+  currentTab = MainRenderingTabs.canvas;
   private isSimulationOn: boolean;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
   t = '0';
@@ -652,7 +654,8 @@ export class CommunicationService {
   }
 
   async handleKeyDown(event: KeyboardEvent) {
-    // let multipleKeyString = '';
+    event.preventDefault();
+
     if (event.shiftKey) {
       this.isShiftPressed = true;
       this.showDragCursor$.next(true);
@@ -669,8 +672,6 @@ export class CommunicationService {
       mouseY: this.mouseY,
       location: event.location,
     };
-
-    // console.table(payload);
 
     if (!this.dialogRef) {
       // const isKeyHandled = false;
@@ -719,6 +720,10 @@ export class CommunicationService {
           this.dialogRef = null;
         });
       }
+      // if (multipleKeyString) {
+      //   TextInputUtilities.setValue(multipleKeyString);
+      // } else {
+      //   TextInputUtilities.hide();}
     }
   }
 
