@@ -736,7 +736,7 @@ export class CommunicationService {
 
   // use this
   async handleTextInputSubmit(multipleKeyString: string) {
-    if (this.electronService.isElectron) {
+    if (this.electronService.isElectron && multipleKeyString) {
       if (multipleKeyString.charAt(0) === '#') {
         const note = multipleKeyString.slice(1);
         this.insertElement('ADD_NOTE', note, 'string');

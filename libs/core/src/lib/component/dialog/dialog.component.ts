@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  NgZone,
+  ViewChild,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
@@ -12,7 +18,10 @@ export class DialogComponent implements AfterViewInit {
   inputHtmlElement: HTMLElement;
   multipleKeyString: FormControl;
 
-  constructor(public dialogRef: MatDialogRef<DialogComponent>) {
+  constructor(
+    public dialogRef: MatDialogRef<DialogComponent>,
+    private ngZone: NgZone
+  ) {
     this.multipleKeyString = new FormControl('');
   }
 
@@ -22,9 +31,19 @@ export class DialogComponent implements AfterViewInit {
   }
 
   submit(): void {
-    this.dialogRef.close(this.multipleKeyString.value);
+    // console.log(
+    //   '🚀 ~ file: dialog.component.ts ~ line 25 ~ DialogComponent ~ submit ~ submit'
+    // );
+    this.ngZone.run(() => {
+      this.dialogRef.close(this.multipleKeyString.value);
+    });
   }
   close(): void {
-    this.dialogRef.close();
+    // console.log(
+    //   '🚀 ~ file: dialog.component.ts ~ line 28 ~ DialogComponent ~ close ~ close'
+    // );
+    this.ngZone.run(() => {
+      this.dialogRef.close();
+    });
   }
 }

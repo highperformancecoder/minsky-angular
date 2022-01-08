@@ -1,15 +1,19 @@
 <div class="container">
-  <mat-form-field>
-    <input
-      class="input"
-      matInput
-      [formControl]="multipleKeyString"
-      #inputElement
-    />
+  <mat-form-field class="input">
+    <mat-label>Text Input</mat-label>
+    <input matInput [formControl]="multipleKeyString" #inputElement />
   </mat-form-field>
-
-  <button mat-raised-button type="submit" class="submit" (click)="submit()">
-    Submit
-  </button>
-  <button mat-raised-button type="button" (click)="close()">Cancel</button>
+  <span>
+    <button
+      mat-raised-button
+      type="submit"
+      class="buttons submit"
+      (click)="submit()"
+    >
+      Submit
+    </button>
+    <!-- <button mat-raised-button type="button" class="buttons" (click)="close()">
+      Cancel
+    </button> -->
+  </span>
 </div>

@@ -12,7 +12,6 @@ export * from './lib/godley-widget-view/godley-widget-view.component';
 export * from './lib/header/header.component';
 export * from './lib/import-csv/import-csv.component';
 export * from './lib/input-modal/input-modal.component';
-export * from './lib/multiple-key-operation/multiple-key-operation.component';
 export * from './lib/page-not-found/page-not-found.component';
 export * from './lib/parameters/parameters.component';
 export * from './lib/plot-widget-options/plot-widget-options.component';

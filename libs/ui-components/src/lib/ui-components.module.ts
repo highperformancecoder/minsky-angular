@@ -15,7 +15,6 @@ import { GodleyWidgetViewComponent } from './godley-widget-view/godley-widget-vi
 import { HeaderComponent } from './header/header.component';
 import { ImportCsvComponent } from './import-csv/import-csv.component';
 import { InputModalComponent } from './input-modal/input-modal.component';
-import { MultipleKeyOperationComponent } from './multiple-key-operation/multiple-key-operation.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ParametersComponent } from './parameters/parameters.component';
 import { PlotWidgetOptionsComponent } from './plot-widget-options/plot-widget-options.component';
@@ -44,7 +43,6 @@ import { WiringComponent } from './wiring/wiring.component';
     EditDescriptionComponent,
     EditGodleyTitleComponent,
     EditGodleyCurrencyComponent,
-    MultipleKeyOperationComponent,
     FindAllInstancesComponent,
     EditOperationComponent,
     EditIntegralComponent,
@@ -70,7 +68,6 @@ import { WiringComponent } from './wiring/wiring.component';
     EditDescriptionComponent,
     EditGodleyTitleComponent,
     EditGodleyCurrencyComponent,
-    MultipleKeyOperationComponent,
     FindAllInstancesComponent,
     EditOperationComponent,
     EditIntegralComponent,

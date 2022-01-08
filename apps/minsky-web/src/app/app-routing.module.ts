@@ -13,7 +13,6 @@ import {
   FindAllInstancesComponent,
   GodleyWidgetViewComponent,
   ImportCsvComponent,
-  MultipleKeyOperationComponent,
   PageNotFoundComponent,
   ParametersComponent,
   PlotWidgetOptionsComponent,
@@ -68,10 +67,6 @@ const routes: Routes = [
   {
     path: 'headless/edit-group',
     component: EditGroupComponent,
-  },
-  {
-    path: 'headless/multiple-key-operation',
-    component: MultipleKeyOperationComponent,
   },
   {
     path: 'headless/edit-godley-title',
