@@ -11,21 +11,22 @@ import { EditOperationComponent } from './edit-operation/edit-operation.componen
 import { EditUserFunctionComponent } from './edit-user-function/edit-user-function.component';
 import { EquationsComponent } from './equations/equations.component';
 import { FindAllInstancesComponent } from './find-all-instances/find-all-instances.component';
+import { GodleyWidgetViewComponent } from './godley-widget-view/godley-widget-view.component';
 import { HeaderComponent } from './header/header.component';
+import { ImportCsvComponent } from './import-csv/import-csv.component';
 import { InputModalComponent } from './input-modal/input-modal.component';
 import { MultipleKeyOperationComponent } from './multiple-key-operation/multiple-key-operation.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ParametersComponent } from './parameters/parameters.component';
+import { PlotWidgetOptionsComponent } from './plot-widget-options/plot-widget-options.component';
+import { PlotWidgetViewComponent } from './plot-widget-view/plot-widget-view.component';
 import { RenameAllInstancesComponent } from './rename-all-instances/rename-all-instances.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { VariablesComponent } from './variables/variables.component';
 import { AvailableOperationsComponent } from './wiring/available-operations/available-operations.component';
 import { VariableComponent } from './wiring/variable/variable.component';
 import { WiringComponent } from './wiring/wiring.component';
-import { PlotWidgetViewComponent } from './plot-widget-view/plot-widget-view.component';
-import { GodleyWidgetViewComponent } from './godley-widget-view/godley-widget-view.component';
-import { PlotWidgetOptionsComponent } from './plot-widget-options/plot-widget-options.component';
-import { ImportCsvComponent } from './import-csv/import-csv.component';
+
 @NgModule({
   declarations: [
     HeaderComponent,

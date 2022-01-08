@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {
   AppLayoutPayload,
   commandsMapping,
@@ -8,12 +9,13 @@ import {
   MainRenderingTabs,
   MinskyProcessPayload,
   ReplayRecordingStatus,
+  TypeValueName,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
 import { BehaviorSubject } from 'rxjs';
-import { TextInputUtilities } from '../TextInputUtilities';
 import { WindowUtilityService } from '../WindowUtility/window-utility.service';
+import { DialogComponent } from './../../component/dialog/dialog.component';
 import { ElectronService } from './../electron/electron.service';
 
 export class Message {
@@ -60,10 +62,14 @@ export class CommunicationService {
   delay = 0;
   runUntilTime: number;
 
+  private dialogRef: MatDialogRef<DialogComponent, any> = null;
+  availableOperations = null;
+
   constructor(
     // private socket: Socket,
     private electronService: ElectronService,
-    private windowUtilityService: WindowUtilityService // private dialog: MatDialog
+    private windowUtilityService: WindowUtilityService,
+    private dialog: MatDialog
   ) {
     this.isSimulationOn = false;
     this.scrollPositionAtMouseDown = null;
@@ -166,8 +172,9 @@ export class CommunicationService {
           case 'ZOOM_OUT':
             autoHandleMinskyProcess = false;
             await this.electronService.sendMinskyCommandAndRender({
-              command: `${command} [${canvasWidth / 2}, ${canvasHeight / 2
-                }, ${ZOOM_OUT_FACTOR}]`,
+              command: `${command} [${canvasWidth / 2}, ${
+                canvasHeight / 2
+              }, ${ZOOM_OUT_FACTOR}]`,
             });
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
@@ -176,8 +183,9 @@ export class CommunicationService {
           case 'ZOOM_IN':
             autoHandleMinskyProcess = false;
             await this.electronService.sendMinskyCommandAndRender({
-              command: `${command} [${canvasWidth / 2}, ${canvasHeight / 2
-                }, ${ZOOM_IN_FACTOR}]`,
+              command: `${command} [${canvasWidth / 2}, ${
+                canvasHeight / 2
+              }, ${ZOOM_IN_FACTOR}]`,
             });
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
@@ -345,8 +353,9 @@ export class CommunicationService {
       })) as number;
 
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
-      command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${1 / (relZoom || 1)
-        }]`;
+      command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
+        1 / (relZoom || 1)
+      }]`;
     } else {
       command = `${commandsMapping.SET_ZOOM} 1`;
     }
@@ -517,8 +526,9 @@ export class CommunicationService {
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${params.units || ''
-        }"`,
+      command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${
+        params.units || ''
+      }"`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
@@ -538,29 +548,25 @@ export class CommunicationService {
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MAX} ${params.sliderBoundsMax || 0
-        }`,
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MAX} ${
+        params.sliderBoundsMax || 0
+      }`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MIN} ${params.sliderBoundsMin || 0
-        }`,
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MIN} ${
+        params.sliderBoundsMin || 0
+      }`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP} ${params.sliderStepSize || 0
-        }`,
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP} ${
+        params.sliderStepSize || 0
+      }`,
     });
   }
 
   async importData() {
-    /*
-      1. Add a parameter with name set to "dataimport"
-      2. Automatically open the CSV import dialog.
-      3. If CSV import is successfully completed / saved -> rename the parameter to the name of the csv file
-      4. If CSV import fails or is cancelled -> delete the parameter.
-    */
-
     await this.createVariable({
       variableName: importCSVvariableName,
       type: 'parameter',
@@ -580,7 +586,6 @@ export class CommunicationService {
       mouseY: this.mouseY,
     });
 
-    // 2
     const payload: MinskyProcessPayload = {
       mouseX: this.mouseX,
       mouseY: this.mouseY,
@@ -644,7 +649,10 @@ export class CommunicationService {
   }
 
   async handleKeyDown(event: KeyboardEvent) {
-    event.preventDefault();
+    if (event.shiftKey) {
+      this.isShiftPressed = true;
+      this.showDragCursor$.next(true);
+    }
 
     const payload: MinskyProcessPayload = {
       command: '',
@@ -658,23 +666,130 @@ export class CommunicationService {
       location: event.location,
     };
 
-    // console.table(payload);
+    if (!this.dialogRef) {
+      const isKeyHandled = this.electronService.ipcRenderer.sendSync(
+        events.KEY_PRESS,
+        {
+          ...payload,
+          command: payload.command.trim(),
+        }
+      );
 
-    if (event.shiftKey) {
-      this.isShiftPressed = true;
-      this.showDragCursor$.next(true);
+      const asciiRegex = /[ -~]/;
+
+      if (
+        !isKeyHandled &&
+        event.key.length === 1 &&
+        event.key.match(asciiRegex)
+      ) {
+        this.dialogRef = this.dialog.open(DialogComponent, {
+          width: '600px',
+          position: { top: '0', left: '33.33%' },
+        });
+
+        this.dialogRef.afterClosed().subscribe(async (multipleKeyString) => {
+          console.log(
+            '🚀 ~ file: communication.service.ts ~ line 691 ~ CommunicationService ~ this.dialogRef.afterClosed ~ multipleKeyString',
+            multipleKeyString
+          );
+          this.dialogRef = null;
+          await this.handleTextInputSubmit(multipleKeyString);
+        });
+      }
+
+      // if (multipleKeyString) {
+      //   TextInputUtilities.setValue(multipleKeyString);
+      // } else {
+      //   TextInputUtilities.hide();
+      // }
     }
-
-    const multipleKeyString = (await this.electronService.sendMinskyCommandAndRender(
-      payload,
-      events.KEY_PRESS
-    )) as string;
-
-    if (multipleKeyString) {
-      TextInputUtilities.setValue(multipleKeyString);
-    } else {
-      TextInputUtilities.hide();
+    if (
+      [
+        'ArrowRight',
+        'ArrowLeft',
+        'ArrowUp',
+        'ArrowDown',
+        'PageUp',
+        'PageDown',
+      ].includes(event.key) &&
+      !this.dialogRef
+    ) {
+      // this is to prevent scroll events on press if arrow and page up/down keys
+      event.preventDefault();
     }
+  }
+
+  private showCreateVariablePopup(title: string, params: TypeValueName) {
+    const urlParts = Object.keys(params)
+      .map((pKey) => {
+        return `${pKey}=${params[pKey]}`;
+      })
+      .join('&');
+
+    this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
+      width: 500,
+      height: 650,
+      title: title,
+      url: `#/headless/menu/insert/create-variable?${urlParts}`,
+    });
+  }
+
+  // use this
+  async handleTextInputSubmit(multipleKeyString: string) {
+    if (this.electronService.isElectron) {
+      if (multipleKeyString.charAt(0) === '#') {
+        const note = multipleKeyString.slice(1);
+        this.insertElement('ADD_NOTE', note, 'string');
+        return;
+      }
+
+      if (multipleKeyString.charAt(0) === '-') {
+        this.showCreateVariablePopup('Create Constant', {
+          type: 'constant',
+          value: multipleKeyString,
+        });
+        return;
+      }
+
+      const availableOperations = await this.getAvailableOperations();
+      const operation = availableOperations[multipleKeyString.toLowerCase()];
+
+      if (operation) {
+        this.addOperation(operation);
+        return;
+      }
+
+      const value = parseFloat(multipleKeyString);
+      const isConstant = !isNaN(value);
+      const popupTitle = isConstant
+        ? 'Create Constant'
+        : 'Specify Variable Name';
+      const params: TypeValueName = {
+        type: isConstant ? 'constant' : 'flow',
+        name: multipleKeyString,
+      };
+      if (isConstant) {
+        params.value = value;
+      }
+
+      this.showCreateVariablePopup(popupTitle, params);
+      return;
+    }
+  }
+
+  private async getAvailableOperations(): Promise<Object> {
+    if (!this.availableOperations) {
+      this.availableOperations = {};
+      const list = (await this.electronService.sendMinskyCommandAndRender({
+        command: commandsMapping.AVAILABLE_OPERATIONS,
+        render: false,
+      })) as string[];
+
+      list.forEach((value) => {
+        this.availableOperations[value.toLowerCase()] = value;
+      });
+    }
+    return this.availableOperations;
   }
 
   handleDblClick() {

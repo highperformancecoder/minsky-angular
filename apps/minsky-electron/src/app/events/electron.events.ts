@@ -110,9 +110,15 @@ ipcMain.on(events.ADD_RECENT_FILE, (event, filePath: string) => {
 ipcMain.handle(
   events.KEY_PRESS,
   async (event, payload: MinskyProcessPayload) => {
+    // this is a asynchronous handler for events.KEY_PRESS
     return await KeyBindingsManager.handleOnKeyPress(payload);
   }
 );
+
+ipcMain.on(events.KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
+  // this is a synchronous handler for events.KEY_PRESS
+  event.returnValue = await KeyBindingsManager.handleOnKeyPress(payload);
+});
 
 ipcMain.handle(events.GET_PREFERENCES, () => {
   return StoreManager.store.get('preferences');

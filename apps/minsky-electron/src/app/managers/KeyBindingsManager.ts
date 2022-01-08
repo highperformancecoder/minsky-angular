@@ -4,21 +4,15 @@ import {
   isEmptyObject,
   MainRenderingTabs,
   MinskyProcessPayload,
-  rendererAppURL,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
-import { BrowserWindow } from 'electron';
 import * as KeysymMapper from 'keysym';
 import * as utf8 from 'utf8';
 import { CommandsManager } from './CommandsManager';
 import { RestServiceManager } from './RestServiceManager';
 
 export class KeyBindingsManager {
-  static multipleKeyString = '';
-  static multipleKeyWindow: BrowserWindow = null;
-  private static closeInsteadOfHiding = false;
-
   static async handleOnKeyPress(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
@@ -174,10 +168,7 @@ export class KeyBindingsManager {
   }
 
   private static isCtrlPayload(payload: MinskyProcessPayload) {
-    return (!this.multipleKeyString &&
-      payload.ctrl &&
-      !payload.alt &&
-      !payload.shift);
+    return payload.ctrl && !payload.alt && !payload.shift;
   }
 
   private static async handleOnKeyPressFallback(payload: MinskyProcessPayload) {
@@ -278,15 +269,8 @@ export class KeyBindingsManager {
       return;
     }
 
-    const asciiRegex = /[ -~]/;
-    if (!executed && key.length === 1 && key.match(asciiRegex)) {
-      return key;
-      //this.multipleKeyString += key;
-    }
-    return null;
-    //return this.multipleKeyString;
+    return executed;
   }
-
 
   private static async handlePlusKey(payload: MinskyProcessPayload) {
     if (payload.shift) {

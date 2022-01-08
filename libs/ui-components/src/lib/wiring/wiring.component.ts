@@ -6,7 +6,6 @@ import {
   OnInit,
 } from '@angular/core';
 import {
-  TextInputUtilities,
   CommunicationService,
   ElectronService,
   WindowUtilityService,
@@ -87,11 +86,10 @@ export class WiringComponent implements OnInit, OnDestroy {
         });
         minskyCanvasContainer.onwheel = this.cmService.onMouseWheelZoom;
 
-        TextInputUtilities.bindEvents();
-
+        // TextInputUtilities.bindEvents();
 
         document.body.addEventListener('keydown', async (event) => {
-          TextInputUtilities.show();
+          // TextInputUtilities.show();
           await this.cmService.handleKeyDown(event);
         });
 
