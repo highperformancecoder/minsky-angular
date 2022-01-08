@@ -12,7 +12,7 @@ import {
   MinskyProcessPayload,
 } from '@minsky/shared';
 import * as debug from 'debug';
-import { ipcMain, BrowserWindow } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import { environment } from '../../environments/environment';
 import { BookmarkManager } from '../managers/BookmarkManager';
 import { CommandsManager } from '../managers/CommandsManager';
@@ -91,8 +91,14 @@ ipcMain.on(events.POPULATE_BOOKMARKS, async (event, bookmarks: string[]) => {
 
 ipcMain.on(
   events.INIT_MENU_FOR_GODLEY_VIEW,
-  async (event, parameters: { window: BrowserWindow, itemInfo: CanvasItem }) => {
-    const menu = GodleyMenuManager.createMenusForGodleyView(parameters.window, parameters.itemInfo);
+  async (
+    event,
+    parameters: { window: BrowserWindow; itemInfo: CanvasItem }
+  ) => {
+    const menu = GodleyMenuManager.createMenusForGodleyView(
+      parameters.window,
+      parameters.itemInfo
+    );
     WindowManager.storeWindowMenu(parameters.window, menu);
   }
 );
@@ -104,9 +110,15 @@ ipcMain.on(events.ADD_RECENT_FILE, (event, filePath: string) => {
 ipcMain.handle(
   events.KEY_PRESS,
   async (event, payload: MinskyProcessPayload) => {
+    // this is a asynchronous handler for events.KEY_PRESS
     return await KeyBindingsManager.handleOnKeyPress(payload);
   }
 );
+
+ipcMain.on(events.KEY_PRESS, async (event, payload: MinskyProcessPayload) => {
+  // this is a synchronous handler for events.KEY_PRESS
+  event.returnValue = await KeyBindingsManager.handleOnKeyPress(payload);
+});
 
 ipcMain.handle(events.GET_PREFERENCES, () => {
   return StoreManager.store.get('preferences');

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {
   AppLayoutPayload,
   commandsMapping,
@@ -12,6 +13,7 @@ import {
 } from '@minsky/shared';
 import { BehaviorSubject } from 'rxjs';
 import { WindowUtilityService } from '../WindowUtility/window-utility.service';
+import { DialogComponent } from './../../component/dialog/dialog.component';
 import { ElectronService } from './../electron/electron.service';
 
 export class Message {
@@ -57,10 +59,12 @@ export class CommunicationService {
   delay = 0;
   runUntilTime: number;
 
+  private dialogRef: MatDialogRef<DialogComponent, any> = null;
   constructor(
     // private socket: Socket,
     private electronService: ElectronService,
-    private windowUtilityService: WindowUtilityService // private dialog: MatDialog
+    private windowUtilityService: WindowUtilityService,
+    private dialog: MatDialog
   ) {
     this.isSimulationOn = false;
     this.scrollPositionAtMouseDown = null;
@@ -648,6 +652,12 @@ export class CommunicationService {
   }
 
   async handleKeyDown(event: KeyboardEvent) {
+    // let multipleKeyString = '';
+    if (event.shiftKey) {
+      this.isShiftPressed = true;
+      this.showDragCursor$.next(true);
+    }
+
     const payload: MinskyProcessPayload = {
       command: '',
       key: event.key,
@@ -662,17 +672,54 @@ export class CommunicationService {
 
     // console.table(payload);
 
-    if (event.shiftKey) {
-      this.isShiftPressed = true;
-      this.showDragCursor$.next(true);
+    if (!this.dialogRef) {
+      // const isKeyHandled = false;
+      // const isKeyHandled = (await this.electronService.sendMinskyCommandAndRender(
+      //   payload,
+      //   events.KEY_PRESS
+      // )) as boolean;
+      // console.log(
+      //   '🚀 ~ file: communication.service.ts ~ line 679 ~ CommunicationService ~ handleKeyDown ~ isKeyHandled',
+      //   isKeyHandled
+      // );
+
+      const isKeyHandled = this.electronService.ipcRenderer.sendSync(
+        events.KEY_PRESS,
+        {
+          ...payload,
+          command: payload.command.trim(),
+        }
+      );
+      console.log(
+        '🚀 ~ file: communication.service.ts ~ line 693 ~ CommunicationService ~ handleKeyDown ~ isKeyHandled',
+        isKeyHandled
+      );
+      const asciiRegex = /[ -~]/;
+
+      if (
+        !isKeyHandled &&
+        event.key.length === 1 &&
+        event.key.match(asciiRegex)
+      ) {
+        // multipleKeyString += event.key;
+
+        this.dialogRef = this.dialog.open(DialogComponent, {
+          width: '600px',
+          // data: { multipleKeyString: multipleKeyString },
+          position: { top: '0', left: '33.33%' },
+        });
+
+        this.dialogRef.afterClosed().subscribe((result) => {
+          console.log('The dialog was closed');
+          console.log(
+            '🚀 ~ file: communication.service.ts ~ line 687 ~ CommunicationService ~ this.dialogRef.afterClosed ~ result',
+            result
+          );
+          // multipleKeyString = '';
+          this.dialogRef = null;
+        });
+      }
     }
-
-    const multipleKeyString = (await this.electronService.sendMinskyCommandAndRender(
-      payload,
-      events.KEY_PRESS
-    )) as string;
-
-    localStorage.setItem('multipleKeyString', multipleKeyString);
   }
 
   handleDblClick() {
