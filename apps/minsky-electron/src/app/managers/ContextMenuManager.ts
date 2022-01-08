@@ -4,8 +4,9 @@ import {
   commandsMapping,
   isEmptyObject,
   isWindows,
+  MainRenderingTabs,
 } from '@minsky/shared';
-import { Menu, MenuItem } from 'electron';
+import { BrowserWindow, Menu, MenuItem } from 'electron';
 import { CommandsManager } from './CommandsManager';
 import { RestServiceManager } from './RestServiceManager';
 import { WindowManager } from './WindowManager';
@@ -18,11 +19,95 @@ export class ContextMenuManager {
 
   public static async initContextMenu(x: number, y: number) {
     const mainWindow = WindowManager.getMainWindow();
+    this.x = x;
+    this.y = y;
 
+    const currentTab = RestServiceManager.getCurrentTab();
+
+    switch (currentTab) {
+      case MainRenderingTabs.canvas:
+        await this.initContextMenuForWiring(mainWindow);
+        break;
+
+      case MainRenderingTabs.variables:
+        await this.initContextMenuForVariableTab(mainWindow);
+        break;
+
+      case MainRenderingTabs.plot:
+        await this.initContextMenuForPlotTab(mainWindow);
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  private static async initContextMenuForVariableTab(
+    mainWindow: BrowserWindow
+  ) {
+    const rowNumber = await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.VARIABLE_TAB_ROW_Y} ${this.y}`,
+    });
+
+    const clickType = await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.VARIABLE_TAB_CLICK_TYPE} [${this.x}, ${this.y}]`,
+    });
+
+    if (clickType === `internal`) {
+      const varName = await RestServiceManager.handleMinskyProcess({
+        command: `${commandsMapping.VARIABLE_TAB_GET_VAR_NAME} ${rowNumber}`,
+      });
+
+      const menuItems = [
+        new MenuItem({
+          label: `Remove ${varName} from tab`,
+          click: async () => {
+            await RestServiceManager.handleMinskyProcess({
+              command: `${commandsMapping.VARIABLE_TAB_TOGGLE_VAR_DISPLAY} ${rowNumber}`,
+            });
+
+            await RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
+            });
+          },
+        }),
+      ];
+
+      ContextMenuManager.buildAndDisplayContextMenu(menuItems, mainWindow);
+
+      return;
+    }
+  }
+
+  private static async initContextMenuForPlotTab(mainWindow: BrowserWindow) {
+    const isPlot = await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.PLOT_TAB_GET_ITEM_AT} [${this.x},${this.y}]`,
+    });
+
+    if (isPlot) {
+      const menuItems = [
+        new MenuItem({
+          label: `Remove plot from tab`,
+          click: async () => {
+            await RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.PLOT_TAB_TOGGLE_PLOT_DISPLAY,
+            });
+
+            await RestServiceManager.handleMinskyProcess({
+              command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
+            });
+          },
+        }),
+      ];
+
+      ContextMenuManager.buildAndDisplayContextMenu(menuItems, mainWindow);
+
+      return;
+    }
+  }
+
+  private static async initContextMenuForWiring(mainWindow: BrowserWindow) {
     try {
-      this.x = x;
-      this.y = y;
-
       const wire = await CommandsManager.getWireAt(this.x, this.y);
 
       const isWirePresent = !isEmptyObject(wire);
@@ -84,7 +169,6 @@ export class ContextMenuManager {
       );
     }
   }
-
   private static async rightMouseGodley(
     itemInfo: CanvasItem
   ): Promise<MenuItem[]> {
@@ -290,6 +374,8 @@ export class ContextMenuManager {
       const menu = Menu.buildFromTemplate([
         new MenuItem({
           label: 'Help',
+          visible:
+            RestServiceManager.getCurrentTab() === MainRenderingTabs.canvas,
           click: async () => {
             await CommandsManager.help(this.x, this.y);
           },
@@ -438,8 +524,8 @@ export class ContextMenuManager {
       }),
       new MenuItem({
         label: 'Options',
-        click: () => {
-          CommandsManager.openPlotWindowOptions(itemInfo);
+        click: async () => {
+          await CommandsManager.openPlotWindowOptions(itemInfo);
         },
       }),
       new MenuItem({

@@ -456,8 +456,9 @@ export class CommandsManager {
     );
 
     await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${numCases + delta
-        }`,
+      command: `${commandsMapping.CANVAS_ITEM_SET_NUM_CASES} ${
+        numCases + delta
+      }`,
     });
 
     CommandsManager.requestRedraw();
@@ -1061,17 +1062,14 @@ export class CommandsManager {
   static async editVar() {
     const itemName = await this.getCurrentItemName();
     const itemType = await this.getItemType();
-    console.log(
-      '🚀 ~ file: commandsManager.ts ~ line 1072 ~ CommandsManager ~ editVar ~ itemType',
-      itemType
-    );
 
     WindowManager.createPopupWindowWithRouting({
       width: 500,
       height: 650,
       title: `Edit ${itemName || ''}`,
-      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${itemName || ''
-        }&isEditMode=true`,
+      url: `#/headless/menu/insert/create-variable?type=${itemType}&name=${
+        itemName || ''
+      }&isEditMode=true`,
     });
   }
 
@@ -1117,14 +1115,13 @@ export class CommandsManager {
     payload: InitializePopupWindowPayload
   ): Promise<Electron.BrowserWindow> {
     const { itemInfo, url, height = 600, width = 800, modal = true } = payload;
-    // Pushing the current item to namedItems map
-    await RestServiceManager.handleMinskyProcess({
-      command: `${commandsMapping.ADD_ENTRY_TO_NAMED_ITEMS_MAP} "${itemInfo.id}"`,
-    });
+    await CommandsManager.addItemToNamedItems(itemInfo);
 
     const window = WindowManager.createPopupWindowWithRouting(
       {
-        title: (payload.customTitle? payload.customTitle : (itemInfo.classType + ' : ' + itemInfo.id)),
+        title: payload.customTitle
+          ? payload.customTitle
+          : itemInfo.classType + ' : ' + itemInfo.id,
         url: url,
         uid: itemInfo.id,
         height,
@@ -1136,6 +1133,14 @@ export class CommandsManager {
       }
     );
     return window;
+  }
+
+  static async addItemToNamedItems(itemInfo: CanvasItem) {
+    // Pushing the current item to namedItems map
+
+    await RestServiceManager.handleMinskyProcess({
+      command: `${commandsMapping.ADD_ENTRY_TO_NAMED_ITEMS_MAP} "${itemInfo.id}"`,
+    });
   }
 
   static async handleDoubleClick({ mouseX, mouseY }) {
@@ -1193,7 +1198,7 @@ export class CommandsManager {
       let systemWindowId = null;
       // TODO:: Can use godley title (if set) in window title
       const window = await this.initializePopupWindow({
-        customTitle : `Godley Table : ${itemInfo.id}`,
+        customTitle: `Godley Table : ${itemInfo.id}`,
         itemInfo,
         url: `#/headless/godley-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
         modal: false,
@@ -1224,7 +1229,7 @@ export class CommandsManager {
     if (!WindowManager.focusIfWindowIsPresent(itemInfo.id as number)) {
       let systemWindowId = null;
       const window = await this.initializePopupWindow({
-        customTitle : `Plot : ${itemInfo.id}`,
+        customTitle: `Plot : ${itemInfo.id}`,
         itemInfo,
         url: `#/headless/plot-widget-view?systemWindowId=${systemWindowId}&itemId=${itemInfo.id}`,
         modal: false,
@@ -1243,8 +1248,8 @@ export class CommandsManager {
           submenu: [
             {
               label: 'Options',
-              click: () => {
-                CommandsManager.openPlotWindowOptions(itemInfo);
+              click: async () => {
+                await CommandsManager.openPlotWindowOptions(itemInfo);
               },
             },
           ],
@@ -1259,7 +1264,8 @@ export class CommandsManager {
     }
   }
 
-  static openPlotWindowOptions(itemInfo: CanvasItem) {
+  static async openPlotWindowOptions(itemInfo: CanvasItem) {
+    await CommandsManager.addItemToNamedItems(itemInfo);
     WindowManager.createPopupWindowWithRouting({
       title: 'Plot Window Options',
       url: `#/headless/plot-widget-options?itemId=${itemInfo.id}`,

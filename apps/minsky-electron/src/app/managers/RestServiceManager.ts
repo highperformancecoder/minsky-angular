@@ -104,7 +104,6 @@ function callRESTApi(command: string) {
   }
 }
 
-
 export class RestServiceManager {
   static currentMinskyModelFilePath: string;
 
@@ -136,7 +135,7 @@ export class RestServiceManager {
     }
   }
 
-  public static getCurrentTab() : MainRenderingTabs {
+  public static getCurrentTab(): MainRenderingTabs {
     return this.currentTab;
   }
 
@@ -174,19 +173,19 @@ export class RestServiceManager {
     return await this.processCommandsInQueue();
   }
 
-
-  
   public static async handleMinskyProcess(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
     const wasQueueEmpty = this.payloadDataQueue.length === 0;
 
-    const shouldProcessQueue = this.isQueueEnabled? (!this.runningCommand && wasQueueEmpty) : true;
+    const shouldProcessQueue = this.isQueueEnabled
+      ? !this.runningCommand && wasQueueEmpty
+      : true;
 
-    let queueItem: QueueItem = null; 
+    let queueItem: QueueItem = null;
 
     // TODO:: Take into account Tab when merging commands
-    if ((payload.command === commandsMapping.MOUSEMOVE_SUBCOMMAND)) {
+    if (payload.command === commandsMapping.MOUSEMOVE_SUBCOMMAND) {
       if (this.lastMouseMovePayload !== null) {
         // console.log("Merging mouse move commands");
         this.lastMouseMovePayload.mouseX = payload.mouseX;
@@ -199,7 +198,7 @@ export class RestServiceManager {
       this.lastModelMoveToPayload = null;
       this.lastZoomPayload = null;
     } else if (payload.command === commandsMapping.MOVE_TO) {
-      console.log("MOVE TO ::", payload.mouseX, payload.mouseY);
+      console.log('MOVE TO ::', payload.mouseX, payload.mouseY);
       if (this.lastModelMoveToPayload !== null) {
         this.lastModelMoveToPayload.mouseX = payload.mouseX;
         this.lastModelMoveToPayload.mouseY = payload.mouseY;
@@ -267,7 +266,6 @@ export class RestServiceManager {
     return res;
   }
 
-
   private static async executeCommandOnMinskyServer(
     payload: MinskyProcessPayload
   ): Promise<unknown> {
@@ -291,6 +289,10 @@ export class RestServiceManager {
 
       case commandsMapping.MOVE_TO:
         stdinCommand = `${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
+        break;
+
+      case commandsMapping.MOVE_TO_SUBCOMMAND:
+        stdinCommand = `${this.currentTab}/${payload.command} [${payload.mouseX}, ${payload.mouseY}]`;
         break;
 
       case commandsMapping.MOUSEDOWN_SUBCOMMAND:
@@ -424,7 +426,6 @@ export class RestServiceManager {
     )}]`; // TODO:: Remove this and fix backend to accept integer values
     return renderCommand;
   }
-
 
   static async setPreferences() {
     const preferences: MinskyPreferences = StoreManager.store.get(

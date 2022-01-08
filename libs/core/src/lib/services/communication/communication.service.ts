@@ -5,6 +5,7 @@ import {
   events,
   HeaderEvent,
   importCSVvariableName,
+  MainRenderingTabs,
   MinskyProcessPayload,
   ReplayRecordingStatus,
   ZOOM_IN_FACTOR,
@@ -37,6 +38,7 @@ export class CommunicationService {
     y: number;
   };
 
+  currentTab = MainRenderingTabs.canvas;
   private isSimulationOn: boolean;
   showPlayButton$ = new BehaviorSubject<boolean>(true);
   t = '0';
@@ -648,6 +650,8 @@ export class CommunicationService {
   }
 
   async handleKeyDown(event: KeyboardEvent) {
+    event.preventDefault();
+
     const payload: MinskyProcessPayload = {
       command: '',
       key: event.key,

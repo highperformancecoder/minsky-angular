@@ -13,7 +13,7 @@ export const RESET_ZOOM_FACTOR = 1;
 
 export const USE_FRONTEND_DRIVEN_RENDERING = false; // We can retire this now?
 
-export const OPEN_DEV_TOOLS_IN_DEV_BUILD  = false;
+export const OPEN_DEV_TOOLS_IN_DEV_BUILD = false;
 
 export const commandsMapping = {
   ADD_BOOKMARK: '/minsky/model/addBookmark',
@@ -82,6 +82,7 @@ export const commandsMapping = {
   TIME_UNIT: '/minsky/timeUnit',
   UNDO: `/minsky/undo`,
   MOVE_TO: `/minsky/canvas/moveTo`,
+  MOVE_TO_SUBCOMMAND: `moveTo`,
   ZOOM_IN: `/minsky/canvas/zoom`,
   ZOOM_OUT: `/minsky/canvas/zoom`,
   ZOOM_TO_FIT: `/minsky/canvas/zoom`,
@@ -249,6 +250,12 @@ export const commandsMapping = {
   GET_NAMED_ITEM: '/minsky/namedItems/@elem',
   CANVAS_ITEM_IMPORT_FROM_CSV: '/minsky/canvas/item/importFromCSV',
   CANVAS_BACKGROUND_COLOR: '/minsky/canvas/backgroundColour',
+  VARIABLE_TAB_ROW_Y: '/minsky/variableTab/rowY',
+  VARIABLE_TAB_CLICK_TYPE: '/minsky/variableTab/clickType',
+  VARIABLE_TAB_GET_VAR_NAME: '/minsky/variableTab/getVarName',
+  VARIABLE_TAB_TOGGLE_VAR_DISPLAY: '/minsky/variableTab/toggleVarDisplay',
+  PLOT_TAB_GET_ITEM_AT: '/minsky/plotTab/getItemAt',
+  PLOT_TAB_TOGGLE_PLOT_DISPLAY: '/minsky/plotTab/togglePlotDisplay',
 };
 
 export const availableOperations = {

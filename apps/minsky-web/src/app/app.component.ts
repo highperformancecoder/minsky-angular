@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService, ElectronService } from '@minsky/core';
-import { events, MainRenderingTabs } from '@minsky/shared';
+import { commandsMapping, events, MainRenderingTabs } from '@minsky/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { ResizedEvent } from 'angular-resize-event';
 import * as debug from 'debug';
@@ -49,7 +49,6 @@ export class AppComponent implements AfterViewInit {
           break;
       }
     });
-
   }
 
   // close modals with ESC
@@ -70,7 +69,9 @@ export class AppComponent implements AfterViewInit {
     //CAVEAT: The blur is needed to prevent main window close (If we try to close a child window when one of its inputs has focus - the main window closes and there is a crash)
 
     // TODO:: Are there scenarios where we need to pass Enter key to the backend?
-    const buttons = Array.from(document.getElementsByClassName('submit')) as HTMLElement[];
+    const buttons = Array.from(
+      document.getElementsByClassName('submit')
+    ) as HTMLElement[];
     if (buttons.length > 0) {
       event.preventDefault();
     }
@@ -85,6 +86,12 @@ export class AppComponent implements AfterViewInit {
   }
 
   changeTab(tab: MainRenderingTabs) {
+    this.electronService.sendMinskyCommandAndRender({
+      command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
+    });
+
+    this.cmService.currentTab = tab;
+
     if (this.electronService.isElectron) {
       const payload = { newTab: tab };
       this.electronService.ipcRenderer.send(events.CHANGE_MAIN_TAB, payload);

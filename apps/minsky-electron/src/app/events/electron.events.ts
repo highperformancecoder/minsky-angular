@@ -12,7 +12,7 @@ import {
   MinskyProcessPayload,
 } from '@minsky/shared';
 import * as debug from 'debug';
-import { ipcMain, BrowserWindow } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import { environment } from '../../environments/environment';
 import { BookmarkManager } from '../managers/BookmarkManager';
 import { CommandsManager } from '../managers/CommandsManager';
@@ -91,8 +91,14 @@ ipcMain.on(events.POPULATE_BOOKMARKS, async (event, bookmarks: string[]) => {
 
 ipcMain.on(
   events.INIT_MENU_FOR_GODLEY_VIEW,
-  async (event, parameters: { window: BrowserWindow, itemInfo: CanvasItem }) => {
-    const menu = GodleyMenuManager.createMenusForGodleyView(parameters.window, parameters.itemInfo);
+  async (
+    event,
+    parameters: { window: BrowserWindow; itemInfo: CanvasItem }
+  ) => {
+    const menu = GodleyMenuManager.createMenusForGodleyView(
+      parameters.window,
+      parameters.itemInfo
+    );
     WindowManager.storeWindowMenu(parameters.window, menu);
   }
 );

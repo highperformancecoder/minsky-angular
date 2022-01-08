@@ -24,7 +24,6 @@ export class KeyBindingsManager {
     payload: MinskyProcessPayload
   ): Promise<unknown> {
     const {
-      key,
       shift,
       capsLock,
       ctrl,
@@ -34,18 +33,13 @@ export class KeyBindingsManager {
       location,
       command = '',
     } = payload;
+    let { key } = payload;
 
-    let keySymAndName = this.getX11KeysymAndName(key, location);
-    let _utf8 = this.getUtf8(key, ctrl);
-
-    const __payload = {
-      ...payload,
-      keySym: keySymAndName.keysym,
-      utf8: _utf8,
-      key: keySymAndName.name,
-    };
-
-    console.table(__payload);
+    if (shift && key === 'Tab') {
+      key = 'BackTab';
+    }
+    const keySymAndName = this.getX11KeysymAndName(key, location);
+    const _utf8 = this.getUtf8(key, ctrl);
 
     let modifierKeyCode = 0;
     if (shift) {
@@ -74,14 +68,18 @@ export class KeyBindingsManager {
         _payload
       );
 
-      if (!isKeyPressHandled && !command && (currentTab === MainRenderingTabs.canvas)) {
+      if (
+        !isKeyPressHandled &&
+        !command &&
+        currentTab === MainRenderingTabs.canvas
+      ) {
         return await this.handleOnKeyPressFallback(payload);
       }
       return isKeyPressHandled;
     }
 
     let res: boolean | string = false;
-    if (!command && (currentTab === MainRenderingTabs.canvas)) {
+    if (!command && currentTab === MainRenderingTabs.canvas) {
       res = await this.handleOnKeyPressFallback(payload);
     }
     return res;
@@ -300,36 +298,18 @@ export class KeyBindingsManager {
 
   private static openMultipleKeyStringPopup() {
     const scope = this;
-
-    if(!scope.multipleKeyWindow) {
-      scope.multipleKeyWindow = WindowManager.createPopupWindowWithRouting({
-        title: 'Text Input',
-        url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
-        width: 300,
-        height: 130
-      }, function (event : Electron.Event) {
-        if(!scope.closeInsteadOfHiding) {
-          event.preventDefault();
-          scope.multipleKeyWindow.hide();
-        } else {
+    if (!scope.multipleKeyWindow) {
+      scope.multipleKeyWindow = WindowManager.createPopupWindowWithRouting(
+        {
+          title: 'Text Input',
+          url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
+          width: 300,
+          height: 130,
+        },
+        function () {
+          scope.multipleKeyString = '';
           scope.multipleKeyWindow = null;
         }
-        scope.multipleKeyString = '';
-      });
-    }
-    
-
-    if (!scope.multipleKeyWindow.isVisible()) {
-      scope.multipleKeyWindow.show();
-      scope.multipleKeyWindow.focus();
-    }
-
-
-    if (scope.multipleKeyWindow && scope.multipleKeyWindow.isVisible()) {
-      this.multipleKeyWindow.loadURL(
-        `${rendererAppURL}#/headless/multiple-key-operation?input=${encodeURIComponent(
-          this.multipleKeyString
-        )}`
       );
     }
   }

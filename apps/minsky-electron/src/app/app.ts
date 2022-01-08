@@ -1,26 +1,26 @@
 import {
   ActiveWindow,
   green,
+  isMacOS,
+  OPEN_DEV_TOOLS_IN_DEV_BUILD,
   red,
   rendererAppName,
   rendererAppURL,
-  isMacOS,
-  OPEN_DEV_TOOLS_IN_DEV_BUILD
 } from '@minsky/shared';
 import * as debug from 'debug';
-import { BrowserWindow, dialog, screen, shell } from 'electron';
+import { BrowserWindow, dialog, screen } from 'electron';
 import * as log from 'electron-log';
 import { join } from 'path';
 import { format } from 'url';
+import { ApplicationMenuManager } from './managers/ApplicationMenuManager';
 import { CommandsManager } from './managers/CommandsManager';
 import { HelpFilesManager } from './managers/HelpFilesManager';
-import { ApplicationMenuManager } from './managers/ApplicationMenuManager';
 import { RecentFilesManager } from './managers/RecentFilesManager';
 import { RestServiceManager } from './managers/RestServiceManager';
 import { StoreManager } from './managers/StoreManager';
-import { Utility } from './utility';
 import { WindowManager } from './managers/WindowManager';
 import { KeyBindingsManager } from './managers/KeyBindingsManager';
+import { Utility } from './utility';
 
 const logWindows = debug('minsky:electron_windows');
 
@@ -30,7 +30,7 @@ export default class App {
   static mainWindow: Electron.BrowserWindow;
   static application: Electron.App;
   static BrowserWindow;
-  static directlyClose: boolean = false;
+  static directlyClose = false;
 
   private static onWindowAllClosed() {
     if (!isMacOS()) {
@@ -139,7 +139,7 @@ export default class App {
       isMainWindow: true,
       context: App.mainWindow,
       systemWindowId: WindowManager.getSystemWindowId(this.mainWindow),
-      menu : null
+      menu: null,
     };
 
     WindowManager.activeWindows.set(App.mainWindow.id, mainWindowDetails);
