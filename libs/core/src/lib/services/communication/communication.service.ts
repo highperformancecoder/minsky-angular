@@ -9,6 +9,7 @@ import {
   MainRenderingTabs,
   MinskyProcessPayload,
   ReplayRecordingStatus,
+  TypeValueName,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
@@ -62,6 +63,8 @@ export class CommunicationService {
   runUntilTime: number;
 
   private dialogRef: MatDialogRef<DialogComponent, any> = null;
+  availableOperations = null;
+
   constructor(
     // private socket: Socket,
     private electronService: ElectronService,
@@ -564,13 +567,6 @@ export class CommunicationService {
   }
 
   async importData() {
-    /*
-      1. Add a parameter with name set to "dataimport"
-      2. Automatically open the CSV import dialog.
-      3. If CSV import is successfully completed / saved -> rename the parameter to the name of the csv file
-      4. If CSV import fails or is cancelled -> delete the parameter.
-    */
-
     await this.createVariable({
       variableName: importCSVvariableName,
       type: 'parameter',
@@ -590,7 +586,6 @@ export class CommunicationService {
       mouseY: this.mouseY,
     });
 
-    // 2
     const payload: MinskyProcessPayload = {
       mouseX: this.mouseX,
       mouseY: this.mouseY,
@@ -654,8 +649,6 @@ export class CommunicationService {
   }
 
   async handleKeyDown(event: KeyboardEvent) {
-    event.preventDefault();
-
     if (event.shiftKey) {
       this.isShiftPressed = true;
       this.showDragCursor$.next(true);
@@ -674,16 +667,6 @@ export class CommunicationService {
     };
 
     if (!this.dialogRef) {
-      // const isKeyHandled = false;
-      // const isKeyHandled = (await this.electronService.sendMinskyCommandAndRender(
-      //   payload,
-      //   events.KEY_PRESS
-      // )) as boolean;
-      // console.log(
-      //   '🚀 ~ file: communication.service.ts ~ line 679 ~ CommunicationService ~ handleKeyDown ~ isKeyHandled',
-      //   isKeyHandled
-      // );
-
       const isKeyHandled = this.electronService.ipcRenderer.sendSync(
         events.KEY_PRESS,
         {
@@ -691,10 +674,7 @@ export class CommunicationService {
           command: payload.command.trim(),
         }
       );
-      console.log(
-        '🚀 ~ file: communication.service.ts ~ line 693 ~ CommunicationService ~ handleKeyDown ~ isKeyHandled',
-        isKeyHandled
-      );
+
       const asciiRegex = /[ -~]/;
 
       if (
@@ -702,29 +682,114 @@ export class CommunicationService {
         event.key.length === 1 &&
         event.key.match(asciiRegex)
       ) {
-        // multipleKeyString += event.key;
-
         this.dialogRef = this.dialog.open(DialogComponent, {
           width: '600px',
-          // data: { multipleKeyString: multipleKeyString },
           position: { top: '0', left: '33.33%' },
         });
 
-        this.dialogRef.afterClosed().subscribe((result) => {
-          console.log('The dialog was closed');
+        this.dialogRef.afterClosed().subscribe(async (multipleKeyString) => {
           console.log(
-            '🚀 ~ file: communication.service.ts ~ line 687 ~ CommunicationService ~ this.dialogRef.afterClosed ~ result',
-            result
+            '🚀 ~ file: communication.service.ts ~ line 691 ~ CommunicationService ~ this.dialogRef.afterClosed ~ multipleKeyString',
+            multipleKeyString
           );
-          // multipleKeyString = '';
           this.dialogRef = null;
+          await this.handleTextInputSubmit(multipleKeyString);
         });
       }
+
       // if (multipleKeyString) {
       //   TextInputUtilities.setValue(multipleKeyString);
       // } else {
-      //   TextInputUtilities.hide();}
+      //   TextInputUtilities.hide();
+      // }
     }
+    if (
+      [
+        'ArrowRight',
+        'ArrowLeft',
+        'ArrowUp',
+        'ArrowDown',
+        'PageUp',
+        'PageDown',
+      ].includes(event.key) &&
+      !this.dialogRef
+    ) {
+      // this is to prevent scroll events on press if arrow and page up/down keys
+      event.preventDefault();
+    }
+  }
+
+  private showCreateVariablePopup(title: string, params: TypeValueName) {
+    const urlParts = Object.keys(params)
+      .map((pKey) => {
+        return `${pKey}=${params[pKey]}`;
+      })
+      .join('&');
+
+    this.electronService.ipcRenderer.send(events.CREATE_MENU_POPUP, {
+      width: 500,
+      height: 650,
+      title: title,
+      url: `#/headless/menu/insert/create-variable?${urlParts}`,
+    });
+  }
+
+  // use this
+  async handleTextInputSubmit(multipleKeyString: string) {
+    if (this.electronService.isElectron) {
+      if (multipleKeyString.charAt(0) === '#') {
+        const note = multipleKeyString.slice(1);
+        this.insertElement('ADD_NOTE', note, 'string');
+        return;
+      }
+
+      if (multipleKeyString.charAt(0) === '-') {
+        this.showCreateVariablePopup('Create Constant', {
+          type: 'constant',
+          value: multipleKeyString,
+        });
+        return;
+      }
+
+      const availableOperations = await this.getAvailableOperations();
+      const operation = availableOperations[multipleKeyString.toLowerCase()];
+
+      if (operation) {
+        this.addOperation(operation);
+        return;
+      }
+
+      const value = parseFloat(multipleKeyString);
+      const isConstant = !isNaN(value);
+      const popupTitle = isConstant
+        ? 'Create Constant'
+        : 'Specify Variable Name';
+      const params: TypeValueName = {
+        type: isConstant ? 'constant' : 'flow',
+        name: multipleKeyString,
+      };
+      if (isConstant) {
+        params.value = value;
+      }
+
+      this.showCreateVariablePopup(popupTitle, params);
+      return;
+    }
+  }
+
+  private async getAvailableOperations(): Promise<Object> {
+    if (!this.availableOperations) {
+      this.availableOperations = {};
+      const list = (await this.electronService.sendMinskyCommandAndRender({
+        command: commandsMapping.AVAILABLE_OPERATIONS,
+        render: false,
+      })) as string[];
+
+      list.forEach((value) => {
+        this.availableOperations[value.toLowerCase()] = value;
+      });
+    }
+    return this.availableOperations;
   }
 
   handleDblClick() {

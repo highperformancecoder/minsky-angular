@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -9,21 +10,21 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class DialogComponent implements AfterViewInit {
   @ViewChild('inputElement') inputElement: ElementRef;
   inputHtmlElement: HTMLElement;
+  multipleKeyString: FormControl;
 
-  constructor(
-    public dialogRef: MatDialogRef<DialogComponent> // @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  constructor(public dialogRef: MatDialogRef<DialogComponent>) {
+    this.multipleKeyString = new FormControl('');
+  }
 
   ngAfterViewInit(): void {
     this.inputHtmlElement = this.inputElement.nativeElement as HTMLElement;
-    // this.input = localStorage.getItem('multipleKeyString');
     this.inputHtmlElement.focus();
   }
 
-  onCancel(): void {
-    this.dialogRef.close();
+  submit(): void {
+    this.dialogRef.close(this.multipleKeyString.value);
   }
-  handleSave(): void {
+  close(): void {
     this.dialogRef.close();
   }
 }
