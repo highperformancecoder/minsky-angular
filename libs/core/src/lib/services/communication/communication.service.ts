@@ -12,6 +12,7 @@ import {
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
 import { BehaviorSubject } from 'rxjs';
+import { TextInputUtilities } from '../TextInputUtilities';
 import { WindowUtilityService } from '../WindowUtility/window-utility.service';
 import { ElectronService } from './../electron/electron.service';
 
@@ -165,9 +166,8 @@ export class CommunicationService {
           case 'ZOOM_OUT':
             autoHandleMinskyProcess = false;
             await this.electronService.sendMinskyCommandAndRender({
-              command: `${command} [${canvasWidth / 2}, ${
-                canvasHeight / 2
-              }, ${ZOOM_OUT_FACTOR}]`,
+              command: `${command} [${canvasWidth / 2}, ${canvasHeight / 2
+                }, ${ZOOM_OUT_FACTOR}]`,
             });
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
@@ -176,9 +176,8 @@ export class CommunicationService {
           case 'ZOOM_IN':
             autoHandleMinskyProcess = false;
             await this.electronService.sendMinskyCommandAndRender({
-              command: `${command} [${canvasWidth / 2}, ${
-                canvasHeight / 2
-              }, ${ZOOM_IN_FACTOR}]`,
+              command: `${command} [${canvasWidth / 2}, ${canvasHeight / 2
+                }, ${ZOOM_IN_FACTOR}]`,
             });
             await this.electronService.sendMinskyCommandAndRender({
               command: commandsMapping.REQUEST_REDRAW_SUBCOMMAND,
@@ -346,9 +345,8 @@ export class CommunicationService {
       })) as number;
 
       //if relZoom = 0 ;use relZoom as 1 to avoid returning infinity
-      command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${
-        1 / (relZoom || 1)
-      }]`;
+      command = `${commandsMapping.ZOOM_IN} [${centerX}, ${centerY}, ${1 / (relZoom || 1)
+        }]`;
     } else {
       command = `${commandsMapping.SET_ZOOM} 1`;
     }
@@ -519,9 +517,8 @@ export class CommunicationService {
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${
-        params.units || ''
-      }"`,
+      command: `${commandsMapping.ITEM_FOCUS_SET_UNITS} "${params.units || ''
+        }"`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
@@ -541,21 +538,18 @@ export class CommunicationService {
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MAX} ${
-        params.sliderBoundsMax || 0
-      }`,
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MAX} ${params.sliderBoundsMax || 0
+        }`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MIN} ${
-        params.sliderBoundsMin || 0
-      }`,
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_MIN} ${params.sliderBoundsMin || 0
+        }`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP} ${
-        params.sliderStepSize || 0
-      }`,
+      command: `${commandsMapping.ITEM_FOCUS_SLIDER_STEP} ${params.sliderStepSize || 0
+        }`,
     });
   }
 
@@ -676,7 +670,11 @@ export class CommunicationService {
       events.KEY_PRESS
     )) as string;
 
-    localStorage.setItem('multipleKeyString', multipleKeyString);
+    if (multipleKeyString) {
+      TextInputUtilities.setValue(multipleKeyString);
+    } else {
+      TextInputUtilities.hide();
+    }
   }
 
   handleDblClick() {

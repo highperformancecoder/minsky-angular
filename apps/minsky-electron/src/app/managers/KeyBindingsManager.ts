@@ -13,7 +13,6 @@ import * as KeysymMapper from 'keysym';
 import * as utf8 from 'utf8';
 import { CommandsManager } from './CommandsManager';
 import { RestServiceManager } from './RestServiceManager';
-import { WindowManager } from './WindowManager';
 
 export class KeyBindingsManager {
   static multipleKeyString = '';
@@ -280,39 +279,14 @@ export class KeyBindingsManager {
     }
 
     const asciiRegex = /[ -~]/;
-
     if (!executed && key.length === 1 && key.match(asciiRegex)) {
-      this.multipleKeyString += key;
-      KeyBindingsManager.openMultipleKeyStringPopup();
+      return key;
+      //this.multipleKeyString += key;
     }
-    return this.multipleKeyString;
+    return null;
+    //return this.multipleKeyString;
   }
 
-
-  public static closeWindow() {
-    this.closeInsteadOfHiding = true;
-    if(this.multipleKeyWindow) {
-      this.multipleKeyWindow.close();
-    }
-  }
-
-  private static openMultipleKeyStringPopup() {
-    const scope = this;
-    if (!scope.multipleKeyWindow) {
-      scope.multipleKeyWindow = WindowManager.createPopupWindowWithRouting(
-        {
-          title: 'Text Input',
-          url: `#/headless/multiple-key-operation?input=${this.multipleKeyString}`,
-          width: 300,
-          height: 130,
-        },
-        function () {
-          scope.multipleKeyString = '';
-          scope.multipleKeyWindow = null;
-        }
-      );
-    }
-  }
 
   private static async handlePlusKey(payload: MinskyProcessPayload) {
     if (payload.shift) {

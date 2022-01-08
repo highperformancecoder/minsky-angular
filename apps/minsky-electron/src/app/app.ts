@@ -19,7 +19,6 @@ import { RecentFilesManager } from './managers/RecentFilesManager';
 import { RestServiceManager } from './managers/RestServiceManager';
 import { StoreManager } from './managers/StoreManager';
 import { WindowManager } from './managers/WindowManager';
-import { KeyBindingsManager } from './managers/KeyBindingsManager';
 import { Utility } from './utility';
 
 const logWindows = debug('minsky:electron_windows');
@@ -37,7 +36,7 @@ export default class App {
       App.application.quit();
     }
   }
-
+  
   private static async onReady() {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
@@ -153,7 +152,6 @@ export default class App {
         if (!canProceed) {
           return;
         }
-        KeyBindingsManager.closeWindow();
         App.directlyClose = true;
         App.mainWindow.close();
       }

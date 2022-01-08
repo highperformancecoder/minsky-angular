@@ -1,10 +1,32 @@
-@import '../../../../shared/src/lib/theme/variables.scss';
+@import "../../../../shared/src/lib/theme/variables.scss";
 
 .toolbar-section {
   display: inline-flex;
 
   .m-a-0 {
     margin: auto 0;
+  }
+
+  .direct-text-input-container {
+    visibility: hidden;
+    margin-left: 1rem;
+    display: flex;
+    align-items: flex-end;
+
+    input {
+      outline: none;
+      border: none;
+      border-bottom: 1px solid black;
+    }
+
+    .custom-button {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: white;
+      border-radius: 1rem;
+      border: 1px solid black;
+      outline: none;
+    }
   }
 
   .btn {
