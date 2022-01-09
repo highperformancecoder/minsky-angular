@@ -3,7 +3,8 @@
 .popup-wrapper {
   font-family: $font-family;
   margin: 0 auto;
-  max-width: 470px;
+  padding: 2rem;
+  max-width: 32rem;
 }
 
 .popup-title {
@@ -17,10 +18,12 @@
 }
 
 .form-control > label {
-  min-width: 270px;
+  width: 12rem;
   display: inline-block;
-  text-align: right;
+  text-align: left;
   margin-right: 10px;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .form-control .radio-wrapper {

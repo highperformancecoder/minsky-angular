@@ -198,7 +198,6 @@ export class RestServiceManager {
       this.lastModelMoveToPayload = null;
       this.lastZoomPayload = null;
     } else if (payload.command === commandsMapping.MOVE_TO) {
-      console.log('MOVE TO ::', payload.mouseX, payload.mouseY);
       if (this.lastModelMoveToPayload !== null) {
         this.lastModelMoveToPayload.mouseX = payload.mouseX;
         this.lastModelMoveToPayload.mouseY = payload.mouseY;
@@ -427,7 +426,7 @@ export class RestServiceManager {
     return renderCommand;
   }
 
-  static async setPreferences() {
+  static async setGodleyPreferences() {
     const preferences: MinskyPreferences = StoreManager.store.get(
       'preferences'
     );
@@ -480,7 +479,7 @@ export class RestServiceManager {
       await setGodleyIconResource();
       await setGroupIconResource();
       await setLockIconResource();
-      await scope.setPreferences();
+      await scope.setGodleyPreferences();
     }, 100);
   }
 }
