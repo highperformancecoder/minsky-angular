@@ -146,7 +146,7 @@ export class RestServiceManager {
   }
 
   private static async processCommandsInQueue(): Promise<unknown> {
-    // Should be on a separate thread......? Janak
+    // Should be on a separate thread......? -Janak
     const shouldProcessQueue = this.isQueueEnabled
       ? !this.runningCommand && this.payloadDataQueue.length > 0
       : this.payloadDataQueue.length > 0;

@@ -38,6 +38,7 @@ export class DialogComponent implements AfterViewInit {
       this.dialogRef.close(this.multipleKeyString.value);
     });
   }
+  
   close(): void {
     // console.log(
     //   '🚀 ~ file: dialog.component.ts ~ line 28 ~ DialogComponent ~ close ~ close'
