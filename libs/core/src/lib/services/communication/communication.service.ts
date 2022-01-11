@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {
   AppLayoutPayload,
+  availableOperations,
   commandsMapping,
   events,
   HeaderEvent,
@@ -743,6 +744,11 @@ export class CommunicationService {
         return;
       }
 
+      if(multipleKeyString === "-") {
+        this.addOperation(availableOperations.SUBTRACT);
+        return;
+      }
+
       if (multipleKeyString.charAt(0) === '-') {
         this.showCreateVariablePopup('Create Constant', {
           type: 'constant',
@@ -751,8 +757,8 @@ export class CommunicationService {
         return;
       }
 
-      const availableOperations = await this.getAvailableOperations();
-      const operation = availableOperations[multipleKeyString.toLowerCase()];
+      const operationsMap = await this.getAvailableOperations();
+      const operation = operationsMap[multipleKeyString.toLowerCase()];
 
       if (operation) {
         this.addOperation(operation);
