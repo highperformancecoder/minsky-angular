@@ -49,7 +49,7 @@ export default class App {
     await HelpFilesManager.initialize(helpFilesFolder);
     App.initMainWindow();
     await App.initMinskyService();
-    App.initMenu();
+    await App.initMenu();
     App.loadMainWindow();
   }
 
@@ -59,19 +59,16 @@ export default class App {
     await RestServiceManager.startMinskyService();
   }
 
-  private static initMenu() {
+  private static async initMenu() {
     const menu = ApplicationMenuManager.createMainApplicationMenu();
     WindowManager.storeWindowMenu(App.mainWindow, menu);
-
     RecentFilesManager.initRecentFiles();
 
     StoreManager.store.onDidChange('recentFiles', () => {
       RecentFilesManager.initRecentFiles();
     });
 
-    (async () => {
-      await ApplicationMenuManager.buildMenuForInsertOperations();
-    })();
+    await ApplicationMenuManager.buildMenuForInsertOperations();
   }
 
   private static onActivate() {
