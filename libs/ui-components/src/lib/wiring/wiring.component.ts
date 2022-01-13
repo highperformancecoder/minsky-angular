@@ -90,7 +90,7 @@ export class WiringComponent implements OnInit, OnDestroy {
 
         document.body.addEventListener('keydown', async (event) => {
           // TextInputUtilities.show();
-          await this.cmService.handleKeyDown(event);
+          await this.cmService.handleKeyDown({ event });
         });
 
         document.body.addEventListener('keyup', async (event) => {

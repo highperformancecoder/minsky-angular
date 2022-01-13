@@ -649,18 +649,44 @@ export class CommunicationService {
     return;
   }
 
-  async handleKeyDown(event: KeyboardEvent) {
-    if (event.shiftKey) {
+  async handleKeyDown({
+    event,
+    command = '',
+  }: {
+    event: KeyboardEvent;
+    command?: string;
+  }) {
+    if (
+      [
+        'ArrowRight',
+        'ArrowLeft',
+        'ArrowUp',
+        'ArrowDown',
+        'PageUp',
+        'PageDown',
+      ].includes(event.key)
+    ) {
+      // this is to prevent scroll events on press if arrow and page up/down keys
+      event.preventDefault();
+    }
+
+    const isMainWindow = this.windowUtilityService.isMainWindow();
+
+    if (event.shiftKey && isMainWindow) {
       this.isShiftPressed = true;
       this.showDragCursor$.next(true);
     }
-    if ((this.dialogRef && event.ctrlKey) || (this.dialogRef && event.altKey)) {
+
+    if (
+      isMainWindow &&
+      ((this.dialogRef && event.ctrlKey) || (this.dialogRef && event.altKey))
+    ) {
       // return when dialog is open anything is pressed with ctrl or alt
       return;
     }
 
     const payload: MinskyProcessPayload = {
-      command: '',
+      command,
       key: event.key,
       shift: event.shiftKey,
       capsLock: event.getModifierState('CapsLock'),
@@ -670,6 +696,15 @@ export class CommunicationService {
       mouseY: this.mouseY,
       location: event.location,
     };
+
+    if (!isMainWindow) {
+      await this.electronService.sendMinskyCommandAndRender(
+        payload,
+        events.KEY_PRESS
+      );
+      return;
+    }
+
     if (!this.dialogRef) {
       const isKeyHandled = this.electronService.ipcRenderer.sendSync(
         events.KEY_PRESS,
@@ -703,24 +738,12 @@ export class CommunicationService {
         });
       }
 
+      return;
       // if (multipleKeyString) {
       //   TextInputUtilities.setValue(multipleKeyString);
       // } else {
       //   TextInputUtilities.hide();
       // }
-    }
-    if (
-      [
-        'ArrowRight',
-        'ArrowLeft',
-        'ArrowUp',
-        'ArrowDown',
-        'PageUp',
-        'PageDown',
-      ].includes(event.key)
-    ) {
-      // this is to prevent scroll events on press if arrow and page up/down keys
-      event.preventDefault();
     }
   }
 
