@@ -654,7 +654,8 @@ export class CommunicationService {
       this.isShiftPressed = true;
       this.showDragCursor$.next(true);
     }
-    if (this.dialogRef || event.ctrlKey) {
+    if ((this.dialogRef && event.ctrlKey) || (this.dialogRef && event.altKey)) {
+      // return when dialog is open anything is pressed with ctrl or alt
       return;
     }
 
@@ -669,43 +670,45 @@ export class CommunicationService {
       mouseY: this.mouseY,
       location: event.location,
     };
+    if (!this.dialogRef) {
+      const isKeyHandled = this.electronService.ipcRenderer.sendSync(
+        events.KEY_PRESS,
+        {
+          ...payload,
+          command: payload.command.trim(),
+        }
+      );
 
-    const isKeyHandled = this.electronService.ipcRenderer.sendSync(
-      events.KEY_PRESS,
-      {
-        ...payload,
-        command: payload.command.trim(),
+      const asciiRegex = /[ -~]/;
+
+      if (
+        !isKeyHandled &&
+        event.key.length === 1 &&
+        event.key.match(asciiRegex) &&
+        !event.altKey &&
+        !event.ctrlKey
+      ) {
+        this.dialogRef = this.dialog.open(DialogComponent, {
+          width: '600px',
+          position: { top: '0', left: '33.33%' },
+        });
+
+        this.dialogRef.afterClosed().subscribe(async (multipleKeyString) => {
+          console.log(
+            '🚀 ~ file: communication.service.ts ~ line 691 ~ CommunicationService ~ this.dialogRef.afterClosed ~ multipleKeyString',
+            multipleKeyString
+          );
+          this.dialogRef = null;
+          await this.handleTextInputSubmit(multipleKeyString);
+        });
       }
-    );
 
-    const asciiRegex = /[ -~]/;
-
-    if (
-      !isKeyHandled &&
-      event.key.length === 1 &&
-      event.key.match(asciiRegex)
-    ) {
-      this.dialogRef = this.dialog.open(DialogComponent, {
-        width: '600px',
-        position: { top: '0', left: '33.33%' },
-      });
-
-      this.dialogRef.afterClosed().subscribe(async (multipleKeyString) => {
-        console.log(
-          '🚀 ~ file: communication.service.ts ~ line 691 ~ CommunicationService ~ this.dialogRef.afterClosed ~ multipleKeyString',
-          multipleKeyString
-        );
-        this.dialogRef = null;
-        await this.handleTextInputSubmit(multipleKeyString);
-      });
+      // if (multipleKeyString) {
+      //   TextInputUtilities.setValue(multipleKeyString);
+      // } else {
+      //   TextInputUtilities.hide();
+      // }
     }
-
-    // if (multipleKeyString) {
-    //   TextInputUtilities.setValue(multipleKeyString);
-    // } else {
-    //   TextInputUtilities.hide();
-    // }
-
     if (
       [
         'ArrowRight',
