@@ -508,11 +508,22 @@ export class ApplicationMenuManager {
     };
   }
 
-  private static async exportCanvas(extension: string, command: string, extraArgs: Array<any> = []) {
-    const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(extension);
+  private static async exportCanvas(
+    extension: string,
+    command: string,
+    extraArgs: Array<any> = []
+  ) {
+    const filePath = await CommandsManager.getFilePathFromExportCanvasDialog(
+      extension
+    );
     if (filePath) {
-      const args = (extraArgs.length > 0) ? `[${filePath}, ${extraArgs.join(",")}]` : filePath;
-      await RestServiceManager.handleMinskyProcess({ command: `${command} ${args}` });
+      const args =
+        extraArgs.length > 0
+          ? `[${filePath}, ${extraArgs.join(',')}]`
+          : filePath;
+      await RestServiceManager.handleMinskyProcess({
+        command: `${command} ${args}`,
+      });
     }
   }
 
@@ -524,32 +535,47 @@ export class ApplicationMenuManager {
         {
           label: 'SVG',
           click: async () => {
-            await scope.exportCanvas('svg', commandsMapping.RENDER_CANVAS_TO_SVG);
+            await scope.exportCanvas(
+              'svg',
+              commandsMapping.RENDER_CANVAS_TO_SVG
+            );
           },
         },
         {
           label: 'PDF',
           click: async () => {
-            await scope.exportCanvas('psd', commandsMapping.RENDER_CANVAS_TO_PDF);
+            await scope.exportCanvas(
+              'psd',
+              commandsMapping.RENDER_CANVAS_TO_PDF
+            );
           },
         },
         {
           label: 'EMF',
           visible: isWindows(),
           click: async () => {
-            await scope.exportCanvas('emf', commandsMapping.RENDER_CANVAS_TO_EMF);
+            await scope.exportCanvas(
+              'emf',
+              commandsMapping.RENDER_CANVAS_TO_EMF
+            );
           },
         },
         {
           label: 'PostScript',
           click: async () => {
-            await scope.exportCanvas('eps', commandsMapping.RENDER_CANVAS_TO_PS);
+            await scope.exportCanvas(
+              'eps',
+              commandsMapping.RENDER_CANVAS_TO_PS
+            );
           },
         },
         {
           label: 'LaTeX',
           click: async () => {
-            await scope.exportCanvas('tex', commandsMapping.LATEX, [StoreManager.store.get('preferences').wrapLongEquationsInLatexExport]);
+            await scope.exportCanvas('tex', commandsMapping.LATEX, [
+              StoreManager.store.get('preferences')
+                .wrapLongEquationsInLatexExport,
+            ]);
           },
         },
         {
@@ -567,7 +593,7 @@ export class ApplicationMenuManager {
       title: `Export plot as ${extension}`,
       defaultPath: 'plot',
       properties: ['showOverwriteConfirmation', 'createDirectory'],
-      filters: [{ extensions: [extension], name: extension.toUpperCase() }]
+      filters: [{ extensions: [extension], name: extension.toUpperCase() }],
     });
 
     const { canceled, filePath: _filePath } = exportPlotDialog;
@@ -583,7 +609,6 @@ export class ApplicationMenuManager {
     });
   }
 
-
   private static getExportPlotMenu(): MenuItemConstructorOptions {
     const scope = this;
     return {
@@ -592,13 +617,19 @@ export class ApplicationMenuManager {
         {
           label: 'SVG',
           async click() {
-            await scope.exportPlot('svg', commandsMapping.RENDER_ALL_PLOTS_AS_SVG);
+            await scope.exportPlot(
+              'svg',
+              commandsMapping.RENDER_ALL_PLOTS_AS_SVG
+            );
           },
         },
         {
           label: 'CSV',
           async click() {
-            await scope.exportPlot('csv', commandsMapping.EXPORT_ALL_PLOTS_AS_CSV);
+            await scope.exportPlot(
+              'csv',
+              commandsMapping.EXPORT_ALL_PLOTS_AS_CSV
+            );
           },
         },
       ],
