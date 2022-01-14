@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ElectronService, WindowUtilityService } from '@minsky/core';
+import { replaceBackSlash } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-input-modal',
@@ -39,7 +40,7 @@ export class InputModalComponent implements OnInit, AfterViewInit {
   }
 
   handleSave() {
-    this.saveInput.emit(this.nameControl.value);
+    this.saveInput.emit(replaceBackSlash(this.nameControl.value));
   }
 
   closeWindow() {

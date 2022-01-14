@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from '@minsky/core';
-import { commandsMapping } from '@minsky/shared';
+import { commandsMapping, replaceBackSlash } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
 @AutoUnsubscribe()
@@ -152,19 +152,27 @@ export class PlotWidgetOptionsComponent implements OnInit, OnDestroy {
   async handleSave() {
     if (this.electronService.isElectron) {
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/title "${this.title.value}"`,
+        command: `${commandsMapping.GET_NAMED_ITEM}/${
+          this.itemId
+        }/second/title "${replaceBackSlash(this.title.value)}"`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/xlabel "${this.xLabel.value}"`,
+        command: `${commandsMapping.GET_NAMED_ITEM}/${
+          this.itemId
+        }/second/xlabel "${replaceBackSlash(this.xLabel.value)}"`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/ylabel "${this.yLabel.value}"`,
+        command: `${commandsMapping.GET_NAMED_ITEM}/${
+          this.itemId
+        }/second/ylabel "${replaceBackSlash(this.yLabel.value)}"`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/y1label "${this.rhsYLabel.value}"`,
+        command: `${commandsMapping.GET_NAMED_ITEM}/${
+          this.itemId
+        }/second/y1label "${replaceBackSlash(this.rhsYLabel.value)}"`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({

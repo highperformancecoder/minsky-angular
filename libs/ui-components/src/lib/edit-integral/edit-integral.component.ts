@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from '@minsky/core';
-import { ClassType, commandsMapping } from '@minsky/shared';
+import { ClassType, commandsMapping, replaceBackSlash } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-edit-integral',
@@ -93,7 +93,9 @@ export class EditIntegralComponent implements OnInit {
   async handleSave() {
     if (this.electronService.isElectron) {
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.CANVAS_ITEM_DESCRIPTION} "${this.name.value}"`,
+        command: `${
+          commandsMapping.CANVAS_ITEM_DESCRIPTION
+        } "${replaceBackSlash(this.name.value)}"`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({
@@ -105,7 +107,9 @@ export class EditIntegralComponent implements OnInit {
       });
 
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.CANVAS_ITEM_INT_VAR_SET_UNITS} "${this.units.value}"`,
+        command: `${
+          commandsMapping.CANVAS_ITEM_INT_VAR_SET_UNITS
+        } "${replaceBackSlash(this.units.value)}"`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({

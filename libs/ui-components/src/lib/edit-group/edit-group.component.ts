@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from '@minsky/core';
-import { ClassType, commandsMapping } from '@minsky/shared';
+import { ClassType, commandsMapping, replaceBackSlash } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-edit-group',
@@ -61,7 +61,9 @@ export class EditGroupComponent implements OnInit {
   async handleSave() {
     if (this.electronService.isElectron) {
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.CANVAS_ITEM_TITLE} "${this.name.value}"`,
+        command: `${commandsMapping.CANVAS_ITEM_TITLE} "${replaceBackSlash(
+          this.name.value
+        )}"`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({

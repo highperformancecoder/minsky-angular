@@ -11,7 +11,7 @@ import {
   ElectronService,
   WindowUtilityService,
 } from '@minsky/core';
-import { commandsMapping } from '@minsky/shared';
+import { commandsMapping, replaceBackSlash } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
 @AutoUnsubscribe()
@@ -173,7 +173,9 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
 
   async editVariable() {
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.RENAME_ITEM} "${this.variableName.value}"`,
+      command: `${commandsMapping.RENAME_ITEM} "${replaceBackSlash(
+        this.variableName.value
+      )}"`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
@@ -181,13 +183,15 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.CANVAS_ITEM_SET_UNITS} "${
+      command: `${commandsMapping.CANVAS_ITEM_SET_UNITS} "${replaceBackSlash(
         this.units.value || ''
-      }"`,
+      )}"`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.CANVAS_ITEM_INIT} "${this.value.value}"`,
+      command: `${commandsMapping.CANVAS_ITEM_INIT} "${replaceBackSlash(
+        this.value.value
+      )}"`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
@@ -197,11 +201,15 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.CANVAS_ITEM_TOOLTIP} "${this.shortDescription.value}"`,
+      command: `${commandsMapping.CANVAS_ITEM_TOOLTIP} "${replaceBackSlash(
+        this.shortDescription.value
+      )}"`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.CANVAS_ITEM_DETAILED_TEXT} "${this.detailedDescription.value}"`,
+      command: `${
+        commandsMapping.CANVAS_ITEM_DETAILED_TEXT
+      } "${replaceBackSlash(this.detailedDescription.value)}"`,
     });
 
     await this.electronService.sendMinskyCommandAndRender({
@@ -231,13 +239,13 @@ export class CreateVariableComponent implements OnInit, OnDestroy {
 
   async createVariable() {
     await this.commService.createVariable({
-      variableName: this.variableName.value,
+      variableName: replaceBackSlash(this.variableName.value),
       type: this.type.value,
-      units: this.units.value || '',
-      value: this.value.value,
+      units: replaceBackSlash(this.units.value || ''),
+      value: replaceBackSlash(this.value.value),
       rotation: this.rotation.value || 0,
-      shortDescription: this.shortDescription.value,
-      detailedDescription: this.detailedDescription.value,
+      shortDescription: replaceBackSlash(this.shortDescription.value),
+      detailedDescription: replaceBackSlash(this.detailedDescription.value),
       sliderStepSize: this.sliderStepSize.value || 0,
       sliderBoundsMax: this.sliderBoundsMax.value || 0,
       sliderBoundsMin: this.sliderBoundsMin.value || 0,

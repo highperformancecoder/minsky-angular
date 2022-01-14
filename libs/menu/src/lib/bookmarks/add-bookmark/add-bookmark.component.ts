@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ElectronService } from '@minsky/core';
-import { commandsMapping, events } from '@minsky/shared';
+import { commandsMapping, events, replaceBackSlash } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-add-bookmark',
@@ -17,7 +17,9 @@ export class AddBookmarkComponent {
 
   async handleSubmit() {
     await this.electronService.sendMinskyCommandAndRender({
-      command: `${commandsMapping.ADD_BOOKMARK} "${this.bookmarkName.value}"`,
+      command: `${commandsMapping.ADD_BOOKMARK} "${replaceBackSlash(
+        this.bookmarkName.value
+      )}"`,
     });
 
     const bookmarks = (await this.electronService.sendMinskyCommandAndRender({
