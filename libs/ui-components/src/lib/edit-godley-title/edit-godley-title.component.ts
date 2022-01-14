@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService, WindowUtilityService } from '@minsky/core';
-import { commandsMapping } from '@minsky/shared';
+import { commandsMapping, replaceBackSlash } from '@minsky/shared';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 
 @AutoUnsubscribe()
@@ -29,11 +29,15 @@ export class EditGodleyTitleComponent implements OnDestroy {
     if (this.electronService.isElectron) {
       if (this.itemId) {
         await this.electronService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.GET_NAMED_ITEM}/${this.itemId}/second/table/title "${newTitle}"`,
+          command: `${commandsMapping.GET_NAMED_ITEM}/${
+            this.itemId
+          }/second/table/title "${replaceBackSlash(newTitle)}"`,
         });
       } else {
         await this.electronService.sendMinskyCommandAndRender({
-          command: `${commandsMapping.CANVAS_ITEM_TABLE_TITLE} "${newTitle}"`,
+          command: `${
+            commandsMapping.CANVAS_ITEM_TABLE_TITLE
+          } "${replaceBackSlash(newTitle)}"`,
         });
 
         await this.electronService.sendMinskyCommandAndRender({
@@ -45,7 +49,5 @@ export class EditGodleyTitleComponent implements OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function,@angular-eslint/no-empty-lifecycle-method
-  ngOnDestroy() {
-
-  }
+  ngOnDestroy() {}
 }
