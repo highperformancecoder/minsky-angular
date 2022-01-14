@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { replaceBackSlash } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-dialog',
@@ -33,7 +32,7 @@ export class DialogComponent implements AfterViewInit {
 
   submit(): void {
     this.ngZone.run(() => {
-      this.dialogRef.close(replaceBackSlash(this.multipleKeyString.value));
+      this.dialogRef.close(this.multipleKeyString.value);
     });
   }
 
