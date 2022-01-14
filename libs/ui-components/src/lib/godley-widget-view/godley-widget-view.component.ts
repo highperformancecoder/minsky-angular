@@ -13,8 +13,6 @@ import {
 } from '@minsky/core';
 import {
   commandsMapping,
-  events,
-  MinskyProcessPayload,
   ZOOM_IN_FACTOR,
   ZOOM_OUT_FACTOR,
 } from '@minsky/shared';
@@ -165,21 +163,10 @@ export class GodleyWidgetViewComponent implements OnDestroy, AfterViewInit {
   }
 
   onKeyDown = async (event: KeyboardEvent) => {
-    const payload: MinskyProcessPayload = {
+    await this.communicationService.handleKeyDown({
+      event,
       command: this.namedItemSubCommand,
-      key: event.key,
-      shift: event.shiftKey,
-      capsLock: event.getModifierState('CapsLock'),
-      ctrl: event.ctrlKey,
-      alt: event.altKey,
-      mouseX: this.mouseX,
-      mouseY: this.mouseY,
-    };
-
-    await this.electronService.sendMinskyCommandAndRender(
-      payload,
-      events.KEY_PRESS
-    );
+    });
 
     await this.redraw();
   };
