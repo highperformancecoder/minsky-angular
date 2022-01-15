@@ -762,7 +762,6 @@ export class CommunicationService {
     });
   }
 
-  // use this
   async handleTextInputSubmit(multipleKeyString: string) {
     if (this.electronService.isElectron && multipleKeyString) {
       if (multipleKeyString.charAt(0) === '#') {

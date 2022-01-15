@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from '@minsky/core';
-import { ClassType, commandsMapping } from '@minsky/shared';
+import { ClassType, commandsMapping, replaceBackSlash } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-edit-user-function',
@@ -73,7 +73,9 @@ export class EditUserFunctionComponent implements OnInit {
   async handleSave() {
     if (this.electronService.isElectron) {
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.CANVAS_ITEM_DESCRIPTION} "${this.name.value}"`,
+        command: `${
+          commandsMapping.CANVAS_ITEM_DESCRIPTION
+        } "${replaceBackSlash(this.name.value)}"`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({
@@ -81,7 +83,9 @@ export class EditUserFunctionComponent implements OnInit {
       });
 
       await this.electronService.sendMinskyCommandAndRender({
-        command: `${commandsMapping.CANVAS_ITEM_EXPRESSION} "${this.expression.value}"`,
+        command: `${commandsMapping.CANVAS_ITEM_EXPRESSION} "${replaceBackSlash(
+          this.expression.value
+        )}"`,
       });
     }
 

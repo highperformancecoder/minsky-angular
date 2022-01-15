@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from '@minsky/core';
+import { replaceBackSlash } from '@minsky/shared';
 
 @Component({
   selector: 'minsky-edit-description',
@@ -35,15 +36,15 @@ export class EditDescriptionComponent implements OnInit {
   async handleSave() {
     if (this.electronService.isElectron) {
       await this.electronService.sendMinskyCommandAndRender({
-        command: `/minsky/canvas/${this.type}/tooltip "${
+        command: `/minsky/canvas/${this.type}/tooltip "${replaceBackSlash(
           this.editDescriptionForm.get('tooltip').value
-        }"`,
+        )}"`,
       });
 
       await this.electronService.sendMinskyCommandAndRender({
-        command: `/minsky/canvas/${this.type}/detailedText "${
+        command: `/minsky/canvas/${this.type}/detailedText "${replaceBackSlash(
           this.editDescriptionForm.get('detailedText').value
-        }"`,
+        )}"`,
       });
     }
     this.closeWindow();

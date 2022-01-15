@@ -31,18 +31,12 @@ export class DialogComponent implements AfterViewInit {
   }
 
   submit(): void {
-    // console.log(
-    //   '🚀 ~ file: dialog.component.ts ~ line 25 ~ DialogComponent ~ submit ~ submit'
-    // );
     this.ngZone.run(() => {
       this.dialogRef.close(this.multipleKeyString.value);
     });
   }
-  
+
   close(): void {
-    // console.log(
-    //   '🚀 ~ file: dialog.component.ts ~ line 28 ~ DialogComponent ~ close ~ close'
-    // );
     this.ngZone.run(() => {
       this.dialogRef.close();
     });
