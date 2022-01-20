@@ -1,6 +1,6 @@
 {
   "name": "minsky",
-  "version": "2.22.0-rest.35",
+  "version": "2.22.0-rest.37",
   "license": "MIT",
   "scripts": {
     "ng": "nx",
